@@ -68,7 +68,7 @@ SEEDED_ENTRY_KEYS = {
 #: `- type: custom:home-keeper-library-card` in the seeded YAML dashboard.
 _YAML_CUSTOM_CARD = re.compile(r"type:\s*custom:([\w-]+)")
 
-#: `customElements.define('home-keeper-library-card', …)` in the card bundle's entry point.
+#: `customElements.define('home-keeper-library-card', …)` in the card entry point.
 _DEFINED_ELEMENT = re.compile(r"customElements\.define\(\s*['\"]([\w-]+)['\"]")
 
 

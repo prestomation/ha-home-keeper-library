@@ -18,7 +18,7 @@ What it changes (ordered, boundary-aware so it doesn't corrupt e.g. `flex-`):
     home_keeper_library  -> your_domain   domain, static path, ws, imports, paths
     home-keeper-library  -> your-domain   panel URL path
     home-keeper-library-             -> your-domain-   web components + e2e dashboard
-    HomeKeeperLibrary              -> YourName       PascalCase symbols (HomeKeeperLibraryStore, …)
+    HomeKeeperLibrary    -> YourName       PascalCase symbols (HomeKeeperLibraryStore)
     hkl-                  -> <prefix>-       CSS classes / element ids
     hkl_                  -> <prefix>_       the input_text event-capture helper
 
@@ -166,7 +166,11 @@ def main() -> int:
             ROOT / "custom_components" / args.domain,
         ),
         (
-            ROOT / "tests" / "integration" / "ha_config" / "home-keeper-library-e2e.yaml",
+            ROOT
+            / "tests"
+            / "integration"
+            / "ha_config"
+            / "home-keeper-library-e2e.yaml",
             ROOT / "tests" / "integration" / "ha_config" / f"{hyphen}-e2e.yaml",
         ),
     ]
