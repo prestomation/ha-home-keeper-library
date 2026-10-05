@@ -340,7 +340,7 @@
   "settings.currency": "Currency",
   "settings.currency_bad": "Type a currency code of 3 letters.",
   "settings.currency_code": "Currency code",
-  "settings.currency_hint": "Use a code of 3 letters, for example EUR or USD.",
+  "settings.currency_hint": "Use a currency code of 3 letters: EUR, USD or GBP.",
   "settings.export": "Export",
   "settings.export_all": "All books, no reading status",
   "settings.no_list": "No list",
