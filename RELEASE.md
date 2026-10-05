@@ -159,6 +159,15 @@ does not bump the version or cut a real release. `preview-release.yml` does the 
 - **Separate from `release.yml`.** A `v*.dev*` tag does not start `release.yml`, which
   runs only on pushes to the `main` branch. Thus a preview cannot publish a real release.
 
+## Before the first stable release
+
+The Library tab needs the panel tab API of Home Keeper (prestomation/ha-home-keeper#434).
+Until that PR merges, CI clones its branch `ccr-bca5cf7c-40042x`. After it merges:
+
+1. Set `HOME_KEEPER_REF` to `main` in `integration.yml`, `e2e.yml`,
+   `walkthrough-preview.yml` and `ha-beta.yml`.
+2. Set `const.HOME_KEEPER_MIN_VERSION` to the first Home Keeper release with the tab API.
+
 ## Constraints
 
 - **Never push directly to `main`.** All changes go through PRs.

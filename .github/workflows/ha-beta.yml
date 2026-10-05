@@ -35,8 +35,13 @@ on:
         required: false
         default: "beta"
 
+# HOME_KEEPER_REF is the Home Keeper branch that ci/fetch-home-keeper.sh clones.
+# The Library tab needs the panel tab API of prestomation/ha-home-keeper#434.
+# Change it to `main` after #434 merges (RELEASE.md, "Before the first stable
+# release").
 env:
   HA_TAG: ${{ github.event.inputs.ha_tag || 'beta' }}
+  HOME_KEEPER_REF: ccr-bca5cf7c-40042x
 
 # A job that needs more asks for it in its own permissions block.
 permissions:
@@ -128,13 +133,6 @@ jobs:
       - name: Install frontend deps
         run: npm ci --prefix custom_components/home_keeper_library/frontend
 
-      - name: Build panel JS
-        run: bash ci/build-panel.sh
-
-      - name: Fetch Home Keeper
-        # The library needs a real Home Keeper for its tab and loan tasks.
-        run: bash ci/fetch-home-keeper.sh
-
       - name: Install e2e deps
         run: npm ci --prefix tests/e2e
 
@@ -142,19 +140,17 @@ jobs:
         working-directory: tests/e2e
         run: npx playwright install --with-deps chromium
 
-      - name: Start Home Assistant
-        working-directory: tests/integration
-        run: docker compose up -d
+      # The same script as e2e.yml and a local run, with HA_TAG from the workflow.
+      - name: Build, seed and start Home Assistant
+        env:
+          NO_TESTS: "1"
+          KEEP_UP: "1"
+          SKIP_BROWSER_ENV: "1"
+        run: bash ci/e2e-up.sh
 
-      - name: Wait for Home Assistant to start
-        run: |
-          for i in $(seq 1 60); do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8123/api/ 2>/dev/null || true)
-            if [ "$code" = "200" ] || [ "$code" = "401" ]; then exit 0; fi
-            sleep 2
-          done
-          (cd tests/integration && docker compose logs)
-          exit 1
+      - name: Report the version actually tested
+        continue-on-error: true
+        run: bash ci/e2e-compose.sh exec -T homeassistant python -c "from homeassistant.const import __version__; print('HA', __version__)"
 
       - name: Run Playwright e2e
         run: bash ci/test-e2e.sh
@@ -171,8 +167,7 @@ jobs:
 
       - name: Cleanup
         if: always()
-        working-directory: tests/integration
-        run: docker compose down -v
+        run: bash ci/e2e-compose.sh down -v
 
   typing:
     name: mypy against pre-release HA
