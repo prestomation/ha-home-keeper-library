@@ -71,6 +71,23 @@ _YAML_CUSTOM_CARD = re.compile(r"type:\s*custom:([\w-]+)")
 #: `customElements.define('home-keeper-library-card', …)` in the card entry point.
 _DEFINED_ELEMENT = re.compile(r"customElements\.define\(\s*['\"]([\w-]+)['\"]")
 
+#: `customElements.define(CARD_TAG, …)`, with `export const CARD_TAG = '…'` in a module.
+_DEFINED_BY_NAME = re.compile(r"customElements\.define\(\s*([A-Z_]+)\s*,")
+_TAG_CONSTANT = re.compile(r"(?:export\s+)?const\s+([A-Z_]+)\s*=\s*['\"]([\w-]+)['\"]")
+
+
+def _defined_elements() -> set[str]:
+    """The element names that the card entry point defines, literal or by constant."""
+    source = CARD_INDEX.read_text()
+    defined = set(_DEFINED_ELEMENT.findall(source))
+    names = set(_DEFINED_BY_NAME.findall(source))
+    if names:
+        constants: dict[str, str] = {}
+        for module in CARD_INDEX.parent.glob("*.ts"):
+            constants.update(_TAG_CONSTANT.findall(module.read_text()))
+        defined |= {constants[n] for n in names if n in constants}
+    return defined
+
 
 def _payload() -> dict:
     return json.loads(CONFIG_ENTRIES.read_text(encoding="utf-8"))
@@ -118,7 +135,7 @@ def test_e2e_dashboard_card_type_is_a_registered_element() -> None:
         "to assert the dashboard card against."
     )
 
-    defined = set(_DEFINED_ELEMENT.findall(CARD_INDEX.read_text()))
+    defined = _defined_elements()
     unknown = sorted(dashboard_cards - defined)
     assert not unknown, (
         f"the seeded e2e dashboard uses card type(s) {unknown}, which "
