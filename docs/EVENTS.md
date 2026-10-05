@@ -1,4 +1,9 @@
-# Home Keeper Library events
+---
+title: Events reference
+summary: The bus events that Home Keeper Library fires, when each one fires, its payload, and an example automation, for integrators.
+---
+
+# Events reference
 
 Home Keeper Library fires a Home Assistant bus event for each change to the
 library. Automations and other integrations use these events. Each event
@@ -85,18 +90,46 @@ The other keys of each event are in the generated API reference and in
 - Deleting a room, a bookcase or a shelf with `force: true` fires a `*_removed`
   event for each child and a `copy_moved` event for each copy that moves to no
   shelf.
+- These changes fire no event: an edit of a copy that keeps its shelf, `update_loan`,
+  `delete_loan`, a change of the rating, the page or the notes that keeps the status,
+  and the person settings.
+
+## Events that the library listens for
+
+| Event | What the library does |
+|---|---|
+| `home_keeper_task_completed` | If the task is the task of an open loan, the loan is returned. |
+| `home_keeper_task_deleted` | If the task is the task of a loan, the loan forgets the task and gets no new one. |
+| `home_keeper_register_companions` | The library registers as a Home Keeper companion again. |
+
+The library ignores a Home Keeper event with the origin `home_keeper_library`, because
+the library made that change itself.
 
 ## Example automation
 
 ```yaml
 automation:
   - alias: Notify when a loan is overdue
-    trigger:
-      - platform: event
+    triggers:
+      - trigger: event
         event_type: home_keeper_library_loan_overdue
-    action:
-      - service: persistent_notification.create
+    actions:
+      - action: persistent_notification.create
         data:
           title: "Loan overdue"
           message: "{{ trigger.event.data.title }} was due on {{ trigger.event.data.due }}."
+```
+
+A second example sends a message when a person finishes a book:
+
+```yaml
+automation:
+  - alias: Book finished
+    triggers:
+      - trigger: event
+        event_type: home_keeper_library_book_finished
+    actions:
+      - action: notify.notify
+        data:
+          message: "Finished {{ trigger.event.data.title }}."
 ```

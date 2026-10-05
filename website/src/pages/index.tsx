@@ -14,24 +14,24 @@ type Feature = {
 
 const FEATURES: Feature[] = [
   {
-    title: 'Sidebar panel',
+    title: 'Scan a shelf',
     description:
-      'Create, edit and delete items in a panel in the Home Assistant sidebar. Each page has its own URL.',
+      'Scan the ISBN barcode of each book with a phone. Details and covers come from Open Library.',
   },
   {
-    title: 'Native entities and a card',
+    title: 'Shelves and reading',
     description:
-      'Each item has a sensor entity, and a dashboard card lists the items with their values.',
+      'Each copy has a room, a bookcase and a shelf. Each person has a reading status, a rating and notes.',
   },
   {
-    title: 'Services and events',
+    title: 'Loans and Home Keeper',
     description:
-      'Each data action is a service, and each change fires a bus event that automations can use.',
+      'Lent and borrowed books get a Home Keeper task on the due date. Completing the task returns the book.',
   },
   {
-    title: 'Translations',
+    title: 'Card, entities and services',
     description:
-      'The panel, the card and the service text follow the Home Assistant language.',
+      'Every user gets a dashboard card and a To read list. Each data action is a service, and each change fires an event.',
   },
 ];
 

@@ -52,7 +52,7 @@ repository. Put documentation for a new feature in `docs/guide/`.
 ```bash
 cd website
 npm install
-npm start        # dev server with live reload at http://localhost:3000/ha-integration-template/
+npm start        # dev server with live reload at http://localhost:3000/ha-home-keeper-library/
 npm run build    # production build into website/build
 npm run typecheck
 ```

@@ -20,7 +20,7 @@ const editUrl = `${repoUrl}/tree/main/website/`;
 
 const config: Config = {
   title: 'Home Keeper Library',
-  tagline: 'A template for a Home Assistant custom integration',
+  tagline: 'The books of a household, as a companion of Home Keeper',
   favicon: 'img/favicon.svg',
 
   url: `https://${organizationName}.github.io`,

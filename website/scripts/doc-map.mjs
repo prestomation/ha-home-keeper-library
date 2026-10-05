@@ -13,10 +13,18 @@ import {posix} from 'node:path';
 // a file: `sync-docs.mjs` fails the build otherwise, so a new page cannot silently
 // stay off the site and a listed page cannot silently vanish.
 export const USER_SECTIONS = [
+  {slug: 'overview', title: 'Overview', group: 'start'},
   {slug: 'installation', title: 'Installation', group: 'start'},
-  {slug: 'panel', title: 'The panel', label: 'The panel', group: 'start'},
+  {slug: 'people-and-privacy', title: 'People and privacy', group: 'start'},
+  {slug: 'rooms-and-shelves', title: 'Rooms and shelves', group: 'library'},
+  {slug: 'scan-books', title: 'Scan books', group: 'library'},
+  {slug: 'books', title: 'Books', group: 'library'},
+  {slug: 'book-detail', title: 'Book detail', group: 'library'},
+  {slug: 'loans', title: 'Loans', group: 'library'},
+  {slug: 'wishlist', title: 'Wishlist', group: 'library'},
+  {slug: 'import-export', title: 'Import and export', group: 'library'},
   {slug: 'dashboard-card', title: 'Dashboard card', label: 'Dashboard card', group: 'views'},
-  {slug: 'services', title: 'Services', group: 'automation'},
+  {slug: 'services', title: 'Services and events', group: 'automation'},
 ];
 
 // Sidebar categories for the User Guide, in order. Each USER_SECTIONS entry names
@@ -24,6 +32,7 @@ export const USER_SECTIONS = [
 // the directory and the sidebar category.
 export const GUIDE_GROUPS = [
   {dir: 'start', label: 'Start'},
+  {dir: 'library', label: 'The library'},
   {dir: 'views', label: 'Views'},
   {dir: 'automation', label: 'Automate and extend'},
 ];

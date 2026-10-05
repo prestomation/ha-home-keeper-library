@@ -9,11 +9,11 @@ import {DEV_DOCS, DOC_ROUTES} from '../../website/scripts/doc-map.mjs';
 describe('pagesForChanges', () => {
   it('maps changed guide files to their User Guide routes in sidebar order', () => {
     const pages = pagesForChanges({
-      changedFiles: ['docs/guide/automation/services.md', 'docs/guide/start/panel.md'],
+      changedFiles: ['docs/guide/automation/services.md', 'docs/guide/library/scan-books.md'],
     });
     expect(pages).toEqual([
-      {title: 'The panel', route: '/docs/guide/panel'},
-      {title: 'Services', route: '/docs/guide/services'},
+      {title: 'Scan books', route: '/docs/guide/scan-books'},
+      {title: 'Services and events', route: '/docs/guide/services'},
     ]);
   });
 
@@ -75,12 +75,12 @@ describe('renderComment', () => {
 
   it('renders a marked, bulleted list with absolute preview URLs', () => {
     const body = renderComment(
-      [{title: 'Services', route: '/docs/guide/services'}],
+      [{title: 'Services and events', route: '/docs/guide/services'}],
       base,
     );
     expect(body).toContain(COMMENT_MARKER);
     expect(body).toContain(
-      '- [Services](https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-9/docs/guide/services)',
+      '- [Services and events](https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-9/docs/guide/services)',
     );
   });
 

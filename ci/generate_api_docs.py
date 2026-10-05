@@ -230,6 +230,8 @@ def render_services(sources: Sources) -> list[str]:
         badges = []
         if spec.admin_only:
             badges.append("**Admin only**")
+        if getattr(spec, "caller_scoped", False):
+            badges.append("**Open, for the caller's own person**")
         if label := _RESPONSE_LABELS.get(spec.response):
             badges.append(f"**{label}**")
 
@@ -394,9 +396,9 @@ def render_options(sources: Sources) -> list[str]:
     return [
         "## Config entry options",
         "",
-        "Readable and writable through the `set_options` action. The ones marked",
-        "*Configure dialog* also appear on the integration's options form; the rest",
-        "are edited in the panel.",
+        "The options of the config entry. The ones marked *Configure dialog* are on",
+        "the options form of the integration. The `set_settings` action writes the",
+        "currency too.",
         "",
         *_table(
             ["Option", "Label", "Where", "Notes"],

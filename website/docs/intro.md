@@ -6,23 +6,29 @@ title: Introduction
 
 # Home Keeper Library
 
-Home Keeper Library is a template for a Home Assistant custom integration. Its feature
-is a list of **items**. Each item has a name and an integer value.
+Home Keeper Library is a Home Assistant integration for the books of a household. It
+records the rooms and shelves of the home, the books and their copies, the reading status
+of each person, the loans and a wishlist.
 
-![The panel with a list of items](/img/screenshots/panel-list.png)
+**Home Keeper Library requires [Home Keeper](https://github.com/prestomation/ha-home-keeper).**
+Install and set up Home Keeper first. The library adds a **Library** tab to the Home
+Keeper panel.
+
+<!-- screenshot: books-desktop.png -->
 
 ## Features
 
-- **Panel.** Create, edit and delete items in a panel in the Home Assistant sidebar.
-- **Entities.** Each item has a `sensor` entity. A total sensor holds the number of items.
-- **Dashboard card.** A card lists the items and their values.
-- **Services.** Each data action is an `home_keeper_library.*` service.
-- **Events.** Each change fires a bus event for automations.
-- **Translations.** The text follows the Home Assistant language.
+- **Scan.** Fill a shelf with the camera of a phone. Details and covers come from Open
+  Library.
+- **Shelves.** Each copy has a room, a bookcase and a shelf, so a search finds the book.
+- **Reading.** Each person has a reading status, a rating, notes and a yearly goal.
+- **Loans.** Lent and borrowed books get a task in Home Keeper on the due date.
+- **Wishlist.** The books to buy go to a to-do list of the person.
+- **Import.** Goodreads and StoryGraph CSV files bring a reading history in.
+- **Card and entities.** Every user gets a dashboard card, sensors and a To read list.
 
 ## Next steps
 
-- Start with [Installation](/docs/guide/installation), then read about
-  [the panel](/docs/guide/panel).
-- To use the integration from another integration, read the
+- Read the [overview](/docs/guide/overview), then [Installation](/docs/guide/installation).
+- To use the library from an automation or another integration, read the
   [Developer Guide](/developer/integrating).
