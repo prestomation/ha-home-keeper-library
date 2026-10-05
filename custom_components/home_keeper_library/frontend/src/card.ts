@@ -7,7 +7,7 @@
 import { errorText, LibraryApi } from './api';
 import { renderKeepFocus } from './dom';
 import { formatAgo, formatNumber, setLanguage, t, tn } from './i18n';
-import { cover, personDot, statusLabel } from './markup';
+import { cover, personDot, statusLabel, wireCovers } from './markup';
 import { TOKENS } from './styles';
 import type { Book, HomeAssistant, Lib } from './types';
 import {
@@ -199,7 +199,7 @@ export class HomeKeeperLibraryCard extends HTMLElement {
   private async _refresh(): Promise<void> {
     if (!this._api) return;
     try {
-      this._lib = normalizeState(await this._api.getState(), personNames(this._hass?.states));
+      this._lib = normalizeState(await this._api.getState());
       this._idx = buildIndex(this._lib);
       this._error = '';
     } catch (err) {
@@ -284,6 +284,7 @@ export class HomeKeeperLibraryCard extends HTMLElement {
       parts.push(`<div class="sec"><span class="eyebrow">${escapeHTML(t('book.household'))}</span>${rows || `<span class="muted">${escapeHTML(t('card.no_activity'))}</span>`}</div>`);
     }
     renderKeepFocus(this._root, this._body, parts.join(''));
+    wireCovers(this._body, this._api, () => this._render());
   }
 
   private _where(idx: Index, book: Book): string {

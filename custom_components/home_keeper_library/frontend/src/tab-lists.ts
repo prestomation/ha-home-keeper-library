@@ -1,7 +1,7 @@
 // The Loans, Wishlist and Settings views.
 
 import { formatDate, t, tn } from './i18n';
-import { button, cover, ICONS, navBar, options, personDot, statusLabel } from './markup';
+import { button, cover, navBar, options, personDot, statusLabel, taskLinkHtml } from './markup';
 import { navCounts } from './tab-books';
 import type { ViewCtx } from './tab-types';
 import type { Book, Loan } from './types';
@@ -40,7 +40,7 @@ function loanRow(ctx: ViewCtx, loan: Loan): string {
   }
   const due = dueText(ctx, loan);
   const task = loan.hk_task_id && !loan.returned
-    ? `<a class="hkl-task" href="${escapeHTML(ctx.taskLink(loan.hk_task_id))}">${ICONS.home}${escapeHTML(t('loan.task'))}</a>`
+    ? taskLinkHtml(ctx, loan.hk_task_id)
     : '';
   const id = escapeHTML(loan.id);
   const act = loan.returned
@@ -136,7 +136,10 @@ export function renderSettings(ctx: ViewCtx): string {
   </section>
   <section class="hkl-card">
     <h2>${escapeHTML(t('settings.currency'))}</h2>
-    <span class="hkl-kv"><span>${escapeHTML(t('settings.currency'))}</span><span>${escapeHTML(ctx.lib.currency)}</span></span>
+    <form data-form="currency" class="hkl-inline-form">
+      <label class="hkl-field small">${escapeHTML(t('settings.currency_code'))}<input name="currency" class="hkl-input narrow" maxlength="3" autocapitalize="characters" spellcheck="false" data-k="currency" value="${escapeHTML(ctx.lib.currency)}" /></label>
+      <button class="hkl-btn tonal" type="submit" data-k="currency-save">${escapeHTML(t('action.save'))}</button>
+    </form>
     <p class="hkl-muted small">${escapeHTML(t('settings.currency_hint'))}</p>
   </section>
   <section class="hkl-card">

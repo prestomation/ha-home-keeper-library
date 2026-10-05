@@ -5,6 +5,8 @@ import '../dist/library-card.js';
 const params = new URLSearchParams(location.search);
 if (params.get('theme') === 'dark') document.documentElement.classList.add('dark');
 const state = await (await fetch('../test/fixtures/state.json')).json();
+// get_state sends lists. The harness changes records by id.
+const byId = (list, id) => list.find((r) => r.id === id);
 if (params.get('admin') === '0') state.me.is_admin = false;
 
 const listeners = new Set();
@@ -16,10 +18,13 @@ function handle(msg) {
   switch (cmd) {
     case 'get_state':
       return structuredClone(state);
+    case 'sign_path':
+      // The harness serves no covers, so each cover shows its title block.
+      throw new Error('no covers in the harness');
     case 'list_todo_entities':
       return { entities: [{ entity_id: 'todo.alex_books', name: 'Alex books' }, { entity_id: 'todo.jo_books', name: 'Jo books' }, { entity_id: 'todo.shopping_list', name: 'Shopping list' }] };
     case 'set_reading': {
-      const book = state.books[msg.book_id];
+      const book = byId(state.books, msg.book_id);
       const pid = msg.person_id ?? state.me.person_id;
       const row = (book.reading[pid] ??= { status: null, rating: null, page: null, started: null, finished: null, read_count: 0, private_notes: '' });
       for (const [k, v] of Object.entries(msg)) if (!['type', 'id', 'book_id', 'person_id'].includes(k)) row[k] = v;
@@ -28,13 +33,13 @@ function handle(msg) {
       return row;
     }
     case 'return_loan':
-      state.loans[msg.loan_id].returned = today;
+      byId(state.loans, msg.loan_id).returned = today;
       push();
-      return state.loans[msg.loan_id];
+      return { loan: byId(state.loans, msg.loan_id) };
     case 'scan_isbn': {
-      const found = Object.values(state.books).find((b) => b.isbn13 === msg.isbn);
+      const found = state.books.find((b) => b.isbn13 === msg.isbn);
       if (found) {
-        const existing = Object.values(state.copies).filter((c) => c.book_id === found.id);
+        const existing = state.copies.filter((c) => c.book_id === found.id);
         if (existing.length && (!msg.on_duplicate || msg.on_duplicate === 'ask')) return { result: 'duplicate', book: found, copy: null, existing_copies: existing };
         return { result: msg.on_duplicate === 'skip' ? 'skipped' : msg.on_duplicate === 'move' ? 'moved' : 'added', book: found, copy: existing[0] ?? null, existing_copies: existing };
       }
@@ -46,8 +51,10 @@ function handle(msg) {
     }
     case 'import_csv':
       return {
+        dry_run: Boolean(msg.dry_run),
+        truncated: false,
         counts: { rows: 318, read: 201, reading: 2, want: 41, wishlist: 74, tags: 9, copies: 57, existing: 187, new: 57, title_match: 12 },
-        rows: [{ line: 2, title: 'Piranesi', authors: ['Susanna Clarke'], action: 'existing' }],
+        rows: [{ line: 2, title: 'Piranesi', authors: ['Susanna Clarke'], isbn: '9781635575637', book_id: null, action: 'existing', message: '' }],
       };
     default:
       return {};
@@ -58,8 +65,8 @@ const hass = {
   language: params.get('lang') || 'en',
   states: {
     'person.alex': { entity_id: 'person.alex', state: 'home', attributes: { id: state.me.person_id, friendly_name: 'Alex' } },
-    'person.sam': { entity_id: 'person.sam', state: 'home', attributes: { id: '5a0000000000000000000000000005a0', friendly_name: 'Sam' } },
-    'person.jo': { entity_id: 'person.jo', state: 'away', attributes: { id: '10000000000000000000000000000f00', friendly_name: 'Jo' } },
+    'person.sam': { entity_id: 'person.sam', state: 'home', attributes: { id: 'sam', friendly_name: 'Sam' } },
+    'person.jo': { entity_id: 'person.jo', state: 'away', attributes: { id: 'jo', friendly_name: 'Jo' } },
     'todo.alex_books': { entity_id: 'todo.alex_books', state: '2', attributes: { friendly_name: 'Alex books' } },
     'todo.jo_books': { entity_id: 'todo.jo_books', state: '1', attributes: { friendly_name: 'Jo books' } },
   },

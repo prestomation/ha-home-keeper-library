@@ -1,172 +1,189 @@
 {
- "rooms": {
-  "a1000000000000000000000000000001": {
-   "id": "a1000000000000000000000000000001",
+ "revision": 1,
+ "rooms": [
+  {
+   "id": "cd9acbd87f83485f844a5ff2d6fc7588",
    "name": "Living room",
    "area_id": "living_room",
    "order": 1
   },
-  "a1000000000000000000000000000002": {
-   "id": "a1000000000000000000000000000002",
+  {
+   "id": "3e967cbdfd3941fc944f2f1db5811497",
    "name": "Office",
    "area_id": "office",
    "order": 2
   }
- },
- "bookcases": {
-  "ca000000000000000000000000000003": {
-   "id": "ca000000000000000000000000000003",
-   "room_id": "a1000000000000000000000000000001",
+ ],
+ "bookcases": [
+  {
+   "id": "b86f8a873e8c4fe594d4cdc01fd671d7",
+   "room_id": "3e967cbdfd3941fc944f2f1db5811497",
+   "name": "Tall bookcase",
+   "note": "",
+   "order": 3
+  },
+  {
+   "id": "cc0ac7d7ab034b348bccf2b6668bfda7",
+   "room_id": "cd9acbd87f83485f844a5ff2d6fc7588",
    "name": "Bookcase A",
    "note": "By the window",
    "order": 1
   },
-  "ca000000000000000000000000000004": {
-   "id": "ca000000000000000000000000000004",
-   "room_id": "a1000000000000000000000000000001",
+  {
+   "id": "cdeee5b77bf643409b0f4313dd7ea77a",
+   "room_id": "cd9acbd87f83485f844a5ff2d6fc7588",
    "name": "Bookcase B",
    "note": "Next to the TV",
    "order": 2
-  },
-  "ca000000000000000000000000000005": {
-   "id": "ca000000000000000000000000000005",
-   "room_id": "a1000000000000000000000000000002",
-   "name": "Tall bookcase",
-   "note": "",
-   "order": 1
   }
- },
- "shelves": {
-  "5e000000000000000000000000000006": {
-   "id": "5e000000000000000000000000000006",
-   "bookcase_id": "ca000000000000000000000000000003",
+ ],
+ "shelves": [
+  {
+   "id": "9e21a820c92f4af6ac206d2b45b8316b",
+   "bookcase_id": "b86f8a873e8c4fe594d4cdc01fd671d7",
    "name": "Shelf 1",
    "order": 1
   },
-  "5e000000000000000000000000000007": {
-   "id": "5e000000000000000000000000000007",
-   "bookcase_id": "ca000000000000000000000000000003",
+  {
+   "id": "2438e456729348678c453d9967239c07",
+   "bookcase_id": "b86f8a873e8c4fe594d4cdc01fd671d7",
    "name": "Shelf 2",
    "order": 2
   },
-  "5e000000000000000000000000000008": {
-   "id": "5e000000000000000000000000000008",
-   "bookcase_id": "ca000000000000000000000000000003",
+  {
+   "id": "c102ccaab0ca46f3a26333acc51e5da4",
+   "bookcase_id": "b86f8a873e8c4fe594d4cdc01fd671d7",
    "name": "Shelf 3",
    "order": 3
   },
-  "5e000000000000000000000000000009": {
-   "id": "5e000000000000000000000000000009",
-   "bookcase_id": "ca000000000000000000000000000003",
+  {
+   "id": "d3be9b2c152a450d9a18995d11a26924",
+   "bookcase_id": "cc0ac7d7ab034b348bccf2b6668bfda7",
+   "name": "Shelf 1",
+   "order": 1
+  },
+  {
+   "id": "356599599fc54f88a023d93d58228ca4",
+   "bookcase_id": "cc0ac7d7ab034b348bccf2b6668bfda7",
+   "name": "Shelf 2",
+   "order": 2
+  },
+  {
+   "id": "05d18119c2744375b9a89f4eb028edc0",
+   "bookcase_id": "cc0ac7d7ab034b348bccf2b6668bfda7",
+   "name": "Shelf 3",
+   "order": 3
+  },
+  {
+   "id": "9d1880ff64484dcbbe7d31c250ee3be6",
+   "bookcase_id": "cc0ac7d7ab034b348bccf2b6668bfda7",
    "name": "Shelf 4",
    "order": 4
   },
-  "5e00000000000000000000000000000a": {
-   "id": "5e00000000000000000000000000000a",
-   "bookcase_id": "ca000000000000000000000000000004",
+  {
+   "id": "2d8fcd0ea779423d8c0941759aba2355",
+   "bookcase_id": "cdeee5b77bf643409b0f4313dd7ea77a",
    "name": "Top",
    "order": 1
   },
-  "5e00000000000000000000000000000b": {
-   "id": "5e00000000000000000000000000000b",
-   "bookcase_id": "ca000000000000000000000000000004",
+  {
+   "id": "0e8ebfc93d1e4b739f47d5a99806022a",
+   "bookcase_id": "cdeee5b77bf643409b0f4313dd7ea77a",
    "name": "Oversize",
    "order": 2
-  },
-  "5e00000000000000000000000000000c": {
-   "id": "5e00000000000000000000000000000c",
-   "bookcase_id": "ca000000000000000000000000000005",
-   "name": "Shelf 1",
-   "order": 1
-  },
-  "5e00000000000000000000000000000d": {
-   "id": "5e00000000000000000000000000000d",
-   "bookcase_id": "ca000000000000000000000000000005",
-   "name": "Shelf 2",
-   "order": 2
-  },
-  "5e00000000000000000000000000000e": {
-   "id": "5e00000000000000000000000000000e",
-   "bookcase_id": "ca000000000000000000000000000005",
-   "name": "Shelf 3",
-   "order": 3
   }
- },
- "books": {
-  "b000000000000000000000000000000f": {
-   "id": "b000000000000000000000000000000f",
-   "title": "The Left Hand of Darkness",
+ ],
+ "books": [
+  {
+   "id": "d863ec937ad1406fba8ce5f430d7d2ab",
+   "title": "9780980123468",
+   "subtitle": "",
+   "authors": [],
+   "isbn13": "9780980123463",
+   "isbn10": "0980123461",
+   "publisher": "",
+   "published": "",
+   "pages": null,
+   "language": null,
+   "subjects": [],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": true,
+   "created_at": "2026-03-21T10:00:00+00:00",
+   "updated_at": "2026-03-21T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "06618efb9962471d992ba150a7d619b6",
+   "title": "A Memory Called Empire",
    "subtitle": "",
    "authors": [
-    "Ursula K. Le Guin"
+    "Arkady Martine"
    ],
-   "isbn13": "9780001000018",
-   "isbn10": null,
-   "publisher": "Ace Books",
-   "published": "1969",
-   "pages": 304,
+   "isbn13": "9781250186430",
+   "isbn10": "1250186439",
+   "publisher": "Tor Books",
+   "published": "2019",
+   "pages": 462,
    "language": "en",
    "subjects": [
-    "Science fiction",
-    "Gender"
+    "Science fiction"
    ],
    "series": {
-    "name": "Hainish Cycle",
-    "number": 4
+    "name": "Teixcalaan",
+    "number": "1"
    },
    "description": "",
    "tags": [
     "Hugo winner"
    ],
-   "shared_notes": "Book club pick, **Oct 2026**. Sam has the map of Gethen bookmarked on page 6.",
-   "openlibrary": {
-    "edition_key": "OL100001M",
-    "work_key": "/works/OL100001W",
-    "cover_id": null
-   },
+   "shared_notes": "",
+   "openlibrary": null,
    "cover": {
-    "kind": "custom",
+    "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-03-13T10:00:00+00:00",
+   "updated_at": "2026-03-13T10:00:00+00:00",
    "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
    "reading": {
-    "a1e8000000000000000000000000a1e0": {
+    "alex": {
      "status": "read",
      "rating": 4,
      "page": null,
      "started": null,
-     "finished": "2025-03-02",
-     "read_count": 2,
-     "private_notes": "Reread before the club.",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    },
-    "5a0000000000000000000000000005a0": {
-     "status": "reading",
-     "rating": null,
-     "page": 112,
-     "started": "2026-09-01",
-     "finished": null,
-     "read_count": 0,
+     "finished": "2026-08-08",
+     "read_count": 1,
      "private_notes": "",
-     "updated_at": "2026-10-03T10:00:00+00:00"
+     "updated_at": "2026-08-08T22:00:00+00:00"
     }
-   },
-   "owned": true,
-   "cover_url": null
+   }
   },
-  "b0000000000000000000000000000012": {
-   "id": "b0000000000000000000000000000012",
+  {
+   "id": "e4b7df5e6eef4483b1751162204397b8",
    "title": "A Wizard of Earthsea",
    "subtitle": "",
    "authors": [
     "Ursula K. Le Guin"
    ],
-   "isbn13": "9780001000025",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9780547773742",
+   "isbn10": "0547773749",
+   "publisher": "Clarion Books",
    "published": "1968",
    "pages": 183,
    "language": "en",
@@ -175,26 +192,29 @@
    ],
    "series": {
     "name": "Earthsea",
-    "number": 1
+    "number": "1"
    },
    "description": "",
    "tags": [],
    "shared_notes": "",
    "openlibrary": {
-    "edition_key": "OL100002M",
-    "work_key": "/works/OL100002W",
-    "cover_id": null
+    "edition_key": "OL5241542M",
+    "work_key": "/works/OL5241542W",
+    "cover_id": 12623421
    },
    "cover": {
-    "kind": "none",
-    "file": null
+    "kind": "openlibrary",
+    "file": "e4b7df5e6eef4483b1751162204397b8-798c3698.jpg"
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-01-03T10:00:00+00:00",
+   "updated_at": "2026-01-03T10:00:00+00:00",
    "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/e4b7df5e6eef4483b1751162204397b8?v=798c3698",
    "reading": {
-    "a1e8000000000000000000000000a1e0": {
+    "alex": {
      "status": "read",
      "rating": 5,
      "page": null,
@@ -202,9 +222,9 @@
      "finished": "2026-02-11",
      "read_count": 1,
      "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
+     "updated_at": "2026-02-11T21:00:00+00:00"
     },
-    "10000000000000000000000000000f00": {
+    "jo": {
      "status": "read",
      "rating": 4,
      "page": null,
@@ -212,262 +232,20 @@
      "finished": "2026-08-30",
      "read_count": 1,
      "private_notes": "",
-     "updated_at": "2026-08-30T10:00:00+00:00"
+     "updated_at": "2026-08-30T19:00:00+00:00"
     }
-   },
-   "owned": true,
-   "cover_url": null
+   }
   },
-  "b0000000000000000000000000000014": {
-   "id": "b0000000000000000000000000000014",
-   "title": "The Dispossessed",
-   "subtitle": "",
-   "authors": [
-    "Ursula K. Le Guin"
-   ],
-   "isbn13": "9780001000032",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1974",
-   "pages": 387,
-   "language": "en",
-   "subjects": [
-    "Science fiction"
-   ],
-   "series": {
-    "name": "Hainish Cycle",
-    "number": 6
-   },
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100003M",
-    "work_key": "/works/OL100003W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "a1e8000000000000000000000000a1e0": {
-     "status": "read",
-     "rating": 5,
-     "page": null,
-     "started": null,
-     "finished": "2026-04-20",
-     "read_count": 1,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000016": {
-   "id": "b0000000000000000000000000000016",
-   "title": "The Lathe of Heaven",
-   "subtitle": "",
-   "authors": [
-    "Ursula K. Le Guin"
-   ],
-   "isbn13": "9780001000049",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1971",
-   "pages": 184,
-   "language": "en",
-   "subjects": [
-    "Science fiction"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100004M",
-    "work_key": "/works/OL100004W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "a1e8000000000000000000000000a1e0": {
-     "status": "want",
-     "rating": null,
-     "page": null,
-     "started": null,
-     "finished": null,
-     "read_count": 0,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000018": {
-   "id": "b0000000000000000000000000000018",
-   "title": "The Tombs of Atuan",
-   "subtitle": "",
-   "authors": [
-    "Ursula K. Le Guin"
-   ],
-   "isbn13": "9780001000056",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1970",
-   "pages": 180,
-   "language": "en",
-   "subjects": [
-    "Fantasy"
-   ],
-   "series": {
-    "name": "Earthsea",
-    "number": 2
-   },
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100005M",
-    "work_key": "/works/OL100005W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "10000000000000000000000000000f00": {
-     "status": "reading",
-     "rating": null,
-     "page": 40,
-     "started": null,
-     "finished": null,
-     "read_count": 0,
-     "private_notes": "",
-     "updated_at": "2026-10-01T10:00:00+00:00"
-    },
-    "a1e8000000000000000000000000a1e0": {
-     "status": "want",
-     "rating": null,
-     "page": null,
-     "started": null,
-     "finished": null,
-     "read_count": 0,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b000000000000000000000000000001a": {
-   "id": "b000000000000000000000000000001a",
-   "title": "The Farthest Shore",
-   "subtitle": "",
-   "authors": [
-    "Ursula K. Le Guin"
-   ],
-   "isbn13": "9780001000063",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1972",
-   "pages": 223,
-   "language": "en",
-   "subjects": [
-    "Fantasy"
-   ],
-   "series": {
-    "name": "Earthsea",
-    "number": 3
-   },
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100006M",
-    "work_key": "/works/OL100006W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b000000000000000000000000000001c": {
-   "id": "b000000000000000000000000000001c",
-   "title": "Tehanu",
-   "subtitle": "",
-   "authors": [
-    "Ursula K. Le Guin"
-   ],
-   "isbn13": "9780001000070",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1990",
-   "pages": 252,
-   "language": "en",
-   "subjects": [
-    "Fantasy"
-   ],
-   "series": {
-    "name": "Earthsea",
-    "number": 4
-   },
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100007M",
-    "work_key": "/works/OL100007W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b000000000000000000000000000001e": {
-   "id": "b000000000000000000000000000001e",
+  {
+   "id": "360738e00aa246d38aab80792e9087fb",
    "title": "Always Coming Home",
    "subtitle": "",
    "authors": [
     "Ursula K. Le Guin"
    ],
-   "isbn13": "9780001000087",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9781598537055",
+   "isbn10": "1598537059",
+   "publisher": "Library of America",
    "published": "1985",
    "pages": 523,
    "language": "en",
@@ -478,35 +256,354 @@
    "description": "",
    "tags": [],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100008M",
-    "work_key": "/works/OL100008W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
     "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-01-15T10:00:00+00:00",
+   "updated_at": "2026-01-15T10:00:00+00:00",
    "wishlist": null,
-   "reading": {},
    "owned": true,
-   "cover_url": null
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
   },
-  "b0000000000000000000000000000020": {
-   "id": "b0000000000000000000000000000020",
-   "title": "The Word for World Is Forest",
+  {
+   "id": "93ff2f45f4464b0d836a5c3d8cc5e33d",
+   "title": "Atlas of Remote Islands",
    "subtitle": "",
    "authors": [
-    "Ursula K. Le Guin"
+    "Judith Schalansky"
    ],
-   "isbn13": "9780001000094",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1972",
-   "pages": 189,
+   "isbn13": "9780143118206",
+   "isbn10": "014311820X",
+   "publisher": "Penguin Books",
+   "published": "2009",
+   "pages": 144,
+   "language": "en",
+   "subjects": [
+    "Travel",
+    "Maps"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-02-15T10:00:00+00:00",
+   "updated_at": "2026-02-15T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "117b1aed4a5547c39b9627cbb9d71506",
+   "title": "Braiding Sweetgrass",
+   "subtitle": "",
+   "authors": [
+    "Robin Wall Kimmerer"
+   ],
+   "isbn13": "9781571313560",
+   "isbn10": "1571313567",
+   "publisher": "Milkweed Editions",
+   "published": "2013",
+   "pages": 391,
+   "language": "en",
+   "subjects": [
+    "Nature",
+    "Botany"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-02-21T10:00:00+00:00",
+   "updated_at": "2026-02-21T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "eed5dacf0ada41059efc64fdefd6dfa9",
+   "title": "Dune",
+   "subtitle": "",
+   "authors": [
+    "Frank Herbert"
+   ],
+   "isbn13": "9780441013593",
+   "isbn10": "0441013597",
+   "publisher": "Ace Books",
+   "published": "1965",
+   "pages": 688,
+   "language": "en",
+   "subjects": [
+    "Science fiction"
+   ],
+   "series": {
+    "name": "Dune",
+    "number": "1"
+   },
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": {
+    "edition_key": "OL10492718M",
+    "work_key": "/works/OL10492718W",
+    "cover_id": 11481354
+   },
+   "cover": {
+    "kind": "openlibrary",
+    "file": "eed5dacf0ada41059efc64fdefd6dfa9-543ed35b.jpg"
+   },
+   "needs_details": false,
+   "created_at": "2026-02-03T10:00:00+00:00",
+   "updated_at": "2026-02-03T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/eed5dacf0ada41059efc64fdefd6dfa9?v=543ed35b",
+   "reading": {
+    "alex": {
+     "status": "read",
+     "rating": 4,
+     "page": null,
+     "started": null,
+     "finished": "2024-12-01",
+     "read_count": 1,
+     "private_notes": "",
+     "updated_at": "2024-12-01T22:00:00+00:00"
+    },
+    "jo": {
+     "status": "dnf",
+     "rating": null,
+     "page": 140,
+     "started": null,
+     "finished": null,
+     "read_count": 0,
+     "private_notes": "",
+     "updated_at": "2026-07-12T10:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "e888e36a88504536bd6a87fd7c4aafe1",
+   "title": "Every Grain of Rice",
+   "subtitle": "",
+   "authors": [
+    "Fuchsia Dunlop"
+   ],
+   "isbn13": "9780393089288",
+   "isbn10": "0393089282",
+   "publisher": "W. W. Norton",
+   "published": "2012",
+   "pages": 352,
+   "language": "en",
+   "subjects": [
+    "Cooking",
+    "Chinese cooking"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [
+    "Kitchen"
+   ],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-02-09T10:00:00+00:00",
+   "updated_at": "2026-02-09T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {
+    "alex": {
+     "status": "reading",
+     "rating": null,
+     "page": 80,
+     "started": "2026-08-01",
+     "finished": null,
+     "read_count": 0,
+     "private_notes": "",
+     "updated_at": "2026-09-12T18:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "84cbfdd27dcf4439a1fa041c32d955fc",
+   "title": "Gödel, Escher, Bach",
+   "subtitle": "",
+   "authors": [
+    "Douglas Hofstadter"
+   ],
+   "isbn13": "9780465026562",
+   "isbn10": "0465026567",
+   "publisher": "Basic Books",
+   "published": "1979",
+   "pages": 777,
+   "language": "en",
+   "subjects": [
+    "Mathematics",
+    "Philosophy"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-02-17T10:00:00+00:00",
+   "updated_at": "2026-02-17T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {
+    "alex": {
+     "status": "dnf",
+     "rating": 3,
+     "page": 320,
+     "started": null,
+     "finished": null,
+     "read_count": 0,
+     "private_notes": "Try again one day.",
+     "updated_at": "2025-11-11T10:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "ad5098f6bd434ad8af9c3e8307d5724c",
+   "title": "Integrated Chinese 1",
+   "subtitle": "",
+   "authors": [
+    "Yuehua Liu",
+    "Tao-chung Yao"
+   ],
+   "isbn13": "9781622911356",
+   "isbn10": "1622911350",
+   "publisher": "Cheng & Tsui",
+   "published": "2017",
+   "pages": 420,
+   "language": "en",
+   "subjects": [
+    "Chinese language"
+   ],
+   "series": {
+    "name": "Integrated Chinese",
+    "number": "1"
+   },
+   "description": "",
+   "tags": [
+    "Study"
+   ],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-03-03T10:00:00+00:00",
+   "updated_at": "2026-03-03T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {
+    "alex": {
+     "status": "reading",
+     "rating": null,
+     "page": 150,
+     "started": "2026-01-08",
+     "finished": null,
+     "read_count": 0,
+     "private_notes": "",
+     "updated_at": "2026-09-30T18:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "6d4bd3ff12e9445ca851b230b527ce18",
+   "title": "Integrated Chinese 2",
+   "subtitle": "",
+   "authors": [
+    "Yuehua Liu",
+    "Tao-chung Yao"
+   ],
+   "isbn13": "9781622911400",
+   "isbn10": "1622911407",
+   "publisher": "Cheng & Tsui",
+   "published": "2018",
+   "pages": 412,
+   "language": "en",
+   "subjects": [
+    "Chinese language"
+   ],
+   "series": {
+    "name": "Integrated Chinese",
+    "number": "2"
+   },
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-04-15T10:00:00+00:00",
+   "updated_at": "2026-04-15T10:00:00+00:00",
+   "wishlist": {
+    "person_id": "alex",
+    "buy": false,
+    "added_at": "2026-06-01T10:00:00+00:00",
+    "todo_uid": null,
+    "todo_entity": null,
+    "bought": false
+   },
+   "owned": false,
+   "copy_count": 0,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "af804c5b7f944aabb9462c114fab95d0",
+   "title": "Klara and the Sun",
+   "subtitle": "",
+   "authors": [
+    "Kazuo Ishiguro"
+   ],
+   "isbn13": "9780593318171",
+   "isbn10": "059331817X",
+   "publisher": "Knopf",
+   "published": "2021",
+   "pages": 303,
    "language": "en",
    "subjects": [
     "Science fiction"
@@ -516,77 +613,119 @@
    "tags": [],
    "shared_notes": "",
    "openlibrary": {
-    "edition_key": "OL100009M",
-    "work_key": "/works/OL100009W",
-    "cover_id": null
+    "edition_key": "OL14483060M",
+    "work_key": "/works/OL14483060W",
+    "cover_id": 10958358
    },
+   "cover": {
+    "kind": "openlibrary",
+    "file": "af804c5b7f944aabb9462c114fab95d0-4a3dba00.jpg"
+   },
+   "needs_details": false,
+   "created_at": "2026-02-07T10:00:00+00:00",
+   "updated_at": "2026-02-07T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/af804c5b7f944aabb9462c114fab95d0?v=4a3dba00",
+   "reading": {
+    "sam": {
+     "status": "read",
+     "rating": 4,
+     "page": null,
+     "started": null,
+     "finished": "2026-09-28",
+     "read_count": 1,
+     "private_notes": "",
+     "updated_at": "2026-09-28T21:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "0079317c9882402e93c2fdfa755ebffb",
+   "title": "Land of Fish and Rice",
+   "subtitle": "",
+   "authors": [
+    "Fuchsia Dunlop"
+   ],
+   "isbn13": "9780393254389",
+   "isbn10": "0393254380",
+   "publisher": "W. W. Norton",
+   "published": "2016",
+   "pages": 368,
+   "language": "en",
+   "subjects": [
+    "Cooking",
+    "Chinese cooking"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
    "cover": {
     "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "5a0000000000000000000000000005a0": {
-     "status": "read",
-     "rating": 3,
-     "page": null,
-     "started": null,
-     "finished": "2026-06-01",
-     "read_count": 1,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
+   "created_at": "2026-04-13T10:00:00+00:00",
+   "updated_at": "2026-04-13T10:00:00+00:00",
+   "wishlist": {
+    "person_id": "sam",
+    "buy": true,
+    "added_at": "2026-09-18T10:00:00+00:00",
+    "todo_uid": null,
+    "todo_entity": null,
+    "bought": false
    },
-   "owned": true,
-   "cover_url": null
+   "owned": false,
+   "copy_count": 0,
+   "cover_url": null,
+   "reading": {}
   },
-  "b0000000000000000000000000000022": {
-   "id": "b0000000000000000000000000000022",
+  {
+   "id": "3bd29a2113cc46c08d7ff1eaf7c68307",
    "title": "Lavinia",
    "subtitle": "",
    "authors": [
     "Ursula K. Le Guin"
    ],
-   "isbn13": "9780001000100",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9780156033688",
+   "isbn10": "0156033682",
+   "publisher": "Mariner Books",
    "published": "2008",
    "pages": 279,
    "language": "en",
-   "subjects": [],
+   "subjects": [
+    "Historical fiction"
+   ],
    "series": null,
    "description": "",
    "tags": [],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100010M",
-    "work_key": "/works/OL100010W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
     "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-01-19T10:00:00+00:00",
+   "updated_at": "2026-01-19T10:00:00+00:00",
    "wishlist": null,
-   "reading": {},
    "owned": true,
-   "cover_url": null
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
   },
-  "b0000000000000000000000000000024": {
-   "id": "b0000000000000000000000000000024",
+  {
+   "id": "e50273c278814a57b97033997476c0df",
    "title": "Piranesi",
    "subtitle": "",
    "authors": [
     "Susanna Clarke"
    ],
-   "isbn13": "9780001000117",
-   "isbn10": null,
+   "isbn13": "9781635575637",
+   "isbn10": "163557563X",
    "publisher": "Bloomsbury",
    "published": "2020",
    "pages": 272,
@@ -596,33 +735,38 @@
    ],
    "series": null,
    "description": "",
-   "tags": [],
+   "tags": [
+    "Book club"
+   ],
    "shared_notes": "",
    "openlibrary": {
-    "edition_key": "OL100011M",
-    "work_key": "/works/OL100011W",
-    "cover_id": null
+    "edition_key": "OL1382631M",
+    "work_key": "/works/OL1382631W",
+    "cover_id": 10307413
    },
    "cover": {
-    "kind": "none",
-    "file": null
+    "kind": "openlibrary",
+    "file": "e50273c278814a57b97033997476c0df-84379fb2.jpg"
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-01-21T10:00:00+00:00",
+   "updated_at": "2026-01-21T10:00:00+00:00",
    "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/e50273c278814a57b97033997476c0df?v=84379fb2",
    "reading": {
-    "a1e8000000000000000000000000a1e0": {
+    "alex": {
      "status": "read",
      "rating": 5,
      "page": null,
-     "started": null,
+     "started": "2026-09-20",
      "finished": "2026-10-03",
      "read_count": 1,
      "private_notes": "",
-     "updated_at": "2026-10-03T10:00:00+00:00"
+     "updated_at": "2026-10-03T21:45:00+00:00"
     },
-    "5a0000000000000000000000000005a0": {
+    "sam": {
      "status": "want",
      "rating": null,
      "page": null,
@@ -630,22 +774,20 @@
      "finished": null,
      "read_count": 0,
      "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
+     "updated_at": "2026-10-04T08:00:00+00:00"
     }
-   },
-   "owned": true,
-   "cover_url": null
+   }
   },
-  "b0000000000000000000000000000026": {
-   "id": "b0000000000000000000000000000026",
+  {
+   "id": "d4c37434a7ea4a8e860517cd82ccc32b",
    "title": "Project Hail Mary",
    "subtitle": "",
    "authors": [
     "Andy Weir"
    ],
-   "isbn13": "9780001000124",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9780593135204",
+   "isbn10": "0593135202",
+   "publisher": "Ballantine Books",
    "published": "2021",
    "pages": 476,
    "language": "en",
@@ -657,20 +799,23 @@
    "tags": [],
    "shared_notes": "",
    "openlibrary": {
-    "edition_key": "OL100012M",
-    "work_key": "/works/OL100012W",
-    "cover_id": null
+    "edition_key": "OL932852M",
+    "work_key": "/works/OL932852W",
+    "cover_id": 11200092
    },
    "cover": {
-    "kind": "none",
-    "file": null
+    "kind": "openlibrary",
+    "file": "d4c37434a7ea4a8e860517cd82ccc32b-fe79493e.jpg"
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-01-23T10:00:00+00:00",
+   "updated_at": "2026-01-23T10:00:00+00:00",
    "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/d4c37434a7ea4a8e860517cd82ccc32b?v=fe79493e",
    "reading": {
-    "a1e8000000000000000000000000a1e0": {
+    "alex": {
      "status": "reading",
      "rating": null,
      "page": 210,
@@ -678,9 +823,9 @@
      "finished": null,
      "read_count": 0,
      "private_notes": "",
-     "updated_at": "2026-10-04T10:00:00+00:00"
+     "updated_at": "2026-10-04T07:10:00+00:00"
     },
-    "5a0000000000000000000000000005a0": {
+    "sam": {
      "status": "want",
      "rating": null,
      "page": null,
@@ -688,265 +833,20 @@
      "finished": null,
      "read_count": 0,
      "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
+     "updated_at": "2026-09-26T10:00:00+00:00"
     }
-   },
-   "owned": true,
-   "cover_url": null
+   }
   },
-  "b0000000000000000000000000000028": {
-   "id": "b0000000000000000000000000000028",
-   "title": "The Fifth Season",
-   "subtitle": "",
-   "authors": [
-    "N. K. Jemisin"
-   ],
-   "isbn13": "9780001000131",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2015",
-   "pages": 468,
-   "language": "en",
-   "subjects": [
-    "Fantasy"
-   ],
-   "series": {
-    "name": "The Broken Earth",
-    "number": 1
-   },
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100013M",
-    "work_key": "/works/OL100013W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "a1e8000000000000000000000000a1e0": {
-     "status": "read",
-     "rating": 5,
-     "page": null,
-     "started": null,
-     "finished": "2026-05-14",
-     "read_count": 1,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b000000000000000000000000000002a": {
-   "id": "b000000000000000000000000000002a",
-   "title": "Dune",
-   "subtitle": "",
-   "authors": [
-    "Frank Herbert"
-   ],
-   "isbn13": "9780001000148",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1965",
-   "pages": 688,
-   "language": "en",
-   "subjects": [
-    "Science fiction"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100014M",
-    "work_key": "/works/OL100014W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "a1e8000000000000000000000000a1e0": {
-     "status": "read",
-     "rating": 4,
-     "page": null,
-     "started": null,
-     "finished": "2024-12-01",
-     "read_count": 1,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    },
-    "10000000000000000000000000000f00": {
-     "status": "dnf",
-     "rating": null,
-     "page": null,
-     "started": null,
-     "finished": null,
-     "read_count": 0,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b000000000000000000000000000002c": {
-   "id": "b000000000000000000000000000002c",
-   "title": "The Name of the Wind",
-   "subtitle": "",
-   "authors": [
-    "Patrick Rothfuss"
-   ],
-   "isbn13": "9780001000155",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2007",
-   "pages": 662,
-   "language": "en",
-   "subjects": [
-    "Fantasy"
-   ],
-   "series": {
-    "name": "The Kingkiller Chronicle",
-    "number": 1
-   },
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100015M",
-    "work_key": "/works/OL100015W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b000000000000000000000000000002e": {
-   "id": "b000000000000000000000000000002e",
-   "title": "Klara and the Sun",
-   "subtitle": "",
-   "authors": [
-    "Kazuo Ishiguro"
-   ],
-   "isbn13": "9780001000162",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2021",
-   "pages": 303,
-   "language": "en",
-   "subjects": [],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100016M",
-    "work_key": "/works/OL100016W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "5a0000000000000000000000000005a0": {
-     "status": "read",
-     "rating": 4,
-     "page": null,
-     "started": null,
-     "finished": "2026-09-28",
-     "read_count": 1,
-     "private_notes": "",
-     "updated_at": "2026-09-28T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000030": {
-   "id": "b0000000000000000000000000000030",
-   "title": "Every Grain of Rice",
-   "subtitle": "",
-   "authors": [
-    "Fuchsia Dunlop"
-   ],
-   "isbn13": "9780001000179",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2012",
-   "pages": 352,
-   "language": "en",
-   "subjects": [
-    "Cooking"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100017M",
-    "work_key": "/works/OL100017W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "a1e8000000000000000000000000a1e0": {
-     "status": "reading",
-     "rating": null,
-     "page": 80,
-     "started": null,
-     "finished": null,
-     "read_count": 0,
-     "private_notes": "",
-     "updated_at": "2026-09-15T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000032": {
-   "id": "b0000000000000000000000000000032",
+  {
+   "id": "2ff469fc40f54abfbb1a50274f264dae",
    "title": "Salt, Fat, Acid, Heat",
    "subtitle": "",
    "authors": [
     "Samin Nosrat"
    ],
-   "isbn13": "9780001000186",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9781476753836",
+   "isbn10": "1476753830",
+   "publisher": "Simon & Schuster",
    "published": "2017",
    "pages": 480,
    "language": "en",
@@ -955,563 +855,81 @@
    ],
    "series": null,
    "description": "",
-   "tags": [],
+   "tags": [
+    "Kitchen"
+   ],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100018M",
-    "work_key": "/works/OL100018W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
-    "kind": "none",
-    "file": null
+    "kind": "custom",
+    "file": "2ff469fc40f54abfbb1a50274f264dae-fb97e18d.jpg"
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-02-11T10:00:00+00:00",
+   "updated_at": "2026-02-11T10:00:00+00:00",
    "wishlist": null,
-   "reading": {},
    "owned": true,
-   "cover_url": null
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/2ff469fc40f54abfbb1a50274f264dae?v=fb97e18d",
+   "reading": {}
   },
-  "b0000000000000000000000000000034": {
-   "id": "b0000000000000000000000000000034",
-   "title": "The Food Lab",
-   "subtitle": "",
-   "authors": [
-    "J. Kenji López-Alt"
-   ],
-   "isbn13": "9780001000193",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2015",
-   "pages": 958,
-   "language": "en",
-   "subjects": [
-    "Cooking"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100019M",
-    "work_key": "/works/OL100019W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000036": {
-   "id": "b0000000000000000000000000000036",
-   "title": "Atlas of Remote Islands",
-   "subtitle": "",
-   "authors": [
-    "Judith Schalansky"
-   ],
-   "isbn13": "9780001000209",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2009",
-   "pages": 144,
-   "language": "en",
-   "subjects": [
-    "Geography"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100020M",
-    "work_key": "/works/OL100020W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000038": {
-   "id": "b0000000000000000000000000000038",
-   "title": "Gödel, Escher, Bach",
-   "subtitle": "",
-   "authors": [
-    "Douglas Hofstadter"
-   ],
-   "isbn13": "9780001000216",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1979",
-   "pages": 777,
-   "language": "en",
-   "subjects": [
-    "Mathematics"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100021M",
-    "work_key": "/works/OL100021W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "a1e8000000000000000000000000a1e0": {
-     "status": "dnf",
-     "rating": null,
-     "page": null,
-     "started": null,
-     "finished": null,
-     "read_count": 0,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b000000000000000000000000000003a": {
-   "id": "b000000000000000000000000000003a",
-   "title": "The Overstory",
-   "subtitle": "",
-   "authors": [
-    "Richard Powers"
-   ],
-   "isbn13": "9780001000223",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2018",
-   "pages": 502,
-   "language": "en",
-   "subjects": [],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100022M",
-    "work_key": "/works/OL100022W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "5a0000000000000000000000000005a0": {
-     "status": "read",
-     "rating": 5,
-     "page": null,
-     "started": null,
-     "finished": "2026-03-03",
-     "read_count": 1,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b000000000000000000000000000003c": {
-   "id": "b000000000000000000000000000003c",
-   "title": "Braiding Sweetgrass",
-   "subtitle": "",
-   "authors": [
-    "Robin Wall Kimmerer"
-   ],
-   "isbn13": "9780001000230",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2013",
-   "pages": 391,
-   "language": "en",
-   "subjects": [
-    "Nature"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100023M",
-    "work_key": "/works/OL100023W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b000000000000000000000000000003e": {
-   "id": "b000000000000000000000000000003e",
-   "title": "The Hobbit",
-   "subtitle": "",
-   "authors": [
-    "J. R. R. Tolkien"
-   ],
-   "isbn13": "9780001000247",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1937",
-   "pages": 310,
-   "language": "en",
-   "subjects": [
-    "Fantasy"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100024M",
-    "work_key": "/works/OL100024W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "10000000000000000000000000000f00": {
-     "status": "read",
-     "rating": 5,
-     "page": null,
-     "started": null,
-     "finished": "2026-07-07",
-     "read_count": 1,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    },
-    "a1e8000000000000000000000000a1e0": {
-     "status": "read",
-     "rating": null,
-     "page": null,
-     "started": null,
-     "finished": "2019-01-01",
-     "read_count": 1,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000040": {
-   "id": "b0000000000000000000000000000040",
-   "title": "Where the Wild Things Are",
-   "subtitle": "",
-   "authors": [
-    "Maurice Sendak"
-   ],
-   "isbn13": "9780001000254",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1963",
-   "pages": 48,
-   "language": "en",
-   "subjects": [],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100025M",
-    "work_key": "/works/OL100025W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "10000000000000000000000000000f00": {
-     "status": "read",
-     "rating": null,
-     "page": null,
-     "started": null,
-     "finished": "2026-01-02",
-     "read_count": 12,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000042": {
-   "id": "b0000000000000000000000000000042",
-   "title": "Integrated Chinese 1",
-   "subtitle": "",
-   "authors": [
-    "Yuehua Liu",
-    "Tao-chung Yao"
-   ],
-   "isbn13": "9780001000261",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2017",
-   "pages": 420,
-   "language": "en",
-   "subjects": [
-    "Language"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100026M",
-    "work_key": "/works/OL100026W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "a1e8000000000000000000000000a1e0": {
-     "status": "reading",
-     "rating": null,
-     "page": 150,
-     "started": null,
-     "finished": null,
-     "read_count": 0,
-     "private_notes": "",
-     "updated_at": "2026-09-10T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000044": {
-   "id": "b0000000000000000000000000000044",
-   "title": "Structure and Interpretation of Computer Programs",
-   "subtitle": "",
-   "authors": [
-    "Harold Abelson",
-    "Gerald Jay Sussman"
-   ],
-   "isbn13": "9780001000278",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1996",
-   "pages": 657,
-   "language": "en",
-   "subjects": [
-    "Computers"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100027M",
-    "work_key": "/works/OL100027W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000046": {
-   "id": "b0000000000000000000000000000046",
-   "title": "The Pragmatic Programmer",
-   "subtitle": "",
-   "authors": [
-    "Andrew Hunt",
-    "David Thomas"
-   ],
-   "isbn13": "9780001000285",
-   "isbn10": null,
-   "publisher": "",
-   "published": "1999",
-   "pages": 352,
-   "language": "en",
-   "subjects": [
-    "Computers"
-   ],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100028M",
-    "work_key": "/works/OL100028W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "a1e8000000000000000000000000a1e0": {
-     "status": "read",
-     "rating": 4,
-     "page": null,
-     "started": null,
-     "finished": "2026-07-20",
-     "read_count": 1,
-     "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
-    }
-   },
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000048": {
-   "id": "b0000000000000000000000000000048",
-   "title": "Thinking, Fast and Slow",
-   "subtitle": "",
-   "authors": [
-    "Daniel Kahneman"
-   ],
-   "isbn13": "9780001000292",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2011",
-   "pages": 499,
-   "language": "en",
-   "subjects": [],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100029M",
-    "work_key": "/works/OL100029W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b000000000000000000000000000004a": {
-   "id": "b000000000000000000000000000004a",
+  {
+   "id": "7961cdfbeccb4c9c85ed872f0d50319c",
    "title": "Sapiens",
    "subtitle": "",
    "authors": [
     "Yuval Noah Harari"
    ],
-   "isbn13": "9780001000308",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9780062316097",
+   "isbn10": "0062316095",
+   "publisher": "Harper",
    "published": "2011",
    "pages": 443,
    "language": "en",
-   "subjects": [],
+   "subjects": [
+    "History"
+   ],
    "series": null,
    "description": "",
    "tags": [],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100030M",
-    "work_key": "/works/OL100030W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
     "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-03-11T10:00:00+00:00",
+   "updated_at": "2026-03-11T10:00:00+00:00",
    "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
    "reading": {
-    "5a0000000000000000000000000005a0": {
+    "sam": {
      "status": "dnf",
      "rating": null,
-     "page": null,
+     "page": 120,
      "started": null,
      "finished": null,
      "read_count": 0,
      "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
+     "updated_at": "2026-04-04T10:00:00+00:00"
     }
-   },
-   "owned": true,
-   "cover_url": null
+   }
   },
-  "b000000000000000000000000000004c": {
-   "id": "b000000000000000000000000000004c",
-   "title": "A Memory Called Empire",
+  {
+   "id": "518cc58e5bbe485d8b8a241e59e56f2f",
+   "title": "Sea of Tranquility",
    "subtitle": "",
    "authors": [
-    "Arkady Martine"
+    "Emily St. John Mandel"
    ],
-   "isbn13": "9780001000315",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2019",
-   "pages": 462,
+   "isbn13": "9780593321447",
+   "isbn10": "0593321448",
+   "publisher": "Knopf",
+   "published": "2022",
+   "pages": 255,
    "language": "en",
    "subjects": [
     "Science fiction"
@@ -1520,215 +938,581 @@
    "description": "",
    "tags": [],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100031M",
-    "work_key": "/works/OL100031W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
     "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-04-07T10:00:00+00:00",
+   "updated_at": "2026-04-07T10:00:00+00:00",
    "wishlist": null,
+   "owned": false,
+   "copy_count": 0,
+   "cover_url": null,
    "reading": {
-    "a1e8000000000000000000000000a1e0": {
-     "status": "read",
-     "rating": 4,
+    "sam": {
+     "status": "want",
+     "rating": null,
      "page": null,
      "started": null,
-     "finished": "2026-08-08",
-     "read_count": 1,
+     "finished": null,
+     "read_count": 0,
      "private_notes": "",
-     "updated_at": "2026-09-20T10:00:00+00:00"
+     "updated_at": "2026-09-25T10:00:00+00:00"
     }
-   },
-   "owned": true,
-   "cover_url": null
+   }
   },
-  "b000000000000000000000000000004e": {
-   "id": "b000000000000000000000000000004e",
+  {
+   "id": "0a6099a9263f4b709ee6b01c2d7e9506",
+   "title": "Spinning Silver",
+   "subtitle": "",
+   "authors": [
+    "Naomi Novik"
+   ],
+   "isbn13": "9780399581038",
+   "isbn10": "0399581030",
+   "publisher": "Del Rey",
+   "published": "2018",
+   "pages": 466,
+   "language": "en",
+   "subjects": [
+    "Fantasy"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-04-05T10:00:00+00:00",
+   "updated_at": "2026-04-05T10:00:00+00:00",
+   "wishlist": null,
+   "owned": false,
+   "copy_count": 0,
+   "cover_url": null,
+   "reading": {
+    "alex": {
+     "status": "reading",
+     "rating": null,
+     "page": 64,
+     "started": "2026-09-21",
+     "finished": null,
+     "read_count": 0,
+     "private_notes": "",
+     "updated_at": "2026-10-01T20:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "b30885c12d524a63b858d237b5353dc2",
    "title": "Station Eleven",
    "subtitle": "",
    "authors": [
     "Emily St. John Mandel"
    ],
-   "isbn13": "9780001000322",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9780804172448",
+   "isbn10": "0804172447",
+   "publisher": "Vintage",
    "published": "2014",
    "pages": 333,
    "language": "en",
-   "subjects": [],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100032M",
-    "work_key": "/works/OL100032W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000050": {
-   "id": "b0000000000000000000000000000050",
-   "title": "The Unreal and the Real",
-   "subtitle": "",
-   "authors": [
-    "Ursula K. Le Guin"
+   "subjects": [
+    "Literary fiction"
    ],
-   "isbn13": "9780001000339",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2012",
-   "pages": 320,
-   "language": "en",
-   "subjects": [],
    "series": null,
    "description": "",
    "tags": [],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100033M",
-    "work_key": "/works/OL100033W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
     "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-03-15T10:00:00+00:00",
+   "updated_at": "2026-03-15T10:00:00+00:00",
    "wishlist": null,
-   "reading": {},
    "owned": true,
-   "cover_url": null
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
   },
-  "b0000000000000000000000000000052": {
-   "id": "b0000000000000000000000000000052",
-   "title": "Untitled paperback",
-   "subtitle": "",
-   "authors": [],
-   "isbn13": "9780001000346",
-   "isbn10": null,
-   "publisher": "",
-   "published": "",
-   "pages": null,
-   "language": "en",
-   "subjects": [],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100034M",
-    "work_key": "/works/OL100034W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": true,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000054": {
-   "id": "b0000000000000000000000000000054",
-   "title": "9780980123456",
-   "subtitle": "",
-   "authors": [],
-   "isbn13": "9780001000353",
-   "isbn10": null,
-   "publisher": "",
-   "published": "",
-   "pages": null,
-   "language": "en",
-   "subjects": [],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100035M",
-    "work_key": "/works/OL100035W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": true,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {},
-   "owned": true,
-   "cover_url": null
-  },
-  "b0000000000000000000000000000056": {
-   "id": "b0000000000000000000000000000056",
+  {
+   "id": "b796ea67f1b14d51a21aea93829a5f3d",
    "title": "Steering the Craft",
    "subtitle": "",
    "authors": [
     "Ursula K. Le Guin"
    ],
-   "isbn13": "9780001000360",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9780544611610",
+   "isbn10": "0544611616",
+   "publisher": "Mariner Books",
    "published": "1998",
    "pages": 176,
    "language": "en",
-   "subjects": [],
+   "subjects": [
+    "Writing"
+   ],
    "series": null,
    "description": "",
    "tags": [],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100036M",
-    "work_key": "/works/OL100036W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
     "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-03-23T10:00:00+00:00",
+   "updated_at": "2026-03-23T10:00:00+00:00",
    "wishlist": null,
-   "reading": {},
    "owned": true,
-   "cover_url": null
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
   },
-  "b0000000000000000000000000000058": {
-   "id": "b0000000000000000000000000000058",
+  {
+   "id": "d8d911387500471c9736a6a204509f73",
+   "title": "Structure and Interpretation of Computer Programs",
+   "subtitle": "",
+   "authors": [
+    "Harold Abelson",
+    "Gerald Jay Sussman"
+   ],
+   "isbn13": "9780262510875",
+   "isbn10": "0262510871",
+   "publisher": "MIT Press",
+   "published": "1996",
+   "pages": 657,
+   "language": "en",
+   "subjects": [
+    "Computer science"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [
+    "Study"
+   ],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-03-05T10:00:00+00:00",
+   "updated_at": "2026-03-05T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "c8a701c41eb84f78949683fc37d29497",
+   "title": "Tehanu",
+   "subtitle": "",
+   "authors": [
+    "Ursula K. Le Guin"
+   ],
+   "isbn13": "9780689315954",
+   "isbn10": "0689315953",
+   "publisher": "Atheneum",
+   "published": "1990",
+   "pages": 252,
+   "language": "en",
+   "subjects": [
+    "Fantasy"
+   ],
+   "series": {
+    "name": "Earthsea",
+    "number": "4"
+   },
+   "description": "",
+   "tags": [
+    "Nebula winner"
+   ],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-01-13T10:00:00+00:00",
+   "updated_at": "2026-01-13T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "13be6b0e5c354e1981a89fe2766196e0",
+   "title": "The Dispossessed",
+   "subtitle": "",
+   "authors": [
+    "Ursula K. Le Guin"
+   ],
+   "isbn13": "9780061054884",
+   "isbn10": "0061054887",
+   "publisher": "Harper Voyager",
+   "published": "1974",
+   "pages": 387,
+   "language": "en",
+   "subjects": [
+    "Science fiction",
+    "Utopias"
+   ],
+   "series": {
+    "name": "Hainish Cycle",
+    "number": "6"
+   },
+   "description": "",
+   "tags": [
+    "Hugo winner"
+   ],
+   "shared_notes": "",
+   "openlibrary": {
+    "edition_key": "OL11947964M",
+    "work_key": "/works/OL11947964W",
+    "cover_id": 8231862
+   },
+   "cover": {
+    "kind": "openlibrary",
+    "file": "13be6b0e5c354e1981a89fe2766196e0-552257a9.jpg"
+   },
+   "needs_details": false,
+   "created_at": "2026-01-05T10:00:00+00:00",
+   "updated_at": "2026-01-05T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/13be6b0e5c354e1981a89fe2766196e0?v=552257a9",
+   "reading": {
+    "alex": {
+     "status": "read",
+     "rating": 5,
+     "page": null,
+     "started": null,
+     "finished": "2026-04-20",
+     "read_count": 1,
+     "private_notes": "",
+     "updated_at": "2026-04-20T22:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "ba6076bfc6414e079514e8559c452e7f",
+   "title": "The Farthest Shore",
+   "subtitle": "",
+   "authors": [
+    "Ursula K. Le Guin"
+   ],
+   "isbn13": "9781416509639",
+   "isbn10": "1416509631",
+   "publisher": "Atheneum",
+   "published": "1972",
+   "pages": 223,
+   "language": "en",
+   "subjects": [
+    "Fantasy"
+   ],
+   "series": {
+    "name": "Earthsea",
+    "number": "3"
+   },
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-01-11T10:00:00+00:00",
+   "updated_at": "2026-01-11T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "8ffa744031884f64a2b39c35342641c1",
+   "title": "The Fifth Season",
+   "subtitle": "",
+   "authors": [
+    "N. K. Jemisin"
+   ],
+   "isbn13": "9780316229296",
+   "isbn10": "0316229296",
+   "publisher": "Orbit",
+   "published": "2015",
+   "pages": 468,
+   "language": "en",
+   "subjects": [
+    "Fantasy",
+    "Science fiction"
+   ],
+   "series": {
+    "name": "The Broken Earth",
+    "number": "1"
+   },
+   "description": "",
+   "tags": [
+    "Hugo winner"
+   ],
+   "shared_notes": "",
+   "openlibrary": {
+    "edition_key": "OL12869656M",
+    "work_key": "/works/OL12869656W",
+    "cover_id": 8296560
+   },
+   "cover": {
+    "kind": "openlibrary",
+    "file": "8ffa744031884f64a2b39c35342641c1-d2033a57.jpg"
+   },
+   "needs_details": false,
+   "created_at": "2026-02-01T10:00:00+00:00",
+   "updated_at": "2026-02-01T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/8ffa744031884f64a2b39c35342641c1?v=d2033a57",
+   "reading": {
+    "alex": {
+     "status": "read",
+     "rating": 5,
+     "page": null,
+     "started": null,
+     "finished": "2026-05-14",
+     "read_count": 1,
+     "private_notes": "",
+     "updated_at": "2026-05-14T22:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "9cbb153d8b0046dc81ceedd95bf92aaf",
+   "title": "The Food Lab",
+   "subtitle": "",
+   "authors": [
+    "J. Kenji López-Alt"
+   ],
+   "isbn13": "9780393081084",
+   "isbn10": "0393081087",
+   "publisher": "W. W. Norton",
+   "published": "2015",
+   "pages": 958,
+   "language": "en",
+   "subjects": [
+    "Cooking",
+    "Science"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [
+    "Kitchen"
+   ],
+   "shared_notes": "The *pancake* recipe is on page 102.\n\n- Sticky notes from Jo\n- Do not lend",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-02-13T10:00:00+00:00",
+   "updated_at": "2026-02-13T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "fd086096a83f483ab7219f131e678534",
+   "title": "The Hobbit",
+   "subtitle": "",
+   "authors": [
+    "J. R. R. Tolkien"
+   ],
+   "isbn13": "9780547928227",
+   "isbn10": "054792822X",
+   "publisher": "Mariner Books",
+   "published": "1937",
+   "pages": 310,
+   "language": "en",
+   "subjects": [
+    "Fantasy"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [
+    "Family"
+   ],
+   "shared_notes": "First edition of the family. Keep it out of the sun.",
+   "openlibrary": {
+    "edition_key": "OL7500623M",
+    "work_key": "/works/OL7500623W",
+    "cover_id": 12003830
+   },
+   "cover": {
+    "kind": "openlibrary",
+    "file": "fd086096a83f483ab7219f131e678534-f18df7a1.jpg"
+   },
+   "needs_details": false,
+   "created_at": "2026-02-23T10:00:00+00:00",
+   "updated_at": "2026-02-23T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/fd086096a83f483ab7219f131e678534?v=f18df7a1",
+   "reading": {
+    "alex": {
+     "status": "read",
+     "rating": null,
+     "page": null,
+     "started": null,
+     "finished": "2019-01-01",
+     "read_count": 1,
+     "private_notes": "",
+     "updated_at": "2019-01-01T10:00:00+00:00"
+    },
+    "jo": {
+     "status": "read",
+     "rating": 5,
+     "page": null,
+     "started": null,
+     "finished": "2026-07-07",
+     "read_count": 1,
+     "private_notes": "",
+     "updated_at": "2026-07-07T19:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "db815384ca094b1ca4cc5b9a7e437b86",
+   "title": "The Lathe of Heaven",
+   "subtitle": "",
+   "authors": [
+    "Ursula K. Le Guin"
+   ],
+   "isbn13": "9781416556961",
+   "isbn10": "1416556966",
+   "publisher": "Scribner",
+   "published": "1971",
+   "pages": 184,
+   "language": "en",
+   "subjects": [
+    "Science fiction"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-01-07T10:00:00+00:00",
+   "updated_at": "2026-01-07T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {
+    "alex": {
+     "status": "want",
+     "rating": null,
+     "page": null,
+     "started": null,
+     "finished": null,
+     "read_count": 0,
+     "private_notes": "",
+     "updated_at": "2026-05-01T10:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "58247cad1ced46248fefe4d2b0db71b5",
+   "title": "The Left Hand of Darkness",
+   "subtitle": "",
+   "authors": [
+    "Ursula K. Le Guin"
+   ],
+   "isbn13": "9780441478125",
+   "isbn10": "0441478123",
+   "publisher": "Ace Books",
+   "published": "1969",
+   "pages": 304,
+   "language": "en",
+   "subjects": [
+    "Science fiction",
+    "Gender"
+   ],
+   "series": {
+    "name": "Hainish Cycle",
+    "number": "4"
+   },
+   "description": "",
+   "tags": [
+    "Hugo winner"
+   ],
+   "shared_notes": "Book club pick, **Oct 2026**. Sam has the map of Gethen bookmarked on page 6.",
+   "openlibrary": null,
+   "cover": {
+    "kind": "custom",
+    "file": "58247cad1ced46248fefe4d2b0db71b5-cff560bf.jpg"
+   },
+   "needs_details": false,
+   "created_at": "2026-01-01T10:00:00+00:00",
+   "updated_at": "2026-01-01T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 2,
+   "cover_url": "/api/home_keeper_library/cover/58247cad1ced46248fefe4d2b0db71b5?v=cff560bf",
+   "reading": {
+    "alex": {
+     "status": "read",
+     "rating": 4,
+     "page": null,
+     "started": "2025-02-01",
+     "finished": "2025-03-02",
+     "read_count": 2,
+     "private_notes": "Reread before the club.",
+     "updated_at": "2026-09-20T10:00:00+00:00"
+    },
+    "sam": {
+     "status": "reading",
+     "rating": null,
+     "page": 112,
+     "started": "2026-09-01",
+     "finished": null,
+     "read_count": 0,
+     "private_notes": "",
+     "updated_at": "2026-10-03T19:30:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "ae18ed68fc3445f484544a09c13ece47",
    "title": "The Ministry for the Future",
    "subtitle": "",
    "authors": [
     "Kim Stanley Robinson"
    ],
-   "isbn13": "9780001000377",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9780316300131",
+   "isbn10": "0316300136",
+   "publisher": "Orbit",
    "published": "2020",
    "pages": 563,
    "language": "en",
@@ -1739,257 +1523,691 @@
    "description": "",
    "tags": [],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100037M",
-    "work_key": "/works/OL100037W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
-    "kind": "none",
-    "file": null
+    "kind": "custom",
+    "file": "ae18ed68fc3445f484544a09c13ece47-a66afeef.jpg"
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-04-01T10:00:00+00:00",
+   "updated_at": "2026-04-01T10:00:00+00:00",
    "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/ae18ed68fc3445f484544a09c13ece47?v=a66afeef",
    "reading": {
-    "a1e8000000000000000000000000a1e0": {
+    "alex": {
      "status": "reading",
      "rating": null,
      "page": 300,
-     "started": null,
+     "started": "2026-09-01",
      "finished": null,
      "read_count": 0,
      "private_notes": "",
-     "updated_at": "2026-09-30T10:00:00+00:00"
+     "updated_at": "2026-09-29T21:00:00+00:00"
     }
-   },
-   "owned": false,
-   "cover_url": null
+   }
   },
-  "b0000000000000000000000000000059": {
-   "id": "b0000000000000000000000000000059",
-   "title": "Tomorrow, and Tomorrow, and Tomorrow",
+  {
+   "id": "f308096519994fb78d16e480b16b71aa",
+   "title": "The Name of the Wind",
    "subtitle": "",
    "authors": [
-    "Gabrielle Zevin"
+    "Patrick Rothfuss"
    ],
-   "isbn13": "9780001000384",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2022",
-   "pages": 401,
+   "isbn13": "9780756404741",
+   "isbn10": "0756404746",
+   "publisher": "DAW Books",
+   "published": "2007",
+   "pages": 662,
    "language": "en",
-   "subjects": [],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100038M",
-    "work_key": "/works/OL100038W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": null,
-   "reading": {
-    "5a0000000000000000000000000005a0": {
-     "status": "reading",
-     "rating": null,
-     "page": 20,
-     "started": null,
-     "finished": null,
-     "read_count": 0,
-     "private_notes": "",
-     "updated_at": "2026-09-29T10:00:00+00:00"
-    }
-   },
-   "owned": false,
-   "cover_url": null
-  },
-  "b000000000000000000000000000005a": {
-   "id": "b000000000000000000000000000005a",
-   "title": "The Other Wind",
-   "subtitle": "",
-   "authors": [
-    "Ursula K. Le Guin"
+   "subjects": [
+    "Fantasy"
    ],
-   "isbn13": "9780001000391",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2001",
-   "pages": null,
-   "language": "en",
-   "subjects": [],
    "series": {
-    "name": "Earthsea",
-    "number": 6
+    "name": "The Kingkiller Chronicle",
+    "number": "1"
    },
    "description": "",
    "tags": [],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100039M",
-    "work_key": "/works/OL100039W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
     "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": {
-    "person_id": "10000000000000000000000000000f00",
-    "buy": true,
-    "added_at": "2026-09-01T10:00:00+00:00",
-    "todo_uid": null,
-    "bought": false
-   },
-   "reading": {},
-   "owned": false,
-   "cover_url": null
+   "created_at": "2026-02-05T10:00:00+00:00",
+   "updated_at": "2026-02-05T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
   },
-  "b000000000000000000000000000005b": {
-   "id": "b000000000000000000000000000005b",
+  {
+   "id": "46027ede85e54b56a1da501c26b7eee7",
    "title": "The Obelisk Gate",
    "subtitle": "",
    "authors": [
     "N. K. Jemisin"
    ],
-   "isbn13": "9780001000407",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9780316229265",
+   "isbn10": "0316229261",
+   "publisher": "Orbit",
    "published": "2016",
-   "pages": null,
+   "pages": 448,
    "language": "en",
-   "subjects": [],
+   "subjects": [
+    "Fantasy"
+   ],
    "series": {
     "name": "The Broken Earth",
-    "number": 2
+    "number": "2"
    },
    "description": "",
    "tags": [],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100040M",
-    "work_key": "/works/OL100040W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
     "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
+   "created_at": "2026-04-11T10:00:00+00:00",
+   "updated_at": "2026-04-11T10:00:00+00:00",
    "wishlist": {
-    "person_id": "a1e8000000000000000000000000a1e0",
+    "person_id": "alex",
+    "buy": false,
+    "added_at": "2026-08-15T10:00:00+00:00",
+    "todo_uid": null,
+    "todo_entity": null,
+    "bought": false
+   },
+   "owned": false,
+   "copy_count": 0,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "3c13e288a2d24a49a7464566679c565c",
+   "title": "The Other Wind",
+   "subtitle": "",
+   "authors": [
+    "Ursula K. Le Guin"
+   ],
+   "isbn13": "9780547773766",
+   "isbn10": "0547773765",
+   "publisher": "Clarion Books",
+   "published": "2001",
+   "pages": 246,
+   "language": "en",
+   "subjects": [
+    "Fantasy"
+   ],
+   "series": {
+    "name": "Earthsea",
+    "number": "6"
+   },
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-04-09T10:00:00+00:00",
+   "updated_at": "2026-04-09T10:00:00+00:00",
+   "wishlist": {
+    "person_id": "alex",
     "buy": true,
-    "added_at": "2026-09-05T10:00:00+00:00",
+    "added_at": "2026-09-02T10:00:00+00:00",
     "todo_uid": null,
+    "todo_entity": null,
     "bought": false
    },
-   "reading": {},
    "owned": false,
-   "cover_url": null
+   "copy_count": 0,
+   "cover_url": null,
+   "reading": {}
   },
-  "b000000000000000000000000000005c": {
-   "id": "b000000000000000000000000000005c",
-   "title": "Land of Fish and Rice",
+  {
+   "id": "9d5b05a55a2d4f4297abee49d4b7981b",
+   "title": "The Overstory",
    "subtitle": "",
    "authors": [
-    "Fuchsia Dunlop"
+    "Richard Powers"
    ],
-   "isbn13": "9780001000414",
-   "isbn10": null,
-   "publisher": "",
-   "published": "2016",
-   "pages": null,
-   "language": "en",
-   "subjects": [],
-   "series": null,
-   "description": "",
-   "tags": [],
-   "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100041M",
-    "work_key": "/works/OL100041W",
-    "cover_id": null
-   },
-   "cover": {
-    "kind": "none",
-    "file": null
-   },
-   "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": {
-    "person_id": "5a0000000000000000000000000005a0",
-    "buy": false,
-    "added_at": "2026-08-01T10:00:00+00:00",
-    "todo_uid": null,
-    "bought": false
-   },
-   "reading": {},
-   "owned": false,
-   "cover_url": null
-  },
-  "b000000000000000000000000000005d": {
-   "id": "b000000000000000000000000000005d",
-   "title": "Integrated Chinese 2",
-   "subtitle": "",
-   "authors": [
-    "Yuehua Liu",
-    "Tao-chung Yao"
-   ],
-   "isbn13": "9780001000421",
-   "isbn10": null,
-   "publisher": "",
+   "isbn13": "9780393635522",
+   "isbn10": "039363552X",
+   "publisher": "W. W. Norton",
    "published": "2018",
-   "pages": null,
+   "pages": 502,
    "language": "en",
-   "subjects": [],
+   "subjects": [
+    "Literary fiction",
+    "Trees"
+   ],
    "series": null,
    "description": "",
-   "tags": [],
+   "tags": [
+    "Pulitzer winner"
+   ],
    "shared_notes": "",
-   "openlibrary": {
-    "edition_key": "OL100042M",
-    "work_key": "/works/OL100042W",
-    "cover_id": null
-   },
+   "openlibrary": null,
    "cover": {
     "kind": "none",
     "file": null
    },
    "needs_details": false,
-   "created_at": "2026-01-10T10:00:00+00:00",
-   "updated_at": "2026-09-01T10:00:00+00:00",
-   "wishlist": {
-    "person_id": "a1e8000000000000000000000000a1e0",
-    "buy": false,
-    "added_at": "2026-07-01T10:00:00+00:00",
-    "todo_uid": null,
-    "bought": false
+   "created_at": "2026-02-19T10:00:00+00:00",
+   "updated_at": "2026-02-19T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {
+    "sam": {
+     "status": "read",
+     "rating": 5,
+     "page": null,
+     "started": null,
+     "finished": "2026-03-03",
+     "read_count": 1,
+     "private_notes": "",
+     "updated_at": "2026-03-03T21:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "06210f4a2c25422c83f65a12663ab1b1",
+   "title": "The Pragmatic Programmer",
+   "subtitle": "",
+   "authors": [
+    "Andrew Hunt",
+    "David Thomas"
+   ],
+   "isbn13": "9780201616224",
+   "isbn10": "020161622X",
+   "publisher": "Addison-Wesley",
+   "published": "1999",
+   "pages": 352,
+   "language": "en",
+   "subjects": [
+    "Computer science"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
    },
-   "reading": {},
-   "owned": false,
-   "cover_url": null
+   "needs_details": false,
+   "created_at": "2026-03-07T10:00:00+00:00",
+   "updated_at": "2026-03-07T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {
+    "alex": {
+     "status": "read",
+     "rating": 4,
+     "page": null,
+     "started": null,
+     "finished": "2026-07-20",
+     "read_count": 1,
+     "private_notes": "",
+     "updated_at": "2026-07-20T22:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "fb4f591ff96c45e5abc0fa81325c564c",
+   "title": "The Tombs of Atuan",
+   "subtitle": "",
+   "authors": [
+    "Ursula K. Le Guin"
+   ],
+   "isbn13": "9781416509608",
+   "isbn10": "1416509607",
+   "publisher": "Atheneum",
+   "published": "1970",
+   "pages": 180,
+   "language": "en",
+   "subjects": [
+    "Fantasy"
+   ],
+   "series": {
+    "name": "Earthsea",
+    "number": "2"
+   },
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": {
+    "edition_key": "OL7076247M",
+    "work_key": "/works/OL7076247W",
+    "cover_id": 12623433
+   },
+   "cover": {
+    "kind": "openlibrary",
+    "file": "fb4f591ff96c45e5abc0fa81325c564c-7ccde4d9.jpg"
+   },
+   "needs_details": false,
+   "created_at": "2026-01-09T10:00:00+00:00",
+   "updated_at": "2026-01-09T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": "/api/home_keeper_library/cover/fb4f591ff96c45e5abc0fa81325c564c?v=7ccde4d9",
+   "reading": {
+    "alex": {
+     "status": "want",
+     "rating": null,
+     "page": null,
+     "started": null,
+     "finished": null,
+     "read_count": 0,
+     "private_notes": "",
+     "updated_at": "2026-08-31T10:00:00+00:00"
+    },
+    "jo": {
+     "status": "reading",
+     "rating": null,
+     "page": 40,
+     "started": "2026-09-28",
+     "finished": null,
+     "read_count": 0,
+     "private_notes": "",
+     "updated_at": "2026-10-02T18:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "e82369ba83ea4f0f8cafe3229fb3c669",
+   "title": "The Unreal and the Real",
+   "subtitle": "",
+   "authors": [
+    "Ursula K. Le Guin"
+   ],
+   "isbn13": "9781618730794",
+   "isbn10": "1618730797",
+   "publisher": "Saga Press",
+   "published": "2012",
+   "pages": 320,
+   "language": "en",
+   "subjects": [
+    "Short stories"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-03-17T10:00:00+00:00",
+   "updated_at": "2026-03-17T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "d4a98396d9f9490bb2371d3bfa27b476",
+   "title": "The Word for World Is Forest",
+   "subtitle": "",
+   "authors": [
+    "Ursula K. Le Guin"
+   ],
+   "isbn13": "9780765323453",
+   "isbn10": "0765323451",
+   "publisher": "Tor Books",
+   "published": "1972",
+   "pages": 189,
+   "language": "en",
+   "subjects": [
+    "Science fiction"
+   ],
+   "series": {
+    "name": "Hainish Cycle",
+    "number": "5"
+   },
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-01-17T10:00:00+00:00",
+   "updated_at": "2026-01-17T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {
+    "sam": {
+     "status": "read",
+     "rating": 3,
+     "page": null,
+     "started": null,
+     "finished": "2026-06-01",
+     "read_count": 1,
+     "private_notes": "",
+     "updated_at": "2026-06-01T20:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "a662b1be82664e1790a514c31fa97558",
+   "title": "Thinking, Fast and Slow",
+   "subtitle": "",
+   "authors": [
+    "Daniel Kahneman"
+   ],
+   "isbn13": "9780374533557",
+   "isbn10": "0374533555",
+   "publisher": "Farrar, Straus and Giroux",
+   "published": "2011",
+   "pages": 499,
+   "language": "en",
+   "subjects": [
+    "Psychology"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-03-09T10:00:00+00:00",
+   "updated_at": "2026-03-09T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "3d2bac374c67488480cf6c8511eb0411",
+   "title": "Tomorrow, and Tomorrow, and Tomorrow",
+   "subtitle": "",
+   "authors": [
+    "Gabrielle Zevin"
+   ],
+   "isbn13": "9780593321201",
+   "isbn10": "0593321200",
+   "publisher": "Knopf",
+   "published": "2022",
+   "pages": 401,
+   "language": "en",
+   "subjects": [
+    "Literary fiction"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-04-03T10:00:00+00:00",
+   "updated_at": "2026-04-03T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {
+    "sam": {
+     "status": "reading",
+     "rating": null,
+     "page": 20,
+     "started": "2026-10-01",
+     "finished": null,
+     "read_count": 0,
+     "private_notes": "",
+     "updated_at": "2026-10-01T22:00:00+00:00"
+    }
+   }
+  },
+  {
+   "id": "65821c98c7fd417b88431ca2948bab28",
+   "title": "Untitled paperback",
+   "subtitle": "",
+   "authors": [],
+   "isbn13": "9780980123456",
+   "isbn10": "0980123453",
+   "publisher": "",
+   "published": "",
+   "pages": null,
+   "language": null,
+   "subjects": [],
+   "series": null,
+   "description": "",
+   "tags": [],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": true,
+   "created_at": "2026-03-19T10:00:00+00:00",
+   "updated_at": "2026-03-19T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {}
+  },
+  {
+   "id": "dbcf7eb0b9f14491ba5bcde27e29a967",
+   "title": "Where the Wild Things Are",
+   "subtitle": "",
+   "authors": [
+    "Maurice Sendak"
+   ],
+   "isbn13": "9780060254926",
+   "isbn10": "0060254920",
+   "publisher": "HarperCollins",
+   "published": "1963",
+   "pages": 48,
+   "language": "en",
+   "subjects": [
+    "Picture books"
+   ],
+   "series": null,
+   "description": "",
+   "tags": [
+    "Family"
+   ],
+   "shared_notes": "",
+   "openlibrary": null,
+   "cover": {
+    "kind": "none",
+    "file": null
+   },
+   "needs_details": false,
+   "created_at": "2026-03-01T10:00:00+00:00",
+   "updated_at": "2026-03-01T10:00:00+00:00",
+   "wishlist": null,
+   "owned": true,
+   "copy_count": 1,
+   "cover_url": null,
+   "reading": {
+    "jo": {
+     "status": "read",
+     "rating": null,
+     "page": null,
+     "started": null,
+     "finished": "2026-01-02",
+     "read_count": 12,
+     "private_notes": "",
+     "updated_at": "2026-01-02T19:00:00+00:00"
+    }
+   }
   }
- },
- "copies": {
-  "c0000000000000000000000000000010": {
-   "id": "c0000000000000000000000000000010",
-   "book_id": "b000000000000000000000000000000f",
-   "shelf_id": "5e000000000000000000000000000007",
+ ],
+ "copies": [
+  {
+   "id": "30d2547c712f4d68a87d97b35d03efbf",
+   "book_id": "06210f4a2c25422c83f65a12663ab1b1",
+   "shelf_id": "2438e456729348678c453d9967239c07",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2005-02-02",
+   "acquired_from": "",
+   "price": 39.99,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-03-07T10:00:00+00:00"
+  },
+  {
+   "id": "ec2a085e6adc4d7abf341d5a75070da6",
+   "book_id": "06618efb9962471d992ba150a7d619b6",
+   "shelf_id": "9d1880ff64484dcbbe7d31c250ee3be6",
+   "format": "paperback",
+   "condition": "fine",
+   "acquired": "2020-04-04",
+   "acquired_from": "",
+   "price": 17.99,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-03-13T10:00:00+00:00"
+  },
+  {
+   "id": "68943dab053d4e769c9238f52a5963ec",
+   "book_id": "117b1aed4a5547c39b9627cbb9d71506",
+   "shelf_id": "2d8fcd0ea779423d8c0941759aba2355",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2021-02-14",
+   "acquired_from": "",
+   "price": 20,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-02-21T10:00:00+00:00"
+  },
+  {
+   "id": "1a7fd778f21144609382fcd3ed7d205c",
+   "book_id": "13be6b0e5c354e1981a89fe2766196e0",
+   "shelf_id": "356599599fc54f88a023d93d58228ca4",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2015-02-10",
+   "acquired_from": "Powell's Books",
+   "price": 9.99,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-01-05T10:00:00+00:00"
+  },
+  {
+   "id": "977487b197c54c268705f1bb9e2486df",
+   "book_id": "2ff469fc40f54abfbb1a50274f264dae",
+   "shelf_id": "0e8ebfc93d1e4b739f47d5a99806022a",
+   "format": "hardcover",
+   "condition": "fine",
+   "acquired": "2018-04-01",
+   "acquired_from": "",
+   "price": 35,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-02-11T10:00:00+00:00"
+  },
+  {
+   "id": "bc5080bbcb96441e878d0057cda8c017",
+   "book_id": "360738e00aa246d38aab80792e9087fb",
+   "shelf_id": "05d18119c2744375b9a89f4eb028edc0",
+   "format": "hardcover",
+   "condition": "new",
+   "acquired": "2019-09-01",
+   "acquired_from": "Library of America",
+   "price": 45,
+   "value": 45,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-01-15T10:00:00+00:00"
+  },
+  {
+   "id": "a8af0b2004e44fc69eb515fb36e94f6f",
+   "book_id": "3bd29a2113cc46c08d7ff1eaf7c68307",
+   "shelf_id": "05d18119c2744375b9a89f4eb028edc0",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2010-05-05",
+   "acquired_from": "",
+   "price": 12,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-01-19T10:00:00+00:00"
+  },
+  {
+   "id": "6b82a3f17c5c4eed96b578186f7735f1",
+   "book_id": "3d2bac374c67488480cf6c8511eb0411",
+   "shelf_id": "9d1880ff64484dcbbe7d31c250ee3be6",
+   "format": "hardcover",
+   "condition": "fine",
+   "acquired": "2022-07-05",
+   "acquired_from": "",
+   "price": 28,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-04-03T10:00:00+00:00"
+  },
+  {
+   "id": "fc44d1b6f6f7497685389a30477c896c",
+   "book_id": "58247cad1ced46248fefe4d2b0db71b5",
+   "shelf_id": "9e21a820c92f4af6ac206d2b45b8316b",
+   "format": "hardcover",
+   "condition": "fine",
+   "acquired": "2023-12-24",
+   "acquired_from": "Gift from Jo",
+   "price": null,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-01-01T10:00:00+00:00"
+  },
+  {
+   "id": "fdc4f1c3c76440fb9895151652a5d75f",
+   "book_id": "58247cad1ced46248fefe4d2b0db71b5",
+   "shelf_id": "356599599fc54f88a023d93d58228ca4",
    "format": "paperback",
    "condition": "good",
    "acquired": "2019-05-04",
@@ -1998,658 +2216,575 @@
    "value": 45,
    "signed": true,
    "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
+   "note": "Signed at a reading in Portland.",
+   "created_at": "2026-01-01T10:00:00+00:00"
   },
-  "c0000000000000000000000000000011": {
-   "id": "c0000000000000000000000000000011",
-   "book_id": "b000000000000000000000000000000f",
-   "shelf_id": "5e00000000000000000000000000000c",
+  {
+   "id": "a59ea0354cc34a98afe2762b2a9c3f9a",
+   "book_id": "65821c98c7fd417b88431ca2948bab28",
+   "shelf_id": "05d18119c2744375b9a89f4eb028edc0",
+   "format": "paperback",
+   "condition": null,
+   "acquired": null,
+   "acquired_from": "",
+   "price": null,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-03-19T10:00:00+00:00"
+  },
+  {
+   "id": "31795c1819ce40b4bafebabe69e7e9bb",
+   "book_id": "7961cdfbeccb4c9c85ed872f0d50319c",
+   "shelf_id": "c102ccaab0ca46f3a26333acc51e5da4",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2017-08-08",
+   "acquired_from": "",
+   "price": 18.99,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-03-11T10:00:00+00:00"
+  },
+  {
+   "id": "f3d1827d20c546e1b830f174705782c2",
+   "book_id": "84cbfdd27dcf4439a1fa041c32d955fc",
+   "shelf_id": "9e21a820c92f4af6ac206d2b45b8316b",
+   "format": "paperback",
+   "condition": "fair",
+   "acquired": "2001-09-01",
+   "acquired_from": "University Book Store",
+   "price": 22,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-02-17T10:00:00+00:00"
+  },
+  {
+   "id": "fa1a978597c541b18e4256c029145827",
+   "book_id": "8ffa744031884f64a2b39c35342641c1",
+   "shelf_id": "d3be9b2c152a450d9a18995d11a26924",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2018-11-02",
+   "acquired_from": "",
+   "price": 15.99,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-02-01T10:00:00+00:00"
+  },
+  {
+   "id": "0697da407ca84b02abda67e51dc3ec6c",
+   "book_id": "93ff2f45f4464b0d836a5c3d8cc5e33d",
+   "shelf_id": "0e8ebfc93d1e4b739f47d5a99806022a",
+   "format": "hardcover",
+   "condition": "fine",
+   "acquired": "2011-06-06",
+   "acquired_from": "",
+   "price": 25,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-02-15T10:00:00+00:00"
+  },
+  {
+   "id": "c128f5963ea8422987c99c0f4dc9d96f",
+   "book_id": "9cbb153d8b0046dc81ceedd95bf92aaf",
+   "shelf_id": "0e8ebfc93d1e4b739f47d5a99806022a",
    "format": "hardcover",
    "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000013": {
-   "id": "c0000000000000000000000000000013",
-   "book_id": "b0000000000000000000000000000012",
-   "shelf_id": "5e000000000000000000000000000007",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000015": {
-   "id": "c0000000000000000000000000000015",
-   "book_id": "b0000000000000000000000000000014",
-   "shelf_id": "5e000000000000000000000000000007",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000017": {
-   "id": "c0000000000000000000000000000017",
-   "book_id": "b0000000000000000000000000000016",
-   "shelf_id": "5e000000000000000000000000000007",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000019": {
-   "id": "c0000000000000000000000000000019",
-   "book_id": "b0000000000000000000000000000018",
-   "shelf_id": "5e000000000000000000000000000007",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c000000000000000000000000000001b": {
-   "id": "c000000000000000000000000000001b",
-   "book_id": "b000000000000000000000000000001a",
-   "shelf_id": "5e000000000000000000000000000007",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c000000000000000000000000000001d": {
-   "id": "c000000000000000000000000000001d",
-   "book_id": "b000000000000000000000000000001c",
-   "shelf_id": "5e000000000000000000000000000007",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c000000000000000000000000000001f": {
-   "id": "c000000000000000000000000000001f",
-   "book_id": "b000000000000000000000000000001e",
-   "shelf_id": "5e000000000000000000000000000008",
-   "format": "hardcover",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000021": {
-   "id": "c0000000000000000000000000000021",
-   "book_id": "b0000000000000000000000000000020",
-   "shelf_id": "5e000000000000000000000000000008",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000023": {
-   "id": "c0000000000000000000000000000023",
-   "book_id": "b0000000000000000000000000000022",
-   "shelf_id": "5e000000000000000000000000000008",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000025": {
-   "id": "c0000000000000000000000000000025",
-   "book_id": "b0000000000000000000000000000024",
-   "shelf_id": "5e000000000000000000000000000006",
-   "format": "hardcover",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000027": {
-   "id": "c0000000000000000000000000000027",
-   "book_id": "b0000000000000000000000000000026",
-   "shelf_id": "5e000000000000000000000000000006",
-   "format": "hardcover",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000029": {
-   "id": "c0000000000000000000000000000029",
-   "book_id": "b0000000000000000000000000000028",
-   "shelf_id": "5e000000000000000000000000000006",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c000000000000000000000000000002b": {
-   "id": "c000000000000000000000000000002b",
-   "book_id": "b000000000000000000000000000002a",
-   "shelf_id": "5e00000000000000000000000000000c",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c000000000000000000000000000002d": {
-   "id": "c000000000000000000000000000002d",
-   "book_id": "b000000000000000000000000000002c",
-   "shelf_id": "5e000000000000000000000000000006",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c000000000000000000000000000002f": {
-   "id": "c000000000000000000000000000002f",
-   "book_id": "b000000000000000000000000000002e",
-   "shelf_id": "5e000000000000000000000000000006",
-   "format": "hardcover",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000031": {
-   "id": "c0000000000000000000000000000031",
-   "book_id": "b0000000000000000000000000000030",
-   "shelf_id": "5e00000000000000000000000000000b",
-   "format": "hardcover",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000033": {
-   "id": "c0000000000000000000000000000033",
-   "book_id": "b0000000000000000000000000000032",
-   "shelf_id": "5e00000000000000000000000000000b",
-   "format": "hardcover",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000035": {
-   "id": "c0000000000000000000000000000035",
-   "book_id": "b0000000000000000000000000000034",
-   "shelf_id": "5e00000000000000000000000000000b",
-   "format": "hardcover",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
+   "acquired": "2016-12-25",
+   "acquired_from": "Gift from Sam",
+   "price": 49.95,
    "value": 30,
    "signed": false,
    "first_edition": false,
    "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
+   "created_at": "2026-02-13T10:00:00+00:00"
   },
-  "c0000000000000000000000000000037": {
-   "id": "c0000000000000000000000000000037",
-   "book_id": "b0000000000000000000000000000036",
-   "shelf_id": "5e00000000000000000000000000000b",
+  {
+   "id": "67c220052dd343b29cd370a7b11d1f04",
+   "book_id": "9d5b05a55a2d4f4297abee49d4b7981b",
+   "shelf_id": "2d8fcd0ea779423d8c0941759aba2355",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2019-10-10",
+   "acquired_from": "",
+   "price": 18,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-02-19T10:00:00+00:00"
+  },
+  {
+   "id": "3beebfa3890a4665a0c0cbb98291b460",
+   "book_id": "a662b1be82664e1790a514c31fa97558",
+   "shelf_id": "c102ccaab0ca46f3a26333acc51e5da4",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2013-07-07",
+   "acquired_from": "",
+   "price": 17,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-03-09T10:00:00+00:00"
+  },
+  {
+   "id": "438bb22657bb402381afa7810fc322a1",
+   "book_id": "ad5098f6bd434ad8af9c3e8307d5724c",
+   "shelf_id": "2438e456729348678c453d9967239c07",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2024-01-08",
+   "acquired_from": "Cheng & Tsui",
+   "price": 59.99,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-03-03T10:00:00+00:00"
+  },
+  {
+   "id": "e8dd1bbf49a7482d9ad61de073c477e6",
+   "book_id": "ae18ed68fc3445f484544a09c13ece47",
+   "shelf_id": "9d1880ff64484dcbbe7d31c250ee3be6",
+   "format": "hardcover",
+   "condition": "fine",
+   "acquired": "2020-10-06",
+   "acquired_from": "",
+   "price": 28,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-04-01T10:00:00+00:00"
+  },
+  {
+   "id": "9ade59d260e54c3792ac5e3a42a810c5",
+   "book_id": "af804c5b7f944aabb9462c114fab95d0",
+   "shelf_id": "d3be9b2c152a450d9a18995d11a26924",
+   "format": "hardcover",
+   "condition": "fine",
+   "acquired": "2021-03-02",
+   "acquired_from": "Elliott Bay Book Co.",
+   "price": 28,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-02-07T10:00:00+00:00"
+  },
+  {
+   "id": "fb534dcedee741f7b376f7db66c30742",
+   "book_id": "b30885c12d524a63b858d237b5353dc2",
+   "shelf_id": "9d1880ff64484dcbbe7d31c250ee3be6",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2015-05-05",
+   "acquired_from": "",
+   "price": 15.95,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-03-15T10:00:00+00:00"
+  },
+  {
+   "id": "9a1d67bb7f2c4e5196fef868185b18c7",
+   "book_id": "b796ea67f1b14d51a21aea93829a5f3d",
+   "shelf_id": null,
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2024-05-05",
+   "acquired_from": "",
+   "price": 16,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-03-23T10:00:00+00:00"
+  },
+  {
+   "id": "385967fb9d884db6a4d2a61ffc2f4764",
+   "book_id": "ba6076bfc6414e079514e8559c452e7f",
+   "shelf_id": "356599599fc54f88a023d93d58228ca4",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2008-07-01",
+   "acquired_from": "",
+   "price": 6.5,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-01-11T10:00:00+00:00"
+  },
+  {
+   "id": "71846fe7b56749fc86394d8c952a62be",
+   "book_id": "c8a701c41eb84f78949683fc37d29497",
+   "shelf_id": "356599599fc54f88a023d93d58228ca4",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2009-01-15",
+   "acquired_from": "",
+   "price": 7.5,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-01-13T10:00:00+00:00"
+  },
+  {
+   "id": "5b8043dbcada4b519ca4814513858011",
+   "book_id": "d4a98396d9f9490bb2371d3bfa27b476",
+   "shelf_id": "05d18119c2744375b9a89f4eb028edc0",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2016-03-03",
+   "acquired_from": "",
+   "price": 8,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-01-17T10:00:00+00:00"
+  },
+  {
+   "id": "bd84a5f7d0eb44d8ba6ea25ded3dae63",
+   "book_id": "d4c37434a7ea4a8e860517cd82ccc32b",
+   "shelf_id": "d3be9b2c152a450d9a18995d11a26924",
+   "format": "hardcover",
+   "condition": "fine",
+   "acquired": "2021-05-04",
+   "acquired_from": "Amazon",
+   "price": 28.99,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-01-23T10:00:00+00:00"
+  },
+  {
+   "id": "1a9d85cb52234ac6961f9fe0a470c037",
+   "book_id": "d863ec937ad1406fba8ce5f430d7d2ab",
+   "shelf_id": null,
+   "format": "paperback",
+   "condition": null,
+   "acquired": null,
+   "acquired_from": "",
+   "price": null,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-03-21T10:00:00+00:00"
+  },
+  {
+   "id": "c15276857083418fb51ff73a994ea96b",
+   "book_id": "d8d911387500471c9736a6a204509f73",
+   "shelf_id": "2438e456729348678c453d9967239c07",
    "format": "hardcover",
    "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
+   "acquired": "2003-09-01",
+   "acquired_from": "University Book Store",
+   "price": 75,
+   "value": 60,
    "signed": false,
    "first_edition": false,
    "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
+   "created_at": "2026-03-05T10:00:00+00:00"
   },
-  "c0000000000000000000000000000039": {
-   "id": "c0000000000000000000000000000039",
-   "book_id": "b0000000000000000000000000000038",
-   "shelf_id": "5e00000000000000000000000000000c",
+  {
+   "id": "586ecf35bb7a4aad9e64ebaebc8d0cfa",
+   "book_id": "db815384ca094b1ca4cc5b9a7e437b86",
+   "shelf_id": "356599599fc54f88a023d93d58228ca4",
    "format": "paperback",
    "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
+   "acquired": "2015-02-10",
+   "acquired_from": "Powell's Books",
+   "price": 8.99,
    "value": null,
    "signed": false,
    "first_edition": false,
    "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
+   "created_at": "2026-01-07T10:00:00+00:00"
   },
-  "c000000000000000000000000000003b": {
-   "id": "c000000000000000000000000000003b",
-   "book_id": "b000000000000000000000000000003a",
-   "shelf_id": "5e00000000000000000000000000000a",
+  {
+   "id": "b372d890aeb24ec5ba9a7f8f9102f0ab",
+   "book_id": "dbcf7eb0b9f14491ba5bcde27e29a967",
+   "shelf_id": "2d8fcd0ea779423d8c0941759aba2355",
+   "format": "hardcover",
+   "condition": "fair",
+   "acquired": "2016-04-01",
+   "acquired_from": "",
+   "price": 17.99,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-03-01T10:00:00+00:00"
+  },
+  {
+   "id": "07ea7e74e70b4fde80ea617e86a92175",
+   "book_id": "e4b7df5e6eef4483b1751162204397b8",
+   "shelf_id": "356599599fc54f88a023d93d58228ca4",
    "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
+   "condition": "fair",
+   "acquired": "2008-07-01",
+   "acquired_from": "",
+   "price": 6.5,
    "value": null,
    "signed": false,
    "first_edition": false,
    "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
+   "created_at": "2026-01-03T10:00:00+00:00"
   },
-  "c000000000000000000000000000003d": {
-   "id": "c000000000000000000000000000003d",
-   "book_id": "b000000000000000000000000000003c",
-   "shelf_id": "5e00000000000000000000000000000a",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
+  {
+   "id": "4b3876a0092a4fbe9a9e336bef04a034",
+   "book_id": "e50273c278814a57b97033997476c0df",
+   "shelf_id": "d3be9b2c152a450d9a18995d11a26924",
+   "format": "hardcover",
+   "condition": "fine",
+   "acquired": "2020-09-15",
    "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
+   "price": 27,
+   "value": null,
+   "signed": false,
+   "first_edition": true,
+   "note": "",
+   "created_at": "2026-01-21T10:00:00+00:00"
+  },
+  {
+   "id": "a868605c7a744f50b239906b8511908b",
+   "book_id": "e82369ba83ea4f0f8cafe3229fb3c669",
+   "shelf_id": "9d1880ff64484dcbbe7d31c250ee3be6",
+   "format": "hardcover",
+   "condition": "fine",
+   "acquired": "2013-01-01",
+   "acquired_from": "",
+   "price": 30,
    "value": null,
    "signed": false,
    "first_edition": false,
    "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
+   "created_at": "2026-03-17T10:00:00+00:00"
   },
-  "c000000000000000000000000000003f": {
-   "id": "c000000000000000000000000000003f",
-   "book_id": "b000000000000000000000000000003e",
-   "shelf_id": "5e00000000000000000000000000000a",
+  {
+   "id": "3a4ec4724cc24724a2b275745a545865",
+   "book_id": "e888e36a88504536bd6a87fd7c4aafe1",
+   "shelf_id": "0e8ebfc93d1e4b739f47d5a99806022a",
    "format": "hardcover",
    "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
+   "acquired": "2014-01-20",
+   "acquired_from": "",
+   "price": 35,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-02-09T10:00:00+00:00"
+  },
+  {
+   "id": "a82f6819dc2f45a4b839dbb6292b98e4",
+   "book_id": "eed5dacf0ada41059efc64fdefd6dfa9",
+   "shelf_id": "d3be9b2c152a450d9a18995d11a26924",
+   "format": "paperback",
+   "condition": "fair",
+   "acquired": "2004-06-01",
+   "acquired_from": "Garage sale",
+   "price": 1,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "Spine is cracked.",
+   "created_at": "2026-02-03T10:00:00+00:00"
+  },
+  {
+   "id": "f1b0274745da4e69825fc05bff173f02",
+   "book_id": "f308096519994fb78d16e480b16b71aa",
+   "shelf_id": "d3be9b2c152a450d9a18995d11a26924",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2012-08-08",
+   "acquired_from": "",
+   "price": 9.99,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-02-05T10:00:00+00:00"
+  },
+  {
+   "id": "24c3866ba1744fdbb09b6aa846f6baf9",
+   "book_id": "fb4f591ff96c45e5abc0fa81325c564c",
+   "shelf_id": "356599599fc54f88a023d93d58228ca4",
+   "format": "paperback",
+   "condition": "good",
+   "acquired": "2008-07-01",
+   "acquired_from": "",
+   "price": 6.5,
+   "value": null,
+   "signed": false,
+   "first_edition": false,
+   "note": "",
+   "created_at": "2026-01-09T10:00:00+00:00"
+  },
+  {
+   "id": "0cacc85eda044592b1305f02cc2480f7",
+   "book_id": "fd086096a83f483ab7219f131e678534",
+   "shelf_id": "2d8fcd0ea779423d8c0941759aba2355",
+   "format": "hardcover",
+   "condition": "good",
+   "acquired": "1985-12-25",
+   "acquired_from": "Inherited",
+   "price": null,
    "value": 120,
    "signed": false,
-   "first_edition": false,
+   "first_edition": true,
    "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000041": {
-   "id": "c0000000000000000000000000000041",
-   "book_id": "b0000000000000000000000000000040",
-   "shelf_id": "5e00000000000000000000000000000a",
-   "format": "hardcover",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000043": {
-   "id": "c0000000000000000000000000000043",
-   "book_id": "b0000000000000000000000000000042",
-   "shelf_id": "5e00000000000000000000000000000d",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000045": {
-   "id": "c0000000000000000000000000000045",
-   "book_id": "b0000000000000000000000000000044",
-   "shelf_id": "5e00000000000000000000000000000d",
-   "format": "hardcover",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000047": {
-   "id": "c0000000000000000000000000000047",
-   "book_id": "b0000000000000000000000000000046",
-   "shelf_id": "5e00000000000000000000000000000d",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000049": {
-   "id": "c0000000000000000000000000000049",
-   "book_id": "b0000000000000000000000000000048",
-   "shelf_id": "5e00000000000000000000000000000e",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c000000000000000000000000000004b": {
-   "id": "c000000000000000000000000000004b",
-   "book_id": "b000000000000000000000000000004a",
-   "shelf_id": "5e00000000000000000000000000000e",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c000000000000000000000000000004d": {
-   "id": "c000000000000000000000000000004d",
-   "book_id": "b000000000000000000000000000004c",
-   "shelf_id": "5e000000000000000000000000000009",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c000000000000000000000000000004f": {
-   "id": "c000000000000000000000000000004f",
-   "book_id": "b000000000000000000000000000004e",
-   "shelf_id": "5e000000000000000000000000000009",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000051": {
-   "id": "c0000000000000000000000000000051",
-   "book_id": "b0000000000000000000000000000050",
-   "shelf_id": "5e000000000000000000000000000009",
-   "format": "hardcover",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000053": {
-   "id": "c0000000000000000000000000000053",
-   "book_id": "b0000000000000000000000000000052",
-   "shelf_id": "5e000000000000000000000000000008",
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000055": {
-   "id": "c0000000000000000000000000000055",
-   "book_id": "b0000000000000000000000000000054",
-   "shelf_id": null,
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
-  },
-  "c0000000000000000000000000000057": {
-   "id": "c0000000000000000000000000000057",
-   "book_id": "b0000000000000000000000000000056",
-   "shelf_id": null,
-   "format": "paperback",
-   "condition": "good",
-   "acquired": "2019-05-04",
-   "acquired_from": "Elliott Bay Book Co.",
-   "price": 7.99,
-   "value": null,
-   "signed": false,
-   "first_edition": false,
-   "note": "",
-   "created_at": "2026-01-10T10:00:00+00:00"
+   "created_at": "2026-02-23T10:00:00+00:00"
   }
- },
- "loans": {
-  "1000000000000000000000000000005e": {
-   "id": "1000000000000000000000000000005e",
-   "copy_id": "c0000000000000000000000000000015",
-   "person_id": null,
-   "format": null,
-   "due": "2026-09-13",
-   "returned": null,
-   "note": "",
-   "hk_task_id": "task0001",
-   "party": "Priya",
+ ],
+ "loans": [
+  {
+   "id": "2eb9b18071de4d48908a3e00c858f54d",
    "direction": "out",
-   "book_id": "b0000000000000000000000000000014",
-   "started": "2026-08-12"
-  },
-  "1000000000000000000000000000005f": {
-   "id": "1000000000000000000000000000005f",
-   "copy_id": "c0000000000000000000000000000011",
+   "book_id": "13be6b0e5c354e1981a89fe2766196e0",
+   "copy_id": "1a7fd778f21144609382fcd3ed7d205c",
+   "party": "Sam's friend Lee",
    "person_id": null,
    "format": null,
-   "due": "2026-10-13",
-   "returned": null,
-   "note": "",
-   "hk_task_id": "task0002",
-   "party": "Priya",
-   "direction": "out",
-   "book_id": "b000000000000000000000000000000f",
-   "started": "2026-09-12"
-  },
-  "10000000000000000000000000000060": {
-   "id": "10000000000000000000000000000060",
-   "copy_id": "c0000000000000000000000000000031",
-   "person_id": null,
-   "format": null,
-   "due": null,
-   "returned": null,
-   "note": "",
-   "hk_task_id": null,
-   "party": "Book club",
-   "direction": "out",
-   "book_id": "b0000000000000000000000000000030",
-   "started": "2026-10-01"
-  },
-  "10000000000000000000000000000061": {
-   "id": "10000000000000000000000000000061",
-   "copy_id": "c0000000000000000000000000000013",
-   "person_id": null,
-   "format": null,
+   "started": "2026-05-01",
    "due": "2026-06-01",
    "returned": "2026-05-28",
    "note": "",
    "hk_task_id": null,
-   "party": "Sam’s friend",
-   "direction": "out",
-   "book_id": "b0000000000000000000000000000012",
-   "started": "2026-05-01"
+   "add_task": true,
+   "overdue_fired": false
   },
-  "10000000000000000000000000000062": {
-   "id": "10000000000000000000000000000062",
-   "copy_id": null,
-   "person_id": "a1e8000000000000000000000000a1e0",
-   "format": "paperback",
-   "due": "2026-10-07",
+  {
+   "id": "efea7608426b4340b687dbf6e28f73ed",
+   "direction": "out",
+   "book_id": "e50273c278814a57b97033997476c0df",
+   "copy_id": "4b3876a0092a4fbe9a9e336bef04a034",
+   "party": "Priya",
+   "person_id": null,
+   "format": null,
+   "started": "2026-08-12",
+   "due": "2026-09-13",
    "returned": null,
    "note": "",
-   "hk_task_id": "task0003",
-   "party": "Seattle Public Library",
-   "direction": "in",
-   "book_id": "b0000000000000000000000000000058",
-   "started": "2026-09-20"
+   "hk_task_id": "a3310ab425f64f0380acc4692fc4bf4f",
+   "add_task": true,
+   "overdue_fired": false
   },
-  "10000000000000000000000000000063": {
-   "id": "10000000000000000000000000000063",
+  {
+   "id": "54d66fa3af5d4c89afea97958360f3d3",
+   "direction": "out",
+   "book_id": "58247cad1ced46248fefe4d2b0db71b5",
+   "copy_id": "fc44d1b6f6f7497685389a30477c896c",
+   "party": "Priya",
+   "person_id": null,
+   "format": null,
+   "started": "2026-09-12",
+   "due": "2026-10-13",
+   "returned": null,
+   "note": "",
+   "hk_task_id": "993556fe1fc84cc395acc89c6d11447f",
+   "add_task": true,
+   "overdue_fired": false
+  },
+  {
+   "id": "c798db7c768c4d56954cb0927c260891",
+   "direction": "in",
+   "book_id": "0a6099a9263f4b709ee6b01c2d7e9506",
    "copy_id": null,
-   "person_id": "5a0000000000000000000000000005a0",
+   "party": "Seattle Public Library",
+   "person_id": "alex",
+   "format": "paperback",
+   "started": "2026-09-20",
+   "due": "2026-10-11",
+   "returned": null,
+   "note": "",
+   "hk_task_id": "97a5064b889a404d845aff884351628c",
+   "add_task": true,
+   "overdue_fired": false
+  },
+  {
+   "id": "e6ddf13667944709b83352b101610911",
+   "direction": "in",
+   "book_id": "518cc58e5bbe485d8b8a241e59e56f2f",
+   "copy_id": null,
+   "party": "Seattle Public Library",
+   "person_id": "sam",
    "format": "ebook",
+   "started": "2026-09-25",
    "due": "2026-10-25",
    "returned": null,
    "note": "",
+   "hk_task_id": "1682f8f115c74e329674c59568116092",
+   "add_task": true,
+   "overdue_fired": false
+  },
+  {
+   "id": "3e67ba3bf1d945f098e40751b1df10c7",
+   "direction": "out",
+   "book_id": "ae18ed68fc3445f484544a09c13ece47",
+   "copy_id": "e8dd1bbf49a7482d9ad61de073c477e6",
+   "party": "Book club",
+   "person_id": null,
+   "format": null,
+   "started": "2026-10-01",
+   "due": null,
+   "returned": null,
+   "note": "For the November meeting.",
    "hk_task_id": null,
-   "party": "Seattle Public Library",
-   "direction": "in",
-   "book_id": "b0000000000000000000000000000059",
-   "started": "2026-09-25"
+   "add_task": true,
+   "overdue_fired": false
   }
- },
+ ],
  "people": {
-  "a1e8000000000000000000000000a1e0": {
+  "alex": {
+   "person_id": "alex",
+   "name": "Alex",
+   "entity_id": "person.alex",
    "share_reading": true,
    "wishlist_todo": "todo.alex_books",
    "yearly_goal": 24
   },
-  "5a0000000000000000000000000005a0": {
+  "sam": {
+   "person_id": "sam",
+   "name": "Sam",
+   "entity_id": "person.sam",
    "share_reading": true,
    "wishlist_todo": null,
    "yearly_goal": 12
   },
-  "10000000000000000000000000000f00": {
+  "jo": {
+   "person_id": "jo",
+   "name": "Jo",
+   "entity_id": "person.jo",
    "share_reading": true,
-   "wishlist_todo": "todo.jo_books",
+   "wishlist_todo": null,
    "yearly_goal": null
   }
  },
  "me": {
-  "person_id": "a1e8000000000000000000000000a1e0",
+  "person_id": "alex",
+  "name": "Alex",
   "is_admin": true
  },
- "currency": "USD",
+ "currency": "EUR",
  "home_keeper": {
   "tab": true
  }

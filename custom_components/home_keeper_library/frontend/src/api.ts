@@ -14,6 +14,18 @@ export const UPLOAD_URL = `/api/${DOMAIN}/upload`;
 /** The largest CSV file that `import_csv` accepts. */
 export const MAX_IMPORT_BYTES = 5 * 1024 * 1024;
 
+/**
+ * The largest CSV that goes over the websocket. Home Assistant closes a websocket
+ * that gets a message of 4 MB or more, so a larger file goes to the service over
+ * REST.
+ */
+export const MAX_WS_IMPORT_BYTES = 3 * 1024 * 1024;
+
+/** The size of *text* in UTF-8 bytes. */
+export function utf8Bytes(text: string): number {
+  return new TextEncoder().encode(text).length;
+}
+
 /** The largest cover image that the upload view accepts. */
 export const MAX_COVER_BYTES = 10 * 1024 * 1024;
 
@@ -59,8 +71,24 @@ export class LibraryApi {
     return this.call<ScanResult>('scan_isbn', fields);
   }
 
-  importCsv(fields: Fields): Promise<ImportSummary> {
-    return this.call<ImportSummary>('import_csv', fields);
+  /** `import_csv`: over the websocket, or over REST for a file above `MAX_WS_IMPORT_BYTES`. */
+  async importCsv(fields: Fields): Promise<ImportSummary> {
+    const content = String(fields.content ?? '');
+    if (utf8Bytes(content) <= MAX_WS_IMPORT_BYTES || !this.hass.callApi) {
+      return this.call<ImportSummary>('import_csv', fields);
+    }
+    const res = await this.hass.callApi<{ service_response: ImportSummary }>(
+      'POST',
+      `services/${DOMAIN}/import_csv?return_response`,
+      compact(fields),
+    );
+    return res.service_response;
+  }
+
+  /** A signed path for an authenticated GET, such as a cover, that lives *expires* seconds. */
+  async signPath(path: string, expires: number): Promise<string> {
+    const res = await this.hass.connection.sendMessagePromise<{ path: string }>({ type: 'auth/sign_path', path, expires });
+    return res.path;
   }
 
   exportCsv(fields: Fields): Promise<{ filename: string; content: string }> {

@@ -23,8 +23,8 @@ export const TOKENS = `
   --hkl-ok: var(--success-color, #2e7d32);
   --hkl-ok-soft: color-mix(in srgb, var(--hkl-ok) 14%, var(--hkl-surface));
   --hkl-ok-ink: color-mix(in srgb, var(--hkl-ok) 75%, var(--hkl-text));
-  --hkl-ring-read: #a5d6a7;
-  --hkl-ring-reading: #ffcc80;
+  --hkl-ring-read: #43a047;
+  --hkl-ring-reading: #fb8c00;
   --hkl-star: #f9a825;
   --hkl-wood: color-mix(in srgb, #8d6e63 70%, var(--hkl-surface));
   --hkl-radius: 12px;
@@ -102,7 +102,7 @@ button { font: inherit; color: inherit; }
 .hkl-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .hkl-cover-title { font-family: Fraunces, Georgia, 'Times New Roman', serif; font-weight: 700; font-size: 17px; line-height: 1.15; overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
 .hkl-cover-author { font-size: 11px; letter-spacing: .8px; text-transform: uppercase; opacity: .85; }
-.hkl-cover-badge { position: absolute; top: 8px; right: 8px; background: rgba(255,255,255,.92); color: #01579b; font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 8px; }
+.hkl-cover-badge { position: absolute; bottom: 8px; right: 8px; background: rgba(255,255,255,.92); color: #01579b; font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 8px; }
 .hkl-cover-thumb { width: 40px; flex: 0 0 40px; padding: 4px 3px 3px 7px; border-radius: 2px 4px 4px 2px; box-shadow: 0 1px 2px rgba(0,0,0,.25), inset 3px 0 0 rgba(0,0,0,.12); }
 .hkl-cover-thumb .hkl-cover-title { font-size: 6px; -webkit-line-clamp: 6; overflow-wrap: normal; word-break: normal; }
 .hkl-cover-thumb.blank { background: var(--hkl-chip); box-shadow: none; }
@@ -116,11 +116,14 @@ button { font: inherit; color: inherit; }
 .hkl-tile-title { font-weight: 500; font-size: 14px; line-height: 1.25; }
 .hkl-tile-author { font-size: 12px; color: var(--hkl-muted); }
 .hkl-tile-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.hkl-tile-meta:empty { display: none; }
+.hkl-tile-readers { display: flex; align-items: center; gap: 8px; min-height: 24px; padding-left: 2px; }
 .hkl-loc { font-size: 11px; color: var(--hkl-text); border: 1px solid var(--hkl-divider); border-radius: 10px; padding: 1px 8px; background: var(--hkl-surface); }
 .hkl-dot { width: 20px; height: 20px; flex: 0 0 20px; border-radius: 10px; background: var(--p, #00695c); color: #fff; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
-.hkl-dot.ring-read { box-shadow: 0 0 0 2px var(--hkl-ring-read); }
-.hkl-dot.ring-reading { box-shadow: 0 0 0 2px var(--hkl-ring-reading); }
-.hkl-dot.sample { width: 14px; height: 14px; flex-basis: 14px; }
+.hkl-dot.ring-read { box-shadow: 0 0 0 2px var(--hkl-surface), 0 0 0 4px var(--hkl-ring-read); }
+.hkl-dot.ring-reading { box-shadow: 0 0 0 2px var(--hkl-surface), 0 0 0 4px var(--hkl-ring-reading); }
+.hkl-ring { width: 16px; height: 16px; flex: 0 0 16px; border-radius: 8px; border: 3px solid var(--hkl-ring-read); }
+.hkl-ring.ring-reading { border-color: var(--hkl-ring-reading); }
 .hkl-pill { align-self: flex-start; font-size: 11px; background: var(--hkl-chip); color: var(--hkl-text); border-radius: 10px; padding: 2px 8px; white-space: nowrap; }
 .hkl-tile .hkl-pill { white-space: normal; max-width: 100%; }
 .hkl-pill.loan, .hkl-pill.soon, .hkl-pill.warn, .hkl-pill.st-reading { background: var(--hkl-warn-soft); color: var(--hkl-warn-ink); }
@@ -282,6 +285,7 @@ button { font: inherit; color: inherit; }
 .hkl-dlg-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 .hkl-file { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border: 1px solid var(--hkl-divider); border-radius: 10px; flex-wrap: wrap; }
 .hkl-file.empty { border-style: dashed; }
+.hkl-inline-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 12px; }
 .hkl-checklist { display: flex; flex-direction: column; gap: 6px; max-height: 260px; overflow-y: auto; }
 
 /* Phone layout */

@@ -131,28 +131,41 @@ describe('asList and normalizeState', () => {
     expect(l.bookcases.map((s) => s.id)).toEqual(['p', 'q']);
   });
 
-  it('merges person names with settings and fills the defaults', () => {
-    const l = u.normalizeState(
-      { people: { p1: { share_reading: false, wishlist_todo: 'todo.x', yearly_goal: 5 }, p3: { share_reading: true, wishlist_todo: null, yearly_goal: null, name: 'Row name' } } },
-      { p1: 'Zoe', p2: 'Adam' },
-    );
+  it('reads the people map, sorts by name and gives each person the color of its place', () => {
+    const l = u.normalizeState({
+      people: {
+        zoe: { person_id: 'zoe', name: 'Zoe', entity_id: 'person.zoe', share_reading: false, wishlist_todo: 'todo.x', yearly_goal: 5 },
+        adam: { person_id: 'adam', name: 'Adam', entity_id: null, share_reading: true, yearly_goal: null },
+        bea: { person_id: 'bea', name: 'Bea', entity_id: null, share_reading: true, wishlist_todo: null, yearly_goal: 3 },
+      },
+    });
     expect(l.people).toEqual([
-      { id: 'p2', name: 'Adam', share_reading: true, wishlist_todo: null, yearly_goal: null },
-      { id: 'p3', name: 'Row name', share_reading: true, wishlist_todo: null, yearly_goal: null },
-      { id: 'p1', name: 'Zoe', share_reading: false, wishlist_todo: 'todo.x', yearly_goal: 5 },
+      { id: 'adam', name: 'Adam', share_reading: true, wishlist_todo: null, yearly_goal: null, color: u.PERSON_COLORS[0] },
+      { id: 'bea', name: 'Bea', share_reading: true, wishlist_todo: null, yearly_goal: 3, color: u.PERSON_COLORS[1] },
+      { id: 'zoe', name: 'Zoe', share_reading: false, wishlist_todo: 'todo.x', yearly_goal: 5, color: u.PERSON_COLORS[2] },
     ]);
   });
 
-  it('uses the id for a person with no name, and keeps share_reading when it is missing', () => {
+  it('gives 2 people with the same name different colors, in id order', () => {
+    const l = u.normalizePeople({ b: { person_id: 'b', name: 'Sam' }, a: { person_id: 'a', name: 'Sam' } });
+    expect(l.map((p) => p.id)).toEqual(['a', 'b']);
+    expect(l[0].color).not.toBe(l[1].color);
+  });
+
+  it('uses the key for a person with no id or name, and keeps share_reading when it is missing', () => {
     const l = u.normalizeState({ people: { p9: { wishlist_todo: null, yearly_goal: null } } });
+    expect(l.people[0].id).toBe('p9');
     expect(l.people[0].name).toBe('p9');
     expect(l.people[0].share_reading).toBe(true);
+    expect(u.normalizePeople(undefined)).toEqual([]);
+    expect(u.normalizePeople(null)).toEqual([]);
   });
 
   it('fills missing book lists and the defaults of me and currency', () => {
     const l = u.normalizeState({ books: [{ id: 'b' }] });
     expect(l.books[0]).toMatchObject({ authors: [], tags: [], subjects: [], reading: {} });
-    expect(l.me).toEqual({ person_id: null, is_admin: false });
+    expect(l.me).toEqual({ person_id: null, name: null, is_admin: false });
+    expect(u.normalizeState({ me: { person_id: 'p', name: 'P', is_admin: 'yes' } }).me).toEqual({ person_id: 'p', name: 'P', is_admin: false });
     expect(l.currency).toBe('USD');
     expect(l.copies).toEqual([]);
     expect(l.loans).toEqual([]);
@@ -588,8 +601,14 @@ describe('drawing', () => {
     expect(u.spines([book('a'), book('b'), book('c')], 2)).toHaveLength(2);
     expect(u.spines(Array.from({ length: 70 }, (_, i) => book(`x${i}`)))).toHaveLength(60);
   });
-  it('gives a person color', () => {
-    expect(u.personColor('p')).toBe(u.PERSON_COLORS[u.hash('p') % u.PERSON_COLORS.length]);
+  it('gives a person color by place, and wraps after the last color', () => {
+    const n = u.PERSON_COLORS.length;
+    expect(new Set(u.PERSON_COLORS.map((_, i) => u.personColor(i))).size).toBe(n);
+    expect(u.personColor(0)).toBe(u.PERSON_COLORS[0]);
+    expect(u.personColor(n - 1)).toBe(u.PERSON_COLORS[n - 1]);
+    expect(u.personColor(n)).toBe(u.PERSON_COLORS[0]);
+    expect(u.personColor(n + 2)).toBe(u.PERSON_COLORS[2]);
+    expect(u.personColor(-1)).toBe(u.PERSON_COLORS[n - 1]);
   });
 });
 
@@ -725,5 +744,81 @@ describe('scanTally, loansFor and csvRowCount', () => {
     expect(u.csvRowCount('a,b')).toBe(0);
     expect(u.csvRowCount('')).toBe(0);
     expect(u.csvRowCount('\r\n')).toBe(0);
+  });
+});
+
+describe('CoverUrls', () => {
+  const T0 = 1_000_000;
+  const signer = () => {
+    let n = 0;
+    return vi.fn(async (path) => `${path}&authSig=${++n}`);
+  };
+
+  it('signs each path 1 time and gives the signed URL', async () => {
+    const urls = new u.CoverUrls();
+    const sign = signer();
+    expect(urls.get('/c/a?v=1', T0)).toBeUndefined();
+    expect(await urls.ensure(['/c/a?v=1', '/c/b?v=1', '/c/a?v=1'], sign, T0)).toBe(true);
+    expect(sign).toHaveBeenCalledTimes(2);
+    expect(urls.get('/c/a?v=1', T0)).toBe('/c/a?v=1&authSig=1');
+    expect(urls.get('/c/b?v=1', T0)).toBe('/c/b?v=1&authSig=2');
+    expect(await urls.ensure(['/c/a?v=1'], sign, T0 + 1000)).toBe(false);
+    expect(sign).toHaveBeenCalledTimes(2);
+  });
+
+  it('signs again after the resign time and stops using a URL in its last minute', async () => {
+    const urls = new u.CoverUrls();
+    const sign = signer();
+    await urls.ensure(['/c/a'], sign, T0);
+    expect(await urls.ensure(['/c/a'], sign, T0 + u.COVER_RESIGN_MS - 1)).toBe(false);
+    const life = u.COVER_SIGN_SECONDS * 1000;
+    expect(urls.get('/c/a', T0 + life - 60_001)).toBe('/c/a&authSig=1');
+    expect(urls.get('/c/a', T0 + life - 60_000)).toBeUndefined();
+    expect(await urls.ensure(['/c/a'], sign, T0 + u.COVER_RESIGN_MS)).toBe(true);
+    expect(urls.get('/c/a', T0 + u.COVER_RESIGN_MS)).toBe('/c/a&authSig=2');
+    expect(u.COVER_RESIGN_MS).toBeLessThan(life - 60_000);
+  });
+
+  it('shares 1 sign between calls that overlap', async () => {
+    const urls = new u.CoverUrls();
+    let release;
+    const sign = vi.fn(() => new Promise((r) => (release = r)));
+    const first = urls.ensure(['/c/a'], sign, T0);
+    const second = urls.ensure(['/c/a'], sign, T0);
+    expect(sign).toHaveBeenCalledTimes(1);
+    release('/c/a?authSig=x');
+    expect(await first).toBe(true);
+    expect(await second).toBe(true);
+    expect(urls.get('/c/a', T0)).toBe('/c/a?authSig=x');
+  });
+
+  it('keeps no URL for a failed sign and tries again on the next call', async () => {
+    const urls = new u.CoverUrls();
+    const sign = vi.fn().mockRejectedValueOnce(new Error('no')).mockResolvedValueOnce('/c/a?ok');
+    expect(await urls.ensure(['/c/a'], sign, T0)).toBe(false);
+    expect(urls.get('/c/a', T0)).toBeUndefined();
+    expect(await urls.ensure(['/c/a'], sign, T0)).toBe(true);
+    expect(urls.get('/c/a', T0)).toBe('/c/a?ok');
+  });
+
+  it('keeps the old URL when a new sign fails', async () => {
+    const urls = new u.CoverUrls();
+    const sign = vi.fn().mockResolvedValueOnce('/c/a?one').mockRejectedValueOnce(new Error('no'));
+    await urls.ensure(['/c/a'], sign, T0);
+    expect(await urls.ensure(['/c/a'], sign, T0 + u.COVER_RESIGN_MS)).toBe(false);
+    expect(urls.get('/c/a', T0 + u.COVER_RESIGN_MS)).toBe('/c/a?one');
+  });
+
+  it('forgets every URL on clear', async () => {
+    const urls = new u.CoverUrls();
+    await urls.ensure(['/c/a'], signer(), T0);
+    urls.clear();
+    expect(urls.get('/c/a', T0)).toBeUndefined();
+  });
+
+  it('gives false for no paths', async () => {
+    const sign = vi.fn();
+    expect(await new u.CoverUrls().ensure([], sign, T0)).toBe(false);
+    expect(sign).not.toHaveBeenCalled();
   });
 });

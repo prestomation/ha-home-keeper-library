@@ -3,7 +3,8 @@
 
 import { t } from './i18n';
 import type { Book, Lib, Person, ReadingStatus } from './types';
-import { coverColors, escapeHTML, initials, personColor, type Index, type TabRoute } from './utils';
+import type { LibraryApi } from './api';
+import { COVER_SIGN_SECONDS, coverColors, CoverUrls, escapeHTML, initials, type Index, type TabRoute } from './utils';
 
 /** The panel URL of the tab. A tab path is added after it. */
 export const TAB_BASE = '/home-keeper/library';
@@ -34,14 +35,40 @@ export function link(path: string, label: string, cls = ''): string {
   return `<a href="${escapeHTML(href(path))}" data-act="nav" data-path="${escapeHTML(path)}"${cls ? ` class="${cls}"` : ''}>${label}</a>`;
 }
 
-/** The cover of a book: the image, or a colored block with the title. */
+/** The signed cover URLs of this bundle. The tab and each card share them. */
+export const coverUrls = new CoverUrls();
+
+/**
+ * The cover of a book: the image, or a colored block with the title. A cover
+ * with no signed URL yet shows the block, and `wireCovers` signs it.
+ */
 export function cover(book: Book, size: 'tile' | 'thumb' | 'large' = 'tile', badge = ''): string {
   const { bg, ink } = coverColors(book.id);
   const author = book.authors[0] ?? '';
-  const img = book.cover_url
-    ? `<img src="${escapeHTML(book.cover_url)}" alt="" loading="lazy" />`
+  const src = book.cover_url ? coverUrls.get(book.cover_url, Date.now()) : undefined;
+  const img = src
+    ? `<img src="${escapeHTML(src)}" alt="" loading="lazy" />`
     : `<span class="hkl-cover-title">${escapeHTML(book.title)}</span>${size === 'thumb' ? '' : `<span class="hkl-cover-author">${escapeHTML(author)}</span>`}`;
-  return `<span class="hkl-cover hkl-cover-${size}${book.cover_url ? ' has-img' : ''}" style="--c:${bg};--ink:${ink}" aria-hidden="true">${img}${badge}</span>`;
+  const path = book.cover_url ? ` data-cover="${escapeHTML(book.cover_url)}"` : '';
+  return `<span class="hkl-cover hkl-cover-${size}${src ? ' has-img' : ''}" style="--c:${bg};--ink:${ink}"${path} aria-hidden="true">${img}${badge}</span>`;
+}
+
+/** Sign the covers that *root* shows, then call *onSigned* if a new URL came. */
+export function wireCovers(root: ParentNode, api: LibraryApi | undefined, onSigned: () => void): void {
+  if (!api) return;
+  const paths = [...root.querySelectorAll<HTMLElement>('[data-cover]')].map((el) => el.dataset.cover ?? '').filter(Boolean);
+  if (!paths.length) return;
+  void coverUrls.ensure(paths, (path) => api.signPath(path, COVER_SIGN_SECONDS), Date.now()).then((signed) => {
+    if (signed) onSigned();
+  });
+}
+
+/**
+ * The link to the Home Keeper task of a loan. The href is the real panel URL. A
+ * plain click goes through `host.openTask` when the host has it.
+ */
+export function taskLinkHtml(ctx: { taskLink: (id: string) => string }, taskId: string): string {
+  return `<a class="hkl-task" href="${escapeHTML(ctx.taskLink(taskId))}" data-act="open-task" data-id="${escapeHTML(taskId)}" data-k="task-${escapeHTML(taskId)}">${ICONS.home}${escapeHTML(t('loan.task'))}</a>`;
 }
 
 /** A round person mark with the initial, and the name as its label. */
@@ -49,7 +76,7 @@ export function personDot(person: Person | undefined, status: ReadingStatus | nu
   if (!person) return '';
   const ring = status === 'read' ? ' ring-read' : status === 'reading' ? ' ring-reading' : '';
   const label = status ? `${person.name}: ${statusLabel(status)}` : person.name;
-  return `<span class="hkl-dot${ring}" style="--p:${personColor(person.id)}" title="${escapeHTML(label)}" role="img" aria-label="${escapeHTML(label)}">${escapeHTML(initials(person.name))}</span>`;
+  return `<span class="hkl-dot${ring}" style="--p:${escapeHTML(person.color)}" title="${escapeHTML(label)}" role="img" aria-label="${escapeHTML(label)}">${escapeHTML(initials(person.name))}</span>`;
 }
 
 /** The label of a reading status. Null is "Not read". */

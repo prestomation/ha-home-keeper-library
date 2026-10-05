@@ -12,8 +12,12 @@ export const PREVIEW_KEYS = ['read', 'reading', 'want', 'dnf', 'wishlist', 'copi
 /** The match counts that show as pills. */
 export const MATCH_KEYS = ['existing', 'new', 'title_match'] as const;
 
-function authorsOf(row: ImportRow): string {
-  return Array.isArray(row.authors) ? row.authors.join(', ') : (row.authors ?? '');
+/** The number of result rows that the preview shows. */
+export const PREVIEW_ROWS = 200;
+
+/** The text of the result of 1 row: the error, or the match. */
+function rowResult(row: ImportRow): string {
+  return row.message || t(`import.action_${row.action}`);
 }
 
 /** The Import dialog markup. */
@@ -34,12 +38,13 @@ export function renderImport(ctx: ViewCtx): string {
         <tbody>${PREVIEW_KEYS.filter((k) => counts[k]).map((k) => `<tr><td>${escapeHTML(t(`import.row_${k}`))}</td><td class="num">${formatNumber(counts[k])}</td></tr>`).join('') || `<tr><td colspan="2" class="hkl-muted">${escapeHTML(t('import.no_changes'))}</td></tr>`}</tbody>
       </table></div>
       <div class="hkl-chips">${MATCH_KEYS.map((k) => `<span class="hkl-chip">${escapeHTML(t(`import.match_${k}`, { n: formatNumber(counts[k] ?? 0) }))}</span>`).join('')}</div>
-      ${s.summary.rows?.length ? `<details class="hkl-details"><summary>${escapeHTML(tn('import.rows_shown', Math.min(50, s.summary.rows.length)))}</summary><div class="hkl-tablewrap"><table class="hkl-table small"><tbody>${s.summary.rows.slice(0, 50).map((r) => `<tr><td>${escapeHTML(r.line ?? '')}</td><td>${escapeHTML(r.title ?? r.isbn ?? '')}</td><td>${escapeHTML(authorsOf(r))}</td><td>${escapeHTML(r.message || r.action || '')}</td></tr>`).join('')}</tbody></table></div></details>` : ''}`
+      ${s.summary.rows.length ? `<details class="hkl-details"><summary>${escapeHTML(tn('import.rows_shown', Math.min(PREVIEW_ROWS, s.summary.rows.length)))}</summary><div class="hkl-tablewrap"><table class="hkl-table small"><tbody>${s.summary.rows.slice(0, PREVIEW_ROWS).map((r) => `<tr class="${r.action === 'error' ? 'err' : ''}"><td>${escapeHTML(r.line)}</td><td>${escapeHTML(r.title || r.isbn || '')}</td><td>${escapeHTML(r.authors.join(', '))}</td><td>${escapeHTML(rowResult(r))}</td></tr>`).join('')}</tbody></table></div></details>` : ''}
+      ${s.summary.truncated ? `<p class="hkl-muted small" data-k="import-truncated">${escapeHTML(t('import.truncated'))}</p>` : ''}`
     : '';
   const file = s.fileName
     ? `<div class="hkl-file"><span>${escapeHTML(s.fileName)} · ${escapeHTML(tn('import.rows', s.rowCount))}</span>${button(escapeHTML(t('import.change_file')), 'import-pick', 'text', 'data-k="import-change"')}</div>`
     : `<div class="hkl-file empty"><span class="hkl-muted">${escapeHTML(t('import.file_hint'))}</span>${button(escapeHTML(t('import.choose_file')), 'import-pick', 'tonal', 'data-k="import-pick"')}</div>`;
-  const total = counts.rows ?? s.summary?.total ?? s.rowCount;
+  const total = counts.rows ?? s.rowCount;
   const go = s.done
     ? button(escapeHTML(t('action.close')), 'import-close', 'primary', 'data-k="import-done"')
     : `<button class="hkl-btn primary" data-act="import-run" data-k="import-run"${!s.summary || s.busy ? ' disabled' : ''}>${escapeHTML(tn('import.import_rows', total))}</button>`;

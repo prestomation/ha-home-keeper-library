@@ -11,6 +11,7 @@ import { errorText, LibraryApi, MAX_COVER_BYTES, MAX_IMPORT_BYTES, type Fields }
 import { renderKeepFocus } from './dom';
 import { setLanguage, t, tn } from './i18n';
 import { ensureMarkdown, wireMarkdown } from './markdown';
+import { wireCovers } from './markup';
 import { Scanner } from './scanner';
 import { STYLES } from './styles';
 import { booksPath, renderBook, renderBooks } from './tab-books';
@@ -34,7 +35,6 @@ import {
   normalizeState,
   numberOrNull,
   parseRoute,
-  personNames,
   readFilters,
   readingOf,
   shelfPath,
@@ -245,7 +245,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   }
 
   private _setState(raw: RawState): void {
-    this._lib = normalizeState(raw, personNames(this._hass?.states));
+    this._lib = normalizeState(raw);
     this._idx = buildIndex(this._lib);
     if (!this._ui.import.personId) this._ui.import.personId = this._lib.me.person_id;
   }
@@ -348,6 +348,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     this._main.dataset.view = this._route.view;
     renderKeepFocus(this._root, this._main, `${admin}${err}${this._viewHtml(ctx)}${this._route.view === 'scan' ? '' : foot}`);
     wireMarkdown(this._main);
+    wireCovers(this._main, this._api, () => this._render());
     const slot = this._main.querySelector('[data-slot="video"]');
     if (slot && this._scanner) {
       slot.appendChild(this._scanner.video);
@@ -387,6 +388,8 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     if (!el) return;
     const act = el.dataset.act!;
     if (act.endsWith('scrim') && el !== target) return;
+    // With no `host.openTask` (Home Keeper before 0.30), the link opens the task.
+    if (act === 'open-task' && !this._host?.openTask) return;
     if (el.tagName === 'A') {
       if (ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey || ev.button !== 0) return;
       ev.preventDefault();
@@ -481,6 +484,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     ev.preventDefault();
     if (kind === 'dialog') void this._submitDialog(form);
     if (kind === 'notes') void this._saveNotes(form);
+    if (kind === 'currency') void this._saveCurrency(form);
     if (kind === 'isbn') {
       const input = form.elements.namedItem('isbn') as HTMLInputElement;
       const isbn = normalizeIsbn(input.value);
@@ -509,6 +513,9 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         return;
       case 'back':
         this._go(this._booksPath, true);
+        return;
+      case 'open-task':
+        this._host?.openTask?.(id);
         return;
       case 'status':
         this._setFilter('status', value);
@@ -700,6 +707,17 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     if (this._ui.notesTab === 'shared') await this._run('update_book', { book_id: book.id, shared_notes: text });
     else await this._setReading({ private_notes: text });
     this._render();
+  }
+
+  private async _saveCurrency(form: HTMLFormElement): Promise<void> {
+    const input = form.elements.namedItem('currency') as HTMLInputElement;
+    const currency = input.value.trim().toUpperCase();
+    if (!/^[A-Z]{3}$/.test(currency)) {
+      this._toast(t('settings.currency_bad'));
+      return;
+    }
+    if (currency === this._lib?.currency) return;
+    await this._run('set_settings', { currency }, t('settings.saved'));
   }
 
   private async _uploadCover(input: HTMLInputElement): Promise<void> {

@@ -5,8 +5,8 @@ import { vi } from 'vitest';
 import FIXTURE from './fixtures/state.json';
 
 export const ALEX = FIXTURE.me.person_id;
-export const SAM = '5a0000000000000000000000000005a0';
-export const JO = '10000000000000000000000000000f00';
+export const SAM = 'sam';
+export const JO = 'jo';
 
 export function fixture() {
   return structuredClone(FIXTURE);
@@ -16,11 +16,12 @@ export function bookId(state, title) {
   return Object.values(state.books).find((b) => b.title === title).id;
 }
 
-export function fakeHass({ state = fixture(), replies = {}, language = 'en' } = {}) {
+export function fakeHass({ state = fixture(), replies = {}, language = 'en', callApi } = {}) {
   const subs = [];
   const send = vi.fn(async (msg) => {
     const cmd = msg.type.replace('home_keeper_library/', '');
     if (cmd === 'get_state') return structuredClone(state);
+    if (msg.type === 'auth/sign_path' && !('auth/sign_path' in replies)) return { path: `${msg.path}&authSig=t${msg.expires}` };
     if (cmd in replies) {
       const r = replies[cmd];
       return typeof r === 'function' ? r(msg) : r;
@@ -29,6 +30,7 @@ export function fakeHass({ state = fixture(), replies = {}, language = 'en' } = 
   });
   const hass = {
     language,
+    callApi,
     states: {
       'person.alex': { entity_id: 'person.alex', state: 'home', attributes: { id: ALEX, friendly_name: 'Alex' } },
       'person.sam': { entity_id: 'person.sam', state: 'home', attributes: { id: SAM, friendly_name: 'Sam' } },

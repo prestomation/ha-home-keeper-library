@@ -73,6 +73,7 @@ export interface Book {
   wishlist: Wishlist | null;
   reading: Record<string, ReadingRow>;
   owned: boolean;
+  copy_count: number;
   cover_url: string | null;
 }
 
@@ -109,28 +110,49 @@ export interface Loan {
 
 export interface PersonSettings {
   share_reading: boolean;
-  wishlist_todo: string | null;
+  /** Not in the reply for another person when the viewer is not an admin. */
+  wishlist_todo?: string | null;
   yearly_goal: number | null;
-  name?: string;
 }
 
-export interface Person extends PersonSettings {
+/** 1 entry of `people` in the `get_state` reply. */
+export interface RawPerson extends PersonSettings {
+  person_id: string;
+  name: string;
+  entity_id: string | null;
+}
+
+export interface Person {
   id: string;
   name: string;
+  share_reading: boolean;
+  wishlist_todo: string | null;
+  yearly_goal: number | null;
+  /** The avatar color, from the person order (`utils.PERSON_COLORS`). */
+  color: string;
 }
 
-/** The raw `get_state` reply. Collections can be an id map or a list. */
+/** The viewer: the person of the Home Assistant user, and the admin flag. */
+export interface Me {
+  person_id: string | null;
+  name: string | null;
+  is_admin: boolean;
+}
+
+/** The `home_keeper_library/get_state` reply (`projections.project_state`). */
 export interface RawState {
-  rooms?: Record<string, Room> | Room[];
-  bookcases?: Record<string, Bookcase> | Bookcase[];
-  shelves?: Record<string, Shelf> | Shelf[];
-  books?: Record<string, Book> | Book[];
-  copies?: Record<string, Copy> | Copy[];
-  loans?: Record<string, Loan> | Loan[];
-  people?: Record<string, PersonSettings>;
-  me?: { person_id: string | null; is_admin: boolean };
-  currency?: string;
-  home_keeper?: { tab: boolean };
+  revision: number;
+  rooms: Room[];
+  bookcases: Bookcase[];
+  shelves: Shelf[];
+  books: Book[];
+  copies: Copy[];
+  loans: Loan[];
+  /** The people of Home Assistant, by person id. */
+  people: Record<string, RawPerson>;
+  me: Me;
+  currency: string;
+  home_keeper: { tab: boolean };
 }
 
 /** The normalized library that every view reads. */
@@ -142,7 +164,7 @@ export interface Lib {
   copies: Copy[];
   loans: Loan[];
   people: Person[];
-  me: { person_id: string | null; is_admin: boolean };
+  me: Me;
   currency: string;
 }
 
@@ -167,6 +189,7 @@ export interface HomeAssistant {
     ): Promise<() => void | Promise<void>>;
   };
   fetchWithAuth?: (path: string, init?: RequestInit) => Promise<Response>;
+  callApi?: <T = unknown>(method: 'GET' | 'POST', path: string, parameters?: Record<string, unknown>) => Promise<T>;
 }
 
 /** Host API v1 that the Home Keeper panel gives to the tab. */
@@ -175,6 +198,10 @@ export interface TabHost {
   navigate(path: string, opts?: { replace?: boolean }): void;
   taskLink(taskId: string): string;
   applianceLink(id: string): string;
+  /** Open a task in the panel. Home Keeper 0.30 and later. */
+  openTask?(taskId: string): void;
+  /** Open an appliance in the panel. Home Keeper 0.30 and later. */
+  openAppliance?(id: string): void;
   showToast(text: string): void;
 }
 
@@ -188,20 +215,20 @@ export interface ScanResult {
 
 /** One row of the `import_csv` reply. */
 export interface ImportRow {
-  line?: number;
-  title?: string;
-  authors?: string[] | string;
-  isbn?: string | null;
-  shelf?: string;
-  action?: string;
-  status?: string | null;
-  message?: string;
+  line: number;
+  title: string;
+  authors: string[];
+  isbn: string | null;
+  book_id: string | null;
+  action: 'new' | 'existing' | 'title_match' | 'error';
+  /** The error text, or '' for a row with no error. */
+  message: string;
 }
 
-/** The `import_csv` reply. */
+/** The `import_csv` reply. `rows` holds the first 200 rows; `truncated` says there are more. */
 export interface ImportSummary {
-  counts?: Record<string, number>;
-  shelves?: Record<string, number>;
-  rows?: ImportRow[];
-  total?: number;
+  dry_run: boolean;
+  counts: Record<string, number>;
+  rows: ImportRow[];
+  truncated: boolean;
 }

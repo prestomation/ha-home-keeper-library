@@ -5,6 +5,7 @@ import { markdownBlock } from './markdown';
 import {
   button,
   cover,
+  taskLinkHtml,
   ICONS,
   link,
   navBar,
@@ -76,7 +77,8 @@ function tile(ctx: ViewCtx, book: Book): string {
     ${cover(book, 'tile', badge)}
     <span class="hkl-tile-title">${escapeHTML(book.title)}</span>
     <span class="hkl-tile-author">${escapeHTML(book.authors.join(', '))}</span>
-    <span class="hkl-tile-meta">${loc ? `<span class="hkl-loc">${escapeHTML(loc)}</span>` : ''}${book.wishlist ? `<span class="hkl-loc">${escapeHTML(t('nav.wishlist'))}</span>` : ''}${readerDots(ctx, book)}</span>
+    <span class="hkl-tile-meta">${loc ? `<span class="hkl-loc">${escapeHTML(loc)}</span>` : ''}${book.wishlist ? `<span class="hkl-loc">${escapeHTML(t('nav.wishlist'))}</span>` : ''}</span>
+    <span class="hkl-tile-readers">${readerDots(ctx, book)}</span>
     ${book.needs_details ? `<span class="hkl-pill warn">${escapeHTML(t('filter.needs'))}</span>` : ''}
     ${loanPill(ctx, book)}
   </a>`;
@@ -165,7 +167,7 @@ export function renderBooks(ctx: ViewCtx): string {
   </div>
   ${summaryLine(ctx, f, books.length)}
   ${empty}${list}${more}
-  <div class="hkl-legend"><span><span class="hkl-dot sample ring-read"></span>${escapeHTML(t('status.read'))}</span><span><span class="hkl-dot sample ring-reading"></span>${escapeHTML(t('status.reading'))}</span></div>`;
+  <div class="hkl-legend"><span><span class="hkl-ring ring-read" aria-hidden="true"></span>${escapeHTML(t('status.read'))}</span><span><span class="hkl-ring ring-reading" aria-hidden="true"></span>${escapeHTML(t('status.reading'))}</span></div>`;
 }
 
 // ── Book detail ──────────────────────────────────────────────────────────────
@@ -189,7 +191,7 @@ function loanBox(ctx: ViewCtx, loan: Loan): string {
       : t('loan.due_on', { date: formatDate(loan.due) })
     : t('loan.no_date');
   const task = loan.hk_task_id
-    ? `<a href="${escapeHTML(ctx.taskLink(loan.hk_task_id))}" class="hkl-task">${ICONS.home}${escapeHTML(t('loan.task'))}</a> · `
+    ? `${taskLinkHtml(ctx, loan.hk_task_id)} · `
     : '';
   const head = loan.direction === 'out' ? t('book.loan_out') : t('book.loan_in');
   return `<div class="hkl-box${due.kind === 'overdue' ? ' late' : ''}">

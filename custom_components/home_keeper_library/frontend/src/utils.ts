@@ -11,6 +11,7 @@ import type {
   Lib,
   Loan,
   Person,
+  RawPerson,
   RawState,
   ReadingRow,
   ReadingStatus,
@@ -57,27 +58,35 @@ function byOrder<T extends { order: number; name: string }>(a: T, b: T): number 
   return (a.order ?? 0) - (b.order ?? 0) || a.name.localeCompare(b.name);
 }
 
+/** The avatar colors. A person gets the color of its place in the person order. */
+export const PERSON_COLORS = ['#00695c', '#6a1b9a', '#c62828', '#1565c0', '#ef6c00', '#2e7d32', '#4527a0', '#ad1457'];
+
 /**
- * Turn the raw `get_state` reply into the `Lib` that the views read.
- *
- * `names` maps a person id to a display name (from the `person.*` states). A
- * person in `names` with no settings row gets the default settings.
+ * The avatar color of the person at *index* in the person order. 2 people get
+ * different colors while the palette has colors left.
  */
-export function normalizeState(raw: RawState, names: Record<string, string> = {}): Lib {
-  const settings = raw.people ?? {};
-  const ids = new Set([...Object.keys(names), ...Object.keys(settings)]);
-  const people: Person[] = [...ids]
-    .map((id) => {
-      const row = settings[id];
-      return {
-        id,
-        name: names[id] || row?.name || id,
-        share_reading: row ? row.share_reading !== false : true,
-        wishlist_todo: row?.wishlist_todo ?? null,
-        yearly_goal: row?.yearly_goal ?? null,
-      };
-    })
-    .sort((a, b) => a.name.localeCompare(b.name));
+export function personColor(index: number): string {
+  const n = PERSON_COLORS.length;
+  return PERSON_COLORS[((index % n) + n) % n];
+}
+
+/** The people of a `get_state` reply, sorted by name, with their avatar colors. */
+export function normalizePeople(raw: Record<string, RawPerson> | null | undefined): Person[] {
+  return Object.entries(raw ?? {})
+    .map(([id, row]) => ({
+      id: row.person_id || id,
+      name: row.name || id,
+      share_reading: row.share_reading !== false,
+      wishlist_todo: row.wishlist_todo ?? null,
+      yearly_goal: row.yearly_goal ?? null,
+      color: '',
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id))
+    .map((p, i) => ({ ...p, color: personColor(i) }));
+}
+
+/** Turn the raw `get_state` reply into the `Lib` that the views read. */
+export function normalizeState(raw: Partial<RawState>): Lib {
   const books = asList(raw.books).map((b) => ({
     ...b,
     authors: b.authors ?? [],
@@ -92,8 +101,8 @@ export function normalizeState(raw: RawState, names: Record<string, string> = {}
     books,
     copies: asList(raw.copies),
     loans: asList(raw.loans),
-    people,
-    me: raw.me ?? { person_id: null, is_admin: false },
+    people: normalizePeople(raw.people),
+    me: { person_id: raw.me?.person_id ?? null, name: raw.me?.name ?? null, is_admin: raw.me?.is_admin === true },
     currency: raw.currency || 'USD',
   };
 }
@@ -637,13 +646,6 @@ export function spines(books: Book[], max = 60): Spine[] {
   });
 }
 
-/** A person color for the reader dots. */
-export const PERSON_COLORS = ['#00695c', '#6a1b9a', '#c62828', '#1565c0', '#ef6c00', '#2e7d32', '#4527a0', '#ad1457'];
-
-export function personColor(id: string): string {
-  return PERSON_COLORS[hash(id) % PERSON_COLORS.length];
-}
-
 // ── Dates and numbers ────────────────────────────────────────────────────────
 
 function pad(n: number): string {
@@ -824,4 +826,61 @@ export function csvRowCount(text: string): number {
   }
   if (filled) rows += 1;
   return Math.max(0, rows - 1);
+}
+
+// ── Covers ───────────────────────────────────────────────────────────────────
+
+/** The life of a signed cover URL in seconds: the `expires` of `auth/sign_path`. */
+export const COVER_SIGN_SECONDS = 3600;
+
+/** After this time a cover is signed again, well before its URL expires. */
+export const COVER_RESIGN_MS = 45 * 60 * 1000;
+
+/** A signed URL is not used in its last minute, so an image does not load a dead URL. */
+const COVER_USE_MS = COVER_SIGN_SECONDS * 1000 - 60 * 1000;
+
+/**
+ * Signed cover URLs. The cover view needs a signed-in user, and an `<img>` cannot
+ * send the token, so each cover path is signed with `auth/sign_path` before the
+ * render that shows it. An entry is reused until it is old, and calls for the
+ * same path while a sign runs share that sign. A failed sign keeps the old URL.
+ */
+export class CoverUrls {
+  private readonly _entries = new Map<string, { url: string; at: number }>();
+  private readonly _pending = new Map<string, Promise<boolean>>();
+
+  /** Forget every signed URL. */
+  clear(): void {
+    this._entries.clear();
+  }
+
+  /** The signed URL of *path* at *now*, or undefined if it has none that is usable. */
+  get(path: string, now: number): string | undefined {
+    const entry = this._entries.get(path);
+    return entry && now - entry.at < COVER_USE_MS ? entry.url : undefined;
+  }
+
+  /** Sign each path that has no fresh URL. Resolves to true if a URL was signed. */
+  async ensure(paths: Iterable<string>, sign: (path: string) => Promise<string>, now: number): Promise<boolean> {
+    const jobs: Array<Promise<boolean>> = [];
+    for (const path of new Set(paths)) {
+      const entry = this._entries.get(path);
+      if (entry && now - entry.at < COVER_RESIGN_MS) continue;
+      let job = this._pending.get(path);
+      if (!job) {
+        job = sign(path)
+          .then(
+            (url) => {
+              this._entries.set(path, { url, at: now });
+              return true;
+            },
+            () => false,
+          )
+          .finally(() => this._pending.delete(path));
+        this._pending.set(path, job);
+      }
+      jobs.push(job);
+    }
+    return (await Promise.all(jobs)).some(Boolean);
+  }
 }

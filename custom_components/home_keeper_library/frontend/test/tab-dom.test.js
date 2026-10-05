@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import '../src/tab-index.ts';
-import { ALEX, bookId, fakeHass, fixture, flush } from './fake-hass.js';
+import { coverUrls } from '../src/markup.ts';
+import { ALEX, bookId, fakeHass, fixture, flush, SAM } from './fake-hass.js';
 
 let el;
 let host;
@@ -67,8 +68,8 @@ describe('data', () => {
 describe('books view', () => {
   it('shows the owned books with the status counts', async () => {
     await mount();
-    expect($$('.hkl-tile')).toHaveLength(36);
-    expect($('[data-k="st-all"]').textContent).toContain('36');
+    expect($$('.hkl-tile')).toHaveLength(38);
+    expect($('[data-k="st-all"]').textContent).toContain('38');
     expect($('[data-k="st-read"]').textContent).toContain('9');
     expect($('[data-k="nav-books"]').getAttribute('aria-current')).toBe('page');
   });
@@ -78,6 +79,7 @@ describe('books view', () => {
     expect($$('.hkl-row').map((r) => r.querySelector('.hkl-row-title').textContent)).toEqual([
       'Every Grain of Rice',
       'Integrated Chinese 1',
+      'The Ministry for the Future',
       'Project Hail Mary',
     ]);
     expect($('[data-k="st-reading"]').getAttribute('aria-pressed')).toBe('true');
@@ -85,7 +87,7 @@ describe('books view', () => {
 
   it('includes books with no copy when owned is all', async () => {
     await mount('/books?owned=all');
-    expect($$('.hkl-tile')).toHaveLength(42);
+    expect($$('.hkl-tile')).toHaveLength(44);
   });
 
   it('navigates with replace when a chip or a menu changes', async () => {
@@ -124,16 +126,15 @@ describe('books view', () => {
   it('opens a book with a push', async () => {
     await mount();
     $('.hkl-tile').click();
-    expect(host.navigate.mock.calls[0][0]).toMatch(/^\/books\/b0/);
+    expect(host.navigate.mock.calls[0][0]).toMatch(/^\/books\/[0-9a-f]{32}$/);
     expect(host.navigate.mock.calls[0][1]).toEqual({ replace: false });
   });
 
   it('escapes user text', async () => {
     const state = fixture();
-    const id = bookId(state, 'Dune');
-    state.books[id].title = '<img src=x onerror="alert(1)">';
+    state.books.find((b) => b.title === 'Dune').title = '<img src=x onerror="alert(1)">';
     await mount('/books', { state });
-    expect($('img')).toBeNull();
+    expect(el.shadowRoot.querySelector('img[src="x"]')).toBeNull();
     expect(text()).toContain('<img src=x onerror="alert(1)">');
   });
 
@@ -145,6 +146,48 @@ describe('books view', () => {
   });
 });
 
+describe('covers', () => {
+  beforeEach(() => coverUrls.clear());
+
+  it('signs each cover path, then shows the image with the signed URL', async () => {
+    const state = fixture();
+    const book = state.books.find((b) => b.title === 'The Left Hand of Darkness');
+    expect(book.cover_url).toMatch(/^\/api\/home_keeper_library\/cover\/[0-9a-f]{32}\?v=[0-9a-f]{8}$/);
+    const fake = await mount('/books');
+    const signs = fake.send.mock.calls.map((c) => c[0]).filter((m) => m.type === 'auth/sign_path');
+    expect(signs.length).toBe(state.books.filter((b) => b.owned && b.cover_url).length);
+    expect(signs[0].expires).toBe(3600);
+    const tile = $(`[data-k="b-${book.id}"]`);
+    expect(tile.querySelector('img').getAttribute('src')).toBe(`${book.cover_url}&authSig=t3600`);
+    expect(tile.querySelector('.hkl-cover-badge').textContent).toBe('Custom cover');
+    const plain = $$('.hkl-tile .hkl-cover:not([data-cover])');
+    expect(plain.length).toBeGreaterThan(0);
+    expect(plain[0].querySelector('img')).toBeNull();
+  });
+
+  it('shows the title block when the sign fails', async () => {
+    const state = fixture();
+    const book = state.books.find((b) => b.title === 'Piranesi');
+    await mount(`/books/${book.id}`, { replies: { 'auth/sign_path': () => Promise.reject(new Error('no')) } });
+    const block = $('.hkl-cover-large');
+    expect(block.dataset.cover).toBe(book.cover_url);
+    expect(block.querySelector('img')).toBeNull();
+    expect(block.querySelector('.hkl-cover-title').textContent).toBe('Piranesi');
+  });
+
+  it('puts the reader marks in their own row and shows the ring colors in the legend', async () => {
+    const state = fixture();
+    const book = state.books.find((b) => b.title === 'The Left Hand of Darkness');
+    await mount('/books');
+    const tile = $(`[data-k="b-${book.id}"]`);
+    const dots = tile.querySelectorAll('.hkl-tile-readers .hkl-dot');
+    expect([...dots].map((d) => d.getAttribute('aria-label'))).toEqual(['Alex: Read', 'Sam: Reading']);
+    expect(tile.querySelector('.hkl-tile-meta .hkl-dot')).toBeNull();
+    expect(dots[0].style.getPropertyValue('--p')).not.toBe(dots[1].style.getPropertyValue('--p'));
+    expect($$('.hkl-legend .hkl-ring').map((r) => r.className)).toEqual(['hkl-ring ring-read', 'hkl-ring ring-reading']);
+  });
+});
+
 describe('book detail', () => {
   it('shows the location, the loan and the task link', async () => {
     const state = fixture();
@@ -152,12 +195,29 @@ describe('book detail', () => {
     expect($('h1').textContent).toBe('The Left Hand of Darkness');
     expect(text()).toContain('Living room › Bookcase A › Shelf 2');
     expect(text()).toContain('Priya · since Sep 12, 2026');
-    expect($('.hkl-task').getAttribute('href')).toBe('/home-keeper/tasks/task0002');
-    expect(host.taskLink).toHaveBeenCalledWith('task0002');
+    const task = state.loans.find((l) => l.party === 'Priya' && l.book_id === bookId(state, 'The Left Hand of Darkness')).hk_task_id;
+    expect(task).toMatch(/^[0-9a-f]{32}$/);
+    expect($('.hkl-task').getAttribute('href')).toBe(`/home-keeper/tasks/${task}`);
+    expect(host.taskLink).toHaveBeenCalledWith(task);
     expect(text()).toContain('Read on Mar 2, 2025 · Read 2 times');
     expect(text()).toContain('Page 112 of 304');
     expect($('[data-k="rs-read"]').getAttribute('aria-pressed')).toBe('true');
     expect($$('.hkl-star.on')).toHaveLength(4);
+  });
+
+  it('opens the task with host.openTask, or leaves the link to the browser', async () => {
+    const state = fixture();
+    await mount(`/books/${bookId(state, 'The Left Hand of Darkness')}`);
+    const link = $('.hkl-task');
+    const plain = new MouseEvent('click', { bubbles: true, cancelable: true, composed: true });
+    link.dispatchEvent(plain);
+    expect(plain.defaultPrevented).toBe(false);
+    host.openTask = vi.fn();
+    const click = new MouseEvent('click', { bubbles: true, cancelable: true, composed: true });
+    $('.hkl-task').dispatchEvent(click);
+    expect(click.defaultPrevented).toBe(true);
+    expect(host.openTask).toHaveBeenCalledWith(link.dataset.id);
+    expect(host.navigate).not.toHaveBeenCalled();
   });
 
   it('sets the status, the rating and the page for the person', async () => {
@@ -181,10 +241,10 @@ describe('book detail', () => {
     const state = fixture();
     const id = bookId(state, 'Dune');
     const fake = await mount(`/books/${id}`);
-    change($('[data-k="rp"]'), '5a0000000000000000000000000005a0');
+    change($('[data-k="rp"]'), SAM);
     $('[data-k="rs-read"]').click();
     await flush();
-    expect(fake.calls('set_reading')[0]).toMatchObject({ person_id: '5a0000000000000000000000000005a0', status: 'read', read_count: 1 });
+    expect(fake.calls('set_reading')[0]).toMatchObject({ person_id: SAM, status: 'read', read_count: 1 });
   });
 
   it('returns a loan', async () => {
@@ -333,6 +393,31 @@ describe('shelves, loans, wishlist and settings', () => {
   });
 });
 
+describe('settings currency', () => {
+  it('saves a new currency code with set_settings', async () => {
+    const fake = await mount('/settings');
+    const input = $('[data-k="currency"]');
+    expect(input.value).toBe('EUR');
+    input.value = 'usd';
+    $('[data-k="currency-save"]').click();
+    await flush();
+    expect(fake.calls('set_settings')).toEqual([{ type: 'home_keeper_library/set_settings', currency: 'USD' }]);
+    expect(host.showToast).toHaveBeenCalledWith('Settings saved.');
+  });
+
+  it('refuses a code that is not 3 letters and sends nothing for the same code', async () => {
+    const fake = await mount('/settings');
+    $('[data-k="currency"]').value = 'EU';
+    $('[data-k="currency-save"]').click();
+    await flush();
+    expect(host.showToast).toHaveBeenCalledWith('Type a currency code of 3 letters.');
+    $('[data-k="currency"]').value = ' eur ';
+    $('[data-k="currency-save"]').click();
+    await flush();
+    expect(fake.calls('set_settings')).toEqual([]);
+  });
+});
+
 describe('scan', () => {
   beforeEach(() => {
     Object.defineProperty(window, 'isSecureContext', { value: false, configurable: true });
@@ -371,7 +456,7 @@ describe('scan', () => {
     $('[data-k="isbn-add"]').click();
     await flush();
     expect(fake.calls('scan_isbn')[0]).toMatchObject({ isbn: dune.isbn13, shelf_id: shelf, on_duplicate: 'ask' });
-    expect(text()).toContain('Already in Office › Tall bookcase › Shelf 1');
+    expect(text()).toContain('Already in Living room › Bookcase A › Shelf 1');
     $('[data-value="move"]').click();
     await flush();
     expect(fake.calls('scan_isbn')[1]).toMatchObject({ on_duplicate: 'move' });
@@ -401,8 +486,48 @@ describe('scan', () => {
 });
 
 describe('import', () => {
+  function pick(name, content) {
+    const input = $('[data-k="im-file"]');
+    const file = new File([content], name, { type: 'text/csv' });
+    Object.defineProperty(input, 'files', { value: [file] });
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  it('shows the result of each row and says when the list is cut', async () => {
+    const summary = {
+      dry_run: true,
+      counts: { rows: 900, read: 3, existing: 1, new: 1, title_match: 1, errors: 1 },
+      rows: [
+        { line: 2, title: 'Piranesi', authors: ['Susanna Clarke'], isbn: '9781635575637', book_id: 'b1', action: 'existing', message: '' },
+        { line: 3, title: 'Dune', authors: ['Frank Herbert'], isbn: null, book_id: 'b2', action: 'title_match', message: '' },
+        { line: 4, title: '', authors: [], isbn: null, book_id: null, action: 'error', message: 'The row has no title.' },
+      ],
+      truncated: true,
+    };
+    await mount('/import', { replies: { import_csv: summary } });
+    pick('goodreads_library_export.csv', 'Title\nA\n');
+    await flush(10);
+    const cells = $$('.hkl-details tr').map((r) => r.lastElementChild.textContent);
+    expect(cells).toEqual(['In the library', 'Title match', 'The row has no title.']);
+    expect($('[data-k="import-truncated"]').textContent).toBe('The list shows only part of the file. The import reads all rows.');
+    expect($('[data-k="import-run"]').textContent).toBe('Import 900 rows');
+  });
+
+  it('sends a file above 3 MB to the service over REST', async () => {
+    const summary = { dry_run: true, counts: { rows: 1 }, rows: [], truncated: false };
+    const callApi = vi.fn(async () => ({ changed_states: [], service_response: summary }));
+    const fake = await mount('/import', { callApi });
+    const big = `Title\n${'x'.repeat(3 * 1024 * 1024)}\n`;
+    pick('library.csv', big);
+    await flush(10);
+    expect(fake.calls('import_csv')).toEqual([]);
+    expect(callApi).toHaveBeenCalledWith('POST', 'services/home_keeper_library/import_csv?return_response', expect.objectContaining({ dry_run: true, source: 'goodreads', person_id: ALEX }));
+    expect(callApi.mock.calls[0][2].content).toBe(big);
+    expect(text()).toContain('Import 1 row');
+  });
+
   it('runs a dry run, then the import', async () => {
-    const summary = { counts: { rows: 3, read: 2, wishlist: 1, existing: 1, new: 2, title_match: 0 }, rows: [] };
+    const summary = { dry_run: true, counts: { rows: 3, read: 2, wishlist: 1, existing: 1, new: 2, title_match: 0 }, rows: [], truncated: false };
     const fake = await mount('/import', { replies: { import_csv: summary } });
     expect($('#hkl-import-title').textContent).toBe('Import books');
     const input = $('[data-k="im-file"]');
