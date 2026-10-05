@@ -20,6 +20,8 @@ echo "[e2e-up] preparing browser environment..."
 bash ci/setup-browser-env.sh
 echo "[e2e-up] building panel JS..."
 bash ci/build-panel.sh
+echo "[e2e-up] fetching Home Keeper..."
+bash ci/fetch-home-keeper.sh
 echo "[e2e-up] starting Home Assistant..."
 (cd tests/integration && docker compose up -d)
 echo "[e2e-up] waiting for Home Assistant..."

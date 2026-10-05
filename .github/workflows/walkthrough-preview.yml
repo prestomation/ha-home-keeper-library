@@ -71,6 +71,10 @@ jobs:
         if: github.event.action != 'closed'
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
+      - name: Fetch Home Keeper
+        # The library needs a real Home Keeper for its tab and loan tasks.
+        run: bash ci/fetch-home-keeper.sh
+
       - name: Start Home Assistant
         if: github.event.action != 'closed'
         working-directory: tests/integration

@@ -36,6 +36,10 @@ jobs:
       - name: Build panel JS
         run: bash ci/build-panel.sh
 
+      - name: Fetch Home Keeper
+        # The library needs a real Home Keeper for its tab and loan tasks.
+        run: bash ci/fetch-home-keeper.sh
+
       - name: Start Home Assistant
         working-directory: tests/integration
         run: docker compose up -d

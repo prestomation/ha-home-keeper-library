@@ -103,9 +103,8 @@ def access_token() -> str:
 def ensure_integration_loaded(access_token) -> None:
     """Create the config entry via the config flow if it isn't there yet.
 
-    A template shouldn't commit runtime ``.storage`` state, so instead of seeding
-    a config entry on disk we drive the (single-step) config flow over the API.
-    On later runs the flow aborts with ``already_configured`` — also fine.
+    The seeded config entry loads the library at startup. If it is absent, the
+    flow over the API adds it. On a later run the flow aborts, which is correct.
     """
     session = requests.Session()
     session.headers.update({"Authorization": f"Bearer {access_token}"})
@@ -118,7 +117,7 @@ def ensure_integration_loaded(access_token) -> None:
     if data.get("type") == "form":
         session.post(
             f"{HA_URL}/api/config/config_entries/flow/{data['flow_id']}",
-            json={},
+            json={"currency": "EUR"},
             timeout=10,
         )
     # Give HA a moment to finish setting up the entry (platforms, panel, card).
@@ -144,3 +143,28 @@ def api(access_token, ensure_integration_loaded):
             return session.post(f"{HA_URL}{path}", json=json, timeout=10)
 
     return _Api()
+
+
+@pytest.fixture
+def ws(access_token):
+    """Send 1 websocket command and return the reply."""
+    import asyncio
+    import json
+
+    import websockets
+
+    async def _call(msg: dict) -> dict:
+        async with websockets.connect("ws://localhost:8123/api/websocket") as sock:
+            await sock.recv()
+            await sock.send(json.dumps({"type": "auth", "access_token": access_token}))
+            await sock.recv()
+            await sock.send(json.dumps({"id": 1, **msg}))
+            while True:
+                reply = json.loads(await sock.recv())
+                if reply.get("id") == 1:
+                    return reply
+
+    def _run(command: str, **data) -> dict:
+        return asyncio.run(_call({"type": command, **data}))
+
+    return _run

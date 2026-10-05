@@ -47,3 +47,4 @@ reports/
 # Build artifacts
 home_keeper_library.zip
 .hypothesis/
+tests/integration/.home_keeper/

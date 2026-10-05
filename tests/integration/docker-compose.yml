@@ -9,7 +9,10 @@ services:
       - "8123:8123"
     volumes:
       - ./ha_config:/config
-      - ../../custom_components:/config/custom_components:ro
+      # Each component is its own mount, so the real Home Keeper from
+      # ci/fetch-home-keeper.sh sits next to the library.
+      - ../../custom_components/home_keeper_library:/config/custom_components/home_keeper_library:ro
+      - ./.home_keeper/custom_components/home_keeper:/config/custom_components/home_keeper:ro
     environment:
       - TZ=America/New_York
     tmpfs:

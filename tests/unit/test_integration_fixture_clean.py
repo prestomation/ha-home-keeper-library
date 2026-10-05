@@ -76,32 +76,29 @@ def _payload() -> dict:
     return json.loads(CONFIG_ENTRIES.read_text(encoding="utf-8"))
 
 
-def test_seeded_config_entry_carries_no_runtime_state() -> None:
+def test_seeded_config_entries_carry_no_runtime_state() -> None:
+    """The seed holds 1 entry for Home Keeper and 1 for the library."""
     entries = _payload()["data"]["entries"]
-    assert len(entries) == 1, (
-        f"the seed should hold exactly one config entry, found {len(entries)}. "
+    domains = sorted(entry.get("domain") for entry in entries)
+    assert domains == ["home_keeper", "home_keeper_library"], (
+        f"the seed should hold 1 Home Keeper and 1 library entry, found {domains}. "
         f"A local container run adds its own. {RESTORE}"
     )
+    for entry in entries:
+        extra = sorted(set(entry) - SEEDED_ENTRY_KEYS)
+        assert not extra, (
+            f"the committed config-entry fixture carries key(s) Home Assistant "
+            f"writes at runtime: {extra}. That means a local run was committed. "
+            f"{RESTORE}"
+        )
 
-    extra = sorted(set(entries[0]) - SEEDED_ENTRY_KEYS)
-    assert not extra, (
-        f"the committed config-entry fixture carries key(s) Home Assistant writes at "
-        f"runtime: {extra}. That means a local run was committed. {RESTORE}"
-    )
 
-
-def test_seeded_config_entry_still_loads_the_integration() -> None:
-    """A hand-restore that drops a required key is as broken as a dirty one.
-
-    Without ``domain`` and ``entry_id`` Home Assistant does not set the integration
-    up at startup, and the card resource never reaches served pages — which surfaces
-    only as a browser test failing to find the card, several tiers later.
-    """
-    entry = _payload()["data"]["entries"][0]
-    missing = sorted(SEEDED_ENTRY_KEYS - set(entry))
-    assert not missing, f"the seeded config entry is missing key(s): {missing}."
-    assert entry["domain"] == "home_keeper_library"
-    assert entry["entry_id"], "the seeded entry needs a stable entry_id"
+def test_seeded_config_entries_still_load_the_integrations() -> None:
+    """A hand-restore that drops a required key is as broken as a dirty one."""
+    for entry in _payload()["data"]["entries"]:
+        missing = sorted(SEEDED_ENTRY_KEYS - set(entry))
+        assert not missing, f"the seeded config entry is missing key(s): {missing}."
+        assert entry["entry_id"], "the seeded entry needs a stable entry_id"
 
 
 def test_storage_envelope_is_the_seed_not_a_migrated_copy() -> None:
