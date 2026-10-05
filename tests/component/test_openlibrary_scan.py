@@ -53,7 +53,7 @@ async def test_client_lookup_and_miss_cache(hass, setup_entry, aioclient_mock) -
     assert draft["title"] == "The Left Hand of Darkness"
     assert draft["authors"] == ["Ursula K. Le Guin"]
     headers = aioclient_mock.mock_calls[0][3]
-    assert headers["User-Agent"].startswith("HomeKeeperLibrary/0.1.0b1 (+https://")
+    assert headers["User-Agent"].startswith("HomeKeeperLibrary/0.1.0 (+https://")
     aioclient_mock.get(f"{OL}/isbn/9780000000002.json", status=404)
     assert await client.async_lookup_isbn("9780000000002") is None
     calls = aioclient_mock.call_count

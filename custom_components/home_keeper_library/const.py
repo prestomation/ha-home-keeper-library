@@ -42,7 +42,7 @@ PLATFORMS = ["sensor", "todo"]
 
 # PANEL_VERSION is the same string as the manifest version. release.yml checks it,
 # and rollup.config.mjs reads it.
-PANEL_VERSION = "0.1.0b1"
+PANEL_VERSION = "0.1.0"
 
 # The built bundles are in frontend/dist/ and Home Assistant serves them here.
 STATIC_URL = "/home_keeper_library_static"
