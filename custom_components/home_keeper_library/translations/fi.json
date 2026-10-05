@@ -1,0 +1,1098 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Home Keeper Library",
+        "description": "Aseta kappaleiden hintojen ja arvojen valuutta.",
+        "data": {
+          "currency": "Valuutta"
+        },
+        "data_description": {
+          "currency": "3 kirjaimen koodi, esimerkiksi EUR tai USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Anna 3 kirjaimen valuuttakoodi."
+    },
+    "abort": {
+      "already_configured": "Home Keeper Library on jo määritetty.",
+      "single_instance_allowed": "Home Keeper Library on jo määritetty.",
+      "home_keeper_missing": "Home Keeper Library vaatii Home Keeperin. Asenna Home Keeper HACSista, käynnistä Home Assistant uudelleen ja lisää sitten Home Keeper Library uudelleen. Asennusohjeet: {url}",
+      "home_keeper_not_set_up": "Lisää ensin Home Keeper -integraatio.",
+      "home_keeper_too_old": "Päivitä Home Keeper versioon {version} tai uudempaan."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Kirjaston asetukset",
+        "data": {
+          "currency": "Valuutta"
+        },
+        "data_description": {
+          "currency": "3 kirjaimen koodi, esimerkiksi EUR tai USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Anna 3 kirjaimen valuuttakoodi."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "books": {
+        "name": "Kirjat"
+      },
+      "loans_out": {
+        "name": "Lainassa"
+      },
+      "loans_overdue": {
+        "name": "Myöhässä olevat lainat"
+      },
+      "books_read_this_year": {
+        "name": "{person} luetut kirjat tänä vuonna"
+      },
+      "reading_now": {
+        "name": "{person} lukee nyt"
+      }
+    },
+    "todo": {
+      "to_read": {
+        "name": "{person} haluaa lukea"
+      }
+    }
+  },
+  "issues": {
+    "home_keeper_missing": {
+      "title": "Home Keeperia ei ole asennettu",
+      "description": "Kirjasto-välilehti ja lainatehtävät vaativat Home Keeperin. Kortti, entiteetit ja palvelut toimivat nyt. Asenna Home Keeper HACSista ja käynnistä Home Assistant uudelleen. Asennusohjeet: {url}"
+    },
+    "home_keeper_not_set_up": {
+      "title": "Home Keeperia ei ole määritetty",
+      "description": "Kirjasto-välilehti ja lainatehtävät vaativat ladatun Home Keeper -integraation. Kortti, entiteetit ja palvelut toimivat nyt. Lisää tai ota käyttöön Home Keeper -integraatio."
+    },
+    "home_keeper_too_old": {
+      "title": "Home Keeper on liian vanha",
+      "description": "Kirjasto-välilehti ja lainatehtävät vaativat Home Keeperin version {version} tai uudemman. Kortti, entiteetit ja palvelut toimivat nyt. Päivitä Home Keeper."
+    }
+  },
+  "services": {
+    "add_room": {
+      "name": "Lisää huone",
+      "description": "Lisää huone kirjastoon.",
+      "fields": {
+        "name": {
+          "name": "Nimi",
+          "description": "Näytettävä nimi."
+        },
+        "area_id": {
+          "name": "Alue",
+          "description": "Huoneen Home Assistant -alue."
+        },
+        "order": {
+          "name": "Järjestys",
+          "description": "Lajittelupaikka. Pienempi tulee ensin."
+        }
+      }
+    },
+    "update_room": {
+      "name": "Muuta huonetta",
+      "description": "Muuta huonetta.",
+      "fields": {
+        "room_id": {
+          "name": "Huone",
+          "description": "Huoneen ID."
+        },
+        "name": {
+          "name": "Nimi",
+          "description": "Näytettävä nimi."
+        },
+        "area_id": {
+          "name": "Alue",
+          "description": "Huoneen Home Assistant -alue."
+        },
+        "order": {
+          "name": "Järjestys",
+          "description": "Lajittelupaikka. Pienempi tulee ensin."
+        }
+      }
+    },
+    "delete_room": {
+      "name": "Poista huone",
+      "description": "Poista huone. Huone, jossa on kirjahyllyjä, tarvitsee force-arvon.",
+      "fields": {
+        "room_id": {
+          "name": "Huone",
+          "description": "Huoneen ID."
+        },
+        "force": {
+          "name": "Pakota",
+          "description": "Poista myös sisältö. Kappaleet jäävät ilman hyllytasoa."
+        }
+      }
+    },
+    "add_bookcase": {
+      "name": "Lisää kirjahylly",
+      "description": "Lisää kirjahylly huoneeseen.",
+      "fields": {
+        "room_id": {
+          "name": "Huone",
+          "description": "Huoneen ID."
+        },
+        "name": {
+          "name": "Nimi",
+          "description": "Näytettävä nimi."
+        },
+        "note": {
+          "name": "Muistiinpano",
+          "description": "Lyhyt muistiinpano."
+        },
+        "order": {
+          "name": "Järjestys",
+          "description": "Lajittelupaikka. Pienempi tulee ensin."
+        }
+      }
+    },
+    "update_bookcase": {
+      "name": "Muuta kirjahyllyä",
+      "description": "Muuta kirjahyllyä tai siirrä se toiseen huoneeseen.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Kirjahylly",
+          "description": "Kirjahyllyn ID."
+        },
+        "room_id": {
+          "name": "Huone",
+          "description": "Huoneen ID."
+        },
+        "name": {
+          "name": "Nimi",
+          "description": "Näytettävä nimi."
+        },
+        "note": {
+          "name": "Muistiinpano",
+          "description": "Lyhyt muistiinpano."
+        },
+        "order": {
+          "name": "Järjestys",
+          "description": "Lajittelupaikka. Pienempi tulee ensin."
+        }
+      }
+    },
+    "delete_bookcase": {
+      "name": "Poista kirjahylly",
+      "description": "Poista kirjahylly. Kirjahylly, jossa on hyllytasoja, tarvitsee force-arvon.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Kirjahylly",
+          "description": "Kirjahyllyn ID."
+        },
+        "force": {
+          "name": "Pakota",
+          "description": "Poista myös sisältö. Kappaleet jäävät ilman hyllytasoa."
+        }
+      }
+    },
+    "add_shelf": {
+      "name": "Lisää hyllytaso",
+      "description": "Lisää hyllytaso kirjahyllyyn.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Kirjahylly",
+          "description": "Kirjahyllyn ID."
+        },
+        "name": {
+          "name": "Nimi",
+          "description": "Näytettävä nimi."
+        },
+        "order": {
+          "name": "Järjestys",
+          "description": "Lajittelupaikka. Pienempi tulee ensin."
+        }
+      }
+    },
+    "update_shelf": {
+      "name": "Muuta hyllytasoa",
+      "description": "Muuta hyllytasoa tai siirrä se toiseen kirjahyllyyn.",
+      "fields": {
+        "shelf_id": {
+          "name": "Hyllytaso",
+          "description": "Hyllytason ID. Tyhjä, jos hyllytasoa ei ole."
+        },
+        "bookcase_id": {
+          "name": "Kirjahylly",
+          "description": "Kirjahyllyn ID."
+        },
+        "name": {
+          "name": "Nimi",
+          "description": "Näytettävä nimi."
+        },
+        "order": {
+          "name": "Järjestys",
+          "description": "Lajittelupaikka. Pienempi tulee ensin."
+        }
+      }
+    },
+    "delete_shelf": {
+      "name": "Poista hyllytaso",
+      "description": "Poista hyllytaso. Hyllytaso, jolla on kappaleita, tarvitsee force-arvon.",
+      "fields": {
+        "shelf_id": {
+          "name": "Hyllytaso",
+          "description": "Hyllytason ID. Tyhjä, jos hyllytasoa ei ole."
+        },
+        "force": {
+          "name": "Pakota",
+          "description": "Poista myös sisältö. Kappaleet jäävät ilman hyllytasoa."
+        }
+      }
+    },
+    "lookup_isbn": {
+      "name": "Hae ISBN",
+      "description": "Lue ISBN:n tiedot Open Librarysta. Kirjasto ei muutu.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN-tunnus",
+          "description": "ISBN-10 tai ISBN-13."
+        }
+      }
+    },
+    "add_book": {
+      "name": "Lisää kirja",
+      "description": "Lisää kirja. Jos kirjalla on sama ISBN, palvelu palauttaa sen kirjan.",
+      "fields": {
+        "title": {
+          "name": "Nimeke",
+          "description": "Kirjan nimeke."
+        },
+        "subtitle": {
+          "name": "Alaotsikko",
+          "description": "Kirjan alaotsikko."
+        },
+        "authors": {
+          "name": "Tekijät",
+          "description": "Tekijät järjestyksessä."
+        },
+        "isbn": {
+          "name": "ISBN-tunnus",
+          "description": "ISBN-10 tai ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13-tunnus",
+          "description": "13-numeroinen ISBN."
+        },
+        "isbn10": {
+          "name": "ISBN-10-tunnus",
+          "description": "10-numeroinen ISBN."
+        },
+        "publisher": {
+          "name": "Kustantaja",
+          "description": "Kirjan kustantaja."
+        },
+        "published": {
+          "name": "Julkaistu",
+          "description": "Julkaisupäivä, yleensä vuosi."
+        },
+        "pages": {
+          "name": "Sivut",
+          "description": "Sivujen määrä."
+        },
+        "language": {
+          "name": "Kieli",
+          "description": "Kielikoodi, esimerkiksi en."
+        },
+        "subjects": {
+          "name": "Aiheet",
+          "description": "Kirjan aiheet."
+        },
+        "series": {
+          "name": "Sarja",
+          "description": "Sarjan nimi tai nimi ja numero."
+        },
+        "description": {
+          "name": "Kuvaus",
+          "description": "Kirjan kuvaus."
+        },
+        "tags": {
+          "name": "Tunnisteet",
+          "description": "Kirjan tunnisteet."
+        },
+        "shared_notes": {
+          "name": "Jaetut muistiinpanot",
+          "description": "Muistiinpanot, jotka jokainen käyttäjä voi lukea, Markdown-muodossa."
+        },
+        "needs_details": {
+          "name": "Tiedot puuttuvat",
+          "description": "Merkitse kirja keskeneräiseksi."
+        },
+        "lookup": {
+          "name": "Hae tiedot",
+          "description": "Lue tiedot Open Librarysta."
+        }
+      }
+    },
+    "update_book": {
+      "name": "Muuta kirjaa",
+      "description": "Muuta kirjan tietoja.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "title": {
+          "name": "Nimeke",
+          "description": "Kirjan nimeke."
+        },
+        "subtitle": {
+          "name": "Alaotsikko",
+          "description": "Kirjan alaotsikko."
+        },
+        "authors": {
+          "name": "Tekijät",
+          "description": "Tekijät järjestyksessä."
+        },
+        "isbn": {
+          "name": "ISBN-tunnus",
+          "description": "ISBN-10 tai ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13-tunnus",
+          "description": "13-numeroinen ISBN."
+        },
+        "isbn10": {
+          "name": "ISBN-10-tunnus",
+          "description": "10-numeroinen ISBN."
+        },
+        "publisher": {
+          "name": "Kustantaja",
+          "description": "Kirjan kustantaja."
+        },
+        "published": {
+          "name": "Julkaistu",
+          "description": "Julkaisupäivä, yleensä vuosi."
+        },
+        "pages": {
+          "name": "Sivut",
+          "description": "Sivujen määrä."
+        },
+        "language": {
+          "name": "Kieli",
+          "description": "Kielikoodi, esimerkiksi en."
+        },
+        "subjects": {
+          "name": "Aiheet",
+          "description": "Kirjan aiheet."
+        },
+        "series": {
+          "name": "Sarja",
+          "description": "Sarjan nimi tai nimi ja numero."
+        },
+        "description": {
+          "name": "Kuvaus",
+          "description": "Kirjan kuvaus."
+        },
+        "tags": {
+          "name": "Tunnisteet",
+          "description": "Kirjan tunnisteet."
+        },
+        "shared_notes": {
+          "name": "Jaetut muistiinpanot",
+          "description": "Muistiinpanot, jotka jokainen käyttäjä voi lukea, Markdown-muodossa."
+        },
+        "needs_details": {
+          "name": "Tiedot puuttuvat",
+          "description": "Merkitse kirja keskeneräiseksi."
+        }
+      }
+    },
+    "delete_book": {
+      "name": "Poista kirja",
+      "description": "Poista kirja ja sen kappaleet, lukutila, lainat ja kansikuva.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        }
+      }
+    },
+    "refresh_book": {
+      "name": "Päivitä Open Librarysta",
+      "description": "Täytä kirjan tyhjät kentät Open Librarysta.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        }
+      }
+    },
+    "scan_isbn": {
+      "name": "Skannaa ISBN",
+      "description": "Lisää skannattu kirja hyllytasolle.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN-tunnus",
+          "description": "ISBN-10 tai ISBN-13."
+        },
+        "shelf_id": {
+          "name": "Hyllytaso",
+          "description": "Hyllytason ID. Tyhjä, jos hyllytasoa ei ole."
+        },
+        "format": {
+          "name": "Muoto",
+          "description": "Kappaleen muoto."
+        },
+        "on_duplicate": {
+          "name": "Jos kappale on jo olemassa",
+          "description": "Toiminto, jos kirjastossa on kirjan kappale."
+        }
+      }
+    },
+    "add_copy": {
+      "name": "Lisää kappale",
+      "description": "Lisää kirjan kappale.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "shelf_id": {
+          "name": "Hyllytaso",
+          "description": "Hyllytason ID. Tyhjä, jos hyllytasoa ei ole."
+        },
+        "format": {
+          "name": "Muoto",
+          "description": "Kappaleen muoto."
+        },
+        "condition": {
+          "name": "Kunto",
+          "description": "Kappaleen kunto."
+        },
+        "acquired": {
+          "name": "Hankittu",
+          "description": "Päivä, jona kappale hankittiin."
+        },
+        "acquired_from": {
+          "name": "Hankittu paikasta",
+          "description": "Kauppa tai henkilö."
+        },
+        "price": {
+          "name": "Hinta",
+          "description": "Maksettu hinta."
+        },
+        "value": {
+          "name": "Arvo",
+          "description": "Kappaleen nykyinen arvo."
+        },
+        "signed": {
+          "name": "Signeerattu",
+          "description": "Kappale on signeerattu."
+        },
+        "first_edition": {
+          "name": "Ensipainos",
+          "description": "Kappale on ensipainos."
+        },
+        "note": {
+          "name": "Muistiinpano",
+          "description": "Lyhyt muistiinpano."
+        }
+      }
+    },
+    "update_copy": {
+      "name": "Muuta kappaletta",
+      "description": "Muuta kappaletta.",
+      "fields": {
+        "copy_id": {
+          "name": "Kappale",
+          "description": "Kappaleen ID."
+        },
+        "shelf_id": {
+          "name": "Hyllytaso",
+          "description": "Hyllytason ID. Tyhjä, jos hyllytasoa ei ole."
+        },
+        "format": {
+          "name": "Muoto",
+          "description": "Kappaleen muoto."
+        },
+        "condition": {
+          "name": "Kunto",
+          "description": "Kappaleen kunto."
+        },
+        "acquired": {
+          "name": "Hankittu",
+          "description": "Päivä, jona kappale hankittiin."
+        },
+        "acquired_from": {
+          "name": "Hankittu paikasta",
+          "description": "Kauppa tai henkilö."
+        },
+        "price": {
+          "name": "Hinta",
+          "description": "Maksettu hinta."
+        },
+        "value": {
+          "name": "Arvo",
+          "description": "Kappaleen nykyinen arvo."
+        },
+        "signed": {
+          "name": "Signeerattu",
+          "description": "Kappale on signeerattu."
+        },
+        "first_edition": {
+          "name": "Ensipainos",
+          "description": "Kappale on ensipainos."
+        },
+        "note": {
+          "name": "Muistiinpano",
+          "description": "Lyhyt muistiinpano."
+        }
+      }
+    },
+    "move_copy": {
+      "name": "Siirrä kappale",
+      "description": "Siirrä kappale hyllytasolle.",
+      "fields": {
+        "copy_id": {
+          "name": "Kappale",
+          "description": "Kappaleen ID."
+        },
+        "shelf_id": {
+          "name": "Hyllytaso",
+          "description": "Hyllytason ID. Tyhjä, jos hyllytasoa ei ole."
+        }
+      }
+    },
+    "delete_copy": {
+      "name": "Poista kappale",
+      "description": "Poista kappale.",
+      "fields": {
+        "copy_id": {
+          "name": "Kappale",
+          "description": "Kappaleen ID."
+        }
+      }
+    },
+    "set_cover": {
+      "name": "Aseta kansikuva",
+      "description": "Aseta kirjan kansikuva.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "kind": {
+          "name": "Kansikuvan tyyppi",
+          "description": "Kansikuvan lähde."
+        },
+        "file_id": {
+          "name": "Tiedoston ID",
+          "description": "Kansikuvan latauksen ID."
+        }
+      }
+    },
+    "set_reading": {
+      "name": "Aseta lukutila",
+      "description": "Aseta kirjan lukutila henkilölle. Käyttäjä, joka ei ole ylläpitäjä, voi asettaa vain oman tilansa.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "person_id": {
+          "name": "Henkilö",
+          "description": "Home Assistant -henkilön ID."
+        },
+        "status": {
+          "name": "Lukutila",
+          "description": "Lukutila."
+        },
+        "rating": {
+          "name": "Arvosana",
+          "description": "Arvosana 1–5."
+        },
+        "page": {
+          "name": "Sivu",
+          "description": "Nykyinen sivu."
+        },
+        "started": {
+          "name": "Aloitettu",
+          "description": "Aloituspäivä."
+        },
+        "finished": {
+          "name": "Luettu loppuun",
+          "description": "Päivä, jona kirja luettiin loppuun."
+        },
+        "read_count": {
+          "name": "Lukukerrat",
+          "description": "Kuinka monta kertaa kirja on luettu."
+        },
+        "private_notes": {
+          "name": "Yksityiset muistiinpanot",
+          "description": "Muistiinpanot, jotka vain henkilö voi lukea."
+        }
+      }
+    },
+    "lend_book": {
+      "name": "Lainaa kirja",
+      "description": "Lainaa kappale toiselle henkilölle.",
+      "fields": {
+        "copy_id": {
+          "name": "Kappale",
+          "description": "Kappaleen ID."
+        },
+        "party": {
+          "name": "Toinen henkilö",
+          "description": "Lainan toisen henkilön nimi."
+        },
+        "started": {
+          "name": "Aloitettu",
+          "description": "Aloituspäivä."
+        },
+        "due": {
+          "name": "Eräpäivä",
+          "description": "Eräpäivä."
+        },
+        "note": {
+          "name": "Muistiinpano",
+          "description": "Lyhyt muistiinpano."
+        },
+        "add_task": {
+          "name": "Lisää tehtävä",
+          "description": "Lisää Home Keeper -tehtävä eräpäivälle."
+        }
+      }
+    },
+    "borrow_book": {
+      "name": "Lisää lainattu kirja",
+      "description": "Kirjaa kirja, jonka henkilö on lainannut.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "isbn": {
+          "name": "ISBN-tunnus",
+          "description": "ISBN-10 tai ISBN-13."
+        },
+        "title": {
+          "name": "Nimeke",
+          "description": "Kirjan nimeke."
+        },
+        "authors": {
+          "name": "Tekijät",
+          "description": "Tekijät järjestyksessä."
+        },
+        "party": {
+          "name": "Toinen henkilö",
+          "description": "Lainan toisen henkilön nimi."
+        },
+        "started": {
+          "name": "Aloitettu",
+          "description": "Aloituspäivä."
+        },
+        "due": {
+          "name": "Eräpäivä",
+          "description": "Eräpäivä."
+        },
+        "note": {
+          "name": "Muistiinpano",
+          "description": "Lyhyt muistiinpano."
+        },
+        "add_task": {
+          "name": "Lisää tehtävä",
+          "description": "Lisää Home Keeper -tehtävä eräpäivälle."
+        },
+        "person_id": {
+          "name": "Henkilö",
+          "description": "Home Assistant -henkilön ID."
+        },
+        "format": {
+          "name": "Muoto",
+          "description": "Kappaleen muoto."
+        }
+      }
+    },
+    "return_loan": {
+      "name": "Palauta laina",
+      "description": "Kirjaa lainan palautus.",
+      "fields": {
+        "loan_id": {
+          "name": "Laina",
+          "description": "Lainan ID."
+        },
+        "returned": {
+          "name": "Palautettu",
+          "description": "Palautuspäivä. Oletus on tänään."
+        }
+      }
+    },
+    "update_loan": {
+      "name": "Muuta lainaa",
+      "description": "Muuta lainaa.",
+      "fields": {
+        "loan_id": {
+          "name": "Laina",
+          "description": "Lainan ID."
+        },
+        "party": {
+          "name": "Toinen henkilö",
+          "description": "Lainan toisen henkilön nimi."
+        },
+        "started": {
+          "name": "Aloitettu",
+          "description": "Aloituspäivä."
+        },
+        "due": {
+          "name": "Eräpäivä",
+          "description": "Eräpäivä."
+        },
+        "note": {
+          "name": "Muistiinpano",
+          "description": "Lyhyt muistiinpano."
+        },
+        "format": {
+          "name": "Muoto",
+          "description": "Kappaleen muoto."
+        }
+      }
+    },
+    "delete_loan": {
+      "name": "Poista laina",
+      "description": "Poista laina ja sen Home Keeper -tehtävä.",
+      "fields": {
+        "loan_id": {
+          "name": "Laina",
+          "description": "Lainan ID."
+        }
+      }
+    },
+    "add_to_wishlist": {
+      "name": "Lisää toivelistalle",
+      "description": "Lisää kirja henkilön toivelistalle.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "isbn": {
+          "name": "ISBN-tunnus",
+          "description": "ISBN-10 tai ISBN-13."
+        },
+        "title": {
+          "name": "Nimeke",
+          "description": "Kirjan nimeke."
+        },
+        "authors": {
+          "name": "Tekijät",
+          "description": "Tekijät järjestyksessä."
+        },
+        "person_id": {
+          "name": "Henkilö",
+          "description": "Home Assistant -henkilön ID."
+        },
+        "buy": {
+          "name": "Osta",
+          "description": "Lisää kirja henkilön toivelistan tehtävälistalle."
+        }
+      }
+    },
+    "update_wishlist": {
+      "name": "Muuta toivelistaa",
+      "description": "Muuta toivelistan merkintää.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "buy": {
+          "name": "Osta",
+          "description": "Lisää kirja henkilön toivelistan tehtävälistalle."
+        },
+        "person_id": {
+          "name": "Henkilö",
+          "description": "Home Assistant -henkilön ID."
+        }
+      }
+    },
+    "remove_from_wishlist": {
+      "name": "Poista toivelistalta",
+      "description": "Poista kirja toivelistalta.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        }
+      }
+    },
+    "got_wishlist_book": {
+      "name": "Toivekirja saatu",
+      "description": "Lisää toivekirjan kappale ja poista kirja toivelistalta.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "shelf_id": {
+          "name": "Hyllytaso",
+          "description": "Hyllytason ID. Tyhjä, jos hyllytasoa ei ole."
+        },
+        "format": {
+          "name": "Muoto",
+          "description": "Kappaleen muoto."
+        }
+      }
+    },
+    "set_person_settings": {
+      "name": "Aseta henkilön asetukset",
+      "description": "Aseta henkilön kirjastoasetukset. Käyttäjä, joka ei ole ylläpitäjä, voi asettaa vain oman jakonsa ja tavoitteensa.",
+      "fields": {
+        "person_id": {
+          "name": "Henkilö",
+          "description": "Home Assistant -henkilön ID."
+        },
+        "share_reading": {
+          "name": "Jaa lukutila",
+          "description": "Muut käyttäjät näkevät tilan."
+        },
+        "yearly_goal": {
+          "name": "Vuositavoite",
+          "description": "Tänä vuonna luettavien kirjojen määrä."
+        },
+        "wishlist_todo": {
+          "name": "Toivelista",
+          "description": "Ostettavien kirjojen tehtävälista."
+        }
+      }
+    },
+    "import_csv": {
+      "name": "Tuo CSV",
+      "description": "Tuo kirjoja Goodreadsista, StoryGraphista tai kirjaston viennistä.",
+      "fields": {
+        "content": {
+          "name": "CSV-sisältö",
+          "description": "CSV-teksti. Enintään 5 Mt."
+        },
+        "source": {
+          "name": "Lähde",
+          "description": "Sovellus, joka loi CSV-tiedoston."
+        },
+        "person_id": {
+          "name": "Henkilö",
+          "description": "Home Assistant -henkilön ID."
+        },
+        "shelf_id": {
+          "name": "Hyllytaso",
+          "description": "Hyllytason ID. Tyhjä, jos hyllytasoa ei ole."
+        },
+        "import_notes": {
+          "name": "Tuo muistiinpanot",
+          "description": "Tuo arviot ja muistiinpanot yksityisinä muistiinpanoina."
+        },
+        "replace_reading": {
+          "name": "Korvaa lukutila",
+          "description": "Korvaa olemassa oleva lukutila."
+        },
+        "dry_run": {
+          "name": "Koeajo",
+          "description": "Raportoi vain tuonnin muutokset."
+        }
+      }
+    },
+    "export_csv": {
+      "name": "Vie CSV",
+      "description": "Vie kirjasto CSV-tekstinä.",
+      "fields": {
+        "person_id": {
+          "name": "Henkilö",
+          "description": "Home Assistant -henkilön ID."
+        },
+        "format": {
+          "name": "Tiedostomuoto",
+          "description": "goodreads tai library."
+        }
+      }
+    },
+    "list_books": {
+      "name": "Luettele kirjat",
+      "description": "Palauta kirjat, jotka vastaavat suodattimia.",
+      "fields": {
+        "query": {
+          "name": "Haku",
+          "description": "Teksti nimekkeessä, tekijöissä, ISBN:ssä tai tunnisteissa."
+        },
+        "room_id": {
+          "name": "Huone",
+          "description": "Huoneen ID."
+        },
+        "shelf_id": {
+          "name": "Hyllytaso",
+          "description": "Hyllytason ID. Tyhjä, jos hyllytasoa ei ole."
+        },
+        "owned": {
+          "name": "Omistettu",
+          "description": "Vain kirjat, joilla on kappale, tai vain kirjat ilman kappaletta."
+        },
+        "status": {
+          "name": "Lukutila",
+          "description": "Lukutila."
+        },
+        "person_id": {
+          "name": "Henkilö",
+          "description": "Home Assistant -henkilön ID."
+        },
+        "limit": {
+          "name": "Raja",
+          "description": "Kirjojen enimmäismäärä."
+        }
+      }
+    },
+    "get_book": {
+      "name": "Hae kirja",
+      "description": "Palauta kirja sen kappaleineen ja lainoineen.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        }
+      }
+    },
+    "list_locations": {
+      "name": "Luettele sijainnit",
+      "description": "Palauta huoneet, kirjahyllyt ja hyllytasot."
+    },
+    "list_loans": {
+      "name": "Luettele lainat",
+      "description": "Palauta lainat.",
+      "fields": {
+        "status": {
+          "name": "Lainan tila",
+          "description": "open, returned tai all."
+        },
+        "direction": {
+          "name": "Suunta",
+          "description": "out lainattuna annetulle kirjalle, in lainaksi saadulle kirjalle."
+        }
+      }
+    },
+    "list_people": {
+      "name": "Luettele henkilöt",
+      "description": "Palauta henkilöt ja heidän kirjastoasetuksensa."
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "Home Keeper Library ei ole ladattu."
+    },
+    "admin_required": {
+      "message": "Vain ylläpitäjä voi tehdä tämän."
+    },
+    "invalid_field": {
+      "message": "Kentän {field} arvo ei kelpaa."
+    },
+    "field_required": {
+      "message": "{field} on pakollinen."
+    },
+    "field_too_long": {
+      "message": "{field} on liian pitkä. Enimmäispituus on {max}."
+    },
+    "out_of_range": {
+      "message": "Kentän {field} pitää olla välillä {low}–{high}."
+    },
+    "invalid_date": {
+      "message": "Kentän {field} pitää olla päivämäärä muodossa YYYY-MM-DD."
+    },
+    "invalid_choice": {
+      "message": "Kentän {field} pitää olla jokin näistä: {options}."
+    },
+    "invalid_isbn": {
+      "message": "{isbn} ei ole kelvollinen ISBN."
+    },
+    "room_not_found": {
+      "message": "Millään huoneella ei ole ID:tä {id}."
+    },
+    "bookcase_not_found": {
+      "message": "Millään kirjahyllyllä ei ole ID:tä {id}."
+    },
+    "shelf_not_found": {
+      "message": "Millään hyllytasolla ei ole ID:tä {id}."
+    },
+    "book_not_found": {
+      "message": "Millään kirjalla ei ole ID:tä {id}."
+    },
+    "copy_not_found": {
+      "message": "Millään kappaleella ei ole ID:tä {id}."
+    },
+    "loan_not_found": {
+      "message": "Millään lainalla ei ole ID:tä {id}."
+    },
+    "person_not_found": {
+      "message": "Millään henkilöllä ei ole ID:tä {id}."
+    },
+    "no_person": {
+      "message": "Käyttäjälläsi ei ole Home Assistant -henkilöä. Yhdistä henkilö käyttäjään."
+    },
+    "room_not_empty": {
+      "message": "Huoneessa on {count} kirjahyllyä. Käytä force-arvoa, jos haluat poistaa myös ne."
+    },
+    "bookcase_not_empty": {
+      "message": "Kirjahyllyssä on {count} hyllytasoa. Käytä force-arvoa, jos haluat poistaa myös ne."
+    },
+    "shelf_not_empty": {
+      "message": "Hyllytasolla on {count} kappaletta. Käytä force-arvoa, jos haluat siirtää ne pois hyllytasolta."
+    },
+    "duplicate_isbn": {
+      "message": "Toisella kirjalla on ISBN {isbn}."
+    },
+    "copy_on_loan": {
+      "message": "Kappale on lainassa. Palauta laina ensin."
+    },
+    "due_before_start": {
+      "message": "Eräpäivä on ennen aloituspäivää."
+    },
+    "already_on_wishlist": {
+      "message": "Kirja on jo toivelistalla."
+    },
+    "not_on_wishlist": {
+      "message": "Kirja ei ole millään toivelistalla."
+    },
+    "upload_not_found": {
+      "message": "Millään ladatulla kansikuvalla ei ole ID:tä {file_id}."
+    },
+    "isbn_or_title_required": {
+      "message": "Anna kirjan ID, ISBN tai nimeke."
+    },
+    "lookup_unavailable": {
+      "message": "Open Library ei ole käytettävissä. Yritä myöhemmin uudelleen."
+    },
+    "no_openlibrary_cover": {
+      "message": "Open Libraryssa ei ole kansikuvaa tälle kirjalle."
+    },
+    "todo_entity_not_found": {
+      "message": "{entity_id} ei ole tehtävälista."
+    },
+    "csv_too_large": {
+      "message": "CSV-teksti on liian suuri. Enimmäiskoko on {mb} Mt."
+    },
+    "csv_unreadable": {
+      "message": "CSV-tekstissä ei ole saraketta {column}."
+    },
+    "upload_requires_user": {
+      "message": "Lataus vaatii kirjautuneen käyttäjän."
+    },
+    "expected_multipart_upload": {
+      "message": "Latauksen pitää olla multipart-lomake."
+    },
+    "no_file_in_upload": {
+      "message": "Latauksessa ei ole tiedostoa."
+    },
+    "file_too_large": {
+      "message": "Tiedosto on liian suuri. Enimmäiskoko on {mb} Mt."
+    },
+    "unsupported_image": {
+      "message": "Tiedoston pitää olla JPEG-, PNG- tai WebP-kuva."
+    },
+    "image_unreadable": {
+      "message": "Kuvaa ei voi lukea."
+    }
+  }
+}

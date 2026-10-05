@@ -143,8 +143,3 @@ def ws(hass, hass_ws_client, hass_access_token, hass_read_only_access_token):
         return await hass_ws_client(hass, access_token=token)
 
     return _client
-
-
-async def settle(hass) -> None:
-    """Wait for the background syncs of the library."""
-    await hass.async_block_till_done(wait_background_tasks=True)

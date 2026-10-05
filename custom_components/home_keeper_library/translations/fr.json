@@ -1,0 +1,1098 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Home Keeper Library",
+        "description": "Définir la devise des prix et des valeurs des exemplaires.",
+        "data": {
+          "currency": "Devise"
+        },
+        "data_description": {
+          "currency": "Un code de 3 lettres, par exemple EUR ou USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Saisissez un code de devise de 3 lettres."
+    },
+    "abort": {
+      "already_configured": "Home Keeper Library est déjà configuré.",
+      "single_instance_allowed": "Home Keeper Library est déjà configuré.",
+      "home_keeper_missing": "Home Keeper Library demande Home Keeper. Installez Home Keeper depuis HACS, redémarrez Home Assistant, puis ajoutez de nouveau Home Keeper Library. Étapes d'installation : {url}",
+      "home_keeper_not_set_up": "Ajoutez d'abord l'intégration Home Keeper.",
+      "home_keeper_too_old": "Mettez à jour Home Keeper vers la version {version} ou plus récente."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options de la bibliothèque",
+        "data": {
+          "currency": "Devise"
+        },
+        "data_description": {
+          "currency": "Un code de 3 lettres, par exemple EUR ou USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Saisissez un code de devise de 3 lettres."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "books": {
+        "name": "Livres"
+      },
+      "loans_out": {
+        "name": "Prêts en cours"
+      },
+      "loans_overdue": {
+        "name": "Prêts en retard"
+      },
+      "books_read_this_year": {
+        "name": "{person} livres lus cette année"
+      },
+      "reading_now": {
+        "name": "{person} lit en ce moment"
+      }
+    },
+    "todo": {
+      "to_read": {
+        "name": "{person} à lire"
+      }
+    }
+  },
+  "issues": {
+    "home_keeper_missing": {
+      "title": "Home Keeper n'est pas installé",
+      "description": "L'onglet Bibliothèque et les tâches de prêt demandent Home Keeper. La carte, les entités et les services fonctionnent déjà. Installez Home Keeper depuis HACS et redémarrez Home Assistant. Étapes d'installation : {url}"
+    },
+    "home_keeper_not_set_up": {
+      "title": "Home Keeper n'est pas configuré",
+      "description": "L'onglet Bibliothèque et les tâches de prêt demandent une intégration Home Keeper chargée. La carte, les entités et les services fonctionnent déjà. Ajoutez ou activez l'intégration Home Keeper."
+    },
+    "home_keeper_too_old": {
+      "title": "Home Keeper est trop ancien",
+      "description": "L'onglet Bibliothèque et les tâches de prêt demandent Home Keeper version {version} ou plus récente. La carte, les entités et les services fonctionnent déjà. Mettez à jour Home Keeper."
+    }
+  },
+  "services": {
+    "add_room": {
+      "name": "Ajouter une pièce",
+      "description": "Ajouter une pièce à la bibliothèque.",
+      "fields": {
+        "name": {
+          "name": "Nom",
+          "description": "Le nom affiché."
+        },
+        "area_id": {
+          "name": "Zone",
+          "description": "La zone Home Assistant de la pièce."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La position de tri. La plus petite vient en premier."
+        }
+      }
+    },
+    "update_room": {
+      "name": "Modifier une pièce",
+      "description": "Modifier une pièce.",
+      "fields": {
+        "room_id": {
+          "name": "Pièce",
+          "description": "L'ID de la pièce."
+        },
+        "name": {
+          "name": "Nom",
+          "description": "Le nom affiché."
+        },
+        "area_id": {
+          "name": "Zone",
+          "description": "La zone Home Assistant de la pièce."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La position de tri. La plus petite vient en premier."
+        }
+      }
+    },
+    "delete_room": {
+      "name": "Supprimer une pièce",
+      "description": "Supprimer une pièce. Une pièce avec des bibliothèques demande force.",
+      "fields": {
+        "room_id": {
+          "name": "Pièce",
+          "description": "L'ID de la pièce."
+        },
+        "force": {
+          "name": "Forcer",
+          "description": "Supprimer aussi le contenu. Les exemplaires passent sans étagère."
+        }
+      }
+    },
+    "add_bookcase": {
+      "name": "Ajouter une bibliothèque",
+      "description": "Ajouter un meuble bibliothèque à une pièce.",
+      "fields": {
+        "room_id": {
+          "name": "Pièce",
+          "description": "L'ID de la pièce."
+        },
+        "name": {
+          "name": "Nom",
+          "description": "Le nom affiché."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Une courte note."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La position de tri. La plus petite vient en premier."
+        }
+      }
+    },
+    "update_bookcase": {
+      "name": "Modifier une bibliothèque",
+      "description": "Modifier un meuble bibliothèque ou le déplacer dans une autre pièce.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Bibliothèque",
+          "description": "L'ID du meuble bibliothèque."
+        },
+        "room_id": {
+          "name": "Pièce",
+          "description": "L'ID de la pièce."
+        },
+        "name": {
+          "name": "Nom",
+          "description": "Le nom affiché."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Une courte note."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La position de tri. La plus petite vient en premier."
+        }
+      }
+    },
+    "delete_bookcase": {
+      "name": "Supprimer une bibliothèque",
+      "description": "Supprimer un meuble bibliothèque. Un meuble avec des étagères demande force.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Bibliothèque",
+          "description": "L'ID du meuble bibliothèque."
+        },
+        "force": {
+          "name": "Forcer",
+          "description": "Supprimer aussi le contenu. Les exemplaires passent sans étagère."
+        }
+      }
+    },
+    "add_shelf": {
+      "name": "Ajouter une étagère",
+      "description": "Ajouter une étagère à un meuble bibliothèque.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Bibliothèque",
+          "description": "L'ID du meuble bibliothèque."
+        },
+        "name": {
+          "name": "Nom",
+          "description": "Le nom affiché."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La position de tri. La plus petite vient en premier."
+        }
+      }
+    },
+    "update_shelf": {
+      "name": "Modifier une étagère",
+      "description": "Modifier une étagère ou la déplacer dans un autre meuble.",
+      "fields": {
+        "shelf_id": {
+          "name": "Étagère",
+          "description": "L'ID de l'étagère. Vide pour aucune étagère."
+        },
+        "bookcase_id": {
+          "name": "Bibliothèque",
+          "description": "L'ID du meuble bibliothèque."
+        },
+        "name": {
+          "name": "Nom",
+          "description": "Le nom affiché."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La position de tri. La plus petite vient en premier."
+        }
+      }
+    },
+    "delete_shelf": {
+      "name": "Supprimer une étagère",
+      "description": "Supprimer une étagère. Une étagère avec des exemplaires demande force.",
+      "fields": {
+        "shelf_id": {
+          "name": "Étagère",
+          "description": "L'ID de l'étagère. Vide pour aucune étagère."
+        },
+        "force": {
+          "name": "Forcer",
+          "description": "Supprimer aussi le contenu. Les exemplaires passent sans étagère."
+        }
+      }
+    },
+    "lookup_isbn": {
+      "name": "Rechercher un ISBN",
+      "description": "Lire les détails d'un ISBN depuis Open Library. La bibliothèque ne change pas.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 ou un ISBN-13."
+        }
+      }
+    },
+    "add_book": {
+      "name": "Ajouter un livre",
+      "description": "Ajouter un livre. Si un livre a le même ISBN, le service renvoie ce livre.",
+      "fields": {
+        "title": {
+          "name": "Titre",
+          "description": "Le titre du livre."
+        },
+        "subtitle": {
+          "name": "Sous-titre",
+          "description": "Le sous-titre du livre."
+        },
+        "authors": {
+          "name": "Auteurs",
+          "description": "Les auteurs, dans l'ordre."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 ou un ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13",
+          "description": "L'ISBN à 13 chiffres."
+        },
+        "isbn10": {
+          "name": "ISBN-10",
+          "description": "L'ISBN à 10 chiffres."
+        },
+        "publisher": {
+          "name": "Éditeur",
+          "description": "L'éditeur du livre."
+        },
+        "published": {
+          "name": "Publié",
+          "description": "La date de publication, souvent une année."
+        },
+        "pages": {
+          "name": "Pages (nombre)",
+          "description": "Le nombre de pages."
+        },
+        "language": {
+          "name": "Langue",
+          "description": "Le code de langue, par exemple en."
+        },
+        "subjects": {
+          "name": "Sujets",
+          "description": "Les sujets du livre."
+        },
+        "series": {
+          "name": "Série",
+          "description": "Le nom de la série, ou un nom et un numéro."
+        },
+        "description": {
+          "name": "Résumé",
+          "description": "La description du livre."
+        },
+        "tags": {
+          "name": "Étiquettes",
+          "description": "Les étiquettes du livre."
+        },
+        "shared_notes": {
+          "name": "Notes partagées",
+          "description": "Des notes que chaque utilisateur peut lire, en Markdown."
+        },
+        "needs_details": {
+          "name": "Détails manquants",
+          "description": "Marquer le livre comme incomplet."
+        },
+        "lookup": {
+          "name": "Rechercher",
+          "description": "Lire les détails depuis Open Library."
+        }
+      }
+    },
+    "update_book": {
+      "name": "Modifier un livre",
+      "description": "Modifier les détails d'un livre.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "title": {
+          "name": "Titre",
+          "description": "Le titre du livre."
+        },
+        "subtitle": {
+          "name": "Sous-titre",
+          "description": "Le sous-titre du livre."
+        },
+        "authors": {
+          "name": "Auteurs",
+          "description": "Les auteurs, dans l'ordre."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 ou un ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13",
+          "description": "L'ISBN à 13 chiffres."
+        },
+        "isbn10": {
+          "name": "ISBN-10",
+          "description": "L'ISBN à 10 chiffres."
+        },
+        "publisher": {
+          "name": "Éditeur",
+          "description": "L'éditeur du livre."
+        },
+        "published": {
+          "name": "Publié",
+          "description": "La date de publication, souvent une année."
+        },
+        "pages": {
+          "name": "Pages (nombre)",
+          "description": "Le nombre de pages."
+        },
+        "language": {
+          "name": "Langue",
+          "description": "Le code de langue, par exemple en."
+        },
+        "subjects": {
+          "name": "Sujets",
+          "description": "Les sujets du livre."
+        },
+        "series": {
+          "name": "Série",
+          "description": "Le nom de la série, ou un nom et un numéro."
+        },
+        "description": {
+          "name": "Résumé",
+          "description": "La description du livre."
+        },
+        "tags": {
+          "name": "Étiquettes",
+          "description": "Les étiquettes du livre."
+        },
+        "shared_notes": {
+          "name": "Notes partagées",
+          "description": "Des notes que chaque utilisateur peut lire, en Markdown."
+        },
+        "needs_details": {
+          "name": "Détails manquants",
+          "description": "Marquer le livre comme incomplet."
+        }
+      }
+    },
+    "delete_book": {
+      "name": "Supprimer un livre",
+      "description": "Supprimer un livre avec ses exemplaires, son statut de lecture, ses prêts et sa couverture.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        }
+      }
+    },
+    "refresh_book": {
+      "name": "Mettre à jour depuis Open Library",
+      "description": "Remplir les champs vides d'un livre depuis Open Library.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        }
+      }
+    },
+    "scan_isbn": {
+      "name": "Scanner un ISBN",
+      "description": "Ajouter un livre scanné à une étagère.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 ou un ISBN-13."
+        },
+        "shelf_id": {
+          "name": "Étagère",
+          "description": "L'ID de l'étagère. Vide pour aucune étagère."
+        },
+        "format": {
+          "name": "Format du livre",
+          "description": "Le format de l'exemplaire."
+        },
+        "on_duplicate": {
+          "name": "Si un exemplaire existe",
+          "description": "L'action si la bibliothèque a un exemplaire du livre."
+        }
+      }
+    },
+    "add_copy": {
+      "name": "Ajouter un exemplaire",
+      "description": "Ajouter un exemplaire d'un livre.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "shelf_id": {
+          "name": "Étagère",
+          "description": "L'ID de l'étagère. Vide pour aucune étagère."
+        },
+        "format": {
+          "name": "Format du livre",
+          "description": "Le format de l'exemplaire."
+        },
+        "condition": {
+          "name": "État",
+          "description": "L'état de l'exemplaire."
+        },
+        "acquired": {
+          "name": "Acquis le",
+          "description": "La date d'acquisition de l'exemplaire."
+        },
+        "acquired_from": {
+          "name": "Acquis auprès de",
+          "description": "Le magasin ou la personne."
+        },
+        "price": {
+          "name": "Prix",
+          "description": "Le prix payé."
+        },
+        "value": {
+          "name": "Valeur",
+          "description": "La valeur actuelle de l'exemplaire."
+        },
+        "signed": {
+          "name": "Dédicacé",
+          "description": "L'exemplaire est dédicacé."
+        },
+        "first_edition": {
+          "name": "Première édition",
+          "description": "L'exemplaire est une première édition."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Une courte note."
+        }
+      }
+    },
+    "update_copy": {
+      "name": "Modifier un exemplaire",
+      "description": "Modifier un exemplaire.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplaire",
+          "description": "L'ID de l'exemplaire."
+        },
+        "shelf_id": {
+          "name": "Étagère",
+          "description": "L'ID de l'étagère. Vide pour aucune étagère."
+        },
+        "format": {
+          "name": "Format du livre",
+          "description": "Le format de l'exemplaire."
+        },
+        "condition": {
+          "name": "État",
+          "description": "L'état de l'exemplaire."
+        },
+        "acquired": {
+          "name": "Acquis le",
+          "description": "La date d'acquisition de l'exemplaire."
+        },
+        "acquired_from": {
+          "name": "Acquis auprès de",
+          "description": "Le magasin ou la personne."
+        },
+        "price": {
+          "name": "Prix",
+          "description": "Le prix payé."
+        },
+        "value": {
+          "name": "Valeur",
+          "description": "La valeur actuelle de l'exemplaire."
+        },
+        "signed": {
+          "name": "Dédicacé",
+          "description": "L'exemplaire est dédicacé."
+        },
+        "first_edition": {
+          "name": "Première édition",
+          "description": "L'exemplaire est une première édition."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Une courte note."
+        }
+      }
+    },
+    "move_copy": {
+      "name": "Déplacer un exemplaire",
+      "description": "Déplacer un exemplaire sur une étagère.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplaire",
+          "description": "L'ID de l'exemplaire."
+        },
+        "shelf_id": {
+          "name": "Étagère",
+          "description": "L'ID de l'étagère. Vide pour aucune étagère."
+        }
+      }
+    },
+    "delete_copy": {
+      "name": "Supprimer un exemplaire",
+      "description": "Supprimer un exemplaire.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplaire",
+          "description": "L'ID de l'exemplaire."
+        }
+      }
+    },
+    "set_cover": {
+      "name": "Définir la couverture",
+      "description": "Définir la couverture d'un livre.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "kind": {
+          "name": "Type de couverture",
+          "description": "La source de la couverture."
+        },
+        "file_id": {
+          "name": "ID du fichier",
+          "description": "L'ID reçu de l'envoi de la couverture."
+        }
+      }
+    },
+    "set_reading": {
+      "name": "Définir le statut de lecture",
+      "description": "Définir le statut de lecture d'un livre pour une personne. Un utilisateur non administrateur ne peut définir que son propre statut.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "person_id": {
+          "name": "Personne",
+          "description": "L'ID de la personne Home Assistant."
+        },
+        "status": {
+          "name": "Statut",
+          "description": "Le statut de lecture."
+        },
+        "rating": {
+          "name": "Note sur 5",
+          "description": "Une note de 1 à 5."
+        },
+        "page": {
+          "name": "Page actuelle",
+          "description": "La page actuelle."
+        },
+        "started": {
+          "name": "Commencé",
+          "description": "La date de début."
+        },
+        "finished": {
+          "name": "Terminé",
+          "description": "La date de fin de lecture du livre."
+        },
+        "read_count": {
+          "name": "Nombre de lectures",
+          "description": "Le nombre de fois que le livre a été lu."
+        },
+        "private_notes": {
+          "name": "Notes privées",
+          "description": "Des notes que seule la personne peut lire."
+        }
+      }
+    },
+    "lend_book": {
+      "name": "Prêter un livre",
+      "description": "Prêter un exemplaire à une autre personne.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplaire",
+          "description": "L'ID de l'exemplaire."
+        },
+        "party": {
+          "name": "Autre personne",
+          "description": "Le nom de l'autre personne du prêt."
+        },
+        "started": {
+          "name": "Commencé",
+          "description": "La date de début."
+        },
+        "due": {
+          "name": "Échéance",
+          "description": "La date d'échéance."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Une courte note."
+        },
+        "add_task": {
+          "name": "Ajouter une tâche",
+          "description": "Ajouter une tâche Home Keeper à la date d'échéance."
+        }
+      }
+    },
+    "borrow_book": {
+      "name": "Ajouter un livre emprunté",
+      "description": "Enregistrer un livre qu'une personne a emprunté.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 ou un ISBN-13."
+        },
+        "title": {
+          "name": "Titre",
+          "description": "Le titre du livre."
+        },
+        "authors": {
+          "name": "Auteurs",
+          "description": "Les auteurs, dans l'ordre."
+        },
+        "party": {
+          "name": "Autre personne",
+          "description": "Le nom de l'autre personne du prêt."
+        },
+        "started": {
+          "name": "Commencé",
+          "description": "La date de début."
+        },
+        "due": {
+          "name": "Échéance",
+          "description": "La date d'échéance."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Une courte note."
+        },
+        "add_task": {
+          "name": "Ajouter une tâche",
+          "description": "Ajouter une tâche Home Keeper à la date d'échéance."
+        },
+        "person_id": {
+          "name": "Personne",
+          "description": "L'ID de la personne Home Assistant."
+        },
+        "format": {
+          "name": "Format du livre",
+          "description": "Le format de l'exemplaire."
+        }
+      }
+    },
+    "return_loan": {
+      "name": "Rendre un prêt",
+      "description": "Enregistrer le retour d'un prêt.",
+      "fields": {
+        "loan_id": {
+          "name": "Prêt",
+          "description": "L'ID du prêt."
+        },
+        "returned": {
+          "name": "Rendu",
+          "description": "La date de retour. Par défaut, aujourd'hui."
+        }
+      }
+    },
+    "update_loan": {
+      "name": "Modifier un prêt",
+      "description": "Modifier un prêt.",
+      "fields": {
+        "loan_id": {
+          "name": "Prêt",
+          "description": "L'ID du prêt."
+        },
+        "party": {
+          "name": "Autre personne",
+          "description": "Le nom de l'autre personne du prêt."
+        },
+        "started": {
+          "name": "Commencé",
+          "description": "La date de début."
+        },
+        "due": {
+          "name": "Échéance",
+          "description": "La date d'échéance."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Une courte note."
+        },
+        "format": {
+          "name": "Format du livre",
+          "description": "Le format de l'exemplaire."
+        }
+      }
+    },
+    "delete_loan": {
+      "name": "Supprimer un prêt",
+      "description": "Supprimer un prêt et sa tâche Home Keeper.",
+      "fields": {
+        "loan_id": {
+          "name": "Prêt",
+          "description": "L'ID du prêt."
+        }
+      }
+    },
+    "add_to_wishlist": {
+      "name": "Ajouter aux souhaits",
+      "description": "Mettre un livre sur la liste des souhaits d'une personne.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 ou un ISBN-13."
+        },
+        "title": {
+          "name": "Titre",
+          "description": "Le titre du livre."
+        },
+        "authors": {
+          "name": "Auteurs",
+          "description": "Les auteurs, dans l'ordre."
+        },
+        "person_id": {
+          "name": "Personne",
+          "description": "L'ID de la personne Home Assistant."
+        },
+        "buy": {
+          "name": "Acheter",
+          "description": "Mettre le livre sur la liste de tâches des souhaits de la personne."
+        }
+      }
+    },
+    "update_wishlist": {
+      "name": "Modifier un souhait",
+      "description": "Modifier une entrée de la liste des souhaits.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "buy": {
+          "name": "Acheter",
+          "description": "Mettre le livre sur la liste de tâches des souhaits de la personne."
+        },
+        "person_id": {
+          "name": "Personne",
+          "description": "L'ID de la personne Home Assistant."
+        }
+      }
+    },
+    "remove_from_wishlist": {
+      "name": "Retirer des souhaits",
+      "description": "Retirer un livre de la liste des souhaits.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        }
+      }
+    },
+    "got_wishlist_book": {
+      "name": "Livre souhaité reçu",
+      "description": "Ajouter un exemplaire d'un livre souhaité et le retirer de la liste des souhaits.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "shelf_id": {
+          "name": "Étagère",
+          "description": "L'ID de l'étagère. Vide pour aucune étagère."
+        },
+        "format": {
+          "name": "Format du livre",
+          "description": "Le format de l'exemplaire."
+        }
+      }
+    },
+    "set_person_settings": {
+      "name": "Définir les réglages d'une personne",
+      "description": "Définir les réglages de bibliothèque d'une personne. Un utilisateur non administrateur ne peut définir que son propre partage et son objectif.",
+      "fields": {
+        "person_id": {
+          "name": "Personne",
+          "description": "L'ID de la personne Home Assistant."
+        },
+        "share_reading": {
+          "name": "Partager le statut de lecture",
+          "description": "Les autres utilisateurs voient le statut."
+        },
+        "yearly_goal": {
+          "name": "Objectif annuel",
+          "description": "Le nombre de livres à lire cette année."
+        },
+        "wishlist_todo": {
+          "name": "Liste des souhaits",
+          "description": "La liste de tâches pour les livres à acheter."
+        }
+      }
+    },
+    "import_csv": {
+      "name": "Importer un CSV",
+      "description": "Importer des livres depuis Goodreads, StoryGraph ou un export de bibliothèque.",
+      "fields": {
+        "content": {
+          "name": "Contenu CSV",
+          "description": "Le texte CSV. Au plus 5 Mo."
+        },
+        "source": {
+          "name": "Source du fichier",
+          "description": "L'application qui a créé le fichier CSV."
+        },
+        "person_id": {
+          "name": "Personne",
+          "description": "L'ID de la personne Home Assistant."
+        },
+        "shelf_id": {
+          "name": "Étagère",
+          "description": "L'ID de l'étagère. Vide pour aucune étagère."
+        },
+        "import_notes": {
+          "name": "Importer les notes",
+          "description": "Importer les critiques et les notes comme notes privées."
+        },
+        "replace_reading": {
+          "name": "Remplacer le statut de lecture",
+          "description": "Remplacer un statut de lecture existant."
+        },
+        "dry_run": {
+          "name": "Essai",
+          "description": "Signaler seulement les changements de l'import."
+        }
+      }
+    },
+    "export_csv": {
+      "name": "Exporter en CSV",
+      "description": "Exporter la bibliothèque en texte CSV.",
+      "fields": {
+        "person_id": {
+          "name": "Personne",
+          "description": "L'ID de la personne Home Assistant."
+        },
+        "format": {
+          "name": "Format du fichier",
+          "description": "goodreads ou library."
+        }
+      }
+    },
+    "list_books": {
+      "name": "Lister les livres",
+      "description": "Renvoyer les livres qui correspondent aux filtres.",
+      "fields": {
+        "query": {
+          "name": "Recherche",
+          "description": "Du texte dans le titre, les auteurs, l'ISBN ou les étiquettes."
+        },
+        "room_id": {
+          "name": "Pièce",
+          "description": "L'ID de la pièce."
+        },
+        "shelf_id": {
+          "name": "Étagère",
+          "description": "L'ID de l'étagère. Vide pour aucune étagère."
+        },
+        "owned": {
+          "name": "Possédé",
+          "description": "Seulement les livres avec un exemplaire, ou seulement ceux sans exemplaire."
+        },
+        "status": {
+          "name": "Statut",
+          "description": "Le statut de lecture."
+        },
+        "person_id": {
+          "name": "Personne",
+          "description": "L'ID de la personne Home Assistant."
+        },
+        "limit": {
+          "name": "Limite",
+          "description": "Le nombre maximum de livres."
+        }
+      }
+    },
+    "get_book": {
+      "name": "Obtenir un livre",
+      "description": "Renvoyer un livre avec ses exemplaires et ses prêts.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        }
+      }
+    },
+    "list_locations": {
+      "name": "Lister les emplacements",
+      "description": "Renvoyer les pièces, les bibliothèques et les étagères."
+    },
+    "list_loans": {
+      "name": "Lister les prêts",
+      "description": "Renvoyer les prêts.",
+      "fields": {
+        "status": {
+          "name": "Statut du prêt",
+          "description": "open, returned ou all."
+        },
+        "direction": {
+          "name": "Sens",
+          "description": "out pour un livre prêté, in pour un livre emprunté."
+        }
+      }
+    },
+    "list_people": {
+      "name": "Lister les personnes",
+      "description": "Renvoyer les personnes et leurs réglages de bibliothèque."
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "Home Keeper Library n'est pas chargé."
+    },
+    "admin_required": {
+      "message": "Seul un administrateur peut faire cela."
+    },
+    "invalid_field": {
+      "message": "La valeur de {field} n'est pas valide."
+    },
+    "field_required": {
+      "message": "{field} est obligatoire."
+    },
+    "field_too_long": {
+      "message": "{field} est trop long. Le maximum est {max}."
+    },
+    "out_of_range": {
+      "message": "{field} doit être entre {low} et {high}."
+    },
+    "invalid_date": {
+      "message": "{field} doit être une date au format YYYY-MM-DD."
+    },
+    "invalid_choice": {
+      "message": "{field} doit être l'une de ces valeurs : {options}."
+    },
+    "invalid_isbn": {
+      "message": "{isbn} n'est pas un ISBN valide."
+    },
+    "room_not_found": {
+      "message": "Aucune pièce n'a l'ID {id}."
+    },
+    "bookcase_not_found": {
+      "message": "Aucune bibliothèque n'a l'ID {id}."
+    },
+    "shelf_not_found": {
+      "message": "Aucune étagère n'a l'ID {id}."
+    },
+    "book_not_found": {
+      "message": "Aucun livre n'a l'ID {id}."
+    },
+    "copy_not_found": {
+      "message": "Aucun exemplaire n'a l'ID {id}."
+    },
+    "loan_not_found": {
+      "message": "Aucun prêt n'a l'ID {id}."
+    },
+    "person_not_found": {
+      "message": "Aucune personne n'a l'ID {id}."
+    },
+    "no_person": {
+      "message": "Votre utilisateur n'a pas de personne Home Assistant. Liez une personne à l'utilisateur."
+    },
+    "room_not_empty": {
+      "message": "La pièce a {count} bibliothèques. Utilisez force pour les supprimer aussi."
+    },
+    "bookcase_not_empty": {
+      "message": "La bibliothèque a {count} étagères. Utilisez force pour les supprimer aussi."
+    },
+    "shelf_not_empty": {
+      "message": "L'étagère a {count} exemplaires. Utilisez force pour les mettre sans étagère."
+    },
+    "duplicate_isbn": {
+      "message": "Un autre livre a l'ISBN {isbn}."
+    },
+    "copy_on_loan": {
+      "message": "L'exemplaire est prêté. Rendez d'abord le prêt."
+    },
+    "due_before_start": {
+      "message": "La date d'échéance est avant la date de début."
+    },
+    "already_on_wishlist": {
+      "message": "Le livre est déjà sur une liste des souhaits."
+    },
+    "not_on_wishlist": {
+      "message": "Le livre n'est sur aucune liste des souhaits."
+    },
+    "upload_not_found": {
+      "message": "Aucune couverture envoyée n'a l'ID {file_id}."
+    },
+    "isbn_or_title_required": {
+      "message": "Donnez un ID de livre, un ISBN ou un titre."
+    },
+    "lookup_unavailable": {
+      "message": "Open Library n'est pas disponible. Réessayez plus tard."
+    },
+    "no_openlibrary_cover": {
+      "message": "Open Library n'a pas de couverture pour ce livre."
+    },
+    "todo_entity_not_found": {
+      "message": "{entity_id} n'est pas une liste de tâches."
+    },
+    "csv_too_large": {
+      "message": "Le texte CSV est trop grand. Le maximum est {mb} Mo."
+    },
+    "csv_unreadable": {
+      "message": "Le texte CSV n'a pas de colonne {column}."
+    },
+    "upload_requires_user": {
+      "message": "Un envoi demande un utilisateur connecté."
+    },
+    "expected_multipart_upload": {
+      "message": "L'envoi doit être un formulaire multipart."
+    },
+    "no_file_in_upload": {
+      "message": "L'envoi ne contient aucun fichier."
+    },
+    "file_too_large": {
+      "message": "Le fichier est trop grand. Le maximum est {mb} Mo."
+    },
+    "unsupported_image": {
+      "message": "Le fichier doit être une image JPEG, PNG ou WebP."
+    },
+    "image_unreadable": {
+      "message": "L'image ne peut pas être lue."
+    }
+  }
+}

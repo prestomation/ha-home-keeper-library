@@ -1,0 +1,1098 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Home Keeper Library 藏书",
+        "description": "设置藏本价格和价值所用的货币。",
+        "data": {
+          "currency": "货币"
+        },
+        "data_description": {
+          "currency": "3 个字母的代码，例如 EUR 或 USD。"
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "请输入 3 个字母的货币代码。"
+    },
+    "abort": {
+      "already_configured": "Home Keeper Library 已设置。",
+      "single_instance_allowed": "Home Keeper Library 已设置。",
+      "home_keeper_missing": "Home Keeper Library 需要 Home Keeper。请从 HACS 安装 Home Keeper，重启 Home Assistant，然后再次添加 Home Keeper Library。安装步骤：{url}",
+      "home_keeper_not_set_up": "请先添加 Home Keeper 集成。",
+      "home_keeper_too_old": "请将 Home Keeper 更新到 {version} 或更高版本。"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "藏书选项",
+        "data": {
+          "currency": "货币"
+        },
+        "data_description": {
+          "currency": "3 个字母的代码，例如 EUR 或 USD。"
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "请输入 3 个字母的货币代码。"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "books": {
+        "name": "图书"
+      },
+      "loans_out": {
+        "name": "已借出"
+      },
+      "loans_overdue": {
+        "name": "逾期借阅"
+      },
+      "books_read_this_year": {
+        "name": "{person} 今年已读图书"
+      },
+      "reading_now": {
+        "name": "{person} 正在阅读"
+      }
+    },
+    "todo": {
+      "to_read": {
+        "name": "{person} 想读"
+      }
+    }
+  },
+  "issues": {
+    "home_keeper_missing": {
+      "title": "未安装 Home Keeper",
+      "description": "藏书选项卡和借阅任务需要 Home Keeper。卡片、实体和服务现在可以使用。请从 HACS 安装 Home Keeper 并重启 Home Assistant。安装步骤：{url}"
+    },
+    "home_keeper_not_set_up": {
+      "title": "未设置 Home Keeper",
+      "description": "藏书选项卡和借阅任务需要已加载的 Home Keeper 集成。卡片、实体和服务现在可以使用。请添加或启用 Home Keeper 集成。"
+    },
+    "home_keeper_too_old": {
+      "title": "Home Keeper 版本过旧",
+      "description": "藏书选项卡和借阅任务需要 Home Keeper {version} 或更高版本。卡片、实体和服务现在可以使用。请更新 Home Keeper。"
+    }
+  },
+  "services": {
+    "add_room": {
+      "name": "添加房间",
+      "description": "向藏书中添加一个房间。",
+      "fields": {
+        "name": {
+          "name": "名称",
+          "description": "显示名称。"
+        },
+        "area_id": {
+          "name": "区域",
+          "description": "房间所在的 Home Assistant 区域。"
+        },
+        "order": {
+          "name": "顺序",
+          "description": "排序位置。数值小的排在前面。"
+        }
+      }
+    },
+    "update_room": {
+      "name": "修改房间",
+      "description": "修改一个房间。",
+      "fields": {
+        "room_id": {
+          "name": "房间",
+          "description": "房间的 ID。"
+        },
+        "name": {
+          "name": "名称",
+          "description": "显示名称。"
+        },
+        "area_id": {
+          "name": "区域",
+          "description": "房间所在的 Home Assistant 区域。"
+        },
+        "order": {
+          "name": "顺序",
+          "description": "排序位置。数值小的排在前面。"
+        }
+      }
+    },
+    "delete_room": {
+      "name": "删除房间",
+      "description": "删除一个房间。有书柜的房间需要 force。",
+      "fields": {
+        "room_id": {
+          "name": "房间",
+          "description": "房间的 ID。"
+        },
+        "force": {
+          "name": "强制",
+          "description": "同时删除其中内容。藏本将不在任何书架层上。"
+        }
+      }
+    },
+    "add_bookcase": {
+      "name": "添加书柜",
+      "description": "向房间添加一个书柜。",
+      "fields": {
+        "room_id": {
+          "name": "房间",
+          "description": "房间的 ID。"
+        },
+        "name": {
+          "name": "名称",
+          "description": "显示名称。"
+        },
+        "note": {
+          "name": "备注",
+          "description": "一条简短备注。"
+        },
+        "order": {
+          "name": "顺序",
+          "description": "排序位置。数值小的排在前面。"
+        }
+      }
+    },
+    "update_bookcase": {
+      "name": "修改书柜",
+      "description": "修改书柜，或将其移到另一个房间。",
+      "fields": {
+        "bookcase_id": {
+          "name": "书柜",
+          "description": "书柜的 ID。"
+        },
+        "room_id": {
+          "name": "房间",
+          "description": "房间的 ID。"
+        },
+        "name": {
+          "name": "名称",
+          "description": "显示名称。"
+        },
+        "note": {
+          "name": "备注",
+          "description": "一条简短备注。"
+        },
+        "order": {
+          "name": "顺序",
+          "description": "排序位置。数值小的排在前面。"
+        }
+      }
+    },
+    "delete_bookcase": {
+      "name": "删除书柜",
+      "description": "删除一个书柜。有书架层的书柜需要 force。",
+      "fields": {
+        "bookcase_id": {
+          "name": "书柜",
+          "description": "书柜的 ID。"
+        },
+        "force": {
+          "name": "强制",
+          "description": "同时删除其中内容。藏本将不在任何书架层上。"
+        }
+      }
+    },
+    "add_shelf": {
+      "name": "添加书架层",
+      "description": "向书柜添加一个书架层。",
+      "fields": {
+        "bookcase_id": {
+          "name": "书柜",
+          "description": "书柜的 ID。"
+        },
+        "name": {
+          "name": "名称",
+          "description": "显示名称。"
+        },
+        "order": {
+          "name": "顺序",
+          "description": "排序位置。数值小的排在前面。"
+        }
+      }
+    },
+    "update_shelf": {
+      "name": "修改书架层",
+      "description": "修改书架层，或将其移到另一个书柜。",
+      "fields": {
+        "shelf_id": {
+          "name": "书架层",
+          "description": "书架层的 ID。留空表示没有书架层。"
+        },
+        "bookcase_id": {
+          "name": "书柜",
+          "description": "书柜的 ID。"
+        },
+        "name": {
+          "name": "名称",
+          "description": "显示名称。"
+        },
+        "order": {
+          "name": "顺序",
+          "description": "排序位置。数值小的排在前面。"
+        }
+      }
+    },
+    "delete_shelf": {
+      "name": "删除书架层",
+      "description": "删除一个书架层。有藏本的书架层需要 force。",
+      "fields": {
+        "shelf_id": {
+          "name": "书架层",
+          "description": "书架层的 ID。留空表示没有书架层。"
+        },
+        "force": {
+          "name": "强制",
+          "description": "同时删除其中内容。藏本将不在任何书架层上。"
+        }
+      }
+    },
+    "lookup_isbn": {
+      "name": "查询 ISBN",
+      "description": "从 Open Library 读取 ISBN 的详情。藏书不变。",
+      "fields": {
+        "isbn": {
+          "name": "ISBN 编号",
+          "description": "ISBN-10 或 ISBN-13。"
+        }
+      }
+    },
+    "add_book": {
+      "name": "添加图书",
+      "description": "添加一本图书。如果已有相同 ISBN 的图书，服务返回那本书。",
+      "fields": {
+        "title": {
+          "name": "书名",
+          "description": "图书的书名。"
+        },
+        "subtitle": {
+          "name": "副书名",
+          "description": "图书的副书名。"
+        },
+        "authors": {
+          "name": "作者",
+          "description": "按顺序列出的作者。"
+        },
+        "isbn": {
+          "name": "ISBN 编号",
+          "description": "ISBN-10 或 ISBN-13。"
+        },
+        "isbn13": {
+          "name": "ISBN-13 编号",
+          "description": "13 位 ISBN。"
+        },
+        "isbn10": {
+          "name": "ISBN-10 编号",
+          "description": "10 位 ISBN。"
+        },
+        "publisher": {
+          "name": "出版社",
+          "description": "图书的出版社。"
+        },
+        "published": {
+          "name": "出版时间",
+          "description": "出版日期，通常是年份。"
+        },
+        "pages": {
+          "name": "页数",
+          "description": "总页数。"
+        },
+        "language": {
+          "name": "语言",
+          "description": "语言代码，例如 en。"
+        },
+        "subjects": {
+          "name": "主题",
+          "description": "图书的主题。"
+        },
+        "series": {
+          "name": "系列",
+          "description": "系列名称，或名称加编号。"
+        },
+        "description": {
+          "name": "简介",
+          "description": "图书的简介。"
+        },
+        "tags": {
+          "name": "标签",
+          "description": "图书的标签。"
+        },
+        "shared_notes": {
+          "name": "共享笔记",
+          "description": "每位用户都能阅读的笔记，使用 Markdown。"
+        },
+        "needs_details": {
+          "name": "缺少详情",
+          "description": "将图书标记为信息不完整。"
+        },
+        "lookup": {
+          "name": "查询",
+          "description": "从 Open Library 读取详情。"
+        }
+      }
+    },
+    "update_book": {
+      "name": "修改图书",
+      "description": "修改图书的详情。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "title": {
+          "name": "书名",
+          "description": "图书的书名。"
+        },
+        "subtitle": {
+          "name": "副书名",
+          "description": "图书的副书名。"
+        },
+        "authors": {
+          "name": "作者",
+          "description": "按顺序列出的作者。"
+        },
+        "isbn": {
+          "name": "ISBN 编号",
+          "description": "ISBN-10 或 ISBN-13。"
+        },
+        "isbn13": {
+          "name": "ISBN-13 编号",
+          "description": "13 位 ISBN。"
+        },
+        "isbn10": {
+          "name": "ISBN-10 编号",
+          "description": "10 位 ISBN。"
+        },
+        "publisher": {
+          "name": "出版社",
+          "description": "图书的出版社。"
+        },
+        "published": {
+          "name": "出版时间",
+          "description": "出版日期，通常是年份。"
+        },
+        "pages": {
+          "name": "页数",
+          "description": "总页数。"
+        },
+        "language": {
+          "name": "语言",
+          "description": "语言代码，例如 en。"
+        },
+        "subjects": {
+          "name": "主题",
+          "description": "图书的主题。"
+        },
+        "series": {
+          "name": "系列",
+          "description": "系列名称，或名称加编号。"
+        },
+        "description": {
+          "name": "简介",
+          "description": "图书的简介。"
+        },
+        "tags": {
+          "name": "标签",
+          "description": "图书的标签。"
+        },
+        "shared_notes": {
+          "name": "共享笔记",
+          "description": "每位用户都能阅读的笔记，使用 Markdown。"
+        },
+        "needs_details": {
+          "name": "缺少详情",
+          "description": "将图书标记为信息不完整。"
+        }
+      }
+    },
+    "delete_book": {
+      "name": "删除图书",
+      "description": "删除图书及其藏本、阅读状态、借阅和封面。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        }
+      }
+    },
+    "refresh_book": {
+      "name": "从 Open Library 更新",
+      "description": "用 Open Library 的信息填写图书的空字段。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        }
+      }
+    },
+    "scan_isbn": {
+      "name": "扫描 ISBN",
+      "description": "将扫描的图书添加到书架层。",
+      "fields": {
+        "isbn": {
+          "name": "ISBN 编号",
+          "description": "ISBN-10 或 ISBN-13。"
+        },
+        "shelf_id": {
+          "name": "书架层",
+          "description": "书架层的 ID。留空表示没有书架层。"
+        },
+        "format": {
+          "name": "形式",
+          "description": "藏本的形式。"
+        },
+        "on_duplicate": {
+          "name": "已有藏本时",
+          "description": "藏书中已有该书藏本时的操作。"
+        }
+      }
+    },
+    "add_copy": {
+      "name": "添加藏本",
+      "description": "添加一本图书的藏本。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "shelf_id": {
+          "name": "书架层",
+          "description": "书架层的 ID。留空表示没有书架层。"
+        },
+        "format": {
+          "name": "形式",
+          "description": "藏本的形式。"
+        },
+        "condition": {
+          "name": "品相",
+          "description": "藏本的品相。"
+        },
+        "acquired": {
+          "name": "购得日期",
+          "description": "获得该藏本的日期。"
+        },
+        "acquired_from": {
+          "name": "购得来源",
+          "description": "商店或个人。"
+        },
+        "price": {
+          "name": "价格",
+          "description": "支付的价格。"
+        },
+        "value": {
+          "name": "价值",
+          "description": "藏本当前的价值。"
+        },
+        "signed": {
+          "name": "签名本",
+          "description": "该藏本有签名。"
+        },
+        "first_edition": {
+          "name": "初版",
+          "description": "该藏本是初版。"
+        },
+        "note": {
+          "name": "备注",
+          "description": "一条简短备注。"
+        }
+      }
+    },
+    "update_copy": {
+      "name": "修改藏本",
+      "description": "修改一个藏本。",
+      "fields": {
+        "copy_id": {
+          "name": "藏本",
+          "description": "藏本的 ID。"
+        },
+        "shelf_id": {
+          "name": "书架层",
+          "description": "书架层的 ID。留空表示没有书架层。"
+        },
+        "format": {
+          "name": "形式",
+          "description": "藏本的形式。"
+        },
+        "condition": {
+          "name": "品相",
+          "description": "藏本的品相。"
+        },
+        "acquired": {
+          "name": "购得日期",
+          "description": "获得该藏本的日期。"
+        },
+        "acquired_from": {
+          "name": "购得来源",
+          "description": "商店或个人。"
+        },
+        "price": {
+          "name": "价格",
+          "description": "支付的价格。"
+        },
+        "value": {
+          "name": "价值",
+          "description": "藏本当前的价值。"
+        },
+        "signed": {
+          "name": "签名本",
+          "description": "该藏本有签名。"
+        },
+        "first_edition": {
+          "name": "初版",
+          "description": "该藏本是初版。"
+        },
+        "note": {
+          "name": "备注",
+          "description": "一条简短备注。"
+        }
+      }
+    },
+    "move_copy": {
+      "name": "移动藏本",
+      "description": "将藏本移到一个书架层。",
+      "fields": {
+        "copy_id": {
+          "name": "藏本",
+          "description": "藏本的 ID。"
+        },
+        "shelf_id": {
+          "name": "书架层",
+          "description": "书架层的 ID。留空表示没有书架层。"
+        }
+      }
+    },
+    "delete_copy": {
+      "name": "删除藏本",
+      "description": "删除一个藏本。",
+      "fields": {
+        "copy_id": {
+          "name": "藏本",
+          "description": "藏本的 ID。"
+        }
+      }
+    },
+    "set_cover": {
+      "name": "设置封面",
+      "description": "设置图书的封面。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "kind": {
+          "name": "封面类型",
+          "description": "封面的来源。"
+        },
+        "file_id": {
+          "name": "文件 ID",
+          "description": "上传封面时得到的 ID。"
+        }
+      }
+    },
+    "set_reading": {
+      "name": "设置阅读状态",
+      "description": "为某人设置图书的阅读状态。非管理员用户只能设置自己的状态。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "person_id": {
+          "name": "人员",
+          "description": "Home Assistant 人员的 ID。"
+        },
+        "status": {
+          "name": "阅读状态",
+          "description": "阅读状态。"
+        },
+        "rating": {
+          "name": "评分",
+          "description": "1 到 5 的评分。"
+        },
+        "page": {
+          "name": "当前页",
+          "description": "当前读到的页码。"
+        },
+        "started": {
+          "name": "开始日期",
+          "description": "开始的日期。"
+        },
+        "finished": {
+          "name": "读完日期",
+          "description": "读完这本书的日期。"
+        },
+        "read_count": {
+          "name": "阅读次数",
+          "description": "这本书被读过的次数。"
+        },
+        "private_notes": {
+          "name": "私人笔记",
+          "description": "只有本人能阅读的笔记。"
+        }
+      }
+    },
+    "lend_book": {
+      "name": "借出图书",
+      "description": "将藏本借给另一个人。",
+      "fields": {
+        "copy_id": {
+          "name": "藏本",
+          "description": "藏本的 ID。"
+        },
+        "party": {
+          "name": "对方",
+          "description": "借阅中另一方的名字。"
+        },
+        "started": {
+          "name": "开始日期",
+          "description": "开始的日期。"
+        },
+        "due": {
+          "name": "到期日",
+          "description": "到期日期。"
+        },
+        "note": {
+          "name": "备注",
+          "description": "一条简短备注。"
+        },
+        "add_task": {
+          "name": "添加任务",
+          "description": "在到期日添加一个 Home Keeper 任务。"
+        }
+      }
+    },
+    "borrow_book": {
+      "name": "添加借入的图书",
+      "description": "记录某人借入的一本图书。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "isbn": {
+          "name": "ISBN 编号",
+          "description": "ISBN-10 或 ISBN-13。"
+        },
+        "title": {
+          "name": "书名",
+          "description": "图书的书名。"
+        },
+        "authors": {
+          "name": "作者",
+          "description": "按顺序列出的作者。"
+        },
+        "party": {
+          "name": "对方",
+          "description": "借阅中另一方的名字。"
+        },
+        "started": {
+          "name": "开始日期",
+          "description": "开始的日期。"
+        },
+        "due": {
+          "name": "到期日",
+          "description": "到期日期。"
+        },
+        "note": {
+          "name": "备注",
+          "description": "一条简短备注。"
+        },
+        "add_task": {
+          "name": "添加任务",
+          "description": "在到期日添加一个 Home Keeper 任务。"
+        },
+        "person_id": {
+          "name": "人员",
+          "description": "Home Assistant 人员的 ID。"
+        },
+        "format": {
+          "name": "形式",
+          "description": "藏本的形式。"
+        }
+      }
+    },
+    "return_loan": {
+      "name": "归还借阅",
+      "description": "记录借阅的归还。",
+      "fields": {
+        "loan_id": {
+          "name": "借阅",
+          "description": "借阅的 ID。"
+        },
+        "returned": {
+          "name": "归还日期",
+          "description": "归还日期。默认是今天。"
+        }
+      }
+    },
+    "update_loan": {
+      "name": "修改借阅",
+      "description": "修改一条借阅。",
+      "fields": {
+        "loan_id": {
+          "name": "借阅",
+          "description": "借阅的 ID。"
+        },
+        "party": {
+          "name": "对方",
+          "description": "借阅中另一方的名字。"
+        },
+        "started": {
+          "name": "开始日期",
+          "description": "开始的日期。"
+        },
+        "due": {
+          "name": "到期日",
+          "description": "到期日期。"
+        },
+        "note": {
+          "name": "备注",
+          "description": "一条简短备注。"
+        },
+        "format": {
+          "name": "形式",
+          "description": "藏本的形式。"
+        }
+      }
+    },
+    "delete_loan": {
+      "name": "删除借阅",
+      "description": "删除借阅及其 Home Keeper 任务。",
+      "fields": {
+        "loan_id": {
+          "name": "借阅",
+          "description": "借阅的 ID。"
+        }
+      }
+    },
+    "add_to_wishlist": {
+      "name": "加入心愿单",
+      "description": "将图书放入某人的心愿单。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "isbn": {
+          "name": "ISBN 编号",
+          "description": "ISBN-10 或 ISBN-13。"
+        },
+        "title": {
+          "name": "书名",
+          "description": "图书的书名。"
+        },
+        "authors": {
+          "name": "作者",
+          "description": "按顺序列出的作者。"
+        },
+        "person_id": {
+          "name": "人员",
+          "description": "Home Assistant 人员的 ID。"
+        },
+        "buy": {
+          "name": "购买",
+          "description": "将图书放入该人员的心愿待办清单。"
+        }
+      }
+    },
+    "update_wishlist": {
+      "name": "修改心愿",
+      "description": "修改心愿单中的一项。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "buy": {
+          "name": "购买",
+          "description": "将图书放入该人员的心愿待办清单。"
+        },
+        "person_id": {
+          "name": "人员",
+          "description": "Home Assistant 人员的 ID。"
+        }
+      }
+    },
+    "remove_from_wishlist": {
+      "name": "移出心愿单",
+      "description": "将图书移出心愿单。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        }
+      }
+    },
+    "got_wishlist_book": {
+      "name": "已得到心愿图书",
+      "description": "添加心愿图书的藏本，并将其移出心愿单。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "shelf_id": {
+          "name": "书架层",
+          "description": "书架层的 ID。留空表示没有书架层。"
+        },
+        "format": {
+          "name": "形式",
+          "description": "藏本的形式。"
+        }
+      }
+    },
+    "set_person_settings": {
+      "name": "设置人员设置",
+      "description": "设置某人的藏书设置。非管理员用户只能设置自己的共享和目标。",
+      "fields": {
+        "person_id": {
+          "name": "人员",
+          "description": "Home Assistant 人员的 ID。"
+        },
+        "share_reading": {
+          "name": "共享阅读状态",
+          "description": "其他用户可以看到状态。"
+        },
+        "yearly_goal": {
+          "name": "年度目标",
+          "description": "今年要读的图书数量。"
+        },
+        "wishlist_todo": {
+          "name": "心愿清单",
+          "description": "用于待购图书的待办清单。"
+        }
+      }
+    },
+    "import_csv": {
+      "name": "导入 CSV",
+      "description": "从 Goodreads、StoryGraph 或藏书导出文件导入图书。",
+      "fields": {
+        "content": {
+          "name": "CSV 内容",
+          "description": "CSV 文本。最大 5 MB。"
+        },
+        "source": {
+          "name": "来源",
+          "description": "生成 CSV 文件的应用。"
+        },
+        "person_id": {
+          "name": "人员",
+          "description": "Home Assistant 人员的 ID。"
+        },
+        "shelf_id": {
+          "name": "书架层",
+          "description": "书架层的 ID。留空表示没有书架层。"
+        },
+        "import_notes": {
+          "name": "导入笔记",
+          "description": "将书评和笔记作为私人笔记导入。"
+        },
+        "replace_reading": {
+          "name": "替换阅读状态",
+          "description": "替换已有的阅读状态。"
+        },
+        "dry_run": {
+          "name": "试运行",
+          "description": "只报告导入会做的更改。"
+        }
+      }
+    },
+    "export_csv": {
+      "name": "导出 CSV",
+      "description": "将藏书导出为 CSV 文本。",
+      "fields": {
+        "person_id": {
+          "name": "人员",
+          "description": "Home Assistant 人员的 ID。"
+        },
+        "format": {
+          "name": "文件格式",
+          "description": "goodreads 或 library。"
+        }
+      }
+    },
+    "list_books": {
+      "name": "列出图书",
+      "description": "返回符合筛选条件的图书。",
+      "fields": {
+        "query": {
+          "name": "搜索",
+          "description": "书名、作者、ISBN 或标签中的文字。"
+        },
+        "room_id": {
+          "name": "房间",
+          "description": "房间的 ID。"
+        },
+        "shelf_id": {
+          "name": "书架层",
+          "description": "书架层的 ID。留空表示没有书架层。"
+        },
+        "owned": {
+          "name": "已拥有",
+          "description": "只显示有藏本的图书，或只显示没有藏本的图书。"
+        },
+        "status": {
+          "name": "阅读状态",
+          "description": "阅读状态。"
+        },
+        "person_id": {
+          "name": "人员",
+          "description": "Home Assistant 人员的 ID。"
+        },
+        "limit": {
+          "name": "上限",
+          "description": "图书的最大数量。"
+        }
+      }
+    },
+    "get_book": {
+      "name": "获取图书",
+      "description": "返回一本图书及其藏本和借阅。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        }
+      }
+    },
+    "list_locations": {
+      "name": "列出位置",
+      "description": "返回房间、书柜和书架层。"
+    },
+    "list_loans": {
+      "name": "列出借阅",
+      "description": "返回借阅。",
+      "fields": {
+        "status": {
+          "name": "借阅状态",
+          "description": "open、returned 或 all。"
+        },
+        "direction": {
+          "name": "方向",
+          "description": "out 表示借出的书，in 表示借入的书。"
+        }
+      }
+    },
+    "list_people": {
+      "name": "列出人员",
+      "description": "返回人员及其藏书设置。"
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "Home Keeper Library 未加载。"
+    },
+    "admin_required": {
+      "message": "只有管理员用户才能执行此操作。"
+    },
+    "invalid_field": {
+      "message": "{field} 的值无效。"
+    },
+    "field_required": {
+      "message": "{field} 是必填项。"
+    },
+    "field_too_long": {
+      "message": "{field} 过长。最大值为 {max}。"
+    },
+    "out_of_range": {
+      "message": "{field} 必须在 {low} 到 {high} 之间。"
+    },
+    "invalid_date": {
+      "message": "{field} 必须是 YYYY-MM-DD 格式的日期。"
+    },
+    "invalid_choice": {
+      "message": "{field} 必须是以下之一：{options}。"
+    },
+    "invalid_isbn": {
+      "message": "{isbn} 不是有效的 ISBN。"
+    },
+    "room_not_found": {
+      "message": "没有 ID 为 {id} 的房间。"
+    },
+    "bookcase_not_found": {
+      "message": "没有 ID 为 {id} 的书柜。"
+    },
+    "shelf_not_found": {
+      "message": "没有 ID 为 {id} 的书架层。"
+    },
+    "book_not_found": {
+      "message": "没有 ID 为 {id} 的图书。"
+    },
+    "copy_not_found": {
+      "message": "没有 ID 为 {id} 的藏本。"
+    },
+    "loan_not_found": {
+      "message": "没有 ID 为 {id} 的借阅。"
+    },
+    "person_not_found": {
+      "message": "没有 ID 为 {id} 的人员。"
+    },
+    "no_person": {
+      "message": "你的用户没有关联 Home Assistant 人员。请将一个人员关联到该用户。"
+    },
+    "room_not_empty": {
+      "message": "该房间有 {count} 个书柜。使用 force 可一并删除。"
+    },
+    "bookcase_not_empty": {
+      "message": "该书柜有 {count} 个书架层。使用 force 可一并删除。"
+    },
+    "shelf_not_empty": {
+      "message": "该书架层有 {count} 个藏本。使用 force 可将它们移出书架层。"
+    },
+    "duplicate_isbn": {
+      "message": "另一本图书的 ISBN 是 {isbn}。"
+    },
+    "copy_on_loan": {
+      "message": "该藏本已借出。请先归还借阅。"
+    },
+    "due_before_start": {
+      "message": "到期日早于开始日期。"
+    },
+    "already_on_wishlist": {
+      "message": "该图书已在心愿单中。"
+    },
+    "not_on_wishlist": {
+      "message": "该图书不在任何心愿单中。"
+    },
+    "upload_not_found": {
+      "message": "没有 ID 为 {file_id} 的已上传封面。"
+    },
+    "isbn_or_title_required": {
+      "message": "请提供图书 ID、ISBN 或书名。"
+    },
+    "lookup_unavailable": {
+      "message": "Open Library 不可用。请稍后重试。"
+    },
+    "no_openlibrary_cover": {
+      "message": "Open Library 没有这本书的封面。"
+    },
+    "todo_entity_not_found": {
+      "message": "{entity_id} 不是待办清单。"
+    },
+    "csv_too_large": {
+      "message": "CSV 文本过大。最大为 {mb} MB。"
+    },
+    "csv_unreadable": {
+      "message": "CSV 文本中没有 {column} 列。"
+    },
+    "upload_requires_user": {
+      "message": "上传需要已登录的用户。"
+    },
+    "expected_multipart_upload": {
+      "message": "上传必须是 multipart 表单。"
+    },
+    "no_file_in_upload": {
+      "message": "上传中没有文件。"
+    },
+    "file_too_large": {
+      "message": "文件过大。最大为 {mb} MB。"
+    },
+    "unsupported_image": {
+      "message": "文件必须是 JPEG、PNG 或 WebP 图片。"
+    },
+    "image_unreadable": {
+      "message": "无法读取该图片。"
+    }
+  }
+}

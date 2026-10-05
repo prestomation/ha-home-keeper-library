@@ -1,0 +1,1098 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Home Keeper Library",
+        "description": "Задать валюту цен и стоимости экземпляров.",
+        "data": {
+          "currency": "Валюта"
+        },
+        "data_description": {
+          "currency": "Код из 3 букв, например EUR или USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Введите код валюты из 3 букв."
+    },
+    "abort": {
+      "already_configured": "Home Keeper Library уже настроен.",
+      "single_instance_allowed": "Home Keeper Library уже настроен.",
+      "home_keeper_missing": "Для Home Keeper Library нужен Home Keeper. Установите Home Keeper из HACS, перезапустите Home Assistant и снова добавьте Home Keeper Library. Шаги установки: {url}",
+      "home_keeper_not_set_up": "Сначала добавьте интеграцию Home Keeper.",
+      "home_keeper_too_old": "Обновите Home Keeper до версии {version} или новее."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Настройки библиотеки",
+        "data": {
+          "currency": "Валюта"
+        },
+        "data_description": {
+          "currency": "Код из 3 букв, например EUR или USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Введите код валюты из 3 букв."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "books": {
+        "name": "Книги"
+      },
+      "loans_out": {
+        "name": "Выдано"
+      },
+      "loans_overdue": {
+        "name": "Просроченные выдачи"
+      },
+      "books_read_this_year": {
+        "name": "{person} прочитано книг в этом году"
+      },
+      "reading_now": {
+        "name": "{person} читает сейчас"
+      }
+    },
+    "todo": {
+      "to_read": {
+        "name": "{person} хочет прочитать"
+      }
+    }
+  },
+  "issues": {
+    "home_keeper_missing": {
+      "title": "Home Keeper не установлен",
+      "description": "Для вкладки Библиотека и задач выдач нужен Home Keeper. Карточка, сущности и службы уже работают. Установите Home Keeper из HACS и перезапустите Home Assistant. Шаги установки: {url}"
+    },
+    "home_keeper_not_set_up": {
+      "title": "Home Keeper не настроен",
+      "description": "Для вкладки Библиотека и задач выдач нужна загруженная интеграция Home Keeper. Карточка, сущности и службы уже работают. Добавьте или включите интеграцию Home Keeper."
+    },
+    "home_keeper_too_old": {
+      "title": "Home Keeper слишком старый",
+      "description": "Для вкладки Библиотека и задач выдач нужен Home Keeper версии {version} или новее. Карточка, сущности и службы уже работают. Обновите Home Keeper."
+    }
+  },
+  "services": {
+    "add_room": {
+      "name": "Добавить комнату",
+      "description": "Добавить комнату в библиотеку.",
+      "fields": {
+        "name": {
+          "name": "Название",
+          "description": "Отображаемое название."
+        },
+        "area_id": {
+          "name": "Пространство",
+          "description": "Пространство Home Assistant для комнаты."
+        },
+        "order": {
+          "name": "Порядок",
+          "description": "Позиция сортировки. Меньшее значение идёт первым."
+        }
+      }
+    },
+    "update_room": {
+      "name": "Изменить комнату",
+      "description": "Изменить комнату.",
+      "fields": {
+        "room_id": {
+          "name": "Комната",
+          "description": "ID комнаты."
+        },
+        "name": {
+          "name": "Название",
+          "description": "Отображаемое название."
+        },
+        "area_id": {
+          "name": "Пространство",
+          "description": "Пространство Home Assistant для комнаты."
+        },
+        "order": {
+          "name": "Порядок",
+          "description": "Позиция сортировки. Меньшее значение идёт первым."
+        }
+      }
+    },
+    "delete_room": {
+      "name": "Удалить комнату",
+      "description": "Удалить комнату. Для комнаты с книжными шкафами нужен force.",
+      "fields": {
+        "room_id": {
+          "name": "Комната",
+          "description": "ID комнаты."
+        },
+        "force": {
+          "name": "Принудительно",
+          "description": "Удалить также содержимое. Экземпляры останутся без полки."
+        }
+      }
+    },
+    "add_bookcase": {
+      "name": "Добавить книжный шкаф",
+      "description": "Добавить книжный шкаф в комнату.",
+      "fields": {
+        "room_id": {
+          "name": "Комната",
+          "description": "ID комнаты."
+        },
+        "name": {
+          "name": "Название",
+          "description": "Отображаемое название."
+        },
+        "note": {
+          "name": "Заметка",
+          "description": "Короткая заметка."
+        },
+        "order": {
+          "name": "Порядок",
+          "description": "Позиция сортировки. Меньшее значение идёт первым."
+        }
+      }
+    },
+    "update_bookcase": {
+      "name": "Изменить книжный шкаф",
+      "description": "Изменить книжный шкаф или переместить его в другую комнату.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Книжный шкаф",
+          "description": "ID книжного шкафа."
+        },
+        "room_id": {
+          "name": "Комната",
+          "description": "ID комнаты."
+        },
+        "name": {
+          "name": "Название",
+          "description": "Отображаемое название."
+        },
+        "note": {
+          "name": "Заметка",
+          "description": "Короткая заметка."
+        },
+        "order": {
+          "name": "Порядок",
+          "description": "Позиция сортировки. Меньшее значение идёт первым."
+        }
+      }
+    },
+    "delete_bookcase": {
+      "name": "Удалить книжный шкаф",
+      "description": "Удалить книжный шкаф. Для шкафа с полками нужен force.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Книжный шкаф",
+          "description": "ID книжного шкафа."
+        },
+        "force": {
+          "name": "Принудительно",
+          "description": "Удалить также содержимое. Экземпляры останутся без полки."
+        }
+      }
+    },
+    "add_shelf": {
+      "name": "Добавить полку",
+      "description": "Добавить полку в книжный шкаф.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Книжный шкаф",
+          "description": "ID книжного шкафа."
+        },
+        "name": {
+          "name": "Название",
+          "description": "Отображаемое название."
+        },
+        "order": {
+          "name": "Порядок",
+          "description": "Позиция сортировки. Меньшее значение идёт первым."
+        }
+      }
+    },
+    "update_shelf": {
+      "name": "Изменить полку",
+      "description": "Изменить полку или переместить её в другой книжный шкаф.",
+      "fields": {
+        "shelf_id": {
+          "name": "Полка",
+          "description": "ID полки. Пусто, если полки нет."
+        },
+        "bookcase_id": {
+          "name": "Книжный шкаф",
+          "description": "ID книжного шкафа."
+        },
+        "name": {
+          "name": "Название",
+          "description": "Отображаемое название."
+        },
+        "order": {
+          "name": "Порядок",
+          "description": "Позиция сортировки. Меньшее значение идёт первым."
+        }
+      }
+    },
+    "delete_shelf": {
+      "name": "Удалить полку",
+      "description": "Удалить полку. Для полки с экземплярами нужен force.",
+      "fields": {
+        "shelf_id": {
+          "name": "Полка",
+          "description": "ID полки. Пусто, если полки нет."
+        },
+        "force": {
+          "name": "Принудительно",
+          "description": "Удалить также содержимое. Экземпляры останутся без полки."
+        }
+      }
+    },
+    "lookup_isbn": {
+      "name": "Найти ISBN",
+      "description": "Прочитать сведения по ISBN из Open Library. Библиотека не меняется.",
+      "fields": {
+        "isbn": {
+          "name": "Номер ISBN",
+          "description": "ISBN-10 или ISBN-13."
+        }
+      }
+    },
+    "add_book": {
+      "name": "Добавить книгу",
+      "description": "Добавить книгу. Если у книги тот же ISBN, служба возвращает эту книгу.",
+      "fields": {
+        "title": {
+          "name": "Заглавие",
+          "description": "Заглавие книги."
+        },
+        "subtitle": {
+          "name": "Подзаголовок",
+          "description": "Подзаголовок книги."
+        },
+        "authors": {
+          "name": "Авторы",
+          "description": "Авторы по порядку."
+        },
+        "isbn": {
+          "name": "Номер ISBN",
+          "description": "ISBN-10 или ISBN-13."
+        },
+        "isbn13": {
+          "name": "Номер ISBN-13",
+          "description": "ISBN из 13 цифр."
+        },
+        "isbn10": {
+          "name": "Номер ISBN-10",
+          "description": "ISBN из 10 цифр."
+        },
+        "publisher": {
+          "name": "Издательство",
+          "description": "Издательство книги."
+        },
+        "published": {
+          "name": "Издано",
+          "description": "Дата издания, обычно год."
+        },
+        "pages": {
+          "name": "Страницы",
+          "description": "Число страниц."
+        },
+        "language": {
+          "name": "Язык",
+          "description": "Код языка, например en."
+        },
+        "subjects": {
+          "name": "Темы",
+          "description": "Темы книги."
+        },
+        "series": {
+          "name": "Серия",
+          "description": "Название серии или название и номер."
+        },
+        "description": {
+          "name": "Описание",
+          "description": "Описание книги."
+        },
+        "tags": {
+          "name": "Метки",
+          "description": "Метки книги."
+        },
+        "shared_notes": {
+          "name": "Общие заметки",
+          "description": "Заметки, которые может читать каждый пользователь, в Markdown."
+        },
+        "needs_details": {
+          "name": "Нужны сведения",
+          "description": "Отметить книгу как неполную."
+        },
+        "lookup": {
+          "name": "Найти сведения",
+          "description": "Прочитать сведения из Open Library."
+        }
+      }
+    },
+    "update_book": {
+      "name": "Изменить книгу",
+      "description": "Изменить сведения о книге.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "title": {
+          "name": "Заглавие",
+          "description": "Заглавие книги."
+        },
+        "subtitle": {
+          "name": "Подзаголовок",
+          "description": "Подзаголовок книги."
+        },
+        "authors": {
+          "name": "Авторы",
+          "description": "Авторы по порядку."
+        },
+        "isbn": {
+          "name": "Номер ISBN",
+          "description": "ISBN-10 или ISBN-13."
+        },
+        "isbn13": {
+          "name": "Номер ISBN-13",
+          "description": "ISBN из 13 цифр."
+        },
+        "isbn10": {
+          "name": "Номер ISBN-10",
+          "description": "ISBN из 10 цифр."
+        },
+        "publisher": {
+          "name": "Издательство",
+          "description": "Издательство книги."
+        },
+        "published": {
+          "name": "Издано",
+          "description": "Дата издания, обычно год."
+        },
+        "pages": {
+          "name": "Страницы",
+          "description": "Число страниц."
+        },
+        "language": {
+          "name": "Язык",
+          "description": "Код языка, например en."
+        },
+        "subjects": {
+          "name": "Темы",
+          "description": "Темы книги."
+        },
+        "series": {
+          "name": "Серия",
+          "description": "Название серии или название и номер."
+        },
+        "description": {
+          "name": "Описание",
+          "description": "Описание книги."
+        },
+        "tags": {
+          "name": "Метки",
+          "description": "Метки книги."
+        },
+        "shared_notes": {
+          "name": "Общие заметки",
+          "description": "Заметки, которые может читать каждый пользователь, в Markdown."
+        },
+        "needs_details": {
+          "name": "Нужны сведения",
+          "description": "Отметить книгу как неполную."
+        }
+      }
+    },
+    "delete_book": {
+      "name": "Удалить книгу",
+      "description": "Удалить книгу с её экземплярами, статусом чтения, выдачами и обложкой.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        }
+      }
+    },
+    "refresh_book": {
+      "name": "Обновить из Open Library",
+      "description": "Заполнить пустые поля книги из Open Library.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        }
+      }
+    },
+    "scan_isbn": {
+      "name": "Сканировать ISBN",
+      "description": "Добавить отсканированную книгу на полку.",
+      "fields": {
+        "isbn": {
+          "name": "Номер ISBN",
+          "description": "ISBN-10 или ISBN-13."
+        },
+        "shelf_id": {
+          "name": "Полка",
+          "description": "ID полки. Пусто, если полки нет."
+        },
+        "format": {
+          "name": "Формат",
+          "description": "Формат экземпляра."
+        },
+        "on_duplicate": {
+          "name": "Если экземпляр есть",
+          "description": "Действие, если в библиотеке есть экземпляр книги."
+        }
+      }
+    },
+    "add_copy": {
+      "name": "Добавить экземпляр",
+      "description": "Добавить экземпляр книги.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "shelf_id": {
+          "name": "Полка",
+          "description": "ID полки. Пусто, если полки нет."
+        },
+        "format": {
+          "name": "Формат",
+          "description": "Формат экземпляра."
+        },
+        "condition": {
+          "name": "Состояние",
+          "description": "Состояние экземпляра."
+        },
+        "acquired": {
+          "name": "Приобретено",
+          "description": "Дата приобретения экземпляра."
+        },
+        "acquired_from": {
+          "name": "Источник",
+          "description": "Магазин или человек."
+        },
+        "price": {
+          "name": "Цена",
+          "description": "Уплаченная цена."
+        },
+        "value": {
+          "name": "Стоимость",
+          "description": "Текущая стоимость экземпляра."
+        },
+        "signed": {
+          "name": "С автографом",
+          "description": "Экземпляр с автографом."
+        },
+        "first_edition": {
+          "name": "Первое издание",
+          "description": "Экземпляр первого издания."
+        },
+        "note": {
+          "name": "Заметка",
+          "description": "Короткая заметка."
+        }
+      }
+    },
+    "update_copy": {
+      "name": "Изменить экземпляр",
+      "description": "Изменить экземпляр.",
+      "fields": {
+        "copy_id": {
+          "name": "Экземпляр",
+          "description": "ID экземпляра."
+        },
+        "shelf_id": {
+          "name": "Полка",
+          "description": "ID полки. Пусто, если полки нет."
+        },
+        "format": {
+          "name": "Формат",
+          "description": "Формат экземпляра."
+        },
+        "condition": {
+          "name": "Состояние",
+          "description": "Состояние экземпляра."
+        },
+        "acquired": {
+          "name": "Приобретено",
+          "description": "Дата приобретения экземпляра."
+        },
+        "acquired_from": {
+          "name": "Источник",
+          "description": "Магазин или человек."
+        },
+        "price": {
+          "name": "Цена",
+          "description": "Уплаченная цена."
+        },
+        "value": {
+          "name": "Стоимость",
+          "description": "Текущая стоимость экземпляра."
+        },
+        "signed": {
+          "name": "С автографом",
+          "description": "Экземпляр с автографом."
+        },
+        "first_edition": {
+          "name": "Первое издание",
+          "description": "Экземпляр первого издания."
+        },
+        "note": {
+          "name": "Заметка",
+          "description": "Короткая заметка."
+        }
+      }
+    },
+    "move_copy": {
+      "name": "Переместить экземпляр",
+      "description": "Переместить экземпляр на полку.",
+      "fields": {
+        "copy_id": {
+          "name": "Экземпляр",
+          "description": "ID экземпляра."
+        },
+        "shelf_id": {
+          "name": "Полка",
+          "description": "ID полки. Пусто, если полки нет."
+        }
+      }
+    },
+    "delete_copy": {
+      "name": "Удалить экземпляр",
+      "description": "Удалить экземпляр.",
+      "fields": {
+        "copy_id": {
+          "name": "Экземпляр",
+          "description": "ID экземпляра."
+        }
+      }
+    },
+    "set_cover": {
+      "name": "Задать обложку",
+      "description": "Задать обложку книги.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "kind": {
+          "name": "Тип обложки",
+          "description": "Источник обложки."
+        },
+        "file_id": {
+          "name": "ID файла",
+          "description": "ID из загрузки обложки."
+        }
+      }
+    },
+    "set_reading": {
+      "name": "Задать статус чтения",
+      "description": "Задать статус чтения книги для человека. Пользователь без прав администратора может задать только свой статус.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "person_id": {
+          "name": "Человек",
+          "description": "ID человека в Home Assistant."
+        },
+        "status": {
+          "name": "Статус чтения",
+          "description": "Статус чтения."
+        },
+        "rating": {
+          "name": "Оценка",
+          "description": "Оценка от 1 до 5."
+        },
+        "page": {
+          "name": "Страница",
+          "description": "Текущая страница."
+        },
+        "started": {
+          "name": "Начато",
+          "description": "Дата начала."
+        },
+        "finished": {
+          "name": "Прочитано",
+          "description": "Дата, когда книга прочитана."
+        },
+        "read_count": {
+          "name": "Число прочтений",
+          "description": "Сколько раз книга прочитана."
+        },
+        "private_notes": {
+          "name": "Личные заметки",
+          "description": "Заметки, которые может читать только этот человек."
+        }
+      }
+    },
+    "lend_book": {
+      "name": "Выдать книгу",
+      "description": "Выдать экземпляр другому человеку.",
+      "fields": {
+        "copy_id": {
+          "name": "Экземпляр",
+          "description": "ID экземпляра."
+        },
+        "party": {
+          "name": "Другой человек",
+          "description": "Имя другого человека в выдаче."
+        },
+        "started": {
+          "name": "Начато",
+          "description": "Дата начала."
+        },
+        "due": {
+          "name": "Срок",
+          "description": "Срок возврата."
+        },
+        "note": {
+          "name": "Заметка",
+          "description": "Короткая заметка."
+        },
+        "add_task": {
+          "name": "Добавить задачу",
+          "description": "Добавить задачу Home Keeper на срок возврата."
+        }
+      }
+    },
+    "borrow_book": {
+      "name": "Добавить взятую книгу",
+      "description": "Записать книгу, которую человек взял.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "isbn": {
+          "name": "Номер ISBN",
+          "description": "ISBN-10 или ISBN-13."
+        },
+        "title": {
+          "name": "Заглавие",
+          "description": "Заглавие книги."
+        },
+        "authors": {
+          "name": "Авторы",
+          "description": "Авторы по порядку."
+        },
+        "party": {
+          "name": "Другой человек",
+          "description": "Имя другого человека в выдаче."
+        },
+        "started": {
+          "name": "Начато",
+          "description": "Дата начала."
+        },
+        "due": {
+          "name": "Срок",
+          "description": "Срок возврата."
+        },
+        "note": {
+          "name": "Заметка",
+          "description": "Короткая заметка."
+        },
+        "add_task": {
+          "name": "Добавить задачу",
+          "description": "Добавить задачу Home Keeper на срок возврата."
+        },
+        "person_id": {
+          "name": "Человек",
+          "description": "ID человека в Home Assistant."
+        },
+        "format": {
+          "name": "Формат",
+          "description": "Формат экземпляра."
+        }
+      }
+    },
+    "return_loan": {
+      "name": "Вернуть выдачу",
+      "description": "Записать возврат выдачи.",
+      "fields": {
+        "loan_id": {
+          "name": "Выдача",
+          "description": "ID выдачи."
+        },
+        "returned": {
+          "name": "Возвращено",
+          "description": "Дата возврата. По умолчанию сегодня."
+        }
+      }
+    },
+    "update_loan": {
+      "name": "Изменить выдачу",
+      "description": "Изменить выдачу.",
+      "fields": {
+        "loan_id": {
+          "name": "Выдача",
+          "description": "ID выдачи."
+        },
+        "party": {
+          "name": "Другой человек",
+          "description": "Имя другого человека в выдаче."
+        },
+        "started": {
+          "name": "Начато",
+          "description": "Дата начала."
+        },
+        "due": {
+          "name": "Срок",
+          "description": "Срок возврата."
+        },
+        "note": {
+          "name": "Заметка",
+          "description": "Короткая заметка."
+        },
+        "format": {
+          "name": "Формат",
+          "description": "Формат экземпляра."
+        }
+      }
+    },
+    "delete_loan": {
+      "name": "Удалить выдачу",
+      "description": "Удалить выдачу и её задачу Home Keeper.",
+      "fields": {
+        "loan_id": {
+          "name": "Выдача",
+          "description": "ID выдачи."
+        }
+      }
+    },
+    "add_to_wishlist": {
+      "name": "Добавить в желания",
+      "description": "Поставить книгу в список желаний человека.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "isbn": {
+          "name": "Номер ISBN",
+          "description": "ISBN-10 или ISBN-13."
+        },
+        "title": {
+          "name": "Заглавие",
+          "description": "Заглавие книги."
+        },
+        "authors": {
+          "name": "Авторы",
+          "description": "Авторы по порядку."
+        },
+        "person_id": {
+          "name": "Человек",
+          "description": "ID человека в Home Assistant."
+        },
+        "buy": {
+          "name": "Купить",
+          "description": "Поставить книгу в список задач желаний человека."
+        }
+      }
+    },
+    "update_wishlist": {
+      "name": "Изменить желание",
+      "description": "Изменить запись в списке желаний.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "buy": {
+          "name": "Купить",
+          "description": "Поставить книгу в список задач желаний человека."
+        },
+        "person_id": {
+          "name": "Человек",
+          "description": "ID человека в Home Assistant."
+        }
+      }
+    },
+    "remove_from_wishlist": {
+      "name": "Убрать из желаний",
+      "description": "Убрать книгу из списка желаний.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        }
+      }
+    },
+    "got_wishlist_book": {
+      "name": "Желанная книга получена",
+      "description": "Добавить экземпляр желанной книги и убрать её из списка желаний.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "shelf_id": {
+          "name": "Полка",
+          "description": "ID полки. Пусто, если полки нет."
+        },
+        "format": {
+          "name": "Формат",
+          "description": "Формат экземпляра."
+        }
+      }
+    },
+    "set_person_settings": {
+      "name": "Задать настройки человека",
+      "description": "Задать настройки библиотеки для человека. Пользователь без прав администратора может задать только свой доступ и свою цель.",
+      "fields": {
+        "person_id": {
+          "name": "Человек",
+          "description": "ID человека в Home Assistant."
+        },
+        "share_reading": {
+          "name": "Делиться статусом чтения",
+          "description": "Другие пользователи видят статус."
+        },
+        "yearly_goal": {
+          "name": "Цель на год",
+          "description": "Число книг, которые надо прочитать в этом году."
+        },
+        "wishlist_todo": {
+          "name": "Список желаний",
+          "description": "Список задач с книгами для покупки."
+        }
+      }
+    },
+    "import_csv": {
+      "name": "Импорт CSV",
+      "description": "Импортировать книги из Goodreads, StoryGraph или экспорта библиотеки.",
+      "fields": {
+        "content": {
+          "name": "Содержимое CSV",
+          "description": "Текст CSV. Не более 5 МБ."
+        },
+        "source": {
+          "name": "Источник файла",
+          "description": "Приложение, которое создало файл CSV."
+        },
+        "person_id": {
+          "name": "Человек",
+          "description": "ID человека в Home Assistant."
+        },
+        "shelf_id": {
+          "name": "Полка",
+          "description": "ID полки. Пусто, если полки нет."
+        },
+        "import_notes": {
+          "name": "Импортировать заметки",
+          "description": "Импортировать отзывы и заметки как личные заметки."
+        },
+        "replace_reading": {
+          "name": "Заменить статус чтения",
+          "description": "Заменить имеющийся статус чтения."
+        },
+        "dry_run": {
+          "name": "Пробный запуск",
+          "description": "Только показать изменения импорта."
+        }
+      }
+    },
+    "export_csv": {
+      "name": "Экспорт CSV",
+      "description": "Экспортировать библиотеку как текст CSV.",
+      "fields": {
+        "person_id": {
+          "name": "Человек",
+          "description": "ID человека в Home Assistant."
+        },
+        "format": {
+          "name": "Формат файла",
+          "description": "goodreads или library."
+        }
+      }
+    },
+    "list_books": {
+      "name": "Список книг",
+      "description": "Вернуть книги, которые подходят под фильтры.",
+      "fields": {
+        "query": {
+          "name": "Поиск",
+          "description": "Текст в заглавии, авторах, ISBN или метках."
+        },
+        "room_id": {
+          "name": "Комната",
+          "description": "ID комнаты."
+        },
+        "shelf_id": {
+          "name": "Полка",
+          "description": "ID полки. Пусто, если полки нет."
+        },
+        "owned": {
+          "name": "В наличии",
+          "description": "Только книги с экземпляром или только книги без экземпляра."
+        },
+        "status": {
+          "name": "Статус чтения",
+          "description": "Статус чтения."
+        },
+        "person_id": {
+          "name": "Человек",
+          "description": "ID человека в Home Assistant."
+        },
+        "limit": {
+          "name": "Лимит",
+          "description": "Наибольшее число книг."
+        }
+      }
+    },
+    "get_book": {
+      "name": "Получить книгу",
+      "description": "Вернуть книгу с её экземплярами и выдачами.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        }
+      }
+    },
+    "list_locations": {
+      "name": "Список мест",
+      "description": "Вернуть комнаты, книжные шкафы и полки."
+    },
+    "list_loans": {
+      "name": "Список выдач",
+      "description": "Вернуть выдачи.",
+      "fields": {
+        "status": {
+          "name": "Статус выдачи",
+          "description": "open, returned или all."
+        },
+        "direction": {
+          "name": "Направление",
+          "description": "out для выданной книги, in для взятой книги."
+        }
+      }
+    },
+    "list_people": {
+      "name": "Список людей",
+      "description": "Вернуть людей и их настройки библиотеки."
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "Home Keeper Library не загружен."
+    },
+    "admin_required": {
+      "message": "Это может сделать только администратор."
+    },
+    "invalid_field": {
+      "message": "Значение {field} недопустимо."
+    },
+    "field_required": {
+      "message": "{field} обязательно."
+    },
+    "field_too_long": {
+      "message": "{field} слишком длинное. Максимум: {max}."
+    },
+    "out_of_range": {
+      "message": "{field} должно быть от {low} до {high}."
+    },
+    "invalid_date": {
+      "message": "{field} должно быть датой в виде YYYY-MM-DD."
+    },
+    "invalid_choice": {
+      "message": "{field} должно быть одним из значений: {options}."
+    },
+    "invalid_isbn": {
+      "message": "{isbn} не является допустимым ISBN."
+    },
+    "room_not_found": {
+      "message": "Нет комнаты с ID {id}."
+    },
+    "bookcase_not_found": {
+      "message": "Нет книжного шкафа с ID {id}."
+    },
+    "shelf_not_found": {
+      "message": "Нет полки с ID {id}."
+    },
+    "book_not_found": {
+      "message": "Нет книги с ID {id}."
+    },
+    "copy_not_found": {
+      "message": "Нет экземпляра с ID {id}."
+    },
+    "loan_not_found": {
+      "message": "Нет выдачи с ID {id}."
+    },
+    "person_not_found": {
+      "message": "Нет человека с ID {id}."
+    },
+    "no_person": {
+      "message": "У вашего пользователя нет человека в Home Assistant. Свяжите человека с пользователем."
+    },
+    "room_not_empty": {
+      "message": "В комнате есть книжные шкафы: {count}. Используйте force, чтобы удалить и их."
+    },
+    "bookcase_not_empty": {
+      "message": "В книжном шкафу есть полки: {count}. Используйте force, чтобы удалить и их."
+    },
+    "shelf_not_empty": {
+      "message": "На полке есть экземпляры: {count}. Используйте force, чтобы оставить их без полки."
+    },
+    "duplicate_isbn": {
+      "message": "У другой книги ISBN {isbn}."
+    },
+    "copy_on_loan": {
+      "message": "Экземпляр выдан. Сначала верните выдачу."
+    },
+    "due_before_start": {
+      "message": "Срок возврата раньше даты начала."
+    },
+    "already_on_wishlist": {
+      "message": "Книга уже в списке желаний."
+    },
+    "not_on_wishlist": {
+      "message": "Книги нет ни в одном списке желаний."
+    },
+    "upload_not_found": {
+      "message": "Нет загруженной обложки с ID {file_id}."
+    },
+    "isbn_or_title_required": {
+      "message": "Укажите ID книги, ISBN или заглавие."
+    },
+    "lookup_unavailable": {
+      "message": "Open Library недоступна. Повторите попытку позже."
+    },
+    "no_openlibrary_cover": {
+      "message": "В Open Library нет обложки для этой книги."
+    },
+    "todo_entity_not_found": {
+      "message": "{entity_id} не является списком задач."
+    },
+    "csv_too_large": {
+      "message": "Текст CSV слишком большой. Максимум: {mb} МБ."
+    },
+    "csv_unreadable": {
+      "message": "В тексте CSV нет столбца {column}."
+    },
+    "upload_requires_user": {
+      "message": "Для загрузки нужен вошедший пользователь."
+    },
+    "expected_multipart_upload": {
+      "message": "Загрузка должна быть формой multipart."
+    },
+    "no_file_in_upload": {
+      "message": "В загрузке нет файла."
+    },
+    "file_too_large": {
+      "message": "Файл слишком большой. Максимум: {mb} МБ."
+    },
+    "unsupported_image": {
+      "message": "Файл должен быть изображением JPEG, PNG или WebP."
+    },
+    "image_unreadable": {
+      "message": "Не удаётся прочитать изображение."
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # The services of Home Keeper Library. The names and descriptions are in
-# strings.json. A generator writes this file and the string tables from 1
-# table, so the field labels are the same in each service.
+# strings.json and translations/. The fields of each service are the keys of
+# services.SERVICE_FIELDS, and tests/unit/test_api_surface.py checks that.
 
 add_room:
   fields:
