@@ -38,6 +38,10 @@ you write or review code.
   each change.
 - Records are plain JSON dicts. `models.normalize_state` is the migration hook:
   the store runs it on every load, so a new section needs no migration step.
+- **An import never replaces the document.** `csv_io.apply_import` plans on a
+  snapshot in an executor job, and `commit_import` writes the plan with
+  `models.merge_changes`: only the records and fields that the plan changed,
+  with no `await` in the middle. A change made while the plan runs stays.
 - A book has `lookup_tries`: the Open Library lookups that gave no details.
   Setup queues again each book that `models.books_to_look_up` names, and the
   queue stops at `LOOKUP_MAX_TRIES` across restarts. It is bookkeeping of the

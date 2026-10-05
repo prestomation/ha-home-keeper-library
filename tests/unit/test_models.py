@@ -82,6 +82,111 @@ def test_books_to_look_up() -> None:
     assert m.books_to_look_up(state, 3) == ["b_late", "c_early", "a_ten"]
 
 
+def _merge_state(**sections):
+    state = m.empty_state()
+    for name, value in sections.items():
+        state[name] = value
+    return state
+
+
+def test_merge_changes_writes_only_what_the_plan_changed() -> None:
+    before = _merge_state(
+        rooms={"r": {"id": "r", "name": "Den"}},
+        books={
+            "b": {"id": "b", "title": "Dune", "tags": [], "gone": 1},
+            "same": {"id": "same", "title": "Same"},
+            "drop": {"id": "drop", "title": "Drop"},
+            "lost": {"id": "lost", "title": "Lost", "tags": []},
+        },
+    )
+    after = m.clone(before)
+    after["books"]["b"]["tags"] = ["sf"]
+    after["books"]["b"]["series"] = {"name": "Dune"}
+    del after["books"]["b"]["gone"]
+    after["books"]["lost"]["tags"] = ["x"]
+    del after["books"]["drop"]
+    after["books"]["new"] = {"id": "new", "title": "New", "tags": ["a"]}
+    after["books"]["taken"] = {"id": "taken", "title": "Mine"}
+    current = m.clone(before)
+    current["books"]["b"]["title"] = "Dune (edited)"
+    current["books"]["same"]["title"] = "Same (edited)"
+    del current["books"]["lost"]
+    current["books"]["taken"] = {"id": "taken", "title": "Theirs"}
+    current["rooms"]["r2"] = {"id": "r2", "name": "Attic"}
+    kept = m.clone(current)
+    merged = m.merge_changes(current, before, after)
+    assert current == kept, "the merge must not change its input"
+    assert merged["books"] == {
+        "b": {
+            "id": "b",
+            "title": "Dune (edited)",
+            "tags": ["sf"],
+            "series": {"name": "Dune"},
+        },
+        "same": {"id": "same", "title": "Same (edited)"},
+        "new": {"id": "new", "title": "New", "tags": ["a"]},
+        "taken": {"id": "taken", "title": "Theirs"},
+    }
+    assert merged["rooms"] == current["rooms"]
+    after["books"]["new"]["tags"].append("b")
+    after["books"]["b"]["tags"].append("c")
+    assert merged["books"]["new"]["tags"] == ["a"], "no alias of the plan"
+    assert merged["books"]["b"]["tags"] == ["sf"], "no alias of the plan"
+
+
+def test_merge_changes_keeps_links() -> None:
+    books = {"b": {"id": "b"}, "gone": {"id": "gone"}}
+    shelves = {"s": {"id": "s"}, "old": {"id": "old"}}
+    before = _merge_state(books=dict(books), shelves=dict(shelves))
+    before["reading"] = {"p": {"b": {"status": "want"}}}
+    after = m.clone(before)
+    after["copies"] = {
+        "c1": {"id": "c1", "book_id": "b", "shelf_id": "s"},
+        "c2": {"id": "c2", "book_id": "b", "shelf_id": "old"},
+        "c3": {"id": "c3", "book_id": "gone", "shelf_id": None},
+        "c4": {"id": "c4", "book_id": "b", "shelf_id": None},
+    }
+    after["reading"] = {
+        "p": {"b": {"status": "read"}, "gone": {"status": "read"}},
+        "q": {"gone": {"status": "want"}},
+    }
+    current = m.clone(before)
+    del current["books"]["gone"]
+    del current["shelves"]["old"]
+    current["reading"]["p"]["other"] = {"status": "reading"}
+    current["reading"]["r"] = {"x": {"status": "want"}}
+    current["copies"]["mine"] = {"id": "mine", "book_id": "zzz", "shelf_id": "zz"}
+    merged = m.merge_changes(current, before, after)
+    assert merged["copies"] == {
+        "c1": {"id": "c1", "book_id": "b", "shelf_id": "s"},
+        "c2": {"id": "c2", "book_id": "b", "shelf_id": None},
+        "c4": {"id": "c4", "book_id": "b", "shelf_id": None},
+        "mine": {"id": "mine", "book_id": "zzz", "shelf_id": "zz"},
+    }
+    assert merged["reading"] == {
+        "p": {"b": {"status": "read"}, "other": {"status": "reading"}},
+        "r": {"x": {"status": "want"}},
+    }
+
+
+def test_merge_changes_removes_a_person_with_no_rows() -> None:
+    before = _merge_state(books={"b": {"id": "b"}})
+    before["reading"] = {"p": {"b": {"status": "want"}}}
+    after = m.clone(before)
+    after["reading"] = {}
+    merged = m.merge_changes(m.clone(before), before, after)
+    assert merged["reading"] == {}
+    assert m.merge_changes(m.clone(before), before, m.clone(before)) == before
+
+
+def test_merge_changes_when_the_current_data_already_lost_it() -> None:
+    before = _merge_state(books={"b": {"id": "b", "x": 1}, "d": {"id": "d"}})
+    after = _merge_state(books={"b": {"id": "b", "y": 2}})
+    current = _merge_state(books={"b": {"id": "b"}})
+    merged = m.merge_changes(current, before, after)
+    assert merged["books"] == {"b": {"id": "b", "y": 2}}
+
+
 def test_new_id_and_clone() -> None:
     first, second = m.new_id(), m.new_id()
     assert len(first) == 32 and first != second

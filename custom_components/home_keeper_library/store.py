@@ -909,17 +909,26 @@ class LibraryStore:
 
     async def commit_import(
         self,
-        new_state: dict[str, Any],
+        before: dict[str, Any],
+        after: dict[str, Any],
         summary: dict[str, Any],
         *,
         person_id: str | None,
         source: str,
         origin: str | None = None,
     ) -> None:
-        """Replace the document with the result of an import.
+        """Write the result of an import.
+
+        The import planned *after* from the snapshot *before*, and other
+        changes could go on in the meantime. ``models.merge_changes`` writes
+        only what the plan changed into the current document. The merge and
+        the new document happen with no ``await`` between them, so no other
+        change can come in the middle.
 
         The import fires only ``import_completed``, not 1 event for each row.
         """
-        self.state = models.normalize_state(new_state)
+        self.state = models.normalize_state(
+            models.merge_changes(self.state, before, after)
+        )
         payload = events.import_completed_event_data(summary, person_id, source, origin)
         await self._commit([(EVENT_IMPORT_COMPLETED, payload)])

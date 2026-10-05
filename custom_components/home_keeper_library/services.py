@@ -770,8 +770,10 @@ async def _import_csv(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     dry_run = data.get("dry_run", False)
     summary = csv_io.summary_of(counts, counts["reading_kept"])
     if not dry_run:
+        # The plan ran on a snapshot. The store merges it into the current
+        # data, so a change made while the plan ran stays.
         await ctx.store.commit_import(
-            new_state, summary, person_id=person_id, source=data["source"]
+            snapshot, new_state, summary, person_id=person_id, source=data["source"]
         )
         for book_id in lookup_ids:
             ctx.coordinator.lookup.async_enqueue(book_id)
