@@ -282,3 +282,60 @@ async def test_cover_upload_rules(
     webp = _jpeg((20, 20), fmt="WEBP")
     response = await _upload(hass_client, webp, "c.webp")
     assert response.status == HTTPStatus.OK
+
+
+def test_openlibrary_urls_from_the_environment() -> None:
+    from custom_components.home_keeper_library.openlibrary_client import (
+        openlibrary_urls,
+    )
+
+    assert openlibrary_urls({}) == {}
+    assert openlibrary_urls({"HOME_KEEPER_LIBRARY_OPENLIBRARY_URL": "  "}) == {}
+    assert openlibrary_urls(
+        {
+            "HOME_KEEPER_LIBRARY_OPENLIBRARY_URL": "http://ol:8080/",
+            "HOME_KEEPER_LIBRARY_OPENLIBRARY_COVERS_URL": "http://ol:8080",
+        }
+    ) == {"base_url": "http://ol:8080", "covers_url": "http://ol:8080"}
+
+
+async def test_client_reads_the_base_urls(hass, setup_entry, aioclient_mock) -> None:
+    aioclient_mock.get("http://ol:8080/isbn/9780000000002.json", status=404)
+    aioclient_mock.get("http://ol:8080/b/id/1-L.jpg?default=false", content=b"jpg")
+    client = OpenLibraryClient(
+        hass, base_url="http://ol:8080", covers_url="http://ol:8080", min_interval=0
+    )
+    assert await client.async_lookup_isbn("9780000000002") is None
+    assert await client.async_cover(1) == b"jpg"
+
+
+async def test_covers_dir_is_not_the_store_file(hass, setup_entry) -> None:
+    from custom_components.home_keeper_library import covers
+
+    store_file = Path(hass.config.path(".storage", "home_keeper_library"))
+    directory = covers.covers_dir(hass)
+    assert directory.parent == store_file.parent
+    assert directory != store_file and store_file not in directory.parents
+
+
+async def test_signed_cover_url_needs_no_token(
+    hass, setup_entry, call, hass_client, hass_client_no_auth, hass_ws_client
+) -> None:
+    """The tab and the card sign a cover path, because an <img> sends no token."""
+    book = (await call("add_book", {"title": "Dune", "lookup": False}))["book"]
+    response = await _upload(hass_client, _jpeg((60, 90)))
+    file_id = (await response.json())["file_id"]
+    url = (
+        await call(
+            "set_cover", {"book_id": book["id"], "kind": "custom", "file_id": file_id}
+        )
+    )["book"]["cover_url"]
+    anon = await hass_client_no_auth()
+    assert (await anon.get(url)).status == HTTPStatus.UNAUTHORIZED
+    ws = await hass_ws_client(hass)
+    await ws.send_json(
+        {"id": 1, "type": "auth/sign_path", "path": url, "expires": 3600}
+    )
+    signed = (await ws.receive_json())["result"]["path"]
+    assert signed.startswith(url) and "authSig=" in signed
+    assert (await anon.get(signed)).status == HTTPStatus.OK

@@ -1,6 +1,7 @@
 """Book covers: the files, the upload view and the cover view.
 
-The cover files are in ``.storage/home_keeper_library/covers/``. A file name is
+The cover files are in ``.storage/home_keeper_library_covers/``. The store file is
+``.storage/home_keeper_library``, so the directory has a name of its own. A file name is
 ``<book_id>-<token>.jpg``. The token changes with each new cover, and the
 ``cover_url`` of a book carries it as ``?v=<token>``, so a browser cache never
 shows an old cover.
@@ -40,6 +41,7 @@ from .const import (
     COVER_MAX_PX,
     COVER_UPLOAD_URL,
     COVER_URL_PREFIX,
+    COVERS_DIR,
     DOMAIN,
     SNIFF_BYTES,
 )
@@ -105,8 +107,12 @@ def reencode(data: bytes, dst: Path, max_px: int = COVER_MAX_PX) -> None:
 
 
 def covers_dir(hass: HomeAssistant) -> Path:
-    """The directory of the cover files."""
-    return Path(hass.config.path(".storage", DOMAIN, "covers"))
+    """The directory of the cover files.
+
+    It is not below ``.storage/home_keeper_library``, because that path is the
+    store file.
+    """
+    return Path(hass.config.path(".storage", COVERS_DIR))
 
 
 def pending_dir(hass: HomeAssistant) -> Path:

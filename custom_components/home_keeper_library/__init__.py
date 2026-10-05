@@ -13,6 +13,7 @@ Setup order:
 from __future__ import annotations
 
 import logging
+import os
 from datetime import timedelta
 from functools import partial
 from typing import Any
@@ -28,7 +29,7 @@ from .book_lookup import BookLookup
 from .const import DOMAIN, OVERDUE_CHECK_INTERVAL_S, PLATFORMS
 from .coordinator import LibraryCoordinator
 from .loan_sync import LoanSync
-from .openlibrary_client import OpenLibraryClient
+from .openlibrary_client import OpenLibraryClient, openlibrary_urls
 from .services import async_register_services
 from .store import LibraryStore, today
 from .wishlist_sync import WishlistSync
@@ -52,7 +53,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> b
     store.on_cover_released = partial(covers.release_cover, hass)
 
     coordinator = LibraryCoordinator(hass, entry, store)
-    coordinator.client = OpenLibraryClient(hass)
+    coordinator.client = OpenLibraryClient(hass, **openlibrary_urls(os.environ))
     coordinator.lookup = BookLookup(hass, coordinator)
     coordinator.wishlist_sync = WishlistSync(hass, coordinator)
     coordinator.loan_sync = LoanSync(hass, coordinator)

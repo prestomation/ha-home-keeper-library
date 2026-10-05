@@ -59,6 +59,8 @@ COVER_URL_PREFIX = "/api/home_keeper_library/cover"
 COVER_UPLOAD_URL = "/api/home_keeper_library/upload"
 COVER_MAX_BYTES = 10 * 1024 * 1024
 COVER_MAX_PX = 1200
+# The cover files, below `.storage/`. The store file has the name of the domain.
+COVERS_DIR = f"{DOMAIN}_covers"
 # The first bytes that the upload view reads to identify the image type.
 SNIFF_BYTES = 16
 
@@ -78,6 +80,11 @@ MAX_IMPORT_ROW_RESULTS = 200
 # The Open Library client.
 OPENLIBRARY_URL = "https://openlibrary.org"
 OPENLIBRARY_COVERS_URL = "https://covers.openlibrary.org"
+# Environment variables that replace the 2 Open Library base URLs. Only the
+# browser test setup sets them, to point at a fixture server, because Open
+# Library is not reachable from the test container.
+OPENLIBRARY_URL_ENV = "HOME_KEEPER_LIBRARY_OPENLIBRARY_URL"
+OPENLIBRARY_COVERS_URL_ENV = "HOME_KEEPER_LIBRARY_OPENLIBRARY_COVERS_URL"
 OPENLIBRARY_TIMEOUT_S = 10
 OPENLIBRARY_MIN_INTERVAL_S = 1.0
 OPENLIBRARY_MISS_TTL_S = 24 * 60 * 60

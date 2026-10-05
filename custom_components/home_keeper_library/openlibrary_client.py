@@ -7,6 +7,8 @@
   the next request wait.
 * A lookup that finds no book is kept as a miss for 24 hours, in memory, so the
   same ISBN does not go to Open Library again in that time.
+* 2 environment variables can replace the base URLs (``openlibrary_urls``).
+  Only the browser test setup sets them, to point at a fixture server.
 """
 
 from __future__ import annotations
@@ -14,7 +16,8 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from typing import Any
+from collections.abc import Mapping
+from typing import Any, TypedDict
 from urllib.parse import urlencode, urlsplit
 
 import aiohttp
@@ -24,10 +27,12 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from . import openlibrary
 from .const import (
     OPENLIBRARY_COVERS_URL,
+    OPENLIBRARY_COVERS_URL_ENV,
     OPENLIBRARY_MIN_INTERVAL_S,
     OPENLIBRARY_MISS_TTL_S,
     OPENLIBRARY_TIMEOUT_S,
     OPENLIBRARY_URL,
+    OPENLIBRARY_URL_ENV,
     PANEL_VERSION,
     USER_AGENT,
 )
@@ -35,6 +40,26 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 _MAX_AUTHORS = 3
 _MAX_COVER_BYTES = 10 * 1024 * 1024
+
+
+class OpenLibraryUrls(TypedDict, total=False):
+    """The base URL overrides of the client."""
+
+    base_url: str
+    covers_url: str
+
+
+def openlibrary_urls(env: Mapping[str, str]) -> OpenLibraryUrls:
+    """The ``base_url`` and ``covers_url`` overrides that *env* sets.
+
+    An empty or missing variable keeps the default URL.
+    """
+    out: OpenLibraryUrls = {}
+    if url := env.get(OPENLIBRARY_URL_ENV, "").strip().rstrip("/"):
+        out["base_url"] = url
+    if url := env.get(OPENLIBRARY_COVERS_URL_ENV, "").strip().rstrip("/"):
+        out["covers_url"] = url
+    return out
 
 
 class OpenLibraryError(Exception):
