@@ -13,6 +13,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    include: [`${FRONTEND}/test/**/*.test.js`],
+    // The frontend tests, and the tests of the docs site scripts (website/scripts/).
+    include: [`${FRONTEND}/test/**/*.test.js`, 'tests/frontend/**/*.test.js'],
   },
 });

@@ -3,3 +3,4 @@
 package-lock.json linguist-generated=true
 custom_components/home_keeper_library/frontend/package-lock.json linguist-generated=true
 tests/e2e/package-lock.json linguist-generated=true
+website/package-lock.json linguist-generated=true

@@ -62,7 +62,7 @@ also_copy = [
 # Docker tiers run them, which is too slow for each mutant. const.py and
 # api_surface.py are data, not logic: tests/unit/test_api_surface.py checks
 # api_surface against the real registrations. backend_i18n.py is a file reader
-# that the parity tests cover.
+# that the parity tests cover. card_resource.py is the pure half of card.py.
 only_mutate = [
     "custom_components/home_keeper_library/models.py",
     "custom_components/home_keeper_library/isbn.py",
@@ -72,8 +72,12 @@ only_mutate = [
     "custom_components/home_keeper_library/csv_io.py",
     "custom_components/home_keeper_library/wishlist.py",
     "custom_components/home_keeper_library/loan_tasks.py",
+    "custom_components/home_keeper_library/card_resource.py",
 ]
 pytest_add_cli_args_test_selection = ["tests/unit"]
+# The HA harness plugin loads into every pytest run where it is installed, and its
+# autouse async fixture errors on each unit test. The unit tier turns it off.
+pytest_add_cli_args = ["-p", "no:homeassistant"]
 
 [tool.mutation-gate]
 # Minimum mutation score, in percent, for both languages. The TypeScript side

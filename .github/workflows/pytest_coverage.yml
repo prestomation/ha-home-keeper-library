@@ -54,9 +54,11 @@ jobs:
       # component tier, that stub shadows the real integration and HA sets it up
       # to find no `async_setup_entry`. `--cov-append` on the second run
       # accumulates into the same `.coverage` the comment action reads.
+      # `-p no:homeassistant`: the harness plugin loads into every pytest run,
+      # and its autouse async fixture errors on each unit test.
       - name: Run unit tests with coverage
         run: |
-          python -m pytest tests/unit \
+          python -m pytest tests/unit -p no:homeassistant \
             --cov=custom_components/home_keeper_library --cov-report=
 
       - name: Run component tests with coverage
