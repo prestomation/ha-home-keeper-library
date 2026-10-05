@@ -32,7 +32,13 @@ from homeassistant.helpers import config_validation as cv
 from . import csv_io, models, people, projections
 from .api_surface import SERVICES, ServiceSpec
 from .backend_i18n import resolve_exception
-from .const import CONF_CURRENCY, DOMAIN, MAX_CSV_BYTES, MAX_IMPORT_ROW_RESULTS
+from .const import (
+    CONF_CURRENCY,
+    DOMAIN,
+    LOOKUP_MAX_TRIES,
+    MAX_CSV_BYTES,
+    MAX_IMPORT_ROW_RESULTS,
+)
 from .coordinator import LibraryCoordinator, find_coordinator
 from .covers import async_store_openlibrary_cover, async_use_upload
 from .isbn import IsbnError
@@ -364,7 +370,10 @@ async def _add_book(
                 )
             except OpenLibraryError:
                 _LOGGER.debug("No cover for %s", book["id"])
-        elif book.get("needs_details") and status != "not_found":
+        elif status == "not_found":
+            # Open Library does not have the book, so no restart asks again.
+            await ctx.store.set_lookup_tries(book["id"], LOOKUP_MAX_TRIES)
+        elif book.get("needs_details"):
             ctx.coordinator.lookup.async_enqueue(book["id"])
     return ctx.store.book(book["id"]), existing, status
 
@@ -499,6 +508,19 @@ def _copies_with_location(ctx: Ctx, book_id: str) -> list[dict[str, Any]]:
     return out
 
 
+async def _new_copy(ctx: Ctx, data: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+    """Add a copy. Return ``(copy, from_wishlist)``.
+
+    ``from_wishlist`` is True when the copy took its book off the wishlist.
+    """
+    book_id = str(data.get("book_id"))
+    from_wishlist = models.copy_clears_wishlist(ctx.store.state, book_id)
+    copy = await ctx.store.add_copy(data)
+    if from_wishlist:
+        await ctx.coordinator.wishlist_sync.async_run()
+    return copy, from_wishlist
+
+
 async def _scan_isbn(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     shelf_id = ctx.store.check_shelf(data.get("shelf_id"))
     copy_data: dict[str, Any] = {"shelf_id": shelf_id}
@@ -518,6 +540,7 @@ async def _scan_isbn(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
                 "book": ctx.book_reply(existing),
                 "copy": None,
                 "existing_copies": _copies_with_location(ctx, existing["id"]),
+                "from_wishlist": False,
             }
         if copies and mode == "move":
             target = next(
@@ -529,21 +552,26 @@ async def _scan_isbn(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
                 "book": ctx.book_reply(existing),
                 "copy": moved,
                 "existing_copies": _copies_with_location(ctx, existing["id"]),
+                "from_wishlist": False,
             }
-        copy = await ctx.store.add_copy({**copy_data, "book_id": existing["id"]})
+        copy, from_wishlist = await _new_copy(
+            ctx, {**copy_data, "book_id": existing["id"]}
+        )
         return {
             "result": "added",
             "book": ctx.book_reply(existing),
             "copy": copy,
             "existing_copies": _copies_with_location(ctx, existing["id"]),
+            "from_wishlist": from_wishlist,
         }
     book, _, status = await _add_book(ctx, {"isbn": isbn13})
-    copy = await ctx.store.add_copy({**copy_data, "book_id": book["id"]})
+    copy, from_wishlist = await _new_copy(ctx, {**copy_data, "book_id": book["id"]})
     return {
         "result": "added" if status == "found" else "not_found",
         "book": ctx.book_reply(book),
         "copy": copy,
         "existing_copies": [],
+        "from_wishlist": from_wishlist,
     }
 
 
@@ -551,7 +579,8 @@ async def _scan_isbn(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
 
 
 async def _add_copy(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
-    return {"copy": await ctx.store.add_copy(data)}
+    copy, from_wishlist = await _new_copy(ctx, data)
+    return {"copy": copy, "from_wishlist": from_wishlist}
 
 
 async def _update_copy(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
@@ -710,8 +739,9 @@ async def _set_settings(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     ctx.hass.config_entries.async_update_entry(
         entry, options={**entry.options, CONF_CURRENCY: currency}
     )
-    # The tab and the card read the currency from get_state.
-    ctx.coordinator.store.async_notify()
+    # The store fires settings_updated, and the tab and the card read the
+    # currency from get_state again.
+    ctx.coordinator.async_check_settings()
     return {"currency": currency}
 
 
@@ -740,8 +770,10 @@ async def _import_csv(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     dry_run = data.get("dry_run", False)
     summary = csv_io.summary_of(counts, counts["reading_kept"])
     if not dry_run:
+        # The plan ran on a snapshot. The store merges it into the current
+        # data, so a change made while the plan ran stays.
         await ctx.store.commit_import(
-            new_state, summary, person_id=person_id, source=data["source"]
+            snapshot, new_state, summary, person_id=person_id, source=data["source"]
         )
         for book_id in lookup_ids:
             ctx.coordinator.lookup.async_enqueue(book_id)

@@ -166,6 +166,9 @@ def normalize_state(raw: Any) -> dict[str, Any]:
         value = raw.get(name)
         if isinstance(value, dict):
             state[name] = value
+    for book in state["books"].values():
+        if isinstance(book, dict):
+            book["lookup_tries"] = lookup_tries(book.get("lookup_tries"))
     orphans = raw.get("todo_orphans")
     if isinstance(orphans, list):
         state["todo_orphans"] = [
@@ -178,9 +181,95 @@ def normalize_state(raw: Any) -> dict[str, Any]:
     return state
 
 
+def lookup_tries(value: Any) -> int:
+    """The stored count of Open Library lookups that gave no details.
+
+    A book from before the count, or a bad value, has 0.
+    """
+    if isinstance(value, bool) or not isinstance(value, int):
+        return 0
+    return max(value, 0)
+
+
 def clone(value: Any) -> Any:
     """A deep copy of a JSON value."""
     return _copy.deepcopy(value)
+
+
+# The sections that hold 1 record for each id. ``reading`` holds 1 map of rows
+# for each person.
+RECORD_SECTIONS = tuple(name for name in STATE_SECTIONS if name != "reading")
+
+
+def _merge_records(
+    target: dict[str, Any], before: dict[str, Any], after: dict[str, Any]
+) -> list[str]:
+    """Write the change from *before* to *after* into *target*, record by record.
+
+    A new record is added. For a changed record, only the fields that changed
+    are written, so a concurrent change of another field stays. A record that
+    *target* no longer has stays deleted. Return the ids that were written.
+    """
+    written: list[str] = []
+    for key, record in after.items():
+        old = before.get(key)
+        if old is None:
+            if key not in target:
+                target[key] = clone(record)
+                written.append(key)
+            continue
+        if record == old or key not in target:
+            continue
+        current = dict(target[key])
+        for field in [*record, *(f for f in old if f not in record)]:
+            if field not in record:
+                current.pop(field, None)
+            elif field not in old or record[field] != old[field]:
+                current[field] = clone(record[field])
+        target[key] = current
+        written.append(key)
+    for key in before:
+        if key not in after:
+            target.pop(key, None)
+    return written
+
+
+def merge_changes(
+    current: dict[str, Any], before: dict[str, Any], after: dict[str, Any]
+) -> dict[str, Any]:
+    """Return *current* with the changes that turned *before* into *after*.
+
+    An import plans its changes on a snapshot (*before*) while other changes
+    can go on. This merge writes only the records and the fields that the plan
+    changed, so a change made in the meantime stays. A copy or a reading row of
+    the plan whose book was deleted in the meantime is dropped, and a copy on a
+    deleted shelf goes to no shelf. *current* does not change.
+    """
+    merged = clone(current)
+    written = {
+        name: _merge_records(merged[name], before[name], after[name])
+        for name in RECORD_SECTIONS
+    }
+    rows_written: list[tuple[str, str]] = []
+    for person_id in sorted(set(before["reading"]) | set(after["reading"])):
+        rows = merged["reading"].setdefault(person_id, {})
+        for book_id in _merge_records(
+            rows,
+            before["reading"].get(person_id, {}),
+            after["reading"].get(person_id, {}),
+        ):
+            rows_written.append((person_id, book_id))
+    for copy_id in written["copies"]:
+        copy = merged["copies"][copy_id]
+        if copy.get("book_id") not in merged["books"]:
+            del merged["copies"][copy_id]
+        elif copy.get("shelf_id") not in merged["shelves"]:
+            copy["shelf_id"] = None
+    for person_id, book_id in rows_written:
+        if book_id not in merged["books"]:
+            del merged["reading"][person_id][book_id]
+    merged["reading"] = {p: r for p, r in merged["reading"].items() if r}
+    return merged
 
 
 # ── Field checks ─────────────────────────────────────────────────────────────
@@ -499,6 +588,7 @@ def build_book(data: dict[str, Any], *, now: str) -> dict[str, Any]:
         "openlibrary": None,
         "cover": {"kind": "none", "file": None},
         "needs_details": False,
+        "lookup_tries": 0,
         "created_at": now,
         "updated_at": now,
         "wishlist": None,
@@ -906,6 +996,37 @@ def copies_of(state: dict[str, Any], book_id: str) -> list[dict[str, Any]]:
     """The copies of a book, oldest first."""
     rows = [c for c in state["copies"].values() if c.get("book_id") == book_id]
     return sorted(rows, key=lambda c: (str(c.get("created_at", "")), c["id"]))
+
+
+def books_to_look_up(state: dict[str, Any], max_tries: int) -> list[str]:
+    """The ids of the books that the lookup queue takes again at setup.
+
+    A book goes in the queue when it needs details, has an ISBN, has no Open
+    Library data and has had fewer than *max_tries* lookups with no details.
+    The oldest book is first.
+    """
+    books = [
+        book
+        for book in state["books"].values()
+        if book.get("needs_details")
+        and (book.get("isbn13") or book.get("isbn10"))
+        and not book.get("openlibrary")
+        and lookup_tries(book.get("lookup_tries")) < max_tries
+    ]
+    books.sort(key=lambda b: (str(b.get("created_at", "")), b["id"]))
+    return [book["id"] for book in books]
+
+
+def copy_clears_wishlist(state: dict[str, Any], book_id: str) -> bool:
+    """Whether a new copy of a book takes the book off the wishlist.
+
+    It does when the book has a wishlist entry and no copy yet: the first copy
+    is the book that the person wanted.
+    """
+    book = state["books"].get(book_id)
+    if not book or not book.get("wishlist"):
+        return False
+    return not any(c.get("book_id") == book_id for c in state["copies"].values())
 
 
 def open_loan_of_copy(state: dict[str, Any], copy_id: str) -> dict[str, Any] | None:

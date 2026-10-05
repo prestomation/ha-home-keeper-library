@@ -104,3 +104,35 @@ def test_import_payload() -> None:
         "errors": 1,
         "origin": None,
     }
+
+
+def test_change_payloads_name_the_fields() -> None:
+    fields = ["note", "price"]
+    copy = ev.copy_updated_event_data(BOOK, COPY, fields, "o")
+    assert copy == {
+        "book_id": "b1",
+        "title": "Dune",
+        "person_id": None,
+        "origin": "o",
+        "copy_id": "c1",
+        "shelf_id": "s1",
+        "changed_fields": ["note", "price"],
+    }
+    reading = ev.reading_updated_event_data(BOOK, "p1", "read", fields, "o")
+    assert reading == {
+        "book_id": "b1",
+        "title": "Dune",
+        "person_id": "p1",
+        "origin": "o",
+        "status": "read",
+        "changed_fields": ["note", "price"],
+    }
+    loan = ev.loan_updated_event_data(BOOK, LOAN, fields, "o")
+    assert loan == {**ev.loan_event_data(BOOK, LOAN, "o"), "changed_fields": fields}
+    person = ev.person_settings_event_data("p1", fields, "o")
+    assert person == {"person_id": "p1", "changed_fields": fields, "origin": "o"}
+    settings = ev.settings_event_data(fields, "EUR", None)
+    assert settings == {"changed_fields": fields, "currency": "EUR", "origin": None}
+    fields.append("x")
+    for payload in (copy, reading, loan, person, settings):
+        assert payload["changed_fields"] == ["note", "price"], "no alias"

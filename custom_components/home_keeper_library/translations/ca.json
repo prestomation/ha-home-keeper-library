@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Comparteix l'estat de lectura",
-          "description": "Els altres usuaris veuen l'estat."
+          "description": "Els altres usuaris veuen l'estat. Si està desactivat, els sensors i la llista de tasques de la persona no estan disponibles."
         },
         "yearly_goal": {
           "name": "Objectiu anual",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} no és un codi de moneda de 3 lletres."
+    },
+    "todo_not_allowed": {
+      "message": "Només {person} o un usuari administrador pot canviar aquesta llista de tasques."
     }
   }
 }

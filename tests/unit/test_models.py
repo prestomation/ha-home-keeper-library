@@ -30,7 +30,11 @@ def test_empty_state_has_every_section() -> None:
 def test_normalize_state_fills_and_filters() -> None:
     assert m.normalize_state(None) == m.empty_state()
     raw = {
-        "books": {"b": {"id": "b"}},
+        "books": {
+            "b": {"id": "b"},
+            "t": {"id": "t", "lookup_tries": 2},
+            "x": "not a book",
+        },
         "rooms": [],
         "todo_orphans": [
             {"entity_id": "todo.a", "uid": "1"},
@@ -40,10 +44,147 @@ def test_normalize_state_fills_and_filters() -> None:
         ],
     }
     state = m.normalize_state(raw)
-    assert state["books"] == {"b": {"id": "b"}}
+    assert state["books"] == {
+        "b": {"id": "b", "lookup_tries": 0},
+        "t": {"id": "t", "lookup_tries": 2},
+        "x": "not a book",
+    }
     assert state["rooms"] == {}
     assert state["todo_orphans"] == [{"entity_id": "todo.a", "uid": "1"}]
     assert m.normalize_state({"todo_orphans": "x"})["todo_orphans"] == []
+
+
+@pytest.mark.parametrize(
+    ("value", "tries"),
+    [(None, 0), (0, 0), (1, 1), (3, 3), (-1, 0), (True, 0), ("2", 0), (2.0, 0)],
+)
+def test_lookup_tries(value, tries) -> None:
+    assert m.lookup_tries(value) == tries
+
+
+def test_books_to_look_up() -> None:
+    state = m.empty_state()
+    base = {"needs_details": True, "isbn13": "9780441478125", "openlibrary": None}
+    state["books"] = {
+        "b_late": {**base, "id": "b_late", "created_at": "2", "lookup_tries": 2},
+        "c_early": {**base, "id": "c_early", "created_at": "1"},
+        "a_ten": {**base, "id": "a_ten", "isbn13": None, "isbn10": "0441478123"},
+        "done": {**base, "id": "done", "lookup_tries": 3},
+        "known": {**base, "id": "known", "openlibrary": {"work_key": "W"}},
+        "noisbn": {**base, "id": "noisbn", "isbn13": None},
+        "full": {**base, "id": "full", "needs_details": False},
+    }
+    state["books"]["a_ten"]["created_at"] = "3"
+    assert m.books_to_look_up(state, 3) == ["c_early", "b_late", "a_ten"]
+    assert m.books_to_look_up(state, 2) == ["c_early", "a_ten"]
+    assert m.books_to_look_up(state, 4) == ["done", "c_early", "b_late", "a_ten"]
+    state["books"]["b_late"]["created_at"] = "1"
+    assert m.books_to_look_up(state, 3) == ["b_late", "c_early", "a_ten"]
+
+
+def _merge_state(**sections):
+    state = m.empty_state()
+    for name, value in sections.items():
+        state[name] = value
+    return state
+
+
+def test_merge_changes_writes_only_what_the_plan_changed() -> None:
+    before = _merge_state(
+        rooms={"r": {"id": "r", "name": "Den"}},
+        books={
+            "b": {"id": "b", "title": "Dune", "tags": [], "gone": 1},
+            "same": {"id": "same", "title": "Same"},
+            "drop": {"id": "drop", "title": "Drop"},
+            "lost": {"id": "lost", "title": "Lost", "tags": []},
+        },
+    )
+    after = m.clone(before)
+    after["books"]["b"]["tags"] = ["sf"]
+    after["books"]["b"]["series"] = {"name": "Dune"}
+    del after["books"]["b"]["gone"]
+    after["books"]["lost"]["tags"] = ["x"]
+    del after["books"]["drop"]
+    after["books"]["new"] = {"id": "new", "title": "New", "tags": ["a"]}
+    after["books"]["taken"] = {"id": "taken", "title": "Mine"}
+    current = m.clone(before)
+    current["books"]["b"]["title"] = "Dune (edited)"
+    current["books"]["same"]["title"] = "Same (edited)"
+    del current["books"]["lost"]
+    current["books"]["taken"] = {"id": "taken", "title": "Theirs"}
+    current["rooms"]["r2"] = {"id": "r2", "name": "Attic"}
+    kept = m.clone(current)
+    merged = m.merge_changes(current, before, after)
+    assert current == kept, "the merge must not change its input"
+    assert merged["books"] == {
+        "b": {
+            "id": "b",
+            "title": "Dune (edited)",
+            "tags": ["sf"],
+            "series": {"name": "Dune"},
+        },
+        "same": {"id": "same", "title": "Same (edited)"},
+        "new": {"id": "new", "title": "New", "tags": ["a"]},
+        "taken": {"id": "taken", "title": "Theirs"},
+    }
+    assert merged["rooms"] == current["rooms"]
+    after["books"]["new"]["tags"].append("b")
+    after["books"]["b"]["tags"].append("c")
+    assert merged["books"]["new"]["tags"] == ["a"], "no alias of the plan"
+    assert merged["books"]["b"]["tags"] == ["sf"], "no alias of the plan"
+
+
+def test_merge_changes_keeps_links() -> None:
+    books = {"b": {"id": "b"}, "gone": {"id": "gone"}}
+    shelves = {"s": {"id": "s"}, "old": {"id": "old"}}
+    before = _merge_state(books=dict(books), shelves=dict(shelves))
+    before["reading"] = {"p": {"b": {"status": "want"}}}
+    after = m.clone(before)
+    after["copies"] = {
+        "c1": {"id": "c1", "book_id": "b", "shelf_id": "s"},
+        "c2": {"id": "c2", "book_id": "b", "shelf_id": "old"},
+        "c3": {"id": "c3", "book_id": "gone", "shelf_id": None},
+        "c4": {"id": "c4", "book_id": "b", "shelf_id": None},
+    }
+    after["reading"] = {
+        "p": {"b": {"status": "read"}, "gone": {"status": "read"}},
+        "q": {"gone": {"status": "want"}},
+    }
+    current = m.clone(before)
+    del current["books"]["gone"]
+    del current["shelves"]["old"]
+    current["reading"]["p"]["other"] = {"status": "reading"}
+    current["reading"]["r"] = {"x": {"status": "want"}}
+    current["copies"]["mine"] = {"id": "mine", "book_id": "zzz", "shelf_id": "zz"}
+    merged = m.merge_changes(current, before, after)
+    assert merged["copies"] == {
+        "c1": {"id": "c1", "book_id": "b", "shelf_id": "s"},
+        "c2": {"id": "c2", "book_id": "b", "shelf_id": None},
+        "c4": {"id": "c4", "book_id": "b", "shelf_id": None},
+        "mine": {"id": "mine", "book_id": "zzz", "shelf_id": "zz"},
+    }
+    assert merged["reading"] == {
+        "p": {"b": {"status": "read"}, "other": {"status": "reading"}},
+        "r": {"x": {"status": "want"}},
+    }
+
+
+def test_merge_changes_removes_a_person_with_no_rows() -> None:
+    before = _merge_state(books={"b": {"id": "b"}})
+    before["reading"] = {"p": {"b": {"status": "want"}}}
+    after = m.clone(before)
+    after["reading"] = {}
+    merged = m.merge_changes(m.clone(before), before, after)
+    assert merged["reading"] == {}
+    assert m.merge_changes(m.clone(before), before, m.clone(before)) == before
+
+
+def test_merge_changes_when_the_current_data_already_lost_it() -> None:
+    before = _merge_state(books={"b": {"id": "b", "x": 1}, "d": {"id": "d"}})
+    after = _merge_state(books={"b": {"id": "b", "y": 2}})
+    current = _merge_state(books={"b": {"id": "b"}})
+    merged = m.merge_changes(current, before, after)
+    assert merged["books"] == {"b": {"id": "b", "y": 2}}
 
 
 def test_new_id_and_clone() -> None:
@@ -208,7 +349,8 @@ def test_build_book_defaults() -> None:
     assert book["title"] == "Dune"
     assert book["cover"] == {"kind": "none", "file": None}
     assert book["created_at"] == book["updated_at"] == NOW
-    assert book["needs_details"] is False
+    assert book["needs_details"] is False and book["lookup_tries"] == 0
+    assert m.build_book({"title": "Dune", "isbn": ""}, now=NOW)["isbn13"] is None
     assert book["wishlist"] is None and book["isbn13"] is None
     assert _err(m.build_book, {}, now=NOW).key == "field_required"
 
@@ -521,6 +663,20 @@ def test_build_wishlist() -> None:
     }
     assert _err(m.build_wishlist, "", buy=True, now=NOW).key == "field_required"
     assert _err(m.build_wishlist, "p", buy="yes", now=NOW).key == "invalid_field"
+
+
+def test_copy_clears_wishlist() -> None:
+    state = m.empty_state()
+    entry = m.build_wishlist("p", buy=False, now=NOW)
+    state["books"]["w"] = {"id": "w", "wishlist": entry}
+    state["books"]["plain"] = {"id": "plain", "wishlist": None}
+    state["books"]["owned"] = {"id": "owned", "wishlist": dict(entry)}
+    state["copies"]["c"] = {"id": "c", "book_id": "owned"}
+    state["copies"]["d"] = {"id": "d", "book_id": "plain"}
+    assert m.copy_clears_wishlist(state, "w") is True
+    assert m.copy_clears_wishlist(state, "plain") is False
+    assert m.copy_clears_wishlist(state, "owned") is False
+    assert m.copy_clears_wishlist(state, "nope") is False
 
 
 # ── Derived reads ────────────────────────────────────────────────────────────

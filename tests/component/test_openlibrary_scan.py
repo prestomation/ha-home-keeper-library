@@ -12,6 +12,7 @@ import pytest
 from homeassistant.exceptions import ServiceValidationError
 from PIL import Image
 
+from custom_components.home_keeper_library.const import LOOKUP_MAX_TRIES
 from custom_components.home_keeper_library.openlibrary_client import (
     OpenLibraryClient,
     OpenLibraryError,
@@ -167,8 +168,54 @@ async def test_scan_not_found_and_unavailable(
     lookup = setup_entry.runtime_data.lookup
     await lookup.async_join()
     # The queue tried once, failed and waits on a timer for the next try.
-    assert lookup._tries[reply["book"]["id"]] == 1
+    store = setup_entry.runtime_data.store
+    assert store.state["books"][reply["book"]["id"]]["lookup_tries"] == 1
     assert len(lookup._timers) == 1
+    # Open Library does not have the first book: the queue never tries it again.
+    first = next(
+        b for b in store.state["books"].values() if b["isbn13"] == "9780000000002"
+    )
+    assert first["lookup_tries"] == LOOKUP_MAX_TRIES
+
+
+def _requests(aioclient_mock, isbn: str) -> int:
+    return sum(1 for call in aioclient_mock.mock_calls if isbn in str(call[1]))
+
+
+async def test_lookup_queue_starts_again_after_a_restart(
+    hass, setup_entry, aioclient_mock
+) -> None:
+    first, second, done = "9780441478125", "9780441013593", "9780000000002"
+    for isbn in (first, second, done):
+        aioclient_mock.get(f"{OL}/isbn/{isbn}.json", status=503)
+    store = setup_entry.runtime_data.store
+    ids = {}
+    for isbn, tries in ((first, 0), (second, 2), (done, LOOKUP_MAX_TRIES)):
+        book, _ = await store.add_book(
+            {"isbn": isbn, "title": isbn, "needs_details": True}
+        )
+        await store.set_lookup_tries(book["id"], tries)
+        ids[isbn] = book["id"]
+    # A book with Open Library data or no ISBN is not queued.
+    await store.add_book({"title": "No ISBN", "needs_details": True})
+    await hass.config_entries.async_reload(setup_entry.entry_id)
+    await hass.async_block_till_done()
+    lookup = setup_entry.runtime_data.lookup
+    await lookup.async_join()
+    store = setup_entry.runtime_data.store
+    tries = {isbn: store.state["books"][i]["lookup_tries"] for isbn, i in ids.items()}
+    assert tries == {first: 1, second: LOOKUP_MAX_TRIES, done: LOOKUP_MAX_TRIES}
+    assert _requests(aioclient_mock, first) == 1
+    assert _requests(aioclient_mock, second) == 1
+    assert _requests(aioclient_mock, done) == 0
+    assert len(lookup._timers) == 1, "only the first book waits for a retry"
+    # The count stays across a second restart.
+    await hass.config_entries.async_reload(setup_entry.entry_id)
+    await hass.async_block_till_done()
+    await setup_entry.runtime_data.lookup.async_join()
+    store = setup_entry.runtime_data.store
+    assert store.state["books"][ids[first]]["lookup_tries"] == 2
+    assert _requests(aioclient_mock, second) == 1
 
 
 async def test_lookup_queue_fills_details(

@@ -44,6 +44,22 @@ miniature. The feature — an **items list** (named items, each with a numeric
 - **Deep-linked panel.** The URL is the single source of truth (`parseRoute`/
   `buildPath` are pure); Back/Forward move within the panel.
 
+## People and privacy
+
+Home Assistant shows each entity to each user, and lets each user call the
+`todo` services on each to-do list. So the per-person entities apply the
+privacy rules of the library themselves:
+
+- **The `To read` list of a person** takes a change (add, update or delete an
+  item) only from the user of that person, from an admin user, or from Home
+  Assistant itself (no user). The entity service call sets the context of the
+  call on the entity, and the list reads `user_id` from it. Other users get the
+  translated error `todo_not_allowed`.
+- **A person with `share_reading: false`** shows no reading on an entity. The
+  `To read` list and the `Books read this year` and `Reading now` sensors of
+  that person are unavailable, and the list gives no items, also through
+  `todo/item/list`. They come back when sharing is on again.
+
 ## Why four test tiers
 See `.amazonq/rules/testing-and-workflow.md`. In short: pure unit (ms), in-process
 HA component (≈100ms, real `hass`), Docker integration (real running HA over REST/WS),

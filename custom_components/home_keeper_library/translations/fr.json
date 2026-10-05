@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Partager le statut de lecture",
-          "description": "Les autres utilisateurs voient le statut."
+          "description": "Les autres utilisateurs voient le statut. Si désactivé, les capteurs et la liste de tâches de la personne sont indisponibles."
         },
         "yearly_goal": {
           "name": "Objectif annuel",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} n'est pas un code de devise de 3 lettres."
+    },
+    "todo_not_allowed": {
+      "message": "Seul {person} ou un administrateur peut modifier cette liste de tâches."
     }
   }
 }

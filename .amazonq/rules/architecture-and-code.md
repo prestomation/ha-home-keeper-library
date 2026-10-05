@@ -38,6 +38,15 @@ you write or review code.
   each change.
 - Records are plain JSON dicts. `models.normalize_state` is the migration hook:
   the store runs it on every load, so a new section needs no migration step.
+- **An import never replaces the document.** `csv_io.apply_import` plans on a
+  snapshot in an executor job, and `commit_import` writes the plan with
+  `models.merge_changes`: only the records and fields that the plan changed,
+  with no `await` in the middle. A change made while the plan runs stays.
+- A book has `lookup_tries`: the Open Library lookups that gave no details.
+  Setup queues again each book that `models.books_to_look_up` names, and the
+  queue stops at `LOOKUP_MAX_TRIES` across restarts. It is bookkeeping of the
+  queue: it fires no event and is not in the CSV export, and an imported book
+  starts at 0.
 
 ## Read projections
 - **A reply never leaks.** Every read goes through `projections.py`. A non-admin
@@ -52,6 +61,11 @@ you write or review code.
 - Use `has_entity_name` and a `translation_key`. A per-person name has the
   `{person}` placeholder.
 - The `To read` list of a person is a `todo` entity. Its uid is the book id.
+- **An entity is visible to each user, so it applies the privacy rules.** The
+  `To read` list takes a change only from the user of its person, an admin user
+  or no user (it reads `self._context.user_id`), else `todo_not_allowed`. While
+  a person has `share_reading: false`, each per-person entity is unavailable
+  and the list has no items. See [DESIGN.md](../../docs/DESIGN.md).
 
 ## Services are the interoperability surface
 - **Every action that changes or exports data is a `home_keeper_library.*`
@@ -75,6 +89,10 @@ you write or review code.
   alias it.
 - A new event goes in `api_surface.EVENTS` and in
   [`docs/EVENTS.md`](../../docs/EVENTS.md) in the same change.
+- A change that keeps the shelf of a copy or the status of a reading row still
+  fires an event (`copy_updated`, `reading_updated`). A payload names the
+  changed fields in `changed_fields` and never carries private values: no
+  price, value or private notes, and no setting values of a person.
 - A bulk import fires only `import_completed`. `loan_overdue` fires once for each
   due date, with the flag `overdue_fired` on the loan.
 

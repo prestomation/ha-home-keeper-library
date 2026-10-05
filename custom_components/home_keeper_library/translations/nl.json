@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Leesstatus delen",
-          "description": "Andere gebruikers zien de status."
+          "description": "Andere gebruikers zien de status. Als dit uit staat, zijn de sensoren en de takenlijst van de persoon niet beschikbaar."
         },
         "yearly_goal": {
           "name": "Jaardoel",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} is geen valutacode van 3 letters."
+    },
+    "todo_not_allowed": {
+      "message": "Alleen {person} of een beheerder kan deze takenlijst wijzigen."
     }
   }
 }

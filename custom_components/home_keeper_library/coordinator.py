@@ -46,6 +46,7 @@ class LibraryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.loan_sync: LoanSync
         self.home_keeper: HomeKeeperLink
         self.tab_registered = False
+        self._currency_seen = self.currency
 
     @property
     def currency(self) -> str:
@@ -54,6 +55,19 @@ class LibraryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             CONF_CURRENCY
         )
         return str(value or self.hass.config.currency or DEFAULT_CURRENCY)
+
+    @callback
+    def async_check_settings(self) -> None:
+        """Fire ``settings_updated`` once when the currency option changed.
+
+        The ``set_settings`` service and the update listener of the entry (the
+        options flow) both call this. The second call finds no change.
+        """
+        currency = self.currency
+        if currency == self._currency_seen:
+            return
+        self._currency_seen = currency
+        self.store.async_settings_updated([CONF_CURRENCY], currency)
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Return the document. A local read never fails."""

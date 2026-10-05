@@ -78,6 +78,19 @@ def copy_event_data(
     }
 
 
+def copy_updated_event_data(
+    book: dict[str, Any],
+    copy: dict[str, Any],
+    changed_fields: list[str],
+    origin: str | None,
+) -> dict[str, Any]:
+    """The payload of ``copy_updated``. It names the fields, not their values."""
+    return {
+        **copy_event_data(book, copy, origin),
+        "changed_fields": list(changed_fields),
+    }
+
+
 def copy_moved_event_data(
     book: dict[str, Any],
     copy: dict[str, Any],
@@ -103,6 +116,24 @@ def reading_changed_event_data(
         **book_event_data(book, origin, person_id),
         "status": status,
         "previous_status": previous_status,
+    }
+
+
+def reading_updated_event_data(
+    book: dict[str, Any],
+    person_id: str,
+    status: str,
+    changed_fields: list[str],
+    origin: str | None,
+) -> dict[str, Any]:
+    """The payload of ``reading_updated``: a change that keeps the status.
+
+    It names the fields, so the private notes of a person never go on the bus.
+    """
+    return {
+        **book_event_data(book, origin, person_id),
+        "status": status,
+        "changed_fields": list(changed_fields),
     }
 
 
@@ -134,6 +165,19 @@ def loan_event_data(
     }
 
 
+def loan_updated_event_data(
+    book: dict[str, Any],
+    loan: dict[str, Any],
+    changed_fields: list[str],
+    origin: str | None,
+) -> dict[str, Any]:
+    """The payload of ``loan_updated``."""
+    return {
+        **loan_event_data(book, loan, origin),
+        "changed_fields": list(changed_fields),
+    }
+
+
 def wishlist_event_data(
     book: dict[str, Any], entry: dict[str, Any], origin: str | None
 ) -> dict[str, Any]:
@@ -159,5 +203,27 @@ def import_completed_event_data(
         "reading_set": int(summary.get("reading_set", 0)),
         "wishlist_added": int(summary.get("wishlist_added", 0)),
         "errors": int(summary.get("errors", 0)),
+        "origin": origin,
+    }
+
+
+def person_settings_event_data(
+    person_id: str, changed_fields: list[str], origin: str | None
+) -> dict[str, Any]:
+    """The payload of ``person_settings_updated``. It has no setting values."""
+    return {
+        "person_id": person_id,
+        "changed_fields": list(changed_fields),
+        "origin": origin,
+    }
+
+
+def settings_event_data(
+    changed_fields: list[str], currency: str, origin: str | None
+) -> dict[str, Any]:
+    """The payload of ``settings_updated``: the options of the library."""
+    return {
+        "changed_fields": list(changed_fields),
+        "currency": currency,
         "origin": origin,
     }

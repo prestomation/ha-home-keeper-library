@@ -251,6 +251,16 @@ PAYLOAD_SPINES: dict[str, tuple[Field, ...]] = {
         Field("errors", "int"),
         _ORIGIN,
     ),
+    "person_settings": (
+        Field("person_id", "str", "The Home Assistant person."),
+        Field("changed_fields", "list[str]", "The names of the changed settings."),
+        _ORIGIN,
+    ),
+    "settings": (
+        Field("changed_fields", "list[str]", "The changed options."),
+        Field("currency", "str", "The currency code now."),
+        _ORIGIN,
+    ),
 }
 
 _CHANGED = (Field("changed_fields", "list[str]", "The fields that changed."),)
@@ -306,12 +316,25 @@ EVENTS: tuple[EventSpec, ...] = (
         "A copy moved to another shelf, or off its shelf.",
         (*_COPY, Field("previous_shelf_id", "str | None")),
     ),
+    _event(
+        "EVENT_COPY_UPDATED",
+        "book",
+        "The fields of a copy changed, other than its shelf.",
+        (*_COPY, *_CHANGED),
+    ),
     _event("EVENT_COPY_REMOVED", "book", "A copy was deleted.", _COPY),
     _event(
         "EVENT_READING_CHANGED",
         "book",
         "The reading row of a person changed. status is None for a removed row.",
         (Field("status", "str | None"), Field("previous_status", "str | None")),
+    ),
+    _event(
+        "EVENT_READING_UPDATED",
+        "book",
+        "The rating, page, dates, count or notes of a reading row changed, and "
+        "the status stayed. Names the fields, never the notes.",
+        (Field("status", "str"), *_CHANGED),
     ),
     _event(
         "EVENT_BOOK_FINISHED",
@@ -326,6 +349,13 @@ EVENTS: tuple[EventSpec, ...] = (
     _event("EVENT_LOAN_STARTED", "book", "A book was lent or borrowed.", _LOAN),
     _event("EVENT_LOAN_RETURNED", "book", "A loan was returned.", _LOAN),
     _event(
+        "EVENT_LOAN_UPDATED",
+        "book",
+        "The party, the dates, the format or the note of a loan changed.",
+        (*_LOAN, *_CHANGED),
+    ),
+    _event("EVENT_LOAN_REMOVED", "book", "A loan was deleted.", _LOAN),
+    _event(
         "EVENT_LOAN_OVERDUE",
         "book",
         "An open loan passed its due date. Fires once for each due date.",
@@ -334,6 +364,16 @@ EVENTS: tuple[EventSpec, ...] = (
     _event("EVENT_WISHLIST_ADDED", "book", "A book was added to a wishlist.", _WISH),
     _event("EVENT_WISHLIST_REMOVED", "book", "A book left the wishlist.", _WISH),
     _event("EVENT_IMPORT_COMPLETED", "import", "A CSV import was written."),
+    _event(
+        "EVENT_PERSON_SETTINGS_UPDATED",
+        "person_settings",
+        "The library settings of a person changed. Names the settings only.",
+    ),
+    _event(
+        "EVENT_SETTINGS_UPDATED",
+        "settings",
+        "The options of the library changed, such as the currency.",
+    ),
     EventSpec(
         const.HOME_KEEPER_EVENT_TASK_COMPLETED,
         "HOME_KEEPER_EVENT_TASK_COMPLETED",

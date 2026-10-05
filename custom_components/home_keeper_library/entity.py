@@ -12,6 +12,7 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from . import people
 from .const import DOMAIN, NAME
 from .coordinator import LibraryCoordinator
+from .models import person_settings
 
 
 def device_info(entry_id: str) -> DeviceInfo:
@@ -51,8 +52,16 @@ class PersonEntity(LibraryEntity):
 
     @property
     def available(self) -> bool:
-        """Whether the person still exists."""
-        return people.person(self.hass, self.person_id) is not None
+        """Whether the person exists and shares their reading.
+
+        Home Assistant shows each entity to each user. So while a person does
+        not share their reading (``share_reading: false``), the per-person
+        entities are unavailable and show no reading.
+        """
+        if people.person(self.hass, self.person_id) is None:
+            return False
+        settings = person_settings(self.state_doc["people"], self.person_id)
+        return bool(settings["share_reading"])
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:

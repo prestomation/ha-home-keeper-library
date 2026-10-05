@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "共享阅读状态",
-          "description": "其他用户可以看到状态。"
+          "description": "其他用户可以看到状态。关闭时，此人的传感器和待办事项列表不可用。"
         },
         "yearly_goal": {
           "name": "年度目标",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} 不是 3 个字母的货币代码。"
+    },
+    "todo_not_allowed": {
+      "message": "只有 {person} 或管理员用户才能更改此待办事项列表。"
     }
   }
 }

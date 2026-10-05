@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Jaa lukutila",
-          "description": "Muut käyttäjät näkevät tilan."
+          "description": "Muut käyttäjät näkevät tilan. Kun asetus on pois päältä, henkilön anturit ja tehtävälista eivät ole käytettävissä."
         },
         "yearly_goal": {
           "name": "Vuositavoite",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} ei ole 3 kirjaimen valuuttakoodi."
+    },
+    "todo_not_allowed": {
+      "message": "Vain {person} tai ylläpitäjä voi muuttaa tätä tehtävälistaa."
     }
   }
 }
