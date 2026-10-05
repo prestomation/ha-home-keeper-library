@@ -1,55 +1,131 @@
-"""Constants for the Home Keeper Library.
+"""Constants for Home Keeper Library.
 
-This is a TEMPLATE integration. The example feature is a managed *items list*:
-a set of named items, each carrying a numeric ``value``. It is deliberately
-tiny — the point of this repo is the *scaffolding and patterns* around it
-(pure core, store chokepoint, events, services, websocket, sidebar panel +
-Lovelace card, translations, and the test/CI/agentic-rules harness), not the
-feature itself.
+Home Keeper Library is a companion of Home Keeper. It stores the books of a
+household: the rooms, bookcases and shelves where the copies are, the reading
+status of each person, the loans and the wishlist. The admin UI is a tab in the
+Home Keeper panel. The usage surfaces are the card, the per-person entities and
+the services.
 
-To adapt this template, find-and-replace ``home_keeper_library`` /
-``Home Keeper Library`` / ``home-keeper-library-`` throughout, then replace the items model
-with your own.
+This module is pure. It imports no Home Assistant code, so the unit tier can load
+it.
 """
 
+from __future__ import annotations
+
 DOMAIN = "home_keeper_library"
+NAME = "Home Keeper Library"
+ICON = "mdi:bookshelf"
+DOCS_URL = "https://github.com/prestomation/ha-home-keeper-library"
+USER_AGENT = "HomeKeeperLibrary/{version} (+" + DOCS_URL + ")"
 
-# Entity platforms forwarded from the config entry. The template ships a single
-# ``sensor`` platform (a total + per-item value sensors) to demonstrate the
-# coordinator -> entity pattern without a zoo of platforms.
-PLATFORMS = ["sensor"]
+# The Home Keeper integration that this integration requires.
+HOME_KEEPER_DOMAIN = "home_keeper"
+HOME_KEEPER_EVENT_TASK_COMPLETED = "home_keeper_task_completed"
+HOME_KEEPER_EVENT_TASK_DELETED = "home_keeper_task_deleted"
+HOME_KEEPER_EVENT_REGISTER_COMPANIONS = "home_keeper_register_companions"
+# The repair issue when Home Keeper has no panel tab API.
+ISSUE_HOME_KEEPER_TOO_OLD = "home_keeper_too_old"
 
-# Frontend panel + card.
-# PANEL_VERSION is the single source of truth that release.yml validates against
-# manifest.json's "version". rollup.config.mjs reads it from this file so the
-# built bundles are stamped with the same string.
+# The entity platforms of the config entry.
+PLATFORMS = ["sensor", "todo"]
+
+# PANEL_VERSION is the same string as the manifest version. release.yml checks it,
+# and rollup.config.mjs reads it.
 PANEL_VERSION = "0.1.0b1"
-PANEL_URL_PATH = "home-keeper-library"  # sidebar route -> /home-keeper-library
-PANEL_STATIC_URL = "/home_keeper_library_static"  # serves the JS bundles
-PANEL_JS_FILENAME = "home-keeper-library-panel.js"
-PANEL_TITLE = "Home Keeper Library"
-PANEL_ICON = "mdi:view-list"
-WEBCOMPONENT_NAME = "home-keeper-library-panel"
 
-# Dashboard card. Served from the same static path as the panel and
-# auto-registered as a Lovelace resource so it appears in the "Add card" picker
-# with no manual setup (see card.py).
-CARD_JS_FILENAME = "home-keeper-library-card.js"
+# The built bundles are in frontend/dist/ and Home Assistant serves them here.
+STATIC_URL = "/home_keeper_library_static"
+TAB_JS_FILENAME = "library-tab.js"
+CARD_JS_FILENAME = "library-card.js"
+TAB_ID = "library"
+TAB_ELEMENT = "home-keeper-library-tab"
+TAB_ORDER = 50
+TAB_HOST_API = 1
+CARD_ELEMENT = "home-keeper-library-card"
 
-# Storage — a single JSON document at ``.storage/home_keeper_library``.
+# The cover HTTP views.
+COVER_URL_PREFIX = "/api/home_keeper_library/cover"
+COVER_UPLOAD_URL = "/api/home_keeper_library/cover_upload"
+COVER_MAX_BYTES = 10 * 1024 * 1024
+COVER_MAX_PX = 1200
+# The first bytes that the upload view reads to identify the image type.
+SNIFF_BYTES = 16
+
+# The storage document, ``.storage/home_keeper_library``.
 STORAGE_KEY = DOMAIN
 STORAGE_VERSION = 1
+STORAGE_MINOR_VERSION = 1
 
-# Bounds for item validation (kept in the pure model — no HA imports there).
-MAX_NAME_LENGTH = 255
-MIN_VALUE = -1_000_000
-MAX_VALUE = 1_000_000
+# The config entry option.
+CONF_CURRENCY = "currency"
+DEFAULT_CURRENCY = "EUR"
 
-# Event catalog (see docs/EVENTS.md). Every observable state change fires a bus
-# event built by a pure function in events.py, so automations and other
-# integrations can react to the full item lifecycle. Names follow
-# ``{DOMAIN}_<noun>_<verb>``; payloads share a common spine
-# (events.item_event_data).
-EVENT_ITEM_CREATED = f"{DOMAIN}_item_created"
-EVENT_ITEM_UPDATED = f"{DOMAIN}_item_updated"  # payload carries ``changed_fields``
-EVENT_ITEM_DELETED = f"{DOMAIN}_item_deleted"
+# The CSV import limits.
+MAX_CSV_BYTES = 5 * 1024 * 1024
+MAX_IMPORT_ROW_RESULTS = 200
+
+# The Open Library client.
+OPENLIBRARY_URL = "https://openlibrary.org"
+OPENLIBRARY_COVERS_URL = "https://covers.openlibrary.org"
+OPENLIBRARY_TIMEOUT_S = 10
+OPENLIBRARY_MIN_INTERVAL_S = 1.0
+OPENLIBRARY_MISS_TTL_S = 24 * 60 * 60
+LOOKUP_MAX_TRIES = 3
+LOOKUP_BACKOFF_S = (60, 300, 1800)
+
+# The overdue loan check interval.
+OVERDUE_CHECK_INTERVAL_S = 60 * 60
+
+# The number of titles that the "Reading now" sensor lists.
+READING_NOW_MAX_TITLES = 10
+
+# The origin marker that this integration sends to Home Keeper, and that it reads
+# back in the events of Home Keeper to stop a loop.
+ORIGIN = DOMAIN
+
+# The bus events. Each name is ``home_keeper_library_<noun>_<verb>``. The pure
+# builders in events.py make the payloads, and the store fires them.
+EVENT_ROOM_ADDED = f"{DOMAIN}_room_added"
+EVENT_ROOM_UPDATED = f"{DOMAIN}_room_updated"
+EVENT_ROOM_REMOVED = f"{DOMAIN}_room_removed"
+EVENT_BOOKCASE_ADDED = f"{DOMAIN}_bookcase_added"
+EVENT_BOOKCASE_UPDATED = f"{DOMAIN}_bookcase_updated"
+EVENT_BOOKCASE_REMOVED = f"{DOMAIN}_bookcase_removed"
+EVENT_SHELF_ADDED = f"{DOMAIN}_shelf_added"
+EVENT_SHELF_UPDATED = f"{DOMAIN}_shelf_updated"
+EVENT_SHELF_REMOVED = f"{DOMAIN}_shelf_removed"
+EVENT_BOOK_ADDED = f"{DOMAIN}_book_added"
+EVENT_BOOK_UPDATED = f"{DOMAIN}_book_updated"
+EVENT_BOOK_REMOVED = f"{DOMAIN}_book_removed"
+EVENT_COPY_ADDED = f"{DOMAIN}_copy_added"
+EVENT_COPY_MOVED = f"{DOMAIN}_copy_moved"
+EVENT_COPY_REMOVED = f"{DOMAIN}_copy_removed"
+EVENT_READING_CHANGED = f"{DOMAIN}_reading_changed"
+EVENT_BOOK_FINISHED = f"{DOMAIN}_book_finished"
+EVENT_LOAN_STARTED = f"{DOMAIN}_loan_started"
+EVENT_LOAN_RETURNED = f"{DOMAIN}_loan_returned"
+EVENT_LOAN_OVERDUE = f"{DOMAIN}_loan_overdue"
+EVENT_WISHLIST_ADDED = f"{DOMAIN}_wishlist_added"
+EVENT_WISHLIST_REMOVED = f"{DOMAIN}_wishlist_removed"
+EVENT_IMPORT_COMPLETED = f"{DOMAIN}_import_completed"
+
+# The languages of every string table: strings.json, translations/ and
+# backend_strings/. The same 16 languages as Home Keeper.
+LANGUAGES = (
+    "ca",
+    "cs",
+    "da",
+    "de",
+    "en",
+    "es",
+    "fi",
+    "fr",
+    "it",
+    "nb",
+    "nl",
+    "pl",
+    "pt-BR",
+    "ru",
+    "sv",
+    "zh-Hans",
+)

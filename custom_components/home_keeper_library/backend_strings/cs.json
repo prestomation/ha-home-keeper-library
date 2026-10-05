@@ -1,0 +1,8 @@
+{
+  "tab.title": "Knihovna",
+  "companion.description": "Knihy, police, výpůjčky a stav čtení.",
+  "loan_task.name_out": "Získat zpět {title} od {party}",
+  "loan_task.name_in": "Vrátit {title} osobě {party}",
+  "loan_task.completion_prompt": "Dokončení úkolu vrátí výpůjčku.",
+  "item.summary": "{title} od {author}"
+}

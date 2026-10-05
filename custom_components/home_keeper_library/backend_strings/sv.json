@@ -1,0 +1,8 @@
+{
+  "tab.title": "Bibliotek",
+  "companion.description": "Böcker, hyllor, lån och lässtatus.",
+  "loan_task.name_out": "Få tillbaka {title} från {party}",
+  "loan_task.name_in": "Lämna tillbaka {title} till {party}",
+  "loan_task.completion_prompt": "När uppgiften slutförs återlämnas lånet.",
+  "item.summary": "{title} av {author}"
+}

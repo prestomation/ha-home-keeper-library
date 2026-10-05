@@ -1,0 +1,8 @@
+{
+  "tab.title": "藏书",
+  "companion.description": "图书、书架、借阅和阅读状态。",
+  "loan_task.name_out": "从{party}处取回《{title}》",
+  "loan_task.name_in": "将《{title}》归还给{party}",
+  "loan_task.completion_prompt": "完成任务即归还借阅。",
+  "item.summary": "《{title}》{author}"
+}

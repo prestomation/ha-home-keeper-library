@@ -1,31 +1,45 @@
-"""Diagnostics for the Home Keeper Library.
+"""Diagnostics of Home Keeper Library.
 
-Returns the config entry and current item store, so a bug report can include the
-integration's full state. There is no sensitive data in the item model, so
-nothing is redacted here — add ``async_redact_data`` with a key set if your
-integration stores secrets.
+The download has the config entry, the counts and the library document. The
+names of the loan parties and all notes are redacted.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.config_entries import ConfigEntry
+from homeassistant.components.diagnostics import async_redact_data
 from homeassistant.core import HomeAssistant
 
-from .coordinator import HomeKeeperLibraryCoordinator
+from . import LibraryConfigEntry
+
+TO_REDACT = {
+    "party",
+    "note",
+    "private_notes",
+    "shared_notes",
+    "acquired_from",
+}
 
 
 async def async_get_config_entry_diagnostics(
-    hass: HomeAssistant, entry: ConfigEntry
+    hass: HomeAssistant, entry: LibraryConfigEntry
 ) -> dict[str, Any]:
-    """Return diagnostics for a config entry."""
-    coordinator: HomeKeeperLibraryCoordinator = entry.runtime_data
+    """The diagnostics of the config entry."""
+    coordinator = entry.runtime_data
+    state = coordinator.store.state
     return {
         "entry": {
             "title": entry.title,
             "version": entry.version,
-            "domain": entry.domain,
+            "options": dict(entry.options),
         },
-        "items": coordinator.store.list_items(),
+        "tab_registered": coordinator.tab_registered,
+        "revision": coordinator.store.revision,
+        "counts": {
+            name: len(value)
+            for name, value in state.items()
+            if isinstance(value, dict | list)
+        },
+        "library": async_redact_data(state, TO_REDACT),
     }

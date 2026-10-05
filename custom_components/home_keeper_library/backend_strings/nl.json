@@ -1,0 +1,8 @@
+{
+  "tab.title": "Bibliotheek",
+  "companion.description": "Boeken, planken, uitleningen en leesstatus.",
+  "loan_task.name_out": "{title} terugkrijgen van {party}",
+  "loan_task.name_in": "{title} terugbrengen naar {party}",
+  "loan_task.completion_prompt": "Het voltooien van de taak sluit de uitlening af.",
+  "item.summary": "{title} door {author}"
+}

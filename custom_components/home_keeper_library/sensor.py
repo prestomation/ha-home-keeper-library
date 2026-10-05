@@ -1,15 +1,17 @@
-"""Sensor entities for the Home Keeper Library.
+"""The library sensors.
 
-Two kinds of entity, both driven by the coordinator (the single read path):
+Global sensors:
 
-* ``HomeKeeperLibraryTotalSensor`` — one summary sensor: the count of items, with the sum
-  of their values as an attribute. Always present.
-* ``HomeKeeperLibraryItemSensor`` — one per item, state = the item's ``value``. ``unique_id``
-  is anchored to the item ``id`` so it survives renames.
+* ``books``: the number of books with 1 copy or more.
+* ``loans_out``: the open loans that lend a copy out.
+* ``loans_overdue``: the open loans past their due date.
 
-The per-item entity set is reconciled on each coordinator refresh: new items add
-an entity, deleted items remove theirs. This mirrors the common HA pattern of a
-dynamic entity set backed by a coordinator.
+Per person (the unique id holds the person id):
+
+* ``books_read_this_year``: the books finished this year, with the attributes
+  ``goal``, ``pages`` and ``year``.
+* ``reading_now``: the number of books with status ``reading``, with the
+  attribute ``books`` (at most 10 titles).
 """
 
 from __future__ import annotations
@@ -17,115 +19,141 @@ from __future__ import annotations
 from typing import Any
 
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.util import dt as dt_util
 
-from .const import DOMAIN, PANEL_TITLE
-from .coordinator import HomeKeeperLibraryCoordinator
-
-
-def _device_info(entry_id: str) -> DeviceInfo:
-    """A single service device that groups every entity this integration creates.
-
-    A local, deviceless integration still wants its entities grouped under one
-    device page (the Gold ``devices`` rule). ``entry_type=SERVICE`` marks it as a
-    service rather than a physical device; the identifier is anchored to the
-    config entry so it is stable across restarts and renames.
-    """
-    return DeviceInfo(
-        identifiers={(DOMAIN, entry_id)},
-        name=PANEL_TITLE,
-        entry_type=DeviceEntryType.SERVICE,
-    )
+from . import LibraryConfigEntry
+from .const import READING_NOW_MAX_TITLES
+from .coordinator import LibraryCoordinator
+from .entity import LibraryEntity, PersonEntity, async_track_people
+from .models import person_settings
+from .projections import (
+    books_read_in_year,
+    loans_out_count,
+    loans_overdue_count,
+    owned_book_count,
+    reading_now,
+)
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    entry: LibraryConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up the total sensor and a dynamically-reconciled per-item sensor set."""
-    coordinator: HomeKeeperLibraryCoordinator = entry.runtime_data
+    """Add the global sensors and the sensors of each person."""
+    coordinator = entry.runtime_data
+    async_add_entities(
+        [
+            BooksSensor(coordinator),
+            LoansOutSensor(coordinator),
+            LoansOverdueSensor(coordinator),
+        ]
+    )
 
-    async_add_entities([HomeKeeperLibraryTotalSensor(coordinator)])
+    def _build(person: dict[str, Any]) -> list[SensorEntity]:
+        return [
+            BooksReadThisYearSensor(coordinator, person),
+            ReadingNowSensor(coordinator, person),
+        ]
 
-    known: set[str] = set()
-
-    @callback
-    def _reconcile() -> None:
-        current = {item["id"] for item in coordinator.data or []}
-        new_ids = current - known
-        if new_ids:
-            known.update(new_ids)
-            async_add_entities(
-                HomeKeeperLibraryItemSensor(coordinator, item_id) for item_id in new_ids
-            )
-        # Entities for removed items mark themselves unavailable (see `available`)
-        # and are pruned by HA when the config entry reloads.
-
-    _reconcile()
-    entry.async_on_unload(coordinator.async_add_listener(_reconcile))
+    entry.async_on_unload(
+        async_track_people(hass, coordinator, _build, async_add_entities)
+    )
 
 
-class HomeKeeperLibraryTotalSensor(
-    CoordinatorEntity[HomeKeeperLibraryCoordinator], SensorEntity
-):
-    """Summary sensor: number of items (sum of values as an attribute)."""
+class BooksSensor(LibraryEntity, SensorEntity):
+    """The number of books with 1 copy or more."""
 
-    _attr_has_entity_name = True
-    _attr_translation_key = "total_items"
-    _attr_icon = "mdi:counter"
+    _attr_translation_key = "books"
+    _attr_icon = "mdi:bookshelf"
     _attr_state_class = SensorStateClass.MEASUREMENT
 
-    def __init__(self, coordinator: HomeKeeperLibraryCoordinator) -> None:
-        super().__init__(coordinator)
-        self._attr_unique_id = f"{DOMAIN}_total_items"
-        self._attr_device_info = _device_info(coordinator.entry.entry_id)
+    def __init__(self, coordinator: LibraryCoordinator) -> None:
+        super().__init__(coordinator, "books")
 
     @property
     def native_value(self) -> int:
-        return len(self.coordinator.data or [])
+        return owned_book_count(self.state_doc)
+
+
+class LoansOutSensor(LibraryEntity, SensorEntity):
+    """The number of open loans that lend a copy out."""
+
+    _attr_translation_key = "loans_out"
+    _attr_icon = "mdi:book-arrow-right"
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, coordinator: LibraryCoordinator) -> None:
+        super().__init__(coordinator, "loans_out")
+
+    @property
+    def native_value(self) -> int:
+        return loans_out_count(self.state_doc)
+
+
+class LoansOverdueSensor(LibraryEntity, SensorEntity):
+    """The number of open loans past their due date."""
+
+    _attr_translation_key = "loans_overdue"
+    _attr_icon = "mdi:book-clock"
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, coordinator: LibraryCoordinator) -> None:
+        super().__init__(coordinator, "loans_overdue")
+
+    @property
+    def native_value(self) -> int:
+        return loans_overdue_count(self.state_doc, dt_util.now().date().isoformat())
+
+
+class BooksReadThisYearSensor(PersonEntity, SensorEntity):
+    """The books that a person finished this year."""
+
+    _attr_translation_key = "books_read_this_year"
+    _attr_icon = "mdi:book-check"
+    _attr_state_class = SensorStateClass.TOTAL
+
+    def __init__(self, coordinator: LibraryCoordinator, person: dict[str, Any]) -> None:
+        super().__init__(coordinator, person, "books_read_this_year")
+
+    @property
+    def native_value(self) -> int:
+        year = dt_util.now().year
+        return books_read_in_year(self.state_doc, self.person_id, year)[0]
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
-        return {"total_value": sum(i["value"] for i in (self.coordinator.data or []))}
+        year = dt_util.now().year
+        _, pages = books_read_in_year(self.state_doc, self.person_id, year)
+        goal = person_settings(self.state_doc["people"], self.person_id)["yearly_goal"]
+        return {
+            **super().extra_state_attributes,
+            "goal": goal,
+            "pages": pages,
+            "year": year,
+        }
 
 
-class HomeKeeperLibraryItemSensor(
-    CoordinatorEntity[HomeKeeperLibraryCoordinator], SensorEntity
-):
-    """Per-item sensor: state = the item's value, name = the item's name."""
+class ReadingNowSensor(PersonEntity, SensorEntity):
+    """The number of books that a person reads now."""
 
-    _attr_has_entity_name = False
-    _attr_icon = "mdi:numeric"
+    _attr_translation_key = "reading_now"
+    _attr_icon = "mdi:book-open-page-variant"
     _attr_state_class = SensorStateClass.MEASUREMENT
 
-    def __init__(self, coordinator: HomeKeeperLibraryCoordinator, item_id: str) -> None:
-        super().__init__(coordinator)
-        self._item_id = item_id
-        # unique_id anchored to the item id -> survives renames.
-        self._attr_unique_id = f"{DOMAIN}_item_{item_id}"
-        self._attr_device_info = _device_info(coordinator.entry.entry_id)
-
-    def _item(self) -> dict[str, Any] | None:
-        for item in self.coordinator.data or []:
-            if item["id"] == self._item_id:
-                return item
-        return None
+    def __init__(self, coordinator: LibraryCoordinator, person: dict[str, Any]) -> None:
+        super().__init__(coordinator, person, "reading_now")
 
     @property
-    def available(self) -> bool:
-        return self._item() is not None
+    def native_value(self) -> int:
+        return len(reading_now(self.state_doc, self.person_id))
 
     @property
-    def name(self) -> str | None:
-        item = self._item()
-        return item["name"] if item else None
-
-    @property
-    def native_value(self) -> int | None:
-        item = self._item()
-        return item["value"] if item else None
+    def extra_state_attributes(self) -> dict[str, Any]:
+        titles = reading_now(self.state_doc, self.person_id)
+        return {
+            **super().extra_state_attributes,
+            "books": titles[:READING_NOW_MAX_TITLES],
+        }

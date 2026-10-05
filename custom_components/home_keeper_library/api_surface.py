@@ -1,34 +1,23 @@
-"""The single index of every surface an integrator can build on.
+"""The index of every surface that an integrator can use.
 
-The integration's public API is spread across registries that have no reason to know
-about each other: services registered in ``__init__.py``, bus events named in
-``const.py`` with payloads built in ``events.py``, websocket commands decorated in
-``websocket_api.py``, entity platforms in ``const.PLATFORMS``, and the static route
-``panel.py`` registers. Nothing ties them together, so a surface can be added in one
-place and forgotten everywhere else — registered but missing from the teardown list,
-fired but absent from the docs, renamed on one side of a pair.
+The public API of Home Keeper Library is in registries that do not know about
+each other: the services in ``services.py``, the bus events in ``const.py`` with
+payloads from ``events.py``, the websocket commands in ``websocket_api.py``, the
+entity platforms in ``const.PLATFORMS``, and the HTTP views in ``covers.py`` and
+``frontend_assets.py``. This module declares each surface once.
 
-This module is that tie. It declares every surface once, the runtime *consumes* it
-(``async_unload_entry`` iterates :data:`SERVICE_NAMES`), and
-``tests/unit/test_api_surface.py`` fails when the source and the model disagree.
+The runtime reads this model. ``services.py`` registers each service of
+:data:`SERVICES` and applies its admin gate, ``websocket_api.py`` registers the
+websocket twin of each service from :data:`WEBSOCKET_COMMANDS`, and
+``async_unload_entry`` removes :data:`SERVICE_NAMES`. The unit test
+``tests/unit/test_api_surface.py`` reads the source and fails on drift.
 
-**It declares names and structure only.** Every human-readable string that Home
-Assistant already localizes — service and field labels, entity names, error messages
-— is resolved from ``services.yaml`` / ``strings.json`` at the point of use, so the
-UI and any generated reference read from one source and cannot say different things.
-Never restate that prose here. The one exception is :attr:`EventSpec.summary`: a bus
-event has no Home Assistant string source, so its one-line "fires when" lives in this
-table.
+**The model holds names and structure only.** The labels and descriptions are in
+``services.yaml`` and ``strings.json``. :attr:`EventSpec.summary` is the 1
+exception, because a bus event has no Home Assistant string source.
 
-Pure, and deliberately *light*: it imports nothing from Home Assistant and nothing
-from the integration beyond ``const``, so the fast unit tier can load it alongside
-the rest of the pure core.
-
-**Adapting this after you fork.** Add a row to :data:`SURFACE_KINDS` for any surface
-kind you take on, then fill the matching table. :data:`DEVICE_TRIGGERS` and
-:data:`OPTIONS` are empty on purpose and marked ``not_applicable`` below: the example
-integration has neither a ``device_trigger.py`` nor an options flow. Their specs are
-kept so the slot is labelled rather than missing.
+The module is pure. It imports no Home Assistant code, and only ``const`` from the
+integration.
 """
 
 from __future__ import annotations
@@ -39,61 +28,57 @@ from . import const
 
 # ── Descriptors ──────────────────────────────────────────────────────────────
 #
-# Every table below is a ``tuple``, never a ``set``. Anything that renders them
-# does so in order, and set iteration leaking in here would make the output differ
-# between runs.
+# Each table is a tuple, never a set, so that each rendering has the same order.
 
 
 @dataclass(frozen=True, slots=True)
 class Field:
-    """One key in an event payload or entity attribute map."""
+    """One key in an event payload or an entity attribute map."""
 
     name: str
     type: str = ""
-    """Rendered verbatim (``"str | None"``, ``"list[str]"``); never parsed."""
+    """Shown as is, such as ``"str | None"``. Never parsed."""
     note: str = ""
 
 
 @dataclass(frozen=True, slots=True)
 class ServiceSpec:
-    """An ``home_keeper_library.*`` action.
+    """A ``home_keeper_library.*`` service.
 
-    ``name`` is the one key shared by the ``hass.services.async_register`` call,
-    ``services.yaml`` and ``strings.json``'s ``services`` section — all three are
-    checked against it.
+    ``name`` is the key in ``services.yaml``, in ``strings.json`` ``services`` and
+    in the handler table of ``services.py``.
     """
 
     name: str
     admin_only: bool = False
+    """The service handler rejects a non-admin user with ``Unauthorized``."""
     response: str = "none"
-    """``"none"`` | ``"optional"`` | ``"only"``, mirroring ``SupportsResponse``."""
+    """``"none"``, ``"optional"`` or ``"only"``, as ``SupportsResponse``."""
+    caller_scoped: bool = False
+    """Open to every user, but a non-admin user can change only their own person."""
 
 
 @dataclass(frozen=True, slots=True)
 class EventSpec:
-    """A bus event the integration fires, or one it listens for."""
+    """A bus event that the integration fires, or one that it listens for."""
 
     name: str
-    """The ``const`` attribute's *value*, referenced — never a re-typed literal."""
+    """The value of the ``const`` attribute. Never a typed copy."""
     const_name: str
-    """The ``const`` attribute holding it, so the model is pinned to ``const.py``."""
+    """The ``const`` attribute that holds the name."""
     direction: str
-    """``"fired"`` | ``"listened"``."""
+    """``"fired"`` or ``"listened"``."""
     payload: str
-    """Which spine in :data:`PAYLOAD_SPINES`, or ``"none"``."""
+    """A key of :data:`PAYLOAD_SPINES`, or ``"none"``."""
     summary: str = ""
-    """The "fires when" one-liner. Required for every fired event."""
+    """When the event fires. Required for a fired event."""
     extra: tuple[Field, ...] = ()
-    """Per-event keys merged onto the spine."""
+    """The keys that the event adds to its spine."""
 
 
 @dataclass(frozen=True, slots=True)
 class DeviceTriggerSpec:
-    """A device-automation trigger wrapping one bus event.
-
-    Unused by the example integration (see the module docstring). Kept so a fork
-    that adds ``device_trigger.py`` has the shape waiting for it.
-    """
+    """A device trigger for a bus event. The library has none."""
 
     type: str
     event: str
@@ -102,65 +87,60 @@ class DeviceTriggerSpec:
 
 @dataclass(frozen=True, slots=True)
 class EntityPlatformSpec:
-    """One entity platform and the state attributes its entities expose."""
+    """An entity platform and the state attributes of its entities."""
 
     platform: str
     translation_keys: tuple[str, ...] = ()
-    """Keys under ``strings.json`` → ``entity.<platform>``; empty when the platform
-    names its entities from the data instead of a translation key."""
+    """Keys in ``strings.json`` ``entity.<platform>``."""
     attributes: tuple[Field, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
 class WebsocketSpec:
-    """A panel websocket command.
+    """A websocket command of the tab and the card.
 
-    Internal: a UI-latency optimization over the equivalent service, never a
-    substitute for it (see ``.amazonq/rules/architecture-and-code.md``). Modelled
-    and tested so it can't drift, and so the pairing with its service is visible.
+    A command with a ``service`` is the twin of that service: it takes the same
+    fields, has the same gate and calls the same code. The runtime registers it
+    from this table.
     """
 
     type: str
     admin_only: bool = False
     service: str | None = None
-    """The ``home_keeper_library.*`` service it delegates to, when there is one."""
 
 
 @dataclass(frozen=True, slots=True)
 class HttpViewSpec:
-    """An HTTP route the integration registers. Internal, like the websocket."""
+    """An HTTP route that the integration registers."""
 
     name: str
     url: str
     methods: tuple[str, ...]
     requires_auth: bool = True
+    admin_methods: tuple[str, ...] = ()
+    """The methods that only an admin user can call."""
 
 
 @dataclass(frozen=True, slots=True)
 class OptionSpec:
-    """A config-entry option key.
-
-    Unused by the example integration (see the module docstring).
-    """
+    """A config entry option key."""
 
     key: str
     in_flow: bool
-    """Whether the options-flow form renders it."""
+    """Whether the options flow shows it."""
 
 
 @dataclass(frozen=True, slots=True)
 class SurfaceKind:
-    """One of Home Assistant's integration surfaces, and this integration's stance.
+    """One kind of Home Assistant integration surface, and the stance of the library.
 
-    The point of this table is the rows that say *no*. Listing only what you offer
-    can't tell you what you forgot; listing the whole space, with a reason attached
-    to every absence, can. Adding a new kind of surface means adding a row here
-    first.
+    The table lists also the kinds that the library does not offer, each with a
+    reason. A list of only the offered kinds cannot show what is missing.
     """
 
     kind: str
     status: str
-    """``"published"`` | ``"internal"`` | ``"not_applicable"`` | ``"deferred"``."""
+    """``"published"``, ``"internal"``, ``"not_applicable"`` or ``"deferred"``."""
     note: str
     """One sentence. Required."""
 
@@ -170,61 +150,209 @@ STATUSES = ("published", "internal", "not_applicable", "deferred")
 
 # ── Services ─────────────────────────────────────────────────────────────────
 
+_ADMIN = {"admin_only": True}
+
 SERVICES: tuple[ServiceSpec, ...] = (
-    ServiceSpec("add_item", response="optional"),
-    ServiceSpec("update_item"),
-    ServiceSpec("delete_item"),
+    ServiceSpec("add_room", response="optional", **_ADMIN),
+    ServiceSpec("update_room", response="optional", **_ADMIN),
+    ServiceSpec("delete_room", response="optional", **_ADMIN),
+    ServiceSpec("add_bookcase", response="optional", **_ADMIN),
+    ServiceSpec("update_bookcase", response="optional", **_ADMIN),
+    ServiceSpec("delete_bookcase", response="optional", **_ADMIN),
+    ServiceSpec("add_shelf", response="optional", **_ADMIN),
+    ServiceSpec("update_shelf", response="optional", **_ADMIN),
+    ServiceSpec("delete_shelf", response="optional", **_ADMIN),
+    ServiceSpec("lookup_isbn", response="only", **_ADMIN),
+    ServiceSpec("add_book", response="optional", **_ADMIN),
+    ServiceSpec("update_book", response="optional", **_ADMIN),
+    ServiceSpec("delete_book", response="optional", **_ADMIN),
+    ServiceSpec("refresh_book", response="optional", **_ADMIN),
+    ServiceSpec("scan_isbn", response="optional", **_ADMIN),
+    ServiceSpec("add_copy", response="optional", **_ADMIN),
+    ServiceSpec("update_copy", response="optional", **_ADMIN),
+    ServiceSpec("move_copy", response="optional", **_ADMIN),
+    ServiceSpec("delete_copy", response="optional", **_ADMIN),
+    ServiceSpec("set_cover", response="optional", **_ADMIN),
+    ServiceSpec("set_reading", response="optional", caller_scoped=True),
+    ServiceSpec("lend_book", response="optional", **_ADMIN),
+    ServiceSpec("borrow_book", response="optional", **_ADMIN),
+    ServiceSpec("return_loan", response="optional", **_ADMIN),
+    ServiceSpec("update_loan", response="optional", **_ADMIN),
+    ServiceSpec("delete_loan", response="optional", **_ADMIN),
+    ServiceSpec("add_to_wishlist", response="optional", **_ADMIN),
+    ServiceSpec("update_wishlist", response="optional", **_ADMIN),
+    ServiceSpec("remove_from_wishlist", response="optional", **_ADMIN),
+    ServiceSpec("got_wishlist_book", response="optional", **_ADMIN),
+    ServiceSpec("set_person_settings", response="optional", caller_scoped=True),
+    ServiceSpec("import_csv", response="optional", **_ADMIN),
+    ServiceSpec("export_csv", response="only", **_ADMIN),
+    ServiceSpec("list_books", response="only"),
+    ServiceSpec("get_book", response="only"),
+    ServiceSpec("list_locations", response="only"),
+    ServiceSpec("list_loans", response="only"),
+    ServiceSpec("list_people", response="only"),
 )
 
-#: What ``async_unload_entry`` removes. Derived, so registration and teardown
-#: cannot disagree — a service added to :data:`SERVICES` is torn down for free.
+#: The services that ``async_unload_entry`` removes.
 SERVICE_NAMES: tuple[str, ...] = tuple(spec.name for spec in SERVICES)
+
+#: The read services. Each reply goes through ``projections``. They have no
+#: websocket twin, because ``get_state`` gives the same data to the tab and card.
+READ_SERVICES: tuple[str, ...] = (
+    "list_books",
+    "get_book",
+    "list_locations",
+    "list_loans",
+    "list_people",
+)
 
 
 # ── Event payloads ───────────────────────────────────────────────────────────
 #
-# One spine per payload shape, matching what the pure builders in ``events.py``
-# actually return. The drift test calls those builders and compares the keys.
+# One spine per payload shape. The drift test calls the builders in events.py
+# and compares the keys.
+
+_ORIGIN = Field("origin", "str | None", "The origin marker of the caller.")
 
 PAYLOAD_SPINES: dict[str, tuple[Field, ...]] = {
-    "item": (
-        Field("item_id", "str", "Stable id, anchored across renames."),
-        Field("name", "str", "The item's display name at the time of the event."),
-        Field("value", "int", "The item's numeric value at the time of the event."),
+    "room": (
+        Field("room_id", "str"),
+        Field("name", "str"),
+        _ORIGIN,
+    ),
+    "bookcase": (
+        Field("bookcase_id", "str"),
+        Field("room_id", "str"),
+        Field("name", "str"),
+        _ORIGIN,
+    ),
+    "shelf": (
+        Field("shelf_id", "str"),
+        Field("bookcase_id", "str"),
+        Field("name", "str"),
+        _ORIGIN,
+    ),
+    "book": (
+        Field("book_id", "str", "Stable id. A rename keeps it."),
+        Field("title", "str", "The title at the time of the event."),
+        Field("person_id", "str | None", "The Home Assistant person, if any."),
+        _ORIGIN,
+    ),
+    "import": (
+        Field("person_id", "str | None"),
+        Field("source", "str", "goodreads, storygraph or library."),
+        Field("rows", "int"),
+        Field("books_added", "int"),
+        Field("books_matched", "int"),
+        Field("copies_added", "int"),
+        Field("reading_set", "int"),
+        Field("wishlist_added", "int"),
+        Field("errors", "int"),
+        _ORIGIN,
     ),
 }
+
+_CHANGED = (Field("changed_fields", "list[str]", "The fields that changed."),)
+_COPY = (Field("copy_id", "str"), Field("shelf_id", "str | None"))
+_LOAN = (
+    Field("loan_id", "str"),
+    Field("direction", "str", "out (lent) or in (borrowed)."),
+    Field("copy_id", "str | None"),
+    Field("party", "str", "The other person of the loan."),
+    Field("started", "str", "YYYY-MM-DD."),
+    Field("due", "str | None", "YYYY-MM-DD."),
+    Field("returned", "str | None", "YYYY-MM-DD."),
+)
+_WISH = (Field("buy", "bool"), Field("bought", "bool"))
+
+
+def _event(
+    const_name: str, payload: str, summary: str, extra: tuple[Field, ...] = ()
+) -> EventSpec:
+    return EventSpec(
+        getattr(const, const_name), const_name, "fired", payload, summary, extra
+    )
 
 
 # ── Events ───────────────────────────────────────────────────────────────────
 
 EVENTS: tuple[EventSpec, ...] = (
-    EventSpec(
-        const.EVENT_ITEM_CREATED,
-        "EVENT_ITEM_CREATED",
-        "fired",
-        "item",
-        summary="An item was added.",
+    _event("EVENT_ROOM_ADDED", "room", "A room was added."),
+    _event("EVENT_ROOM_UPDATED", "room", "A room changed.", _CHANGED),
+    _event("EVENT_ROOM_REMOVED", "room", "A room was deleted."),
+    _event("EVENT_BOOKCASE_ADDED", "bookcase", "A bookcase was added."),
+    _event("EVENT_BOOKCASE_UPDATED", "bookcase", "A bookcase changed.", _CHANGED),
+    _event("EVENT_BOOKCASE_REMOVED", "bookcase", "A bookcase was deleted."),
+    _event("EVENT_SHELF_ADDED", "shelf", "A shelf was added."),
+    _event("EVENT_SHELF_UPDATED", "shelf", "A shelf changed.", _CHANGED),
+    _event("EVENT_SHELF_REMOVED", "shelf", "A shelf was deleted."),
+    _event("EVENT_BOOK_ADDED", "book", "A book was added."),
+    _event(
+        "EVENT_BOOK_UPDATED",
+        "book",
+        "The fields, the cover or the wishlist entry of a book changed.",
+        _CHANGED,
     ),
-    EventSpec(
-        const.EVENT_ITEM_UPDATED,
-        "EVENT_ITEM_UPDATED",
-        "fired",
-        "item",
-        summary="An item's name or value changed.",
-        extra=(
-            Field(
-                "changed_fields",
-                "list[str]",
-                "Which fields changed, so an observer can react narrowly.",
-            ),
+    _event(
+        "EVENT_BOOK_REMOVED",
+        "book",
+        "A book was deleted, with its copies, reading rows and loans.",
+    ),
+    _event("EVENT_COPY_ADDED", "book", "A copy of a book was added.", _COPY),
+    _event(
+        "EVENT_COPY_MOVED",
+        "book",
+        "A copy moved to another shelf, or off its shelf.",
+        (*_COPY, Field("previous_shelf_id", "str | None")),
+    ),
+    _event("EVENT_COPY_REMOVED", "book", "A copy was deleted.", _COPY),
+    _event(
+        "EVENT_READING_CHANGED",
+        "book",
+        "The reading row of a person changed. status is None for a removed row.",
+        (Field("status", "str | None"), Field("previous_status", "str | None")),
+    ),
+    _event(
+        "EVENT_BOOK_FINISHED",
+        "book",
+        "The reading status of a person became read.",
+        (
+            Field("finished", "str | None", "YYYY-MM-DD."),
+            Field("rating", "int | None"),
+            Field("read_count", "int"),
         ),
     ),
+    _event("EVENT_LOAN_STARTED", "book", "A book was lent or borrowed.", _LOAN),
+    _event("EVENT_LOAN_RETURNED", "book", "A loan was returned.", _LOAN),
+    _event(
+        "EVENT_LOAN_OVERDUE",
+        "book",
+        "An open loan passed its due date. Fires once for each due date.",
+        _LOAN,
+    ),
+    _event("EVENT_WISHLIST_ADDED", "book", "A book was added to a wishlist.", _WISH),
+    _event("EVENT_WISHLIST_REMOVED", "book", "A book left the wishlist.", _WISH),
+    _event("EVENT_IMPORT_COMPLETED", "import", "A CSV import was written."),
     EventSpec(
-        const.EVENT_ITEM_DELETED,
-        "EVENT_ITEM_DELETED",
-        "fired",
-        "item",
-        summary="An item was removed. The payload is its last-known snapshot.",
+        const.HOME_KEEPER_EVENT_TASK_COMPLETED,
+        "HOME_KEEPER_EVENT_TASK_COMPLETED",
+        "listened",
+        "none",
+        summary="A completed loan task returns its loan.",
+    ),
+    EventSpec(
+        const.HOME_KEEPER_EVENT_TASK_DELETED,
+        "HOME_KEEPER_EVENT_TASK_DELETED",
+        "listened",
+        "none",
+        summary="A deleted loan task clears the task id of its loan.",
+    ),
+    EventSpec(
+        const.HOME_KEEPER_EVENT_REGISTER_COMPANIONS,
+        "HOME_KEEPER_EVENT_REGISTER_COMPANIONS",
+        "listened",
+        "none",
+        summary="The library registers as a companion again.",
     ),
 )
 
@@ -239,14 +367,25 @@ DEVICE_TRIGGERS: tuple[DeviceTriggerSpec, ...] = ()
 ENTITY_PLATFORMS: tuple[EntityPlatformSpec, ...] = (
     EntityPlatformSpec(
         "sensor",
-        translation_keys=("total_items",),
-        attributes=(
-            Field(
-                "total_value",
-                "int",
-                "Sum of every item's value, on the total sensor.",
-            ),
+        translation_keys=(
+            "books",
+            "loans_out",
+            "loans_overdue",
+            "books_read_this_year",
+            "reading_now",
         ),
+        attributes=(
+            Field("goal", "int | None", "Books read this year: the yearly goal."),
+            Field("pages", "int", "Books read this year: the pages read."),
+            Field("year", "int", "Books read this year: the year."),
+            Field("books", "list[str]", "Reading now: at most 10 titles."),
+            Field("person_id", "str", "The person of a per-person sensor."),
+        ),
+    ),
+    EntityPlatformSpec(
+        "todo",
+        translation_keys=("to_read",),
+        attributes=(Field("person_id", "str", "The person of the list."),),
     ),
 )
 
@@ -254,10 +393,16 @@ ENTITY_PLATFORMS: tuple[EntityPlatformSpec, ...] = (
 # ── Websocket commands (internal) ────────────────────────────────────────────
 
 WEBSOCKET_COMMANDS: tuple[WebsocketSpec, ...] = (
-    WebsocketSpec(f"{const.DOMAIN}/list"),
-    WebsocketSpec(f"{const.DOMAIN}/add", service="add_item"),
-    WebsocketSpec(f"{const.DOMAIN}/update", service="update_item"),
-    WebsocketSpec(f"{const.DOMAIN}/delete", service="delete_item"),
+    WebsocketSpec(f"{const.DOMAIN}/get_state"),
+    WebsocketSpec(f"{const.DOMAIN}/subscribe"),
+    WebsocketSpec(f"{const.DOMAIN}/list_todo_entities", admin_only=True),
+    *(
+        WebsocketSpec(
+            f"{const.DOMAIN}/{spec.name}", admin_only=spec.admin_only, service=spec.name
+        )
+        for spec in SERVICES
+        if spec.name not in READ_SERVICES
+    ),
 )
 
 
@@ -265,19 +410,23 @@ WEBSOCKET_COMMANDS: tuple[WebsocketSpec, ...] = (
 
 HTTP_VIEWS: tuple[HttpViewSpec, ...] = (
     HttpViewSpec(
-        "panel_static",
-        const.PANEL_STATIC_URL,
+        "static",
+        const.STATIC_URL,
         ("GET",),
-        # Home Assistant serves registered static paths before authentication, which
-        # is why only the built bundles live under this directory.
+        # Home Assistant serves a static path before authentication, so only the
+        # built bundles in frontend/dist/ are in this path.
         requires_auth=False,
+    ),
+    HttpViewSpec("cover", const.COVER_URL_PREFIX + "/{book_id}", ("GET",)),
+    HttpViewSpec(
+        "cover_upload", const.COVER_UPLOAD_URL, ("POST",), admin_methods=("POST",)
     ),
 )
 
 
 # ── Config entry options ─────────────────────────────────────────────────────
 
-OPTIONS: tuple[OptionSpec, ...] = ()
+OPTIONS: tuple[OptionSpec, ...] = (OptionSpec(const.CONF_CURRENCY, in_flow=True),)
 
 
 # ── The whole surface space ──────────────────────────────────────────────────
@@ -286,86 +435,86 @@ SURFACE_KINDS: tuple[SurfaceKind, ...] = (
     SurfaceKind(
         "Actions (services)",
         "published",
-        "Every operation that mutates or exports data ships as an "
-        "`home_keeper_library.*` service, which is the interoperability contract.",
+        "Each operation that changes or exports library data is a "
+        "`home_keeper_library.*` service.",
     ),
     SurfaceKind(
         "Bus events",
         "published",
-        "Every observable state change fires an `home_keeper_library_<noun>_<verb>` "
-        "event, built by a pure function so the shipped payload and the documented "
-        "one are the same object.",
+        "Each state change fires a `home_keeper_library_<noun>_<verb>` event with a "
+        "payload from a pure builder.",
     ),
     SurfaceKind(
         "Device triggers",
         "not_applicable",
-        "The example integration owns one service device grouping its entities, "
-        "with no per-item devices for a trigger to hang off.",
+        "The library has 1 service device and no device per book for a trigger.",
     ),
     SurfaceKind(
         "Device conditions",
         "not_applicable",
-        "Item state is readable from the per-item sensor, so a condition platform "
-        "would add a second way to ask one question.",
+        "The sensors and the to-do lists give the state that a condition reads.",
     ),
     SurfaceKind(
         "Device actions",
         "not_applicable",
-        "The services cover every operation and take an item id directly.",
+        "The services cover each operation and take a book id directly.",
     ),
     SurfaceKind(
         "Entity platforms",
         "published",
-        "A `sensor` platform: one total sensor plus one per item, the usage surface "
-        "as opposed to the admin panel.",
+        "A `sensor` platform with library and per-person counts, and a per-person "
+        "`todo` list of the books to read.",
     ),
     SurfaceKind(
         "Entity attributes",
         "published",
-        "The total sensor carries the summed value, so an automation can read it "
-        "without calling a service.",
+        "The per-person sensors give the yearly goal, the pages and the titles.",
     ),
     SurfaceKind(
         "Config entry options",
-        "not_applicable",
-        "The example feature has nothing to configure, so there is no options flow.",
+        "published",
+        "The currency of the prices and values of the copies.",
     ),
     SurfaceKind(
         "Config flow",
         "published",
-        "A single-instance UI setup flow, with no YAML configuration.",
+        "A single-instance setup flow with a currency field.",
     ),
     SurfaceKind(
         "Websocket commands",
         "internal",
-        "A latency optimization for the panel and card, delegating to the same "
-        "store methods the services use.",
+        "The tab and the card read the state and call the twin of each service.",
     ),
     SurfaceKind(
         "HTTP routes",
         "internal",
-        "One static path serving the built panel and card bundles.",
+        "A static path for the bundles, and the cover upload and cover views.",
     ),
     SurfaceKind(
         "Diagnostics",
         "published",
-        "The config entry supports a diagnostics download for bug reports.",
+        "The config entry gives a diagnostics download, with names and notes redacted.",
     ),
     SurfaceKind(
         "Reauth / reconfigure flows",
         "not_applicable",
-        "Storage is local and needs no credentials to re-establish.",
+        "The storage is local and needs no credentials.",
     ),
     SurfaceKind(
         "Repairs / issue registry",
-        "deferred",
-        "Nothing in the example feature can enter a state a user must be told to "
-        "fix; add a row here when something can.",
+        "published",
+        "A `home_keeper_too_old` issue shows when Home Keeper has no panel tab API.",
     ),
     SurfaceKind(
         "Discovery",
         "not_applicable",
-        "There is no device or service on the network to discover.",
+        "No device or service on the network is a library.",
+    ),
+    SurfaceKind(
+        "Home Keeper panel tab",
+        "internal",
+        "The admin UI is a tab in the Home Keeper panel, registered through the "
+        "Python API of Home Keeper.",
     ),
 )
 
@@ -384,6 +533,7 @@ __all__ = [
     "HTTP_VIEWS",
     "OPTIONS",
     "PAYLOAD_SPINES",
+    "READ_SERVICES",
     "SERVICES",
     "SERVICE_NAMES",
     "STATUSES",

@@ -1,0 +1,8 @@
+{
+  "tab.title": "Bibliothek",
+  "companion.description": "Bücher, Regale, Ausleihen und Lesestatus.",
+  "loan_task.name_out": "{title} von {party} zurückholen",
+  "loan_task.name_in": "{title} an {party} zurückgeben",
+  "loan_task.completion_prompt": "Das Erledigen der Aufgabe gibt die Ausleihe zurück.",
+  "item.summary": "{title} von {author}"
+}

@@ -1,0 +1,8 @@
+{
+  "tab.title": "Biblioteca",
+  "companion.description": "Libros, estantes, préstamos y estado de lectura.",
+  "loan_task.name_out": "Recuperar {title} de {party}",
+  "loan_task.name_in": "Devolver {title} a {party}",
+  "loan_task.completion_prompt": "Completar la tarea devuelve el préstamo.",
+  "item.summary": "{title} de {author}"
+}

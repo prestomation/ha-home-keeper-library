@@ -1,160 +1,112 @@
-"""The Home Keeper Library — a TEMPLATE for Home Assistant custom integrations.
+"""Home Keeper Library: the books of a household, as a companion of Home Keeper.
 
-Demonstrates the full stack around a tiny "items list" feature: a pure data
-model, a persistent store that is the single mutation chokepoint, a coordinator,
-a sensor platform, automation-facing services, panel websocket commands, a
-sidebar panel + a Lovelace card, translations, and bus events for every state
-change.
+Setup order:
 
-Setup wiring:
-  store.load -> coordinator first refresh -> register panel + card + websocket
-  -> forward the sensor platform -> register services.
+1. Load the string tables and the store.
+2. Make the coordinator, the Open Library client and the syncs.
+3. Register the frontend, the websocket commands and the cover views.
+4. Set up the entity platforms and register the services.
+5. Add the tab to the Home Keeper panel and register as a companion.
+6. Start the lookup queue, the to-do and loan syncs and the overdue check.
 """
 
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
+from functools import partial
 from typing import Any
 
-import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, ServiceCall, SupportsResponse
-from homeassistant.exceptions import ServiceValidationError
-from homeassistant.helpers import config_validation as cv
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.event import async_track_time_interval
+from homeassistant.helpers.typing import ConfigType
 
-from . import card, panel, websocket_api
+from . import backend_i18n, covers, frontend_assets, home_keeper, websocket_api
 from .api_surface import SERVICE_NAMES
-from .const import DOMAIN, PLATFORMS
-from .coordinator import HomeKeeperLibraryCoordinator
-from .models import ItemValidationError
-from .store import HomeKeeperLibraryStore
+from .book_lookup import BookLookup
+from .const import DOMAIN, OVERDUE_CHECK_INTERVAL_S, PLATFORMS
+from .coordinator import LibraryCoordinator
+from .loan_sync import LoanSync
+from .openlibrary_client import OpenLibraryClient
+from .services import async_register_services
+from .store import LibraryStore, today
+from .wishlist_sync import WishlistSync
 
 _LOGGER = logging.getLogger(__name__)
+_VIEWS_REGISTERED = f"{DOMAIN}_views_registered"
 
-ADD_ITEM_SCHEMA = vol.Schema(
-    {
-        vol.Required("name"): cv.string,
-        vol.Optional("value", default=0): vol.Coerce(int),
-    }
-)
-UPDATE_ITEM_SCHEMA = vol.Schema(
-    {
-        vol.Required("item_id"): cv.string,
-        vol.Optional("name"): cv.string,
-        vol.Optional("value"): vol.Coerce(int),
-    }
-)
-DELETE_ITEM_SCHEMA = vol.Schema({vol.Required("item_id"): cv.string})
+type LibraryConfigEntry = ConfigEntry[LibraryCoordinator]
 
 
-async def async_setup(hass: HomeAssistant, config: dict) -> bool:
-    """Set up the integration (config-entry only)."""
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Set up the integration. It has only a config entry."""
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up the Home Keeper Library from a config entry."""
-    store = HomeKeeperLibraryStore(hass)
+async def async_setup_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> bool:
+    """Set up Home Keeper Library from its config entry."""
+    await hass.async_add_executor_job(backend_i18n.preload, hass.config.language)
+    store = LibraryStore(hass)
     await store.load()
+    store.on_cover_released = partial(covers.release_cover, hass)
 
-    coordinator = HomeKeeperLibraryCoordinator(hass, entry, store)
+    coordinator = LibraryCoordinator(hass, entry, store)
+    coordinator.client = OpenLibraryClient(hass)
+    coordinator.lookup = BookLookup(hass, coordinator)
+    coordinator.wishlist_sync = WishlistSync(hass, coordinator)
+    coordinator.loan_sync = LoanSync(hass, coordinator)
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
+    entry.async_on_unload(store.async_add_listener(coordinator.async_store_changed))
 
-    await panel.async_register_panel(hass)
-    card.async_register_card(hass)
+    await frontend_assets.async_register(hass)
     websocket_api.async_register(hass)
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    if not hass.data.get(_VIEWS_REGISTERED):
+        hass.http.register_view(covers.CoverView())
+        hass.http.register_view(covers.CoverUploadView())
+        hass.data[_VIEWS_REGISTERED] = True
 
-    _register_services(hass)
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    async_register_services(hass)
+
+    coordinator.tab_registered = await home_keeper.async_register_tab(hass, entry)
+    await home_keeper.async_register_companion(hass, entry)
+    entry.async_on_unload(home_keeper.async_listen_register(hass, entry))
+
+    coordinator.lookup.async_start()
+    entry.async_on_unload(coordinator.lookup.async_stop)
+    coordinator.wishlist_sync.async_start()
+    entry.async_on_unload(coordinator.wishlist_sync.async_stop)
+    coordinator.loan_sync.async_start()
+    entry.async_on_unload(coordinator.loan_sync.async_stop)
+
+    await store.fire_overdue(today())
+
+    @callback
+    def _check_overdue(_now: Any) -> None:
+        # The date sensors read the date, so they update with the hourly check.
+        coordinator.async_update_listeners()
+        hass.async_create_task(store.fire_overdue(today()))
+
+    entry.async_on_unload(
+        async_track_time_interval(
+            hass,
+            _check_overdue,
+            timedelta(seconds=OVERDUE_CHECK_INTERVAL_S),
+            cancel_on_shutdown=True,
+        )
+    )
+    await covers.async_cleanup_pending(hass)
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Unload a config entry (and its services once the last entry is gone)."""
+async def async_unload_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> bool:
+    """Unload the config entry and remove the services."""
     unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
-    if unloaded and not hass.config_entries.async_loaded_entries(DOMAIN):
-        # Iterating the model rather than a local list is what keeps teardown honest:
-        # a service registered below but never added to `api_surface.SERVICES` fails
-        # the drift test, and one added to the model is torn down without a second
-        # edit here.
+    if unloaded:
+        # The model is the list of services, so a new service is removed here
+        # with no second edit.
         for service in SERVICE_NAMES:
             hass.services.async_remove(DOMAIN, service)
     return unloaded
-
-
-def _register_services(hass: HomeAssistant) -> None:
-    """Register the automation-facing services (idempotent across reloads).
-
-    These are the canonical contract; the panel websocket commands delegate to
-    the same ``HomeKeeperLibraryStore`` methods. Mutations refresh the coordinator so the
-    sensor entities re-render.
-    """
-
-    def _coordinator() -> HomeKeeperLibraryCoordinator:
-        for entry in hass.config_entries.async_entries(DOMAIN):
-            coord = getattr(entry, "runtime_data", None)
-            if isinstance(coord, HomeKeeperLibraryCoordinator):
-                return coord
-        raise ServiceValidationError(
-            translation_domain=DOMAIN, translation_key="not_loaded"
-        )
-
-    async def handle_add_item(call: ServiceCall) -> dict[str, Any]:
-        coord = _coordinator()
-        try:
-            item = await coord.store.add_item(dict(call.data))
-        except ItemValidationError as err:
-            raise ServiceValidationError(
-                translation_domain=DOMAIN,
-                translation_key="invalid_item",
-                translation_placeholders={"error": str(err)},
-            ) from err
-        await coord.async_refresh()
-        return {"item_id": item["id"]}
-
-    async def handle_update_item(call: ServiceCall) -> None:
-        coord = _coordinator()
-        data = dict(call.data)
-        item_id = data.pop("item_id")
-        try:
-            await coord.store.update_item(item_id, data)
-        except KeyError:
-            raise ServiceValidationError(
-                translation_domain=DOMAIN,
-                translation_key="item_not_found",
-                translation_placeholders={"item_id": item_id},
-            ) from None
-        except ItemValidationError as err:
-            raise ServiceValidationError(
-                translation_domain=DOMAIN,
-                translation_key="invalid_item",
-                translation_placeholders={"error": str(err)},
-            ) from err
-        await coord.async_refresh()
-
-    async def handle_delete_item(call: ServiceCall) -> None:
-        coord = _coordinator()
-        try:
-            await coord.store.delete_item(call.data["item_id"])
-        except KeyError:
-            raise ServiceValidationError(
-                translation_domain=DOMAIN,
-                translation_key="item_not_found",
-                translation_placeholders={"item_id": call.data["item_id"]},
-            ) from None
-        await coord.async_refresh()
-
-    hass.services.async_register(
-        DOMAIN,
-        "add_item",
-        handle_add_item,
-        schema=ADD_ITEM_SCHEMA,
-        supports_response=SupportsResponse.OPTIONAL,
-    )
-    hass.services.async_register(
-        DOMAIN, "update_item", handle_update_item, schema=UPDATE_ITEM_SCHEMA
-    )
-    hass.services.async_register(
-        DOMAIN, "delete_item", handle_delete_item, schema=DELETE_ITEM_SCHEMA
-    )

@@ -1,0 +1,8 @@
+{
+  "tab.title": "Biblioteca",
+  "companion.description": "Llibres, prestatges, préstecs i estat de lectura.",
+  "loan_task.name_out": "Recupera {title} de {party}",
+  "loan_task.name_in": "Retorna {title} a {party}",
+  "loan_task.completion_prompt": "Completar la tasca retorna el préstec.",
+  "item.summary": "{title} de {author}"
+}

@@ -1,14 +1,14 @@
-"""Pure event-payload builders for the Home Keeper Library.
+"""Pure payload builders for the bus events of Home Keeper Library.
 
-Events are the **observation surface**: every observable state change fires a
-documented ``home_keeper_library_<noun>_<verb>`` bus event. The payloads are
-built by **pure functions here** (no HA imports) so tests and integrators can
-assert against the exact shipped shape — it cannot drift from a separate
-serialization path.
+Each state change fires a ``home_keeper_library_<noun>_<verb>`` event. The store
+fires it, and a builder here makes the payload, so a test and an integrator read
+the payload that ships. The book events share 1 spine:
+``{book_id, title, person_id, origin}``. ``origin`` is the marker that the caller
+sent, or None for a user.
 
-Events are fired at the ``store.py`` mutation chokepoint (not in service
-handlers), so every surface — panel, service, websocket — is observed
-uniformly. See docs/EVENTS.md for the catalog.
+The catalog is ``api_surface.EVENTS`` and ``docs/EVENTS.md``.
+
+This module imports no Home Assistant code.
 """
 
 from __future__ import annotations
@@ -16,34 +16,148 @@ from __future__ import annotations
 from typing import Any
 
 
-def item_event_data(item: dict[str, Any]) -> dict[str, Any]:
-    """The common payload **spine** shared by every item event.
+def room_event_data(room: dict[str, Any], origin: str | None) -> dict[str, Any]:
+    """The payload of the room events."""
+    return {"room_id": room["id"], "name": room.get("name", ""), "origin": origin}
 
-    Carries the stable identity + current snapshot. Specific events extend this
-    (e.g. ``item_updated`` adds ``changed_fields``).
-    """
+
+def bookcase_event_data(bookcase: dict[str, Any], origin: str | None) -> dict[str, Any]:
+    """The payload of the bookcase events."""
     return {
-        "item_id": item["id"],
-        "name": item["name"],
-        "value": item["value"],
+        "bookcase_id": bookcase["id"],
+        "room_id": bookcase.get("room_id"),
+        "name": bookcase.get("name", ""),
+        "origin": origin,
     }
 
 
-def item_created_event_data(item: dict[str, Any]) -> dict[str, Any]:
-    """Payload for ``home_keeper_library_item_created``."""
-    return item_event_data(item)
+def shelf_event_data(shelf: dict[str, Any], origin: str | None) -> dict[str, Any]:
+    """The payload of the shelf events."""
+    return {
+        "shelf_id": shelf["id"],
+        "bookcase_id": shelf.get("bookcase_id"),
+        "name": shelf.get("name", ""),
+        "origin": origin,
+    }
 
 
-def item_updated_event_data(
-    item: dict[str, Any], changed_fields: list[str]
+def location_changed_data(
+    base: dict[str, Any], changed_fields: list[str]
 ) -> dict[str, Any]:
-    """Payload for ``home_keeper_library_item_updated``.
-
-    ``changed_fields`` lets observers react narrowly (e.g. ignore pure renames).
-    """
-    return {**item_event_data(item), "changed_fields": list(changed_fields)}
+    """A location payload with the list of changed fields."""
+    return {**base, "changed_fields": list(changed_fields)}
 
 
-def item_deleted_event_data(item: dict[str, Any]) -> dict[str, Any]:
-    """Payload for ``home_keeper_library_item_deleted`` (last-known snapshot)."""
-    return item_event_data(item)
+def book_event_data(
+    book: dict[str, Any], origin: str | None, person_id: str | None = None
+) -> dict[str, Any]:
+    """The spine of every book event."""
+    return {
+        "book_id": book["id"],
+        "title": book.get("title", ""),
+        "person_id": person_id,
+        "origin": origin,
+    }
+
+
+def book_updated_event_data(
+    book: dict[str, Any], changed_fields: list[str], origin: str | None
+) -> dict[str, Any]:
+    """The payload of ``book_updated``."""
+    return {**book_event_data(book, origin), "changed_fields": list(changed_fields)}
+
+
+def copy_event_data(
+    book: dict[str, Any], copy: dict[str, Any], origin: str | None
+) -> dict[str, Any]:
+    """The payload of ``copy_added`` and ``copy_removed``."""
+    return {
+        **book_event_data(book, origin),
+        "copy_id": copy["id"],
+        "shelf_id": copy.get("shelf_id"),
+    }
+
+
+def copy_moved_event_data(
+    book: dict[str, Any],
+    copy: dict[str, Any],
+    previous_shelf_id: str | None,
+    origin: str | None,
+) -> dict[str, Any]:
+    """The payload of ``copy_moved``."""
+    return {
+        **copy_event_data(book, copy, origin),
+        "previous_shelf_id": previous_shelf_id,
+    }
+
+
+def reading_changed_event_data(
+    book: dict[str, Any],
+    person_id: str,
+    status: str | None,
+    previous_status: str | None,
+    origin: str | None,
+) -> dict[str, Any]:
+    """The payload of ``reading_changed``. ``status`` is None for a removed row."""
+    return {
+        **book_event_data(book, origin, person_id),
+        "status": status,
+        "previous_status": previous_status,
+    }
+
+
+def book_finished_event_data(
+    book: dict[str, Any], person_id: str, row: dict[str, Any], origin: str | None
+) -> dict[str, Any]:
+    """The payload of ``book_finished``."""
+    return {
+        **book_event_data(book, origin, person_id),
+        "finished": row.get("finished"),
+        "rating": row.get("rating"),
+        "read_count": row.get("read_count", 0),
+    }
+
+
+def loan_event_data(
+    book: dict[str, Any], loan: dict[str, Any], origin: str | None
+) -> dict[str, Any]:
+    """The payload of ``loan_started``, ``loan_returned`` and ``loan_overdue``."""
+    return {
+        **book_event_data(book, origin, loan.get("person_id")),
+        "loan_id": loan["id"],
+        "direction": loan.get("direction"),
+        "copy_id": loan.get("copy_id"),
+        "party": loan.get("party", ""),
+        "started": loan.get("started"),
+        "due": loan.get("due"),
+        "returned": loan.get("returned"),
+    }
+
+
+def wishlist_event_data(
+    book: dict[str, Any], entry: dict[str, Any], origin: str | None
+) -> dict[str, Any]:
+    """The payload of ``wishlist_added`` and ``wishlist_removed``."""
+    return {
+        **book_event_data(book, origin, entry.get("person_id")),
+        "buy": bool(entry.get("buy")),
+        "bought": bool(entry.get("bought")),
+    }
+
+
+def import_completed_event_data(
+    summary: dict[str, Any], person_id: str | None, source: str, origin: str | None
+) -> dict[str, Any]:
+    """The payload of ``import_completed``."""
+    return {
+        "person_id": person_id,
+        "source": source,
+        "rows": int(summary.get("rows", 0)),
+        "books_added": int(summary.get("books_added", 0)),
+        "books_matched": int(summary.get("books_matched", 0)),
+        "copies_added": int(summary.get("copies_added", 0)),
+        "reading_set": int(summary.get("reading_set", 0)),
+        "wishlist_added": int(summary.get("wishlist_added", 0)),
+        "errors": int(summary.get("errors", 0)),
+        "origin": origin,
+    }
