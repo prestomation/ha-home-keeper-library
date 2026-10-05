@@ -25,8 +25,8 @@ lovelace:
   dashboards:
     home-keeper-library-e2e:
       mode: yaml
-      title: HomeKeeperLibrary E2E
-      icon: mdi:view-list
+      title: Library
+      icon: mdi:bookshelf
       show_in_sidebar: true
       filename: home-keeper-library-e2e.yaml
 

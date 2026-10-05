@@ -1,62 +1,113 @@
-import { Page, expect } from '@playwright/test';
-
-/** Open the Home Keeper Library sidebar panel and wait for it to attach. */
-export async function openPanel(page: Page): Promise<void> {
-  await page.goto('/home-keeper-library', { waitUntil: 'domcontentloaded' });
-  await page.locator('home-keeper-library-panel').first().waitFor({ state: 'attached', timeout: 45_000 });
-}
-
-/** Open the seeded e2e dashboard that hosts the custom card. */
-export async function openDashboard(page: Page): Promise<void> {
-  await page.goto('/home-keeper-library-e2e/items', { waitUntil: 'domcontentloaded' });
-  await page.locator('hui-view, home-assistant').first().waitFor({ state: 'attached', timeout: 45_000 });
-}
+import { test as base, expect, type BrowserContext, type Locator, type Page } from '@playwright/test';
+import { library, withWs } from '../ha-ws';
 
 /**
- * Open the dashboard and wait for the custom card to upgrade and render.
- * Returns the card locator (it lives in nested shadow DOM, which Playwright
- * pierces). The card JS is an auto-registered extra module (`add_extra_js_url`),
- * which is fire-and-forget: on the very first dashboard load of a run HA may not
- * have finished loading it, so the element doesn't upgrade in time and HA shows
- * a non-retrying error card. A reload (the module is warm by then) fixes it —
- * retry a couple of times so the first test isn't flaky on a cold frontend.
+ * Keep Home Assistant from installing its service worker.
+ *
+ * In a new browser context the worker takes control about 14 s after the first
+ * load, and Home Assistant then reloads the page. A reload in the middle of a test
+ * resets the tab. Playwright's `serviceWorkers: 'block'` removes
+ * `navigator.serviceWorker`, which breaks the start of the Home Assistant frontend,
+ * so the init script only makes `register` wait forever.
  */
-export async function openCard(page: Page) {
-  let lastErr: unknown;
-  for (let attempt = 0; attempt < 3; attempt++) {
-    if (attempt === 0) await openDashboard(page);
-    else await page.reload({ waitUntil: 'domcontentloaded' });
-    const card = page.locator('home-keeper-library-card').first();
-    try {
-      await card.waitFor({ state: 'attached', timeout: 20_000 });
-      await expect(card.locator('ha-card').first()).toBeVisible({ timeout: 20_000 });
-      return card;
-    } catch (err) {
-      lastErr = err;
-    }
-  }
-  throw lastErr;
+export async function noServiceWorker(context: BrowserContext): Promise<void> {
+  await context.addInitScript(() => {
+    const sw = navigator.serviceWorker;
+    if (sw) Object.defineProperty(sw, 'register', { value: () => new Promise(() => undefined) });
+  });
 }
 
-/**
- * Collect uncaught panel errors so a spec can assert the panel rendered cleanly.
- * Returns a live array of console-error + pageerror messages.
- */
-export function trackPanelErrors(page: Page): string[] {
+/** The Playwright `test` with no Home Assistant service worker in each context. */
+export const test = base.extend({
+  context: async ({ context }, use) => {
+    await noServiceWorker(context);
+    await use(context);
+  },
+});
+
+export { expect };
+
+/** The panel URL of the Library tab in Home Keeper. */
+export const TAB_URL = '/home-keeper/library';
+
+/** The seeded dashboard with the card (tests/integration/ha_config). */
+export const DASHBOARD_URL = '/home-keeper-library-e2e/library';
+
+/** The tab element inside the Home Keeper panel. */
+export function libraryTab(page: Page): Locator {
+  return page.locator('home-keeper-panel home-keeper-library-tab');
+}
+
+/** Open a tab path (after `/home-keeper/library`) and wait for the library data. */
+export async function openTab(page: Page, path = ''): Promise<Locator> {
+  await page.goto(`${TAB_URL}${path}`, { waitUntil: 'domcontentloaded' });
+  const tab = libraryTab(page);
+  // `data-view` is set once the library data is there (the scan view has no nav row).
+  await expect(tab.locator('#main[data-view]')).toBeVisible({ timeout: 45_000 });
+  return tab;
+}
+
+/** Open the seeded dashboard and wait for the card to show its data. */
+export async function openCard(page: Page): Promise<Locator> {
+  await page.goto(DASHBOARD_URL, { waitUntil: 'domcontentloaded' });
+  const card = page.locator('home-keeper-library-card');
+  await expect(card.locator('.head h2')).toBeVisible({ timeout: 45_000 });
+  return card;
+}
+
+/** The book with *title* in the library of Alex. */
+export async function bookByTitle(title: string): Promise<Record<string, any>> {
+  const state = await library<{ books: Array<Record<string, any>> }>('get_state');
+  const book = state.books.find((b) => b.title === title);
+  if (!book) throw new Error(`no book "${title}" in the seed`);
+  return book;
+}
+
+/** The whole `get_state` reply as Alex. */
+export function adminState(): Promise<Record<string, any>> {
+  return library('get_state');
+}
+
+/** The whole `get_state` reply as Sam, who is not an admin. */
+export function userState(): Promise<Record<string, any>> {
+  return withWs('user', (ws) => ws.call({ type: 'home_keeper_library/get_state' }));
+}
+
+/** The Home Keeper tasks, as the library reads them. */
+export async function homeKeeperTasks(): Promise<Array<Record<string, any>>> {
+  return withWs('admin', async (ws) => {
+    const res = await ws.call<{ response: { tasks: Array<Record<string, any>> } }>({
+      type: 'call_service',
+      domain: 'home_keeper',
+      service: 'list_tasks',
+      service_data: {},
+      return_response: true,
+    });
+    return res.response.tasks;
+  });
+}
+
+/** Set the reading row of a person back to what the seed had. */
+export async function restoreReading(bookId: string, personId: string, row: Record<string, any> | undefined): Promise<void> {
+  const fields = row
+    ? {
+        status: row.status,
+        rating: row.rating,
+        page: row.page,
+        started: row.started,
+        finished: row.finished,
+        read_count: row.read_count,
+      }
+    : { status: 'want' };
+  await library('set_reading', { book_id: bookId, person_id: personId, ...fields });
+}
+
+/** Collect the uncaught page errors and the console errors of the library code. */
+export function trackErrors(page: Page): string[] {
   const errors: string[] = [];
-  page.on('pageerror', (err) => errors.push(String(err)));
+  page.on('pageerror', (err) => errors.push(`pageerror: ${err.message}`));
   page.on('console', (msg) => {
-    if (msg.type() === 'error') errors.push(msg.text());
+    if (msg.type() === 'error' && /home[-_]keeper[-_]library|hkl-/i.test(msg.text())) errors.push(msg.text());
   });
   return errors;
-}
-
-/** Add an item through the panel's add form. */
-export async function addItem(page: Page, name: string, value: number): Promise<void> {
-  const panel = page.locator('home-keeper-library-panel').first();
-  await panel.locator('#add-btn').click();
-  await panel.locator('#hkl-item-form #hkl-name').fill(name);
-  await panel.locator('#hkl-item-form #hkl-value').fill(String(value));
-  await panel.locator('#hkl-item-form #hkl-save').click();
-  await expect(panel.locator('.hkl-name', { hasText: name }).first()).toBeVisible();
 }

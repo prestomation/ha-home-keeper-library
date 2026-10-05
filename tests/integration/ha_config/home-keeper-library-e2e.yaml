@@ -1,9 +1,8 @@
-# YAML dashboard for the Playwright e2e suite. Hosts the custom dashboard card
-# so the e2e tests can assert it renders against a real Home Assistant.
-title: HomeKeeperLibrary E2E
+# YAML dashboard for the Playwright e2e suite. The card shows the library of the
+# user who opens the dashboard: Alex (an admin) or Sam (a user who is not an admin).
+title: Library E2E
 views:
-  - title: Items
-    path: items
+  - title: Library
+    path: library
     cards:
       - type: custom:home-keeper-library-card
-        title: HomeKeeperLibrary items

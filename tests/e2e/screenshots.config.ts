@@ -1,8 +1,4 @@
-/** Config for the one-off screenshot capture (see screenshots.capture.ts). */
-import baseConfig from './playwright.config';
+/** Config for the screenshot capture (see screenshots.capture.ts). */
+import { captureConfig } from './capture-config';
 
-export default {
-  ...baseConfig,
-  testDir: '.',
-  testMatch: 'screenshots.capture.ts',
-};
+export default captureConfig('screenshots.capture.ts', { timeout: 300_000 });

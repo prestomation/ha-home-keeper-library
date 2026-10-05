@@ -1,0 +1,17 @@
+{
+  "title": "The Left Hand of Darkness",
+  "key": "/works/OL59863W",
+  "authors": [
+    {"author": {"key": "/authors/OL26320A"}, "type": {"key": "/type/author_role"}}
+  ],
+  "type": {"key": "/type/work"},
+  "description": {
+    "type": "/type/text",
+    "value": "A groundbreaking work of science fiction about an envoy on the planet Gethen."
+  },
+  "covers": [8231856],
+  "subjects": ["Science fiction", "Androgyny", "Fiction"],
+  "first_publish_date": "1969",
+  "latest_revision": 30,
+  "revision": 30
+}
