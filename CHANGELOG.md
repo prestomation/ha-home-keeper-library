@@ -25,7 +25,7 @@ is the single source of truth (see `RELEASE.md`).
   these patterns without stamping a `quality_scale` tier in the manifest (that's
   left to the integration you build on top of it).
 
-## [0.1.0]
+## [0.1.0b1]
 
 ### Added
 - Initial template: the **Home Keeper Library** (`home_keeper_library`) — a managed

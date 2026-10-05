@@ -23,7 +23,7 @@ PLATFORMS = ["sensor"]
 # PANEL_VERSION is the single source of truth that release.yml validates against
 # manifest.json's "version". rollup.config.mjs reads it from this file so the
 # built bundles are stamped with the same string.
-PANEL_VERSION = "0.1.0"
+PANEL_VERSION = "0.1.0b1"
 PANEL_URL_PATH = "home-keeper-library"  # sidebar route -> /home-keeper-library
 PANEL_STATIC_URL = "/home_keeper_library_static"  # serves the JS bundles
 PANEL_JS_FILENAME = "home-keeper-library-panel.js"
