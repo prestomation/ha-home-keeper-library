@@ -1,20 +1,23 @@
 {
-  "name": "home-keeper-library-panel",
+  "name": "home-keeper-library-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "Home Keeper Library sidebar panel + dashboard card — built with Rollup",
+  "description": "Home Keeper Library tab module and dashboard card, built with Rollup",
   "scripts": {
-    "build": "rollup -c",
+    "build": "rm -rf dist && rollup -c",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "devDependencies": {
     "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-terser": "^1.0.0",
     "@rollup/plugin-typescript": "^12.1.0",
     "@rollup/plugin-virtual": "^3.0.2",
+    "@zxing/library": "^0.21.3",
     "rollup": "^4.63.5",
     "tslib": "^2.8.1",
     "typescript": "^5.6.0",
-    "vitest": "^5.0.2"
+    "vitest": "^4.1.11"
   }
 }

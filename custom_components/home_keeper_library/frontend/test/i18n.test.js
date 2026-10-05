@@ -1,218 +1,132 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { getLanguage, setLanguage, t, tn } from '../src/i18n.ts';
+import { formatAgo, formatDate, formatMoney, formatNumber, getLanguage, setLanguage, t, tn } from '../src/i18n.ts';
 import { DEFAULT_LOCALE, LOCALES } from '../src/locales/index.ts';
 
-// Behavioural tests for the i18n module. The translation-quality gates (locale
-// parity, untranslated leaks, key usage) live in `i18n-parity.test.js` — they
-// analyse `src/*.ts` as *text* read off disk, which is a different kind of test,
-// and one the mutation run has to skip (see `vitest.stryker.config.js`).
+// Behaviour of the i18n module. The translation gates (parity, leaks, key usage)
+// are in `i18n-parity.test.js`, which the mutation run skips.
 
-// The i18n module holds global state; reset to the default after every test.
 afterEach(() => setLanguage(DEFAULT_LOCALE));
 
-// Every key `withKeys` stages carries this prefix, so the guard below can tell
-// staged keys from real ones.
-const TEST_KEY_PREFIX = 'tmp.';
-
-// `withKeys` writes into module-level singletons shared with every other test
-// file in the run, so prove after each test that it put them back. Without this
-// a leak would surface as a baffling failure somewhere else entirely — most
-// likely in i18n-parity.test.js, which asserts exact key parity across locales.
-afterEach(() => {
-  for (const [locale, table] of Object.entries(LOCALES)) {
-    const leaked = Object.keys(table).filter((key) => key.startsWith(TEST_KEY_PREFIX));
-    expect(leaked, `${locale} kept staged keys after the test`).toEqual([]);
-  }
-});
-
-/**
- * Run `body` with extra keys temporarily present in a locale table.
- *
- * The bundled tables are deliberately at full parity (i18n-parity.test.js is a
- * gate), which makes several real code paths — the per-key English fallback,
- * multi-character interpolation tokens — unreachable with the shipped data.
- * They are not dead code: they are what a fork mid-translation relies on. This
- * stages that state and always tears it back down, including if staging itself
- * throws part-way through.
- */
+/** Run *body* with extra keys in a locale table, then remove them. */
 function withKeys(keys, body, locale = DEFAULT_LOCALE) {
   const table = LOCALES[locale];
-  for (const key of Object.keys(keys)) {
-    if (!key.startsWith(TEST_KEY_PREFIX)) {
-      throw new Error(`staged key "${key}" must start with "${TEST_KEY_PREFIX}"`);
-    }
-    if (key in table) {
-      throw new Error(`staged key "${key}" would shadow a real one in ${locale}`);
-    }
-  }
   try {
-    for (const [key, value] of Object.entries(keys)) table[key] = value;
+    Object.assign(table, keys);
     body();
   } finally {
     for (const key of Object.keys(keys)) delete table[key];
   }
 }
 
-describe('t() / tn()', () => {
-  it('looks up a key in the active locale', () => {
-    setLanguage('en');
-    expect(t('panel.title')).toBe('Home Keeper Library');
-    setLanguage('de');
-    expect(t('panel.title')).toBe(LOCALES.de['panel.title']);
-  });
-
-  it('interpolates {param} tokens', () => {
-    setLanguage('en');
-    expect(t('panel.created')).toBe('Created');
-  });
-
-  it('falls back to the key when missing', () => {
-    setLanguage('en');
-    expect(t('does.not.exist')).toBe('does.not.exist');
-  });
-
-  it('selects plural categories', () => {
-    setLanguage('en');
-    expect(tn('count', 1)).toBe('1 item');
-    expect(tn('count', 3)).toBe('3 items');
-  });
-});
-
-describe('setLanguage() locale resolution', () => {
-  it('matches a bundled tag exactly', () => {
-    setLanguage('de');
-    expect(getLanguage()).toBe('de');
-    expect(t('panel.title')).toBe(LOCALES.de['panel.title']);
-  });
-
-  // HA reports the user's language as whatever the browser/profile says, so
-  // "DE", "de-AT" and "de-CH" all have to land on the bundled `de` table.
-  it('matches case-insensitively', () => {
+describe('setLanguage', () => {
+  it('finds an exact tag, also a regional one', () => {
+    setLanguage('pt-BR');
+    expect(getLanguage()).toBe('pt-BR');
+    setLanguage('zh-hans');
+    expect(getLanguage()).toBe('zh-Hans');
+    setLanguage('zh_Hans');
+    expect(getLanguage()).toBe('zh-Hans');
     setLanguage('DE');
     expect(getLanguage()).toBe('de');
-    expect(t('panel.title')).toBe(LOCALES.de['panel.title']);
   });
-
-  it('falls back from a regional tag to its base language', () => {
+  it('falls back to the base language', () => {
     setLanguage('de-AT');
     expect(getLanguage()).toBe('de');
-    expect(t('panel.title')).toBe(LOCALES.de['panel.title']);
+    setLanguage('pt-PT');
+    expect(getLanguage()).toBe('pt-BR');
+    setLanguage('zh-Hant');
+    expect(getLanguage()).toBe('zh-Hans');
   });
-
-  it('matches a regional tag case-insensitively too', () => {
-    setLanguage('DE-ch');
-    expect(getLanguage()).toBe('de');
-  });
-
-  it('falls back to the default for an unbundled language', () => {
+  it('falls back to English for an unknown or empty language', () => {
     setLanguage('xx-YY');
-    expect(getLanguage()).toBe(DEFAULT_LOCALE);
-    expect(t('panel.title')).toBe(LOCALES[DEFAULT_LOCALE]['panel.title']);
-  });
-
-  it('falls back to the default for an empty language', () => {
-    setLanguage('de');
-    setLanguage(undefined);
-    expect(getLanguage()).toBe(DEFAULT_LOCALE);
+    expect(getLanguage()).toBe('en');
     setLanguage('de');
     setLanguage('');
-    expect(getLanguage()).toBe(DEFAULT_LOCALE);
+    expect(getLanguage()).toBe('en');
+    setLanguage('de');
+    setLanguage(undefined);
+    expect(getLanguage()).toBe('en');
   });
-});
-
-describe('t() interpolation', () => {
-  it('leaves the template alone when no params are given', () => {
-    setLanguage('en');
-    // `count.one` carries an `{n}` token; called without params the placeholder
-    // must survive untouched rather than being resolved against nothing.
-    expect(t('count.one')).toBe('{n} item');
-  });
-
-  it('leaves a placeholder intact when the param is absent or null', () => {
-    setLanguage('en');
-    expect(t('count.one', { other: 1 })).toBe('{n} item');
-    expect(t('count.one', { n: null })).toBe('{n} item');
-    expect(t('count.one', { n: undefined })).toBe('{n} item');
-  });
-
-  it('substitutes falsy-but-present values', () => {
-    setLanguage('en');
-    // 0 and '' are legitimate values; only null/undefined mean "not supplied".
-    expect(t('count.one', { n: 0 })).toBe('0 item');
-    expect(t('count.one', { n: '' })).toBe(' item');
-  });
-
-  it('interpolates multi-character token names', () => {
-    // Every bundled token happens to be the single character `{n}`, so a
-    // pattern of `\{(\w)\}` would pass on the real tables while silently
-    // failing the moment a fork adds `{count}` or `{date}`.
-    withKeys({ 'tmp.multi': 'due {date} for {itemName}' }, () => {
-      setLanguage('en');
-      expect(t('tmp.multi', { date: '2030-01-01', itemName: 'Shelf' })).toBe(
-        'due 2030-01-01 for Shelf',
-      );
-    });
-  });
-});
-
-describe('tn() key fallback chain', () => {
-  // The chain is `current[key.cat] ?? current[key.other] ?? fallback[key.cat]
-  // ?? fallback[key.other] ?? key`. Its middle rungs are unreachable with the
-  // real tables *by design* — i18n-parity.test.js enforces full key parity
-  // across locales, so `current` is never missing what `fallback` has. They
-  // exist for a fork mid-translation, which is exactly the state these tests
-  // stage explicitly.
-
-  it('falls back to .other within the active locale', () => {
-    // The key goes into the *German* table, so the chain stops at
-    // `current[key.other]` and never reaches the English rungs below it.
-    withKeys(
-      { 'tmp.cat.other': '{n} andere' },
-      () => {
-        setLanguage('de');
-        // German selects "one" for 1; only `.other` is defined here.
-        expect(tn('tmp.cat', 1)).toBe('1 andere');
-      },
-      'de',
-    );
-  });
-
-  it('falls back to the English category key when the locale has neither', () => {
-    withKeys({ 'tmp.en.one': '{n} english thing' }, () => {
+  it('uses the table of the language', () => {
+    withKeys({ 'tmp.x': 'Hallo' }, () => {
       setLanguage('de');
-      expect(tn('tmp.en', 1)).toBe('1 english thing');
-    });
-  });
-
-  it('falls back to the English .other when nothing else matches', () => {
-    withKeys({ 'tmp.enother.other': '{n} english things' }, () => {
-      setLanguage('de');
-      expect(tn('tmp.enother', 3)).toBe('3 english things');
-    });
+      expect(t('tmp.x')).toBe('Hallo');
+    }, 'de');
   });
 });
 
-describe('tn() counting', () => {
-  it('exposes the count as {n} by default', () => {
-    setLanguage('en');
-    expect(tn('count', 5)).toBe('5 items');
+describe('t', () => {
+  it('fills tokens and keeps unknown tokens', () => {
+    expect(t('book.page_of', { page: 3, pages: 10 })).toBe('Page 3 of 10');
+    expect(t('book.page_of', { page: 0 })).toBe('Page 0 of {pages}');
+    expect(t('book.page_of', { page: null, pages: '' })).toBe('Page {page} of ');
+    expect(t('book.page_of')).toBe('Page {page} of {pages}');
   });
-
-  it('lets params override the count', () => {
-    setLanguage('en');
-    expect(tn('count', 5, { n: 'many' })).toBe('many items');
+  it('falls back to English, then to the key', () => {
+    withKeys({ 'tmp.en': 'English only' }, () => {
+      setLanguage('fr');
+      expect(t('tmp.en')).toBe('English only');
+    });
+    expect(t('no.such.key')).toBe('no.such.key');
   });
+});
 
-  it('falls back to .other when the category key is absent', () => {
-    setLanguage('en');
-    // English selects "one" for 1 and "other" for everything else; a category
-    // with no key of its own must land on `.other` rather than the raw key.
-    expect(tn('count', 0)).toBe('0 items');
+describe('tn', () => {
+  it('picks the English plural', () => {
+    expect(tn('count.books', 1)).toBe('1 book');
+    expect(tn('count.books', 0)).toBe('0 books');
+    expect(tn('count.books', 7)).toBe('7 books');
+    expect(tn('count.books', 7, { n: 'seven' })).toBe('seven books');
   });
-
-  it('falls back to the raw key when nothing matches', () => {
-    setLanguage('en');
-    expect(tn('no.such.key', 2)).toBe('no.such.key');
+  it('picks few and many in Polish', () => {
+    withKeys({ 'tmp.p.one': '{n} A', 'tmp.p.few': '{n} B', 'tmp.p.many': '{n} C', 'tmp.p.other': '{n} D' }, () => {
+      setLanguage('pl');
+      expect(tn('tmp.p', 1)).toBe('1 A');
+      expect(tn('tmp.p', 3)).toBe('3 B');
+      expect(tn('tmp.p', 5)).toBe('5 C');
+      expect(tn('tmp.p', 1.5)).toBe('1.5 D');
+    }, 'pl');
   });
+  it('falls back in order: category, other, English category, English other, key', () => {
+    withKeys({ 'tmp.f.other': '{n} local' }, () => {
+      setLanguage('de');
+      expect(tn('tmp.f', 1)).toBe('1 local');
+    }, 'de');
+    withKeys({ 'tmp.g.one': '{n} en one', 'tmp.g.other': '{n} en other' }, () => {
+      setLanguage('de');
+      expect(tn('tmp.g', 1)).toBe('1 en one');
+      expect(tn('tmp.g', 2)).toBe('2 en other');
+    });
+    expect(tn('tmp.none', 2)).toBe('tmp.none');
+  });
+});
 
+describe('formatters', () => {
+  it('formats a date in the language', () => {
+    expect(formatDate('2026-03-02')).toBe('Mar 2, 2026');
+    expect(formatDate('2026-03-02', false)).toBe('Mar 2');
+    expect(formatDate('2026-03-02T12:00:00')).toBe('Mar 2, 2026');
+    setLanguage('de');
+    expect(formatDate('2026-03-02')).toBe('2. März 2026');
+    expect(formatDate('')).toBe('');
+    expect(formatDate(null)).toBe('');
+    expect(formatDate('nope')).toBe('');
+  });
+  it('formats money, with a fallback for a bad currency', () => {
+    expect(formatMoney(7.99, 'USD')).toBe('$7.99');
+    expect(formatMoney(0, 'USD')).toBe('$0.00');
+    expect(formatMoney(null, 'USD')).toBe('');
+    expect(formatMoney(undefined, 'USD')).toBe('');
+    expect(formatMoney(5, 'not a code')).toBe('5 not a code');
+    setLanguage('de');
+    expect(formatMoney(7.5, 'EUR')).toBe('7,50 €');
+  });
+  it('formats numbers and days ago', () => {
+    expect(formatNumber(3890)).toBe('3,890');
+    expect(formatAgo(0)).toBe('today');
+    expect(formatAgo(1)).toBe('yesterday');
+    expect(formatAgo(3)).toBe('3 days ago');
+    setLanguage('de');
+    expect(formatNumber(3890)).toBe('3.890');
+  });
 });

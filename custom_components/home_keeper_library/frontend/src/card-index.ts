@@ -1,13 +1,10 @@
-import { CARD_DESCRIPTION, CARD_NAME, HomeKeeperLibraryCard, HomeKeeperLibraryCardEditor } from './card';
+// The entry point of `library-card.js`, the Lovelace resource of the card.
+import { CARD_TAG, EDITOR_TAG, HomeKeeperLibraryCard, HomeKeeperLibraryCardEditor } from './card';
+import { t } from './i18n';
 
-if (!customElements.get('home-keeper-library-card')) {
-  customElements.define('home-keeper-library-card', HomeKeeperLibraryCard);
-}
-if (!customElements.get('home-keeper-library-card-editor')) {
-  customElements.define('home-keeper-library-card-editor', HomeKeeperLibraryCardEditor);
-}
+if (!customElements.get(CARD_TAG)) customElements.define(CARD_TAG, HomeKeeperLibraryCard);
+if (!customElements.get(EDITOR_TAG)) customElements.define(EDITOR_TAG, HomeKeeperLibraryCardEditor);
 
-// Advertise the card in the dashboard "Add card" picker.
 interface CustomCard {
   type: string;
   name: string;
@@ -15,13 +12,15 @@ interface CustomCard {
   preview?: boolean;
   documentationURL?: string;
 }
+
+// Add the card to the dashboard card picker.
 const w = window as unknown as { customCards?: CustomCard[] };
 w.customCards = w.customCards || [];
-if (!w.customCards.some((c) => c.type === 'home-keeper-library-card')) {
+if (!w.customCards.some((c) => c.type === CARD_TAG)) {
   w.customCards.push({
-    type: 'home-keeper-library-card',
-    name: CARD_NAME,
-    description: CARD_DESCRIPTION,
+    type: CARD_TAG,
+    name: t('card.name'),
+    description: t('card.description'),
     preview: true,
     documentationURL: 'https://github.com/prestomation/ha-home-keeper-library',
   });

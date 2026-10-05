@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Library harness</title>
+<!--
+  A static page that mounts the tab and the card with the fixture state and a fake
+  host, for screenshots before the backend exists. It is not in dist/.
+  Serve the frontend folder (for example `npx http-server -p 8765 .`) after
+  `npm run build`, then open /dev/harness.html?path=/books
+  Query: path=<tab path>, card=1 (card only), theme=dark, lang=<code>, admin=0.
+-->
+<style>
+  :root { --primary-color: #0277bd; --primary-background-color: #fafafa; --card-background-color: #fff; --primary-text-color: #212121; --secondary-text-color: #616161; --divider-color: #e0e0e0; }
+  :root.dark { --primary-color: #4fc3f7; --primary-background-color: #111418; --card-background-color: #1c2026; --primary-text-color: #e8eaed; --secondary-text-color: #9aa0a6; --divider-color: #2f353d; --text-primary-color: #0b1a24; }
+  body { margin: 0; background: var(--primary-background-color); color: var(--primary-text-color); font-family: Roboto, 'Noto Sans', sans-serif; }
+  header { height: 56px; display: flex; align-items: center; padding: 0 24px; background: var(--card-background-color); border-bottom: 1px solid var(--divider-color); font-size: 20px; }
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--divider-color); margin: 12px 24px 0; overflow-x: auto; }
+  .tabs span { height: 48px; padding: 0 20px; display: flex; align-items: center; font-weight: 500; color: var(--secondary-text-color); white-space: nowrap; }
+  .tabs span.on { color: var(--primary-color); border-bottom: 2px solid var(--primary-color); }
+  main { padding: 0 24px; }
+  .cardwrap { max-width: 480px; margin: 24px auto; padding: 0 16px; }
+  #toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #323232; color: #fff; padding: 10px 18px; border-radius: 6px; display: none; z-index: 99; }
+  @media (max-width: 700px) { header { padding: 0 16px; } .tabs { margin: 8px 16px 0; } main { padding: 0 16px; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="toast"></div>
+<script type="module" src="./harness.js"></script>
+</body>
+</html>

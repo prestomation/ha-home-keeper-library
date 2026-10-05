@@ -1,4 +1,4 @@
-// Version string injected by Rollup's virtual module (see rollup.config.mjs).
+// The version string from the Rollup virtual module (see rollup.config.mjs).
 declare module 'panel-version' {
   export const PANEL_VERSION: string;
 }
