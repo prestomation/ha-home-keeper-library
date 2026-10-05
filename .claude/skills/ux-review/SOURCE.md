@@ -42,5 +42,5 @@ this file.
   reads on a phone and uses the card. The surface type is usually `dashboard`
   or `list`. The tone words come from the Home Assistant frontend: calm, dense,
   functional.
-- **Phone and desktop.** Review both widths (`DESKTOP` and `PHONE` in
-  `tests/e2e/viewports.ts`).
+- **Phone and desktop.** Review both widths (`DESKTOP` and `PHONE` in the e2e
+  harness).
