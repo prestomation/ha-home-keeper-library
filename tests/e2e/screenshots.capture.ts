@@ -16,14 +16,14 @@ test('capture: panel list with items', async ({ page }) => {
   await addItem(page, 'Garage shelf', 4);
   await addItem(page, 'Kitchen drawer', 12);
   await addItem(page, 'Attic box', 2);
-  const panel = page.locator('example-panel').first();
-  await panel.locator('.ex-row').first().waitFor();
+  const panel = page.locator('home-keeper-library-panel').first();
+  await panel.locator('.hkl-row').first().waitFor();
   await page.screenshot({ path: `${OUT}/panel-list.png`, fullPage: false });
 });
 
 test('capture: panel item detail', async ({ page }) => {
   await openPanel(page);
-  const panel = page.locator('example-panel').first();
+  const panel = page.locator('home-keeper-library-panel').first();
   await panel.locator('.detail-open').first().click();
   await panel.locator('#back-btn').waitFor();
   await page.screenshot({ path: `${OUT}/panel-detail.png`, fullPage: false });

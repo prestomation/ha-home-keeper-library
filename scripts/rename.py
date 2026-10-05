@@ -14,16 +14,16 @@ own integration in one step:
 
 What it changes (ordered, boundary-aware so it doesn't corrupt e.g. `flex-`):
 
-    Example Integration  -> "Your Name"   display name
-    example_integration  -> your_domain   domain, static path, ws, imports, paths
-    example-integration  -> your-domain   panel URL path
-    example-             -> your-domain-   web components + e2e dashboard
-    Example              -> YourName       PascalCase symbols (ExampleStore, …)
-    ex-                  -> <prefix>-       CSS classes / element ids
-    ex_                  -> <prefix>_       the input_text event-capture helper
+    Home Keeper Library  -> "Your Name"   display name
+    home_keeper_library  -> your_domain   domain, static path, ws, imports, paths
+    home-keeper-library  -> your-domain   panel URL path
+    home-keeper-library-             -> your-domain-   web components + e2e dashboard
+    HomeKeeperLibrary              -> YourName       PascalCase symbols (HomeKeeperLibraryStore, …)
+    hkl-                  -> <prefix>-       CSS classes / element ids
+    hkl_                  -> <prefix>_       the input_text event-capture helper
 
-It also renames `custom_components/example_integration/` and the
-`example-e2e.yaml` dashboard fixture.
+It also renames `custom_components/home_keeper_library/` and the
+`home-keeper-library-e2e.yaml` dashboard fixture.
 
 After running: review `git diff`, then run the tests (see README). The script
 does not touch the synthetic `ex` test package name in `tests/conftest.py`
@@ -57,7 +57,7 @@ SKIP_DIRS = {
 }
 SKIP_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".ico", ".woff", ".woff2", ".zip"}
 # The built bundles are gitignored/derived; never rewrite them.
-SKIP_NAMES = {"example-panel.js", "example-card.js"}
+SKIP_NAMES = {"home-keeper-library-panel.js", "home-keeper-library-card.js"}
 
 
 def _pascal(display: str) -> str:
@@ -80,11 +80,11 @@ def build_replacements(domain: str, display: str, prefix: str) -> list[tuple[str
     pascal = _pascal(display)
     # Order matters: longest / most-specific first.
     return [
-        (r"Example Integration", display),
-        (r"example_integration", domain),
-        (r"example-integration", hyphen),
-        (r"example-", f"{hyphen}-"),
-        (r"Example", pascal),
+        (r"Home Keeper Library", display),
+        (r"home_keeper_library", domain),
+        (r"home-keeper-library", hyphen),
+        (r"home-keeper-library-", f"{hyphen}-"),
+        (r"HomeKeeperLibrary", pascal),
         (r"\bex-", f"{prefix}-"),
         (r"\bex_", f"{prefix}_"),
     ]
@@ -126,7 +126,7 @@ def main() -> int:
 
     if not re.fullmatch(r"[a-z][a-z0-9_]*", args.domain):
         sys.exit("error: domain must be lower_snake_case (start with a letter)")
-    if args.domain == "example_integration":
+    if args.domain == "home_keeper_library":
         sys.exit("error: choose a domain other than the placeholder")
 
     prefix = args.prefix or _default_prefix(args.domain)
@@ -142,7 +142,7 @@ def main() -> int:
         # The full slug carries the repo identity in badges, manifest URLs, and the
         # card's documentationURL; the @handle / %40handle carry the maintainer.
         replacements += [
-            (re.escape("prestomation/ha-integration-template"), args.repo),
+            (re.escape("prestomation/ha-home-keeper-library"), args.repo),
             (re.escape("%40prestomation"), f"%40{owner}"),
             (r"@prestomation\b", f"@{owner}"),
         ]
@@ -162,11 +162,11 @@ def main() -> int:
     hyphen = args.domain.replace("_", "-")
     renames = [
         (
-            ROOT / "custom_components" / "example_integration",
+            ROOT / "custom_components" / "home_keeper_library",
             ROOT / "custom_components" / args.domain,
         ),
         (
-            ROOT / "tests" / "integration" / "ha_config" / "example-e2e.yaml",
+            ROOT / "tests" / "integration" / "ha_config" / "home-keeper-library-e2e.yaml",
             ROOT / "tests" / "integration" / "ha_config" / f"{hyphen}-e2e.yaml",
         ),
     ]

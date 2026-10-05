@@ -1,9 +1,9 @@
-# Example Integration — events
+# Home Keeper Library — events
 
-The Example Integration fires a Home Assistant **bus event** for every meaningful
+The Home Keeper Library fires a Home Assistant **bus event** for every meaningful
 change to an item — created, updated, deleted. This is the surface automations and
 other integrations build on. Events are *observations* of changes that already flow
-through `ExampleStore`, so they need no separate service.
+through `HomeKeeperLibraryStore`, so they need no separate service.
 
 All payloads are built by **pure functions in `events.py`** (no HA imports), fired
 at the **`store.py` mutation chokepoint** — so every surface (panel websocket,
@@ -16,13 +16,13 @@ and described nowhere fails the build rather than reaching you undocumented.
 
 ## Event catalog
 
-Names follow `example_integration_<noun>_<verb>`.
+Names follow `home_keeper_library_<noun>_<verb>`.
 
 | Event | Fires when |
 |---|---|
-| `example_integration_item_created` | an item is created |
-| `example_integration_item_updated` | an item actually changes; payload adds `changed_fields` |
-| `example_integration_item_deleted` | an item is removed |
+| `home_keeper_library_item_created` | an item is created |
+| `home_keeper_library_item_updated` | an item actually changes; payload adds `changed_fields` |
+| `home_keeper_library_item_deleted` | an item is removed |
 
 ## Payloads
 
@@ -56,7 +56,7 @@ automation:
   - alias: Notify when an item value changes
     trigger:
       - platform: event
-        event_type: example_integration_item_updated
+        event_type: home_keeper_library_item_updated
     condition: "{{ 'value' in trigger.event.data.changed_fields }}"
     action:
       - service: notify.notify

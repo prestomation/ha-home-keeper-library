@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Capture the Example Integration panel *video* walkthrough and transcode it for
+# Capture the Home Keeper Library panel *video* walkthrough and transcode it for
 # embedding on the PR (see .github/workflows/walkthrough-preview.yml).
 #
 # Produces, under docs/videos/ (override with VIDEO_DIR):

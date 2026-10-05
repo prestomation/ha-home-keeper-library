@@ -59,10 +59,10 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: custom_components/example_integration/frontend/package-lock.json
+          cache-dependency-path: custom_components/home_keeper_library/frontend/package-lock.json
 
       - name: Install frontend deps
-        run: npm ci --prefix custom_components/example_integration/frontend
+        run: npm ci --prefix custom_components/home_keeper_library/frontend
 
       - name: Build panel JS
         run: bash ci/build-panel.sh
@@ -118,7 +118,7 @@ jobs:
           node-version: "22"
 
       - name: Install frontend deps
-        run: npm ci --prefix custom_components/example_integration/frontend
+        run: npm ci --prefix custom_components/home_keeper_library/frontend
 
       - name: Build panel JS
         run: bash ci/build-panel.sh
@@ -188,7 +188,7 @@ jobs:
         run: python ci/check-ha-version.py --pre
 
       - name: Run mypy
-        run: mypy custom_components/example_integration
+        run: mypy custom_components/home_keeper_library
 
   report:
     name: File a regression issue

@@ -7,8 +7,8 @@ GitHub Release when the version is new.
 ## Cutting a release
 
 1. Open a release PR that:
-   - bumps `version` in `custom_components/example_integration/manifest.json`,
-   - bumps `PANEL_VERSION` in `custom_components/example_integration/const.py` to the
+   - bumps `version` in `custom_components/home_keeper_library/manifest.json`,
+   - bumps `PANEL_VERSION` in `custom_components/home_keeper_library/const.py` to the
      **same** string (the release workflow asserts they match), and
    - adds a `## [X.Y.Z]` section to `CHANGELOG.md`.
 2. Merge (squash). On the push to `main`, `release.yml`:
@@ -31,12 +31,12 @@ Stable `X.Y.Z` ships as a normal release.
 Sometimes you want to **install and try a PR's build via HACS** before merging it —
 without bumping the version or cutting a real release. Add the **`preview-release`**
 label to the PR and `preview-release.yml` builds the frontend bundles +
-`example_integration.zip` from the PR head, stamps a synthetic version
+`home_keeper_library.zip` from the PR head, stamps a synthetic version
 (`X.Y.Z.dev<pr>`) into the zip's manifest, and publishes an **ephemeral GitHub
-pre-release** with the zip attached. Install it from HACS: open *Example Integration*
+pre-release** with the zip attached. Install it from HACS: open *Home Keeper Library*
 → ⋮ → **Redownload**, enable **Show beta versions**, and pick `X.Y.Z.dev<pr>` (or
-download `example_integration.zip` from the release and unzip into
-`config/custom_components/example_integration/`).
+download `home_keeper_library.zip` from the release and unzip into
+`config/custom_components/home_keeper_library/`).
 
 - **Opt-in only** — nothing happens without the label (and only users with write
   access can label).
@@ -50,12 +50,12 @@ download `example_integration.zip` from the release and unzip into
   re-published on each push and **deleted automatically when the PR closes**.
 
 > When you rename the template (`scripts/rename.py`), update `preview-release.yml`
-> to replace `example_integration` / `Example Integration` with your domain / display
+> to replace `home_keeper_library` / `Home Keeper Library` with your domain / display
 > name.
 
 ## Notes
 
-- The built `example-panel.js` / `example-card.js` are gitignored; CI builds them
+- The built `home-keeper-library-panel.js` / `home-keeper-library-card.js` are gitignored; CI builds them
   for the release zip.
 - A stable release's notes describe what changed since the previous **stable**
   release — roll any intervening beta work into Added/Changed/Fixed as users perceive

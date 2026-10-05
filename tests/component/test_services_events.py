@@ -7,7 +7,7 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import entity_registry as er
 from pytest_homeassistant_custom_component.common import async_capture_events
 
-from custom_components.example_integration.const import (
+from custom_components.home_keeper_library.const import (
     DOMAIN,
     EVENT_ITEM_CREATED,
     EVENT_ITEM_DELETED,

@@ -20,7 +20,7 @@ name: Walkthrough video — PR preview
 # also reachable at https://<owner>.github.io/<repo>/pr-preview-media/pr-<n>/… .
 #
 # When you rename the template (scripts/rename.py), update this file: replace
-# `example_integration` with your domain and the `example-panel`/`example-card`
+# `home_keeper_library` with your domain and the `home-keeper-library-panel`/`home-keeper-library-card`
 # selectors in tests/e2e/videos.capture.ts to match.
 
 on:
@@ -52,7 +52,7 @@ jobs:
 
       - name: Install frontend deps
         if: github.event.action != 'closed'
-        run: npm ci --prefix custom_components/example_integration/frontend
+        run: npm ci --prefix custom_components/home_keeper_library/frontend
 
       - name: Build panel + card JS
         if: github.event.action != 'closed'
@@ -166,7 +166,7 @@ jobs:
                 marker,
                 '### 🎥 Panel walkthrough',
                 '',
-                `<img src="${gif}" alt="Example Integration panel walkthrough" width="820">`,
+                `<img src="${gif}" alt="Home Keeper Library panel walkthrough" width="820">`,
                 '',
                 `▶️ [Higher-quality MP4](${mp4})`,
                 '',

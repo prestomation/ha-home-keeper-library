@@ -28,10 +28,10 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: custom_components/example_integration/frontend/package-lock.json
+          cache-dependency-path: custom_components/home_keeper_library/frontend/package-lock.json
 
       - name: Install frontend deps
-        run: npm ci --prefix custom_components/example_integration/frontend
+        run: npm ci --prefix custom_components/home_keeper_library/frontend
 
       - name: Build panel JS
         run: bash ci/build-panel.sh

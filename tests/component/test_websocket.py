@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from custom_components.example_integration.const import DOMAIN
+from custom_components.home_keeper_library.const import DOMAIN
 
 
 async def test_websocket_add_list_update_delete(hass, setup_entry, hass_ws_client):

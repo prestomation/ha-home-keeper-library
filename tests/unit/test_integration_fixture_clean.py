@@ -31,11 +31,11 @@ ROOT = Path(__file__).resolve().parents[2]
 
 HA_CONFIG = ROOT / "tests" / "integration" / "ha_config"
 CONFIG_ENTRIES = HA_CONFIG / ".storage" / "core.config_entries"
-DASHBOARD = HA_CONFIG / "example-e2e.yaml"
+DASHBOARD = HA_CONFIG / "home-keeper-library-e2e.yaml"
 CARD_INDEX = (
     ROOT
     / "custom_components"
-    / "example_integration"
+    / "home_keeper_library"
     / "frontend"
     / "src"
     / "card-index.ts"
@@ -65,10 +65,10 @@ SEEDED_ENTRY_KEYS = {
     "disabled_by",
 }
 
-#: `- type: custom:example-card` in the seeded YAML dashboard.
+#: `- type: custom:home-keeper-library-card` in the seeded YAML dashboard.
 _YAML_CUSTOM_CARD = re.compile(r"type:\s*custom:([\w-]+)")
 
-#: `customElements.define('example-card', …)` in the card bundle's entry point.
+#: `customElements.define('home-keeper-library-card', …)` in the card bundle's entry point.
 _DEFINED_ELEMENT = re.compile(r"customElements\.define\(\s*['\"]([\w-]+)['\"]")
 
 
@@ -100,7 +100,7 @@ def test_seeded_config_entry_still_loads_the_integration() -> None:
     entry = _payload()["data"]["entries"][0]
     missing = sorted(SEEDED_ENTRY_KEYS - set(entry))
     assert not missing, f"the seeded config entry is missing key(s): {missing}."
-    assert entry["domain"] == "example_integration"
+    assert entry["domain"] == "home_keeper_library"
     assert entry["entry_id"], "the seeded entry needs a stable entry_id"
 
 

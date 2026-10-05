@@ -33,7 +33,7 @@ import ex.events as events
 import pytest
 
 _COMPONENT = (
-    Path(__file__).resolve().parents[2] / "custom_components" / "example_integration"
+    Path(__file__).resolve().parents[2] / "custom_components" / "home_keeper_library"
 )
 _INIT_TREE = ast.parse((_COMPONENT / "__init__.py").read_text(encoding="utf-8"))
 _WS_TREE = ast.parse((_COMPONENT / "websocket_api.py").read_text(encoding="utf-8"))
@@ -54,7 +54,7 @@ def _services_yaml() -> dict:
     return yaml.safe_load((_COMPONENT / "services.yaml").read_text(encoding="utf-8"))
 
 
-_FIX = "Add or update its spec in custom_components/example_integration/api_surface.py."
+_FIX = "Add or update its spec in custom_components/home_keeper_library/api_surface.py."
 
 
 # ── Source introspection helpers ─────────────────────────────────────────────

@@ -17,7 +17,7 @@ import json
 from pathlib import Path
 
 _COMPONENT = (
-    Path(__file__).resolve().parents[2] / "custom_components" / "example_integration"
+    Path(__file__).resolve().parents[2] / "custom_components" / "home_keeper_library"
 )
 # Exception types that surface to the user and therefore must be translatable.
 _TRANSLATABLE = {"ServiceValidationError", "HomeAssistantError"}

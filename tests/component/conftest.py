@@ -19,7 +19,7 @@ pytest_plugins = "pytest_homeassistant_custom_component"
 
 @pytest.fixture(autouse=True)
 def auto_enable_custom_integrations(enable_custom_integrations):
-    """Load ``custom_components/example_integration`` in every component test."""
+    """Load ``custom_components/home_keeper_library`` in every component test."""
     yield
 
 
@@ -28,9 +28,9 @@ async def setup_entry(hass):
     """Set up the integration from a fresh config entry and return it."""
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-    from custom_components.example_integration.const import DOMAIN
+    from custom_components.home_keeper_library.const import DOMAIN
 
-    entry = MockConfigEntry(domain=DOMAIN, title="Example Integration", data={})
+    entry = MockConfigEntry(domain=DOMAIN, title="Home Keeper Library", data={})
     entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()

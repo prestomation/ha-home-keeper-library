@@ -20,7 +20,7 @@ jobs:
       - name: Determine release version
         id: check
         run: |
-          VERSION=$(python3 -c "import json; print(json.load(open('custom_components/example_integration/manifest.json'))['version'])")
+          VERSION=$(python3 -c "import json; print(json.load(open('custom_components/home_keeper_library/manifest.json'))['version'])")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
           # Pre-release versions (e.g. 0.2.0b1) become GitHub pre-releases: HACS
@@ -45,7 +45,7 @@ jobs:
             exit 1
           fi
 
-          PANEL_VERSION=$(grep -E '^PANEL_VERSION\s*=' custom_components/example_integration/const.py | sed -E 's/.*"([^"]+)".*/\1/')
+          PANEL_VERSION=$(grep -E '^PANEL_VERSION\s*=' custom_components/home_keeper_library/const.py | sed -E 's/.*"([^"]+)".*/\1/')
           if [ "$PANEL_VERSION" != "$VERSION" ]; then
             echo "::error::manifest.json version ($VERSION) does not match const.py PANEL_VERSION ($PANEL_VERSION). Bump both in the same PR."
             exit 1
@@ -82,7 +82,7 @@ jobs:
 
       - name: Install frontend deps
         if: steps.check.outputs.release == 'true'
-        run: npm ci --prefix custom_components/example_integration/frontend
+        run: npm ci --prefix custom_components/home_keeper_library/frontend
 
       - name: Build panel JS
         if: steps.check.outputs.release == 'true'
@@ -95,11 +95,11 @@ jobs:
       - name: Verify release zip
         if: steps.check.outputs.release == 'true'
         run: |
-          if [ ! -f example_integration.zip ]; then
-            echo "::error::example_integration.zip not found"
+          if [ ! -f home_keeper_library.zip ]; then
+            echo "::error::home_keeper_library.zip not found"
             exit 1
           fi
-          echo "example_integration.zip exists ($(du -h example_integration.zip | cut -f1))"
+          echo "home_keeper_library.zip exists ($(du -h home_keeper_library.zip | cut -f1))"
 
       - name: Create and push tag
         if: steps.check.outputs.release == 'true' && github.event_name != 'pull_request'
@@ -120,4 +120,4 @@ jobs:
           body: ${{ steps.changelog.outputs.notes }}
           draft: false
           prerelease: ${{ steps.check.outputs.prerelease == 'true' }}
-          files: example_integration.zip
+          files: home_keeper_library.zip

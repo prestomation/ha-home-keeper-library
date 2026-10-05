@@ -1,23 +1,23 @@
-# Integrating with the Example Integration
+# Integrating with the Home Keeper Library
 
 Other integrations, automations, scripts, and voice assistants interact with the
-Example Integration through two stable surfaces: **services** (to act) and **events**
+Home Keeper Library through two stable surfaces: **services** (to act) and **events**
 (to observe). Never reach into its storage or websocket commands.
 
 ## Services (the action surface)
 
 | Service | Purpose | Fields |
 |---|---|---|
-| `example_integration.add_item` | Create an item | `name` (required), `value` (optional int) |
-| `example_integration.update_item` | Change an item | `item_id` (required), `name`, `value` |
-| `example_integration.delete_item` | Remove an item | `item_id` (required) |
+| `home_keeper_library.add_item` | Create an item | `name` (required), `value` (optional int) |
+| `home_keeper_library.update_item` | Change an item | `item_id` (required), `name`, `value` |
+| `home_keeper_library.delete_item` | Remove an item | `item_id` (required) |
 
 `add_item` returns a response with the new `item_id` (call with
 `return_response`):
 
 ```yaml
 action:
-  - service: example_integration.add_item
+  - service: home_keeper_library.add_item
     data:
       name: Garage shelf
       value: 4
@@ -28,7 +28,7 @@ action:
 ## Events (the observation surface)
 
 See [EVENTS.md](EVENTS.md) for the full catalog and payloads. Subscribe with a plain
-`event` trigger on `example_integration_item_{created,updated,deleted}`.
+`event` trigger on `home_keeper_library_item_{created,updated,deleted}`.
 
 ## Reading current state
 

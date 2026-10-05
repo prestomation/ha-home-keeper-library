@@ -42,7 +42,7 @@ jobs:
       - name: Report and verify the Home Assistant version being checked
         run: python ci/check-ha-version.py
       - name: Mypy (strict typing)
-        run: mypy custom_components/example_integration
+        run: mypy custom_components/home_keeper_library
 
   vale:
     # User-facing prose is linted for AI-tell phrasing ("delve", "it's important to

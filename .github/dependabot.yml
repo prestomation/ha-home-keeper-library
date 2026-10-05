@@ -16,7 +16,7 @@ updates:
 
   # Frontend (panel + card) build/test dependencies.
   - package-ecosystem: npm
-    directory: "/custom_components/example_integration/frontend"
+    directory: "/custom_components/home_keeper_library/frontend"
     schedule:
       interval: weekly
     labels: ["dependencies"]

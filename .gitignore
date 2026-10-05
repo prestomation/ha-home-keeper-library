@@ -1,6 +1,6 @@
 # Built frontend bundles (CI builds them; never commit).
-custom_components/example_integration/frontend/example-panel.js
-custom_components/example_integration/frontend/example-card.js
+custom_components/home_keeper_library/frontend/home-keeper-library-panel.js
+custom_components/home_keeper_library/frontend/home-keeper-library-card.js
 
 # Node
 node_modules/
@@ -45,4 +45,4 @@ stryker.log
 reports/
 
 # Build artifacts
-example_integration.zip
+home_keeper_library.zip

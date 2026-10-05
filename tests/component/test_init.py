@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from homeassistant.helpers import entity_registry as er
 
-from custom_components.example_integration.const import DOMAIN
+from custom_components.home_keeper_library.const import DOMAIN
 
 
 def total_sensor_entity_id(hass) -> str:

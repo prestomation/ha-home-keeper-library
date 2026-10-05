@@ -3,13 +3,13 @@
 This repository is a **template** for building a Home Assistant custom
 integration with a backend, a sidebar panel, a Lovelace card, translations,
 bus events, and a full four-tier test suite. The example feature is a tiny
-**items list** (`example_integration`); replace it with your own domain, but
+**items list** (`home_keeper_library`); replace it with your own domain, but
 keep the conventions and gates below — they are what make the result reviewable,
 testable, and HACS-shippable.
 
-> **Renaming the template:** find-and-replace `example_integration` →
-> `your_domain`, `Example Integration` → `Your Name`, the `example-` web-component
-> / static-path prefixes, and the `ex`/`Example` symbol prefixes. Then swap the
+> **Renaming the template:** find-and-replace `home_keeper_library` →
+> `your_domain`, `Home Keeper Library` → `Your Name`, the `home-keeper-library-` web-component
+> / static-path prefixes, and the `ex`/`HomeKeeperLibrary` symbol prefixes. Then swap the
 > items model (`models.py`, `store.py`, `sensor.py`, the panel/card UI) for yours.
 
 ## Workflow
@@ -138,14 +138,14 @@ convention isn't real until it's written into the rules.
 
 ## Project structure
 
-- **Domain:** `example_integration`. **Display name:** Example Integration.
-- **Backend:** `custom_components/example_integration/`. The data model
+- **Domain:** `home_keeper_library`. **Display name:** Home Keeper Library.
+- **Backend:** `custom_components/home_keeper_library/`. The data model
   (`models.py`) and event builders (`events.py`) are **pure Python (no HA
   imports)** so they unit-test in isolation — keep them that way.
-- **Storage:** local single JSON document `.storage/example_integration`, mutated
-  only through `ExampleStore` (the chokepoint).
-- **Frontend:** TypeScript + Rollup at `custom_components/example_integration/frontend/`.
-  Source in `src/*.ts`, builds to `example-panel.js` + `example-card.js`
+- **Storage:** local single JSON document `.storage/home_keeper_library`, mutated
+  only through `HomeKeeperLibraryStore` (the chokepoint).
+- **Frontend:** TypeScript + Rollup at `custom_components/home_keeper_library/frontend/`.
+  Source in `src/*.ts`, builds to `home-keeper-library-panel.js` + `home-keeper-library-card.js`
   (gitignored, built by CI; see `ci/build-panel.sh`).
 - **Admin vs usage:** management lives in the **sidebar panel** (a custom HA
   panel); usage/display is exposed via the **native `sensor` entities** and the
@@ -155,10 +155,10 @@ convention isn't real until it's written into the rules.
 
 - **Pure, HA-free core.** `models.py` and `events.py` import nothing from
   `homeassistant`. Inject HA specifics (the clock via `dt_util`) from callers.
-- **One mutation chokepoint.** All writes go through `ExampleStore`; entities and
-  the panel read via the `ExampleCoordinator` and never mutate storage directly.
+- **One mutation chokepoint.** All writes go through `HomeKeeperLibraryStore`; entities and
+  the panel read via the `HomeKeeperLibraryCoordinator` and never mutate storage directly.
 - **Expose every data action as a service.** Any operation that mutates or exports
-  data ships as an `example_integration.*` service (handler in `__init__.py`,
+  data ships as an `home_keeper_library.*` service (handler in `__init__.py`,
   `services.yaml` entry, `strings.json` localization at translation parity). A
   panel **websocket command** is only a UI-latency optimization and delegates to
   the same store method — never a substitute for the service.
@@ -180,7 +180,7 @@ convention isn't real until it's written into the rules.
 - Entity `unique_id`s are anchored to the item `id` (survive renames).
 - Escape all user content before `innerHTML` injection in the panel (`escapeHTML`).
 - Panel navigation is deep-linked: every destination maps to a URL under
-  `/example-integration`, the `route` prop is the single source of truth, and
+  `/home-keeper-library`, the `route` prop is the single source of truth, and
   Back/Forward move within the panel. Route parse/build are pure functions in
   `utils.ts`. Never mutate view/detail state directly to navigate.
 
@@ -221,7 +221,7 @@ surface.
   (and passes `-p no:pytest_socket`). Keep them in separate dirs and steps.
 - **The unit tier and the component tier cannot share one either**, for a second
   reason that bites even in a single environment: `tests/unit/conftest.py` installs
-  stub `custom_components.example_integration` parent packages so the pure core loads
+  stub `custom_components.home_keeper_library` parent packages so the pure core loads
   without Home Assistant. Collect both tiers in one pytest process and that stub is
   in `sys.modules` when HA imports the integration for real, so every component test
   dies with *"No setup or config entry setup function defined"* — HA found the stub.
@@ -302,13 +302,13 @@ bash ci/test-mutation-frontend.sh --all
   its parent, and only `copytree`s a directory into place.
 
 `tests/unit/conftest.py` executes the pure modules under their **real** dotted
-name (`custom_components.example_integration.<mod>`, with stub parent packages so
+name (`custom_components.home_keeper_library.<mod>`, with stub parent packages so
 the HA-importing `__init__.py` never runs) and aliases them to `ex.<mod>`. Keep
 it that way: mutmut matches a mutant's path-derived key against the function's
 `__module__`, and a mismatch makes every mutant look untested. It also has to
 stay in `tests/unit/` rather than `tests/` — as a root conftest its stub parent
 packages would shadow the real integration for the component tier, where Home
-Assistant imports `custom_components.example_integration` itself.
+Assistant imports `custom_components.home_keeper_library` itself.
 
 ## Translations (quality gates)
 
@@ -336,9 +336,9 @@ See `RELEASE.md`.
   `ruff format --check …` before pushing; `ruff format` / `ruff check --fix` apply
   fixes.
 - The integration is **fully typed** (ships `py.typed`); `lint.yml` runs `mypy
-  custom_components/example_integration` with Home Assistant installed. Run it
+  custom_components/home_keeper_library` with Home Assistant installed. Run it
   locally first: `pip install mypy homeassistant && mypy
-  custom_components/example_integration`. User-facing exceptions are localized
+  custom_components/home_keeper_library`. User-facing exceptions are localized
   (translation keys under `strings.json` → `exceptions`). `[tool.mypy]
   python_version` and the job's `python-version` both track Home Assistant's Python
   floor rather than the integration's — see "Home Assistant versions" under CI.

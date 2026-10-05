@@ -1,14 +1,14 @@
 import { Page, expect } from '@playwright/test';
 
-/** Open the Example Integration sidebar panel and wait for it to attach. */
+/** Open the Home Keeper Library sidebar panel and wait for it to attach. */
 export async function openPanel(page: Page): Promise<void> {
-  await page.goto('/example-integration', { waitUntil: 'domcontentloaded' });
-  await page.locator('example-panel').first().waitFor({ state: 'attached', timeout: 45_000 });
+  await page.goto('/home-keeper-library', { waitUntil: 'domcontentloaded' });
+  await page.locator('home-keeper-library-panel').first().waitFor({ state: 'attached', timeout: 45_000 });
 }
 
 /** Open the seeded e2e dashboard that hosts the custom card. */
 export async function openDashboard(page: Page): Promise<void> {
-  await page.goto('/example-e2e/items', { waitUntil: 'domcontentloaded' });
+  await page.goto('/home-keeper-library-e2e/items', { waitUntil: 'domcontentloaded' });
   await page.locator('hui-view, home-assistant').first().waitFor({ state: 'attached', timeout: 45_000 });
 }
 
@@ -26,7 +26,7 @@ export async function openCard(page: Page) {
   for (let attempt = 0; attempt < 3; attempt++) {
     if (attempt === 0) await openDashboard(page);
     else await page.reload({ waitUntil: 'domcontentloaded' });
-    const card = page.locator('example-card').first();
+    const card = page.locator('home-keeper-library-card').first();
     try {
       await card.waitFor({ state: 'attached', timeout: 20_000 });
       await expect(card.locator('ha-card').first()).toBeVisible({ timeout: 20_000 });
@@ -53,10 +53,10 @@ export function trackPanelErrors(page: Page): string[] {
 
 /** Add an item through the panel's add form. */
 export async function addItem(page: Page, name: string, value: number): Promise<void> {
-  const panel = page.locator('example-panel').first();
+  const panel = page.locator('home-keeper-library-panel').first();
   await panel.locator('#add-btn').click();
-  await panel.locator('#ex-item-form #ex-name').fill(name);
-  await panel.locator('#ex-item-form #ex-value').fill(String(value));
-  await panel.locator('#ex-item-form #ex-save').click();
-  await expect(panel.locator('.ex-name', { hasText: name }).first()).toBeVisible();
+  await panel.locator('#hkl-item-form #hkl-name').fill(name);
+  await panel.locator('#hkl-item-form #hkl-value').fill(String(value));
+  await panel.locator('#hkl-item-form #hkl-save').click();
+  await expect(panel.locator('.hkl-name', { hasText: name }).first()).toBeVisible();
 }

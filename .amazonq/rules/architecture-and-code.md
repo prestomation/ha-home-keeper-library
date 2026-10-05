@@ -1,7 +1,7 @@
 # Architecture & code conventions
 
 These rules describe the conventions to follow when generating or reviewing code
-in this repository (the `example_integration` Home Assistant integration
+in this repository (the `home_keeper_library` Home Assistant integration
 template). They are deliberately generic so they survive renaming the template to
 your own domain.
 
@@ -22,8 +22,8 @@ your own domain.
   created=dt_util.now().isoformat())`) rather than reading a clock internally.
 
 ## One mutation chokepoint
-- All item writes go through `ExampleStore` (`store.py`). Entities and the panel
-  read via the `ExampleCoordinator` and never mutate storage directly.
+- All item writes go through `HomeKeeperLibraryStore` (`store.py`). Entities and the panel
+  read via the `HomeKeeperLibraryCoordinator` and never mutate storage directly.
 - Items are plain JSON-serializable dicts (never model objects in storage):
   `id, name, value, created`.
 - For a local store with no I/O cost, mutations call `await
@@ -39,7 +39,7 @@ your own domain.
   sensor) so their names localize via `strings.json`.
 
 ## Services are the interoperability surface — expose every action as one
-- **Every action that mutates or exports data MUST be an `example_integration.*`
+- **Every action that mutates or exports data MUST be an `home_keeper_library.*`
   Home Assistant service**, not only a panel websocket command. Services are what
   automations, scripts, voice assistants, and other integrations build on.
 - **New action ⇒ service first.** It lands as a service (handler in `__init__.py`,
@@ -47,13 +47,13 @@ your own domain.
   documented: a `services.yaml` entry plus `strings.json` localization at parity
   across all `translations/<lang>.json` (the parity test + hassfest enforce this).
   Any websocket command is added alongside and delegates to the same
-  `ExampleStore` method — never a divergent code path.
+  `HomeKeeperLibraryStore` method — never a divergent code path.
 - Read-only/report services use `SupportsResponse.ONLY`/`OPTIONAL`; mutations
   refresh the coordinator exactly as the equivalent CRUD service does.
 
 ## Events are the observation surface — fire one for every state change
 - **Every observable state change fires a documented
-  `example_integration_<noun>_<verb>` bus event**, built by a **pure function in
+  `home_keeper_library_<noun>_<verb>` bus event**, built by a **pure function in
   `events.py`** (no HA imports) so tests and integrators assert against the exact
   shipped payload. Fire at the **`store.py` mutation chokepoint**, not in a service
   handler, so every surface (panel, service, websocket) is observed uniformly.
@@ -67,7 +67,7 @@ your own domain.
 
 ## Panel navigation & deep linking
 - The panel's navigation state is **deep-linked**: every navigable destination maps
-  to a URL under the panel prefix (`/example-integration`). Scheme: `/` (list),
+  to a URL under the panel prefix (`/home-keeper-library`). Scheme: `/` (list),
   `/items/<id>` (detail). Forms are ephemeral overlays and are not deep-linked.
 - **The URL is the single source of truth.** HA hands the panel a `route` for every
   in-panel URL change, including Back/Forward. The `route` setter parses `path` and
@@ -83,8 +83,8 @@ your own domain.
   notice rather than erroring.
 
 ## Frontend bundles & the card-load race
-- Two IIFE bundles ship from one static path: the panel (`example-panel.js`, loaded
-  via the panel's `module_url`) and the card (`example-card.js`, auto-registered as
+- Two IIFE bundles ship from one static path: the panel (`home-keeper-library-panel.js`, loaded
+  via the panel's `module_url`) and the card (`home-keeper-library-card.js`, auto-registered as
   an extra module URL via `card.async_register_card` → `frontend.add_extra_js_url`).
 - `add_extra_js_url` injection is **fire-and-forget**: on a cold frontend the custom
   card element may not upgrade before Lovelace renders the dashboard, so HA shows a

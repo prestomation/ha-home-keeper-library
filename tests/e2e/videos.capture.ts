@@ -1,7 +1,7 @@
 /**
  * One-off **video** walkthrough capture for the per-PR preview — not part of the
  * e2e suite (the filename does not match *.spec.ts, and it's only run via
- * videos.config.ts). It records a short end-to-end tour of the Example Integration
+ * videos.config.ts). It records a short end-to-end tour of the Home Keeper Library
  * UI as a WebM, which ci/capture-video.sh then transcodes to mp4 (+ a GIF that
  * embeds like a screenshot) under docs/videos/.
  *
@@ -25,14 +25,14 @@ import { test, expect } from '@playwright/test';
 import { resolve } from 'path';
 import { addItem, openCard, openPanel } from './tests/helpers';
 
-const OUT = process.env.VIDEO_DIR || '/tmp/example-integration-video';
+const OUT = process.env.VIDEO_DIR || '/tmp/home-keeper-library-video';
 const STATE_PATH = resolve(__dirname, '.auth/state.json');
 const SIZE = { width: 1280, height: 800 };
 
 /** A readable pause so motion in the recording is easy to follow. */
 const BEAT = 900;
 
-test('record Example Integration walkthrough', async ({ browser }) => {
+test('record Home Keeper Library walkthrough', async ({ browser }) => {
   // Build an authenticated context that records video. The recording is flushed to
   // disk only on context.close(), after which page.video().saveAs() names it.
   const context = await browser.newContext({
@@ -45,8 +45,8 @@ test('record Example Integration walkthrough', async ({ browser }) => {
   try {
     // 1. Land on the admin panel — the items list (management lives in the panel).
     await openPanel(page);
-    const panel = page.locator('example-panel').first();
-    await expect(panel.locator('.ex-toolbar-title')).toBeVisible();
+    const panel = page.locator('home-keeper-library-panel').first();
+    await expect(panel.locator('.hkl-toolbar-title')).toBeVisible();
     await page.waitForTimeout(BEAT * 2);
 
     // 2. Add a couple of items through the panel's add form. Use the shared addItem
@@ -63,7 +63,7 @@ test('record Example Integration walkthrough', async ({ browser }) => {
     // 3. Open an item's detail page (deep-linked route) — the edit form — then Back.
     await panel.locator('.detail-open').first().click();
     await expect(panel.locator('#back-btn')).toBeVisible();
-    await expect(panel.locator('#ex-edit-form')).toBeVisible();
+    await expect(panel.locator('#hkl-edit-form')).toBeVisible();
     await page.waitForTimeout(BEAT * 2);
     await panel.locator('#back-btn').click();
     await expect(panel.locator('#add-btn')).toBeVisible();

@@ -5,7 +5,7 @@ from __future__ import annotations
 from homeassistant import config_entries, data_entry_flow
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.example_integration.const import DOMAIN
+from custom_components.home_keeper_library.const import DOMAIN
 
 
 async def test_user_flow_creates_entry(hass):
@@ -16,7 +16,7 @@ async def test_user_flow_creates_entry(hass):
 
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {})
     assert result["type"] == data_entry_flow.FlowResultType.CREATE_ENTRY
-    assert result["title"] == "Example Integration"
+    assert result["title"] == "Home Keeper Library"
 
 
 async def test_single_instance_only(hass):

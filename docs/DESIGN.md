@@ -15,7 +15,7 @@ miniature. The feature — an **items list** (named items, each with a numeric
                   ┌─────────┴────────────────┴────────────────────┐
   HA boundary     │ store.py  ── the single mutation chokepoint    │
                   │   • validates via models                       │
-                  │   • persists to .storage/example_integration   │
+                  │   • persists to .storage/home_keeper_library   │
                   │   • fires bus events (events.py)               │
                   └───────────────┬───────────────────────────────┘
                                   │ read via
@@ -31,11 +31,11 @@ miniature. The feature — an **items list** (named items, each with a numeric
 
 - **Pure, HA-free core.** `models.py`/`events.py` are pure so the highest-value
   logic unit-tests without the HA harness (tier 1).
-- **One mutation chokepoint.** Every write goes through `ExampleStore`; events fire
+- **One mutation chokepoint.** Every write goes through `HomeKeeperLibraryStore`; events fire
   there, so all surfaces are observed uniformly.
 - **Services are the contract; the websocket is an optimization.** The panel/card
   use websocket commands for latency, but they delegate to the same store methods
-  the services call. Automations get a real `example_integration.*` service.
+  the services call. Automations get a real `home_keeper_library.*` service.
 - **Immediate refresh.** Mutations call `coordinator.async_refresh()` (not the
   debounced `async_request_refresh()`) so the local store stays instantly
   consistent and tests are deterministic.

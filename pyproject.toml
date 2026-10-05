@@ -5,7 +5,7 @@ testpaths = ["tests"]
 # The pure unit tier (tests/unit) needs no asyncio config.
 
 [tool.coverage.run]
-source = ["custom_components/example_integration"]
+source = ["custom_components/home_keeper_library"]
 # Store paths relative to the repo root rather than absolute. `pytest_coverage.yml`
 # hands `.coverage` to py-cov-action, which runs `coverage json` inside a Docker
 # container where the workspace is mounted at a different path — an absolute
@@ -24,7 +24,7 @@ exclude_lines = [
 # Mutation testing (ci/test-mutation-python.sh). Coverage says a line ran;
 # mutation testing says a test would have *failed* if that line were wrong.
 [tool.mutmut]
-source_paths = ["custom_components/example_integration"]
+source_paths = ["custom_components/home_keeper_library"]
 # mutmut runs the suite inside a `mutants/` copy that holds only the source paths
 # and the tests, so a unit test that reads a repo file off disk dies at collection
 # unless that file is listed here. `tests/unit/test_ci_check_ha_version.py` and
@@ -44,8 +44,8 @@ also_copy = ["ci", "tests/integration/ha_config"]
 # tests/unit/test_api_surface.py against the real registrations rather than by
 # behavioural assertions.
 only_mutate = [
-    "custom_components/example_integration/models.py",
-    "custom_components/example_integration/events.py",
+    "custom_components/home_keeper_library/models.py",
+    "custom_components/home_keeper_library/events.py",
 ]
 pytest_add_cli_args_test_selection = ["tests/unit"]
 
@@ -55,7 +55,7 @@ pytest_add_cli_args_test_selection = ["tests/unit"]
 break = 80
 
 # Strict typing is a Platinum quality-scale practice. CI (lint.yml) runs `mypy
-# custom_components/example_integration` with Home Assistant installed so HA's own
+# custom_components/home_keeper_library` with Home Assistant installed so HA's own
 # types resolve; keep the integration error-free. The template demonstrates the
 # practice without declaring a quality_scale tier in the manifest (see README).
 [tool.mypy]

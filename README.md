@@ -16,7 +16,7 @@ backend, a sidebar panel, a Lovelace card, translations, bus events, services, a
 full four-tier test suite, all wired to CI and HACS. Clone it, rename it, and replace
 the example feature with your own.
 
-The example feature is a tiny **items list** (`example_integration`): a set of named
+The example feature is a tiny **items list** (`home_keeper_library`): a set of named
 items, each with a numeric value. It's deliberately trivial — the point is the
 *scaffolding and conventions* around it.
 
@@ -24,9 +24,9 @@ items, each with a numeric value. It's deliberately trivial — the point is the
 
 | Area | What you get |
 |---|---|
-| **Backend** | Pure HA-free core (`models.py`, `events.py`), a single-chokepoint `ExampleStore`, a `DataUpdateCoordinator`, a `sensor` platform, a `config_flow`, and `diagnostics`. |
+| **Backend** | Pure HA-free core (`models.py`, `events.py`), a single-chokepoint `HomeKeeperLibraryStore`, a `DataUpdateCoordinator`, a `sensor` platform, a `config_flow`, and `diagnostics`. |
 | **Services** | `add_item` / `update_item` / `delete_item` — the automation-facing contract, with `services.yaml` + localization. |
-| **Events** | `example_integration_item_{created,updated,deleted}` fired at the store chokepoint, documented in [`docs/EVENTS.md`](docs/EVENTS.md). |
+| **Events** | `home_keeper_library_item_{created,updated,deleted}` fired at the store chokepoint, documented in [`docs/EVENTS.md`](docs/EVENTS.md). |
 | **Frontend** | A deep-linked sidebar **panel** (admin) and a dashboard **Lovelace card** (display), TypeScript + Rollup, with a tiny dependency-free i18n. |
 | **Translations** | Backend `strings.json` + `translations/` and frontend `src/locales/` (`en`, `de`), guarded by parity tests. |
 | **Tests** | Four tiers: pure unit, **in-process HA** component, Docker integration, and Playwright e2e + screenshot capture. |
@@ -100,7 +100,7 @@ so the result you build on top of it starts from a strong baseline:
 
 - **Strict typing** — fully typed, ships `py.typed`, and CI runs `mypy` against the
   integration with Home Assistant installed (`lint.yml`, config in `pyproject.toml`).
-- **Async, single-coordinator core**; one mutation chokepoint (`ExampleStore`).
+- **Async, single-coordinator core**; one mutation chokepoint (`HomeKeeperLibraryStore`).
 - **Localized exceptions** — services raise `ServiceValidationError` with
   `translation_key`s defined under `strings.json` → `exceptions` (en + de). A unit
   drift-guard (`tests/unit/test_exception_translations.py`) keeps every raise
@@ -165,26 +165,26 @@ MIT — see [LICENSE](LICENSE).
 
 <!--
 Badge reference links. `scripts/rename.py --repo owner/name` rewrites the
-`prestomation/ha-integration-template` slug and the maintainer handle here; the
-domain in the "integration usage" badge (analytics query `$.example_integration.total`)
+`prestomation/ha-home-keeper-library` slug and the maintainer handle here; the
+domain in the "integration usage" badge (analytics query `$.home_keeper_library.total`)
 is rewritten by the normal domain replacement. The "integration usage" badge only
 shows real numbers once the integration is published to HACS and appears in the
 Home Assistant analytics data.
 -->
 
-[usage-shield]: https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json&query=%24.example_integration.total&style=for-the-badge
+[usage-shield]: https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json&query=%24.home_keeper_library.total&style=for-the-badge
 [usage]: https://analytics.home-assistant.io/
-[downloads-shield]: https://img.shields.io/github/downloads/prestomation/ha-integration-template/total.svg?style=for-the-badge
-[releases]: https://github.com/prestomation/ha-integration-template/releases
-[release-shield]: https://img.shields.io/github/release/prestomation/ha-integration-template.svg?style=for-the-badge
-[release-date-shield]: https://img.shields.io/github/release-date/prestomation/ha-integration-template?style=for-the-badge
-[commits-shield]: https://img.shields.io/github/last-commit/prestomation/ha-integration-template?style=for-the-badge
-[commits]: https://github.com/prestomation/ha-integration-template/commits/main
-[license-shield]: https://img.shields.io/github/license/prestomation/ha-integration-template.svg?style=for-the-badge
+[downloads-shield]: https://img.shields.io/github/downloads/prestomation/ha-home-keeper-library/total.svg?style=for-the-badge
+[releases]: https://github.com/prestomation/ha-home-keeper-library/releases
+[release-shield]: https://img.shields.io/github/release/prestomation/ha-home-keeper-library.svg?style=for-the-badge
+[release-date-shield]: https://img.shields.io/github/release-date/prestomation/ha-home-keeper-library?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/last-commit/prestomation/ha-home-keeper-library?style=for-the-badge
+[commits]: https://github.com/prestomation/ha-home-keeper-library/commits/main
+[license-shield]: https://img.shields.io/github/license/prestomation/ha-home-keeper-library.svg?style=for-the-badge
 [hacs-shield]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge
 [hacs]: https://github.com/hacs/integration
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40prestomation-blue.svg?style=for-the-badge
-[hacs-validation-shield]: https://github.com/prestomation/ha-integration-template/actions/workflows/hacs.yml/badge.svg
-[hacs-validation]: https://github.com/prestomation/ha-integration-template/actions/workflows/hacs.yml
+[hacs-validation-shield]: https://github.com/prestomation/ha-home-keeper-library/actions/workflows/hacs.yml/badge.svg
+[hacs-validation]: https://github.com/prestomation/ha-home-keeper-library/actions/workflows/hacs.yml
 [ha-version-shield]: https://img.shields.io/badge/Home%20Assistant-2024.1%2B-blue.svg?style=for-the-badge
 [ha-version]: https://www.home-assistant.io/

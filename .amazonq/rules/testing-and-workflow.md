@@ -46,7 +46,7 @@ Cheapest first. **Tiers 2 and 3 must run in separate environments** (socket rule
    (`models.py`, `events.py`) and translation parity. Loaded in isolation via the
    synthetic `ex` package in `tests/unit/conftest.py` — these never import HA.
    That conftest *executes* the modules under their real dotted name
-   (`custom_components.example_integration.<mod>`, with stub parent packages so
+   (`custom_components.home_keeper_library.<mod>`, with stub parent packages so
    the HA-importing `__init__.py` never runs) and registers `ex.<mod>` as an
    alias. **Keep it that way**: mutmut matches a mutant's path-derived key
    against the function's `__module__`, so executing them as `ex.<mod>` would
@@ -159,7 +159,7 @@ never leaving it in English. `python3 ci/i18n-coverage.py` reports coverage
   bumps `const.py` `PANEL_VERSION` to match, and adds a `## [X.Y.Z]` `CHANGELOG.md`
   section. PEP 440 pre-release suffixes (`bN`/`aN`/`rcN`) ship as GitHub
   pre-releases → HACS beta channel.
-- The built `example-panel.js` / `example-card.js` are gitignored; CI builds them.
+- The built `home-keeper-library-panel.js` / `home-keeper-library-card.js` are gitignored; CI builds them.
 
 ## Home Assistant versions
 - **PRs test `stable`**; a nightly (`ha-beta.yml`) tests `beta` and gates nothing.
@@ -197,10 +197,10 @@ never leaving it in English. `python3 ci/i18n-coverage.py` reports coverage
 
 ## Typing (strict-typing — Platinum practice)
 - The integration is **fully typed** and ships
-  `custom_components/example_integration/py.typed`. `lint.yml` runs `mypy
-  custom_components/example_integration` with Home Assistant installed (so HA's types
+  `custom_components/home_keeper_library/py.typed`. `lint.yml` runs `mypy
+  custom_components/home_keeper_library` with Home Assistant installed (so HA's types
   resolve); config is `[tool.mypy]` in `pyproject.toml`. Run locally before pushing:
-  `pip install mypy homeassistant && mypy custom_components/example_integration`.
+  `pip install mypy homeassistant && mypy custom_components/home_keeper_library`.
 - The template implements Platinum-tier practices (strict typing, async core,
   localized exceptions, a single service `DeviceInfo`) but **intentionally does not
   stamp a `quality_scale` tier in `manifest.json`** — the real tier depends on the

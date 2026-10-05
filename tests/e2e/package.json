@@ -1,8 +1,8 @@
 {
-  "name": "example-e2e",
+  "name": "home-keeper-library-e2e",
   "private": true,
   "version": "1.0.0",
-  "description": "Playwright browser e2e tests for the Example Integration panel + card",
+  "description": "Playwright browser e2e tests for the Home Keeper Library panel + card",
   "scripts": {
     "test": "playwright test"
   },

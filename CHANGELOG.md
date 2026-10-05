@@ -28,12 +28,12 @@ is the single source of truth (see `RELEASE.md`).
 ## [0.1.0]
 
 ### Added
-- Initial template: the **Example Integration** (`example_integration`) — a managed
+- Initial template: the **Home Keeper Library** (`home_keeper_library`) — a managed
   **items list** demonstrating the full stack:
   - Pure, HA-free core (`models.py`, `events.py`) unit-tested in isolation.
-  - `ExampleStore` single mutation chokepoint persisting to
-    `.storage/example_integration` and firing `item_created/updated/deleted` events.
-  - `ExampleCoordinator` + a `sensor` platform (a total sensor and per-item sensors).
+  - `HomeKeeperLibraryStore` single mutation chokepoint persisting to
+    `.storage/home_keeper_library` and firing `item_created/updated/deleted` events.
+  - `HomeKeeperLibraryCoordinator` + a `sensor` platform (a total sensor and per-item sensors).
   - Automation-facing services `add_item` / `update_item` / `delete_item`, with panel
     websocket commands delegating to the same store methods.
   - A sidebar **panel** (deep-linked admin UI) and a dashboard **Lovelace card**

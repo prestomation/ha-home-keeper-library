@@ -5,7 +5,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     include: [
-      'custom_components/example_integration/frontend/test/**/*.test.js',
+      'custom_components/home_keeper_library/frontend/test/**/*.test.js',
     ],
   },
 });

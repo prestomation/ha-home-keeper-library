@@ -4,7 +4,7 @@
 *
 !.gitignore
 !configuration.yaml
-!example-e2e.yaml
+!home-keeper-library-e2e.yaml
 !.storage
 .storage/*
 !.storage/core.config_entries
