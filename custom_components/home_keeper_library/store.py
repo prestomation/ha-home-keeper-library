@@ -467,11 +467,26 @@ class LibraryStore:
     async def add_copy(
         self, data: dict[str, Any], *, origin: str | None = None
     ) -> dict[str, Any]:
-        """Add a copy of a book."""
+        """Add a copy of a book.
+
+        The first copy of a book on the wishlist takes it off the wishlist, as
+        ``got_wishlist_book`` does. The wishlist sync then removes its to-do
+        item.
+        """
         record, book = self._copy_record(data)
+        clears = models.copy_clears_wishlist(self.state, book["id"])
         self.state["copies"][record["id"]] = record
-        payload = events.copy_event_data(book, record, origin)
-        await self._commit([(EVENT_COPY_ADDED, payload)])
+        fired: list[Event] = [
+            (EVENT_COPY_ADDED, events.copy_event_data(book, record, origin))
+        ]
+        if clears:
+            entry = book["wishlist"]
+            self._orphan_item(entry)
+            book["wishlist"] = None
+            self.state["books"][book["id"]] = book
+            payload = events.wishlist_event_data(book, entry, origin)
+            fired.append((EVENT_WISHLIST_REMOVED, payload))
+        await self._commit(fired)
         return dict(record)
 
     async def update_copy(

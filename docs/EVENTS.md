@@ -82,6 +82,9 @@ The other keys of each event are in the generated API reference and in
   each hour. A new due date can fire it again.
 - A CSV import fires only `import_completed`. It fires no event for each row.
 - `book_finished` fires with `reading_changed`, in that order.
+- The first copy of a book on the wishlist takes the book off the wishlist. The
+  scan, `add_copy` and `got_wishlist_book` fire `copy_added` and then
+  `wishlist_removed`.
 - Deleting a room, a bookcase or a shelf with `force: true` fires a `*_removed`
   event for each child and a `copy_moved` event for each copy that moves to no
   shelf.

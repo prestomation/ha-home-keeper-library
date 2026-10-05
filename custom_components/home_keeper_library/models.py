@@ -908,6 +908,18 @@ def copies_of(state: dict[str, Any], book_id: str) -> list[dict[str, Any]]:
     return sorted(rows, key=lambda c: (str(c.get("created_at", "")), c["id"]))
 
 
+def copy_clears_wishlist(state: dict[str, Any], book_id: str) -> bool:
+    """Whether a new copy of a book takes the book off the wishlist.
+
+    It does when the book has a wishlist entry and no copy yet: the first copy
+    is the book that the person wanted.
+    """
+    book = state["books"].get(book_id)
+    if not book or not book.get("wishlist"):
+        return False
+    return not any(c.get("book_id") == book_id for c in state["copies"].values())
+
+
 def open_loan_of_copy(state: dict[str, Any], copy_id: str) -> dict[str, Any] | None:
     """The open ``out`` loan of a copy, if one exists."""
     for loan in state["loans"].values():

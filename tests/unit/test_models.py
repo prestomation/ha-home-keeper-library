@@ -523,6 +523,20 @@ def test_build_wishlist() -> None:
     assert _err(m.build_wishlist, "p", buy="yes", now=NOW).key == "invalid_field"
 
 
+def test_copy_clears_wishlist() -> None:
+    state = m.empty_state()
+    entry = m.build_wishlist("p", buy=False, now=NOW)
+    state["books"]["w"] = {"id": "w", "wishlist": entry}
+    state["books"]["plain"] = {"id": "plain", "wishlist": None}
+    state["books"]["owned"] = {"id": "owned", "wishlist": dict(entry)}
+    state["copies"]["c"] = {"id": "c", "book_id": "owned"}
+    state["copies"]["d"] = {"id": "d", "book_id": "plain"}
+    assert m.copy_clears_wishlist(state, "w") is True
+    assert m.copy_clears_wishlist(state, "plain") is False
+    assert m.copy_clears_wishlist(state, "owned") is False
+    assert m.copy_clears_wishlist(state, "nope") is False
+
+
 # ── Derived reads ────────────────────────────────────────────────────────────
 
 

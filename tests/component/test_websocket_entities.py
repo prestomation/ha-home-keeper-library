@@ -224,3 +224,54 @@ async def test_wishlist_sync(hass, setup_entry, call, todo_list) -> None:
     )
     assert [i["summary"] for i in items[todo_list]["items"]] == ["Emma by Jane Austen"]
     assert setup_entry.runtime_data.store.state["todo_orphans"] == []
+
+
+async def _todo_items(hass, entity: str) -> list[dict]:
+    items = await hass.services.async_call(
+        TODO,
+        "get_items",
+        {},
+        target={"entity_id": entity},
+        blocking=True,
+        return_response=True,
+    )
+    return items[entity]["items"]
+
+
+async def test_first_copy_of_a_wishlist_book_clears_the_wishlist(
+    hass, setup_entry, call, todo_list, aioclient_mock
+) -> None:
+    from pytest_homeassistant_custom_component.common import async_capture_events
+
+    aioclient_mock.get("https://openlibrary.org/isbn/9780441478125.json", status=404)
+
+    removed = async_capture_events(hass, "home_keeper_library_wishlist_removed")
+    added = async_capture_events(hass, "home_keeper_library_copy_added")
+    await call("set_person_settings", {"person_id": BOB, "wishlist_todo": todo_list})
+    book = await _book(call, title="Emma", authors=["Jane Austen"], isbn="0441478123")
+    await call(
+        "add_to_wishlist", {"book_id": book["id"], "person_id": BOB, "buy": True}
+    )
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert len(await _todo_items(hass, todo_list)) == 1
+    reply = await call("scan_isbn", {"isbn": "0441478123"})
+    assert reply["result"] == "added" and reply["from_wishlist"] is True
+    await hass.async_block_till_done(wait_background_tasks=True)
+    store = setup_entry.runtime_data.store
+    assert store.state["books"][book["id"]]["wishlist"] is None
+    assert await _todo_items(hass, todo_list) == []
+    assert [e.data["person_id"] for e in removed] == [BOB]
+    assert removed[0].data["book_id"] == book["id"]
+    assert [e.data["copy_id"] for e in added] == [reply["copy"]["id"]]
+    # A second copy is not from the wishlist.
+    again = await call("scan_isbn", {"isbn": "0441478123", "on_duplicate": "add_copy"})
+    assert again["result"] == "added" and again["from_wishlist"] is False
+    skipped = await call("scan_isbn", {"isbn": "0441478123", "on_duplicate": "skip"})
+    assert skipped["from_wishlist"] is False
+    # add_copy clears the wishlist too.
+    other = await _book(call, title="Persuasion", authors=["Jane Austen"])
+    await call("add_to_wishlist", {"book_id": other["id"], "person_id": BOB})
+    reply = await call("add_copy", {"book_id": other["id"]})
+    assert reply["from_wishlist"] is True
+    assert store.state["books"][other["id"]]["wishlist"] is None
+    assert len(removed) == 2

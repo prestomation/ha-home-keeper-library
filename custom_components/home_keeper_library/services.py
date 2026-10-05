@@ -499,6 +499,19 @@ def _copies_with_location(ctx: Ctx, book_id: str) -> list[dict[str, Any]]:
     return out
 
 
+async def _new_copy(ctx: Ctx, data: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+    """Add a copy. Return ``(copy, from_wishlist)``.
+
+    ``from_wishlist`` is True when the copy took its book off the wishlist.
+    """
+    book_id = str(data.get("book_id"))
+    from_wishlist = models.copy_clears_wishlist(ctx.store.state, book_id)
+    copy = await ctx.store.add_copy(data)
+    if from_wishlist:
+        await ctx.coordinator.wishlist_sync.async_run()
+    return copy, from_wishlist
+
+
 async def _scan_isbn(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     shelf_id = ctx.store.check_shelf(data.get("shelf_id"))
     copy_data: dict[str, Any] = {"shelf_id": shelf_id}
@@ -518,6 +531,7 @@ async def _scan_isbn(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
                 "book": ctx.book_reply(existing),
                 "copy": None,
                 "existing_copies": _copies_with_location(ctx, existing["id"]),
+                "from_wishlist": False,
             }
         if copies and mode == "move":
             target = next(
@@ -529,21 +543,26 @@ async def _scan_isbn(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
                 "book": ctx.book_reply(existing),
                 "copy": moved,
                 "existing_copies": _copies_with_location(ctx, existing["id"]),
+                "from_wishlist": False,
             }
-        copy = await ctx.store.add_copy({**copy_data, "book_id": existing["id"]})
+        copy, from_wishlist = await _new_copy(
+            ctx, {**copy_data, "book_id": existing["id"]}
+        )
         return {
             "result": "added",
             "book": ctx.book_reply(existing),
             "copy": copy,
             "existing_copies": _copies_with_location(ctx, existing["id"]),
+            "from_wishlist": from_wishlist,
         }
     book, _, status = await _add_book(ctx, {"isbn": isbn13})
-    copy = await ctx.store.add_copy({**copy_data, "book_id": book["id"]})
+    copy, from_wishlist = await _new_copy(ctx, {**copy_data, "book_id": book["id"]})
     return {
         "result": "added" if status == "found" else "not_found",
         "book": ctx.book_reply(book),
         "copy": copy,
         "existing_copies": [],
+        "from_wishlist": from_wishlist,
     }
 
 
@@ -551,7 +570,8 @@ async def _scan_isbn(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
 
 
 async def _add_copy(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
-    return {"copy": await ctx.store.add_copy(data)}
+    copy, from_wishlist = await _new_copy(ctx, data)
+    return {"copy": copy, "from_wishlist": from_wishlist}
 
 
 async def _update_copy(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
