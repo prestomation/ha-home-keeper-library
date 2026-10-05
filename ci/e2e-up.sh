@@ -73,9 +73,11 @@ cp "$SEED"/covers/*.jpg "$CONFIG/.storage/home_keeper_library_covers/"
 echo "[e2e-up] starting Home Assistant..."
 "${COMPOSE[@]}" up -d
 echo "[e2e-up] waiting for Home Assistant..."
+# /api/ answers 401 once Home Assistant is up. The root path answers 302 before
+# onboarding, so it cannot tell a started Home Assistant from one that is not up.
 up=0
 for _ in $(seq 1 90); do
-  code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8123/ 2>/dev/null || true)
+  code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8123/api/ 2>/dev/null || true)
   if [ "$code" = "200" ] || [ "$code" = "401" ]; then up=1; echo "[e2e-up] HA is up."; break; fi
   sleep 2
 done
