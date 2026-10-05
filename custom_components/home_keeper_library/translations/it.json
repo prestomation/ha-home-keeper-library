@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Condividi lo stato di lettura",
-          "description": "Gli altri utenti vedono lo stato."
+          "description": "Gli altri utenti vedono lo stato. Se disattivato, i sensori e l'elenco di cose da fare della persona non sono disponibili."
         },
         "yearly_goal": {
           "name": "Obiettivo annuale",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} non è un codice valuta di 3 lettere."
+    },
+    "todo_not_allowed": {
+      "message": "Solo {person} o un utente amministratore può modificare questo elenco di cose da fare."
     }
   }
 }

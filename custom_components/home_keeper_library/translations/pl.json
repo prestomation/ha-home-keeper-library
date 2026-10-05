@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Udostępniaj stan czytania",
-          "description": "Inni użytkownicy widzą stan."
+          "description": "Inni użytkownicy widzą stan. Gdy wyłączone, czujniki i lista zadań osoby są niedostępne."
         },
         "yearly_goal": {
           "name": "Cel roczny",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} nie jest kodem waluty z 3 liter."
+    },
+    "todo_not_allowed": {
+      "message": "Tylko {person} lub administrator może zmienić tę listę zadań."
     }
   }
 }

@@ -52,6 +52,11 @@ you write or review code.
 - Use `has_entity_name` and a `translation_key`. A per-person name has the
   `{person}` placeholder.
 - The `To read` list of a person is a `todo` entity. Its uid is the book id.
+- **An entity is visible to each user, so it applies the privacy rules.** The
+  `To read` list takes a change only from the user of its person, an admin user
+  or no user (it reads `self._context.user_id`), else `todo_not_allowed`. While
+  a person has `share_reading: false`, each per-person entity is unavailable
+  and the list has no items. See [DESIGN.md](../../docs/DESIGN.md).
 
 ## Services are the interoperability surface
 - **Every action that changes or exports data is a `home_keeper_library.*`

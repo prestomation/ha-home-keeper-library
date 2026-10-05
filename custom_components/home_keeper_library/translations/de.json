@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Lesestatus teilen",
-          "description": "Andere Benutzer sehen den Status."
+          "description": "Andere Benutzer sehen den Status. Wenn aus, sind die Sensoren und die To-do-Liste der Person nicht verfügbar."
         },
         "yearly_goal": {
           "name": "Jahresziel",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} ist kein Währungscode aus 3 Buchstaben."
+    },
+    "todo_not_allowed": {
+      "message": "Nur {person} oder ein Admin-Benutzer kann diese To-do-Liste ändern."
     }
   }
 }

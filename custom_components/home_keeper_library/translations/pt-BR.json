@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Compartilhar status de leitura",
-          "description": "Os outros usuários veem o status."
+          "description": "Os outros usuários veem o status. Quando desligado, os sensores e a lista de tarefas da pessoa ficam indisponíveis."
         },
         "yearly_goal": {
           "name": "Meta anual",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} não é um código de moeda de 3 letras."
+    },
+    "todo_not_allowed": {
+      "message": "Só {person} ou um usuário administrador pode alterar esta lista de tarefas."
     }
   }
 }

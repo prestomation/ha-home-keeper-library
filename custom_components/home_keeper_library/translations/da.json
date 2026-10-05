@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Del læsestatus",
-          "description": "Andre brugere ser statussen."
+          "description": "Andre brugere ser statussen. Når den er slået fra, er personens sensorer og opgaveliste utilgængelige."
         },
         "yearly_goal": {
           "name": "Årsmål",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} er ikke en valutakode på 3 bogstaver."
+    },
+    "todo_not_allowed": {
+      "message": "Kun {person} eller en administrator kan ændre denne opgaveliste."
     }
   }
 }

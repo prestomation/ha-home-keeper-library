@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Dela lässtatus",
-          "description": "Andra användare ser statusen."
+          "description": "Andra användare ser statusen. När den är av är personens sensorer och att göra-lista inte tillgängliga."
         },
         "yearly_goal": {
           "name": "Årsmål",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} är inte en valutakod med 3 bokstäver."
+    },
+    "todo_not_allowed": {
+      "message": "Bara {person} eller en adminanvändare kan ändra denna att göra-lista."
     }
   }
 }

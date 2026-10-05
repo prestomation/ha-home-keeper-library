@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Compartir estado de lectura",
-          "description": "Los otros usuarios ven el estado."
+          "description": "Los otros usuarios ven el estado. Si está desactivado, los sensores y la lista de tareas de la persona no están disponibles."
         },
         "yearly_goal": {
           "name": "Objetivo anual",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} no es un código de moneda de 3 letras."
+    },
+    "todo_not_allowed": {
+      "message": "Solo {person} o un usuario administrador puede cambiar esta lista de tareas."
     }
   }
 }

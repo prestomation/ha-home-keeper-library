@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Share reading status",
-          "description": "Other users can see the status."
+          "description": "Other users can see the status. When off, the sensors and the to-do list of the person are unavailable."
         },
         "yearly_goal": {
           "name": "Yearly goal",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} is not a currency code of 3 letters."
+    },
+    "todo_not_allowed": {
+      "message": "Only {person} or an admin user can change this to-do list."
     }
   }
 }

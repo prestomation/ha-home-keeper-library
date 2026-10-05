@@ -852,7 +852,7 @@
         },
         "share_reading": {
           "name": "Sdílet stav čtení",
-          "description": "Ostatní uživatelé vidí stav."
+          "description": "Ostatní uživatelé vidí stav. Když je vypnuto, senzory a seznam úkolů osoby nejsou dostupné."
         },
         "yearly_goal": {
           "name": "Roční cíl",
@@ -1106,6 +1106,9 @@
     },
     "invalid_currency": {
       "message": "{currency} není kód měny ze 3 písmen."
+    },
+    "todo_not_allowed": {
+      "message": "Tento seznam úkolů může změnit jen {person} nebo správce."
     }
   }
 }

@@ -8,6 +8,11 @@ The items are the books with status ``want`` for the person. The summary is
   book has that title, a new book with ``needs_details: true`` is added, and the
   lookup queue reads Open Library for it.
 * Deleting an item removes the ``want`` row.
+
+Home Assistant lets each user call the ``todo`` services on each list. So a
+change must come from the user of the person, from an admin user or from Home
+Assistant itself (no user). Other users get ``todo_not_allowed``. While the
+person does not share their reading, the list is unavailable and has no items.
 """
 
 from __future__ import annotations
@@ -21,10 +26,10 @@ from homeassistant.components.todo import (
     TodoListEntityFeature,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ServiceValidationError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from . import LibraryConfigEntry
+from . import LibraryConfigEntry, people
 from .backend_i18n import resolve_string
 from .const import DOMAIN
 from .coordinator import LibraryCoordinator
@@ -71,8 +76,31 @@ class ToReadList(PersonEntity, TodoListEntity):
     def __init__(self, coordinator: LibraryCoordinator, person: dict[str, Any]) -> None:
         super().__init__(coordinator, person, "to_read")
 
+    async def _check_caller(self) -> None:
+        """Refuse a change from a user who is not the person or an admin.
+
+        The entity service call of Home Assistant sets the context of the call
+        on the entity before it calls the item method.
+        """
+        context = self._context
+        actor = await people.actor_for_user(
+            self.hass, context.user_id if context else None
+        )
+        if actor.is_admin or actor.person_id == self.person_id:
+            return
+        found = people.person(self.hass, self.person_id)
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="todo_not_allowed",
+            translation_placeholders={
+                "person": str(found["name"] if found else self.person_id)
+            },
+        )
+
     @property
     def todo_items(self) -> list[TodoItem]:
+        if not self.available:
+            return []
         template = resolve_string(self.hass.config.language, "item.summary")
         return [
             TodoItem(
@@ -85,6 +113,7 @@ class ToReadList(PersonEntity, TodoListEntity):
 
     async def async_create_todo_item(self, item: TodoItem) -> None:
         """Give the book with this title a ``want`` row, or add a new book."""
+        await self._check_caller()
         summary = (item.summary or "").strip()
         if not summary:
             return
@@ -112,6 +141,7 @@ class ToReadList(PersonEntity, TodoListEntity):
 
     async def async_update_todo_item(self, item: TodoItem) -> None:
         """A completed item sets the status to ``read``."""
+        await self._check_caller()
         if item.uid is None or item.status != TodoItemStatus.COMPLETED:
             return
         try:
@@ -123,6 +153,7 @@ class ToReadList(PersonEntity, TodoListEntity):
 
     async def async_delete_todo_items(self, uids: list[str]) -> None:
         """Remove the ``want`` row of each item."""
+        await self._check_caller()
         store = self.coordinator.store
         for uid in uids:
             row = store.reading_row(self.person_id, uid)

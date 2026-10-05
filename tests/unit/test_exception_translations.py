@@ -112,6 +112,12 @@ def test_library_error_keys_exist_in_strings() -> None:
     strings = json.loads((_COMPONENT / "strings.json").read_text(encoding="utf-8"))
     defined = set(strings["exceptions"])
     used = _literal_keys({"LibraryError", "CoverError", "resolve_exception", "_error"})
+    # A raise with a constant ``translation_key`` uses its key too.
+    used |= {
+        key.value
+        for _, _, call in _raise_calls()
+        if isinstance((key := _kwarg(call, "translation_key")), ast.Constant)
+    }
     # ``store._get`` builds ``<kind>_not_found`` for these kinds.
     used |= {
         f"{kind}_not_found"
