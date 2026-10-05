@@ -180,7 +180,7 @@ def project_state(
         )
         for book in state["books"].values()
     ]
-    books.sort(key=lambda b: (str(b.get("title", "")).casefold(), b["id"]))
+    books.sort(key=lambda b: (b["title"].casefold(), b["id"]))
     return {
         "revision": revision,
         "rooms": _by_order(state["rooms"], None),
@@ -228,16 +228,16 @@ def book_matches(
     """
     query = str(filters.get("query") or "").strip().casefold()
     if query:
-        series = book.get("series") or {}
+        series = book["series"] or {"name": ""}
         haystack = " ".join(
             [
-                str(book.get("title", "")),
-                str(book.get("subtitle", "")),
-                " ".join(book.get("authors") or []),
-                str(book.get("isbn13") or ""),
-                str(book.get("isbn10") or ""),
-                str(series.get("name", "")),
-                " ".join(book.get("tags") or []),
+                book["title"],
+                book["subtitle"],
+                *book["authors"],
+                book["isbn13"] or "",
+                book["isbn10"] or "",
+                series["name"],
+                *book["tags"],
             ]
         ).casefold()
         if query not in haystack:
@@ -289,7 +289,7 @@ def list_books(
         )
         for book in sorted(
             state["books"].values(),
-            key=lambda b: (str(b.get("title", "")).casefold(), b["id"]),
+            key=lambda b: (b["title"].casefold(), b["id"]),
         )
         if book_matches(state, book, filters, index)
     ]

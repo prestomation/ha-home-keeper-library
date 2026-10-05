@@ -471,11 +471,11 @@ class _Index:
 
     def add(self, book: dict[str, Any]) -> None:
         self.by_id[book["id"]] = book["id"]
-        if book.get("isbn13"):
+        if book["isbn13"]:
             self.isbn13.setdefault(book["isbn13"], book["id"])
-        if book.get("isbn10"):
+        if book["isbn10"]:
             self.isbn10.setdefault(book["isbn10"], book["id"])
-        key = title_key(book.get("title"), book.get("authors"))
+        key = title_key(book["title"], book["authors"])
         if key.split("|", 1)[0]:
             self.title.setdefault(key, book["id"])
 
@@ -716,7 +716,7 @@ def rows_from_state(
     rows: list[dict[str, Any]] = []
     books = sorted(
         state["books"].values(),
-        key=lambda b: (str(b.get("title", "")).casefold(), b["id"]),
+        key=lambda b: (b["title"].casefold(), b["id"]),
     )
     for book in books:
         base = empty_row(len(rows) + 1)
@@ -737,7 +737,7 @@ def rows_from_state(
             "shared_notes",
             "needs_details",
         ):
-            base[field] = clone(book.get(field))
+            base[field] = clone(book[field])
         base["book_id"] = book["id"]
         row_reading = reading.get(book["id"])
         if row_reading:
@@ -745,7 +745,7 @@ def rows_from_state(
                 base[field] = row_reading.get(field)
             base["read_count"] = row_reading.get("read_count")
             base["notes"] = row_reading.get("private_notes", "")
-        wish = book.get("wishlist")
+        wish = book["wishlist"]
         if wish and (person_id is None or wish.get("person_id") == person_id):
             base["wishlist"] = True
             base["wishlist_buy"] = bool(wish.get("buy"))

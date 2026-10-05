@@ -1,18 +1,16 @@
-# Home Keeper Library — events
+# Home Keeper Library events
 
-The Home Keeper Library fires a Home Assistant **bus event** for every meaningful
-change to an item — created, updated, deleted. This is the surface automations and
-other integrations build on. Events are *observations* of changes that already flow
-through `HomeKeeperLibraryStore`, so they need no separate service.
+Home Keeper Library fires a Home Assistant bus event for each change to the
+library. Automations and other integrations use these events. Each event
+observes a change that a service already makes, so an event needs no service of
+its own.
 
-All payloads are built by **pure functions in `events.py`** (no HA imports), fired
-at the **`store.py` mutation chokepoint** — so every surface (panel websocket,
-service call, future integrations) is observed identically.
+A pure function in `events.py` builds each payload. The store fires the event
+after it saves the change. So a change from the tab, the card, a service, the
+to-do list or a Home Keeper task fires the same event.
 
-The machine-readable index of the same catalog lives in `api_surface.py`
-(`EVENTS` and `PAYLOAD_SPINES`). `tests/unit/test_api_surface.py` calls the real
-builders and compares their keys against it, so a payload field added to `events.py`
-and described nowhere fails the build rather than reaching you undocumented.
+`api_surface.py` has the same catalog in `EVENTS` and `PAYLOAD_SPINES`.
+`tests/unit/test_api_surface.py` calls the real builders and compares the keys.
 
 ## Event catalog
 
@@ -20,56 +18,85 @@ Names follow `home_keeper_library_<noun>_<verb>`.
 
 | Event | Fires when |
 |---|---|
-| `home_keeper_library_item_created` | an item is created |
-| `home_keeper_library_item_updated` | an item actually changes; payload adds `changed_fields` |
-| `home_keeper_library_item_deleted` | an item is removed |
+| `home_keeper_library_room_added` | A room is added. |
+| `home_keeper_library_room_updated` | A room changes. The payload has `changed_fields`. |
+| `home_keeper_library_room_removed` | A room is deleted. |
+| `home_keeper_library_bookcase_added` | A bookcase is added. |
+| `home_keeper_library_bookcase_updated` | A bookcase changes or moves to another room. |
+| `home_keeper_library_bookcase_removed` | A bookcase is deleted. |
+| `home_keeper_library_shelf_added` | A shelf is added. |
+| `home_keeper_library_shelf_updated` | A shelf changes or moves to another bookcase. |
+| `home_keeper_library_shelf_removed` | A shelf is deleted. |
+| `home_keeper_library_book_added` | A book is added. |
+| `home_keeper_library_book_updated` | The fields, the cover or the wishlist entry of a book change. |
+| `home_keeper_library_book_removed` | A book is deleted with its copies, reading rows and loans. |
+| `home_keeper_library_copy_added` | A copy is added. |
+| `home_keeper_library_copy_moved` | A copy moves to another shelf, or to no shelf. |
+| `home_keeper_library_copy_removed` | A copy is deleted. |
+| `home_keeper_library_reading_changed` | The reading status of a person changes. |
+| `home_keeper_library_book_finished` | The reading status of a person becomes `read`. |
+| `home_keeper_library_loan_started` | A book is lent or borrowed. |
+| `home_keeper_library_loan_returned` | A loan is returned. |
+| `home_keeper_library_loan_overdue` | An open loan passes its due date. |
+| `home_keeper_library_wishlist_added` | A book goes on the wishlist of a person. |
+| `home_keeper_library_wishlist_removed` | A book leaves the wishlist. |
+| `home_keeper_library_import_completed` | A CSV import is written. |
 
 ## Payloads
 
-Every item event shares a common **spine** (`events.item_event_data`):
+The book, copy, reading, loan and wishlist events share 1 spine:
 
 ```json
 {
-  "item_id": "a1b2c3d4",
-  "name": "Garage shelf",
-  "value": 4
+  "book_id": "5f0c1b2a9d8e4f7a8b6c5d4e3f2a1b0c",
+  "title": "The Left Hand of Darkness",
+  "person_id": "alice",
+  "origin": null
 }
 ```
 
-`item_updated` extends it with the list of fields that changed:
+`person_id` is the id of the Home Assistant person, or `null`. `origin` is the
+marker of the caller, or `null` for a user. A change that comes from a Home
+Keeper task has the origin `home_keeper_library`.
 
-```json
-{
-  "item_id": "a1b2c3d4",
-  "name": "Garage shelf",
-  "value": 7,
-  "changed_fields": ["value"]
-}
-```
+The other keys of each event are in the generated API reference and in
+`api_surface.EVENTS`:
 
-## Reacting to an event
+- `book_updated` and the location `*_updated` events add `changed_fields`.
+- The copy events add `copy_id` and `shelf_id`. `copy_moved` adds
+  `previous_shelf_id`.
+- `reading_changed` adds `status` and `previous_status`. A removed reading row
+  has `status: null`.
+- `book_finished` adds `finished`, `rating` and `read_count`.
+- The loan events add `loan_id`, `direction`, `copy_id`, `party`, `started`,
+  `due` and `returned`. `direction` is `out` for a lent copy and `in` for a
+  borrowed book.
+- The wishlist events add `buy` and `bought`.
+- The room, bookcase and shelf events have their own ids and `name` in place of
+  the book spine.
+- `import_completed` has `person_id`, `source` and the counts of the import.
 
-Use a plain `event` trigger on the event name:
+## Rules
+
+- `loan_overdue` fires once for each due date. The library checks at setup and
+  each hour. A new due date can fire it again.
+- A CSV import fires only `import_completed`. It fires no event for each row.
+- `book_finished` fires with `reading_changed`, in that order.
+- Deleting a room, a bookcase or a shelf with `force: true` fires a `*_removed`
+  event for each child and a `copy_moved` event for each copy that moves to no
+  shelf.
+
+## Example automation
 
 ```yaml
 automation:
-  - alias: Notify when an item value changes
+  - alias: Notify when a loan is overdue
     trigger:
       - platform: event
-        event_type: home_keeper_library_item_updated
-    condition: "{{ 'value' in trigger.event.data.changed_fields }}"
+        event_type: home_keeper_library_loan_overdue
     action:
-      - service: notify.notify
+      - service: persistent_notification.create
         data:
-          message: >-
-            {{ trigger.event.data.name }} is now {{ trigger.event.data.value }}
+          title: "Loan overdue"
+          message: "{{ trigger.event.data.title }} was due on {{ trigger.event.data.due }}."
 ```
-
-## Adding a new event (checklist)
-
-1. Add the constant to `const.py` (`EVENT_ITEM_…`).
-2. Add a pure builder to `events.py`.
-3. Fire it at the relevant `store.py` chokepoint.
-4. Document it in this file.
-5. Cover it in `tests/unit/test_events.py` (payload shape) and
-   `tests/component/test_services_events.py` (fires on the bus).

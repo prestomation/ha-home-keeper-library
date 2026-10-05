@@ -42,29 +42,40 @@
 ## The four test tiers (run locally before pushing — never use CI as the runner)
 Cheapest first. **Tiers 2 and 3 must run in separate environments** (socket rule).
 
-1. **Pure unit** (`tests/unit`, `pip install pytest`): the pure core
-   (`models.py`, `events.py`) and translation parity. Loaded in isolation via the
-   synthetic `ex` package in `tests/unit/conftest.py` — these never import HA.
-   That conftest *executes* the modules under their real dotted name
-   (`custom_components.home_keeper_library.<mod>`, with stub parent packages so
-   the HA-importing `__init__.py` never runs) and registers `ex.<mod>` as an
-   alias. **Keep it that way**: mutmut matches a mutant's path-derived key
-   against the function's `__module__`, so executing them as `ex.<mod>` would
-   make every mutant look untested and abort the mutation run. **And keep it in
-   `tests/unit/`** — as a root conftest the stub packages would shadow the real
-   integration for tier 2, where HA imports the package itself.
-2. **Component / in-process HA** (`tests/component`,
-   `pytest-homeassistant-custom-component` + `home-assistant-frontend`): real
-   `hass`, registries, config entries, I/O mocked. Covers `config_flow`,
-   setup/unload, store, coordinator, sensor entities, services, **bus events**
-   (`async_capture_events`), websocket commands. Run with `asyncio_mode=auto`
-   (`ci/test-python-component.sh`).
-3. **Docker integration** (`tests/integration`): a real running HA container over
-   REST/WS. Covers end-to-end loading, served bundles, event observability via an
-   automation. Bring up with `bash ci/e2e-up.sh`; run with
-   `ci/test-python-integration.sh`.
-4. **Frontend (vitest)** + **Browser e2e (Playwright)**: `utils`/i18n parity, and
-   the panel + card smoke tests / screenshot capture.
+1. **Pure unit** (`tests/unit`, `pip install pytest PyYAML hypothesis`): the pure
+   core, the translation parity, the backend strings and the API surface drift
+   test. `tests/unit/conftest.py` executes each pure module under its real dotted
+   name (`custom_components.home_keeper_library.<mod>`) with stub parent
+   packages, and registers `ex.<mod>` as an alias. **Keep it that way**: mutmut
+   matches a mutant key against the `__module__` of the function. **And keep it
+   in `tests/unit/`**: as a root conftest its stub packages would hide the real
+   integration from tier 2. The CSV and ISBN tests use hypothesis for round
+   trips. A test that reads component source skips inside `mutants/`, because
+   the source there holds mutated strings.
+2. **Component** (`tests/component`, `pytest-homeassistant-custom-component`):
+   real `hass`, registries and config entries. It covers the config flow,
+   setup and unload, every service with an admin and a non-admin user, the
+   projections, the websocket commands, the entities, the upload and cover views,
+   the Open Library client (`aioclient_mock`) and the loan task flow. Run it with
+   `asyncio_mode=auto`.
+   - **Home Keeper is a fake** in `tests/component/fake_home_keeper/`: it has the
+     same service names, fields and events, and a copy of `panel_tabs.py`. A
+     `fake_todo` integration there gives an in-memory to-do list for the
+     wishlist sync. `custom_components` is a namespace package, so the conftest
+     puts the fake directory on `sys.path` and imports `custom_components`
+     before Home Assistant starts.
+   - A test that waits for the syncs uses
+     `hass.async_block_till_done(wait_background_tasks=True)`. Keep each
+     background task finite, or that call never returns.
+3. **Docker integration** (`tests/integration`): a real Home Assistant with the
+   **real Home Keeper**. `ci/fetch-home-keeper.sh` copies Home Keeper from
+   `HOME_KEEPER_SRC` or clones `HOME_KEEPER_REF` into the git-ignored
+   `tests/integration/.home_keeper/`, and `docker-compose.yml` mounts it. The
+   seed has a config entry for each integration. A test of the panel tab skips
+   when that Home Keeper has no `panel_tabs.py`. Wrap each local docker command in
+   `flock /tmp/claude-0/docker.lock`, and use `-p <name>` for the compose project,
+   because other work can share the machine and port 8123.
+4. **Frontend (vitest)** and **browser e2e (Playwright)**.
 
 ### Choosing the tier for "real HA"
 HA-coupled logic belongs in the **component** tier — it *is* real HA and ~100×
@@ -110,11 +121,13 @@ the branch touched.
   `ci/test-mutation-frontend.sh` (Stryker, against vitest). Both take `--changed`
   (default) or `--all`.
 - **The surface is an allowlist, in one place per language:** `only_mutate` in
-  `[tool.mutmut]` (pyproject.toml) and `mutate` in `stryker.conf.json`. It holds
-  only what the *fast* tiers cover — the pure Python core, and `utils.ts` /
-  `i18n.ts`. HA-coupled modules and the DOM-heavy `panel.ts`/`card.ts` are out:
-  mutating them means re-running the component or Docker tier thousands of times
-  for a score that mostly reports "no test covers this".
+  `[tool.mutmut]` (pyproject.toml) and `mutate` in `stryker.conf.json`. The Python
+  list holds the pure modules with logic: `models`, `isbn`, `events`,
+  `projections`, `openlibrary`, `csv_io`, `wishlist` and `loan_tasks`. The modules
+  that import Home Assistant are out, because each mutant would need the component
+  tier.
+- A round trip test passes when a key has a wrong name on both sides. Pin the
+  exact shape of each record and reply in `tests/unit/test_shapes.py`.
 - **Diff scoping:** `ci/mutation_scope.py` turns the diff into mutmut mutant-name
   filters (changed line → enclosing function, via `ast`) and Stryker `--mutate`
   line ranges. Scoping to whole files would fail a PR for pre-existing debt.

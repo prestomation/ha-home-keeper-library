@@ -1,108 +1,106 @@
 # Architecture & code conventions
 
-These rules describe the conventions to follow when generating or reviewing code
-in this repository (the `home_keeper_library` Home Assistant integration
-template). They are deliberately generic so they survive renaming the template to
-your own domain.
+These rules are the conventions for code in Home Keeper Library
+(`home_keeper_library`), a companion integration of Home Keeper. Follow them when
+you write or review code.
 
-## Separation of administration vs. usage
-- **Administration** lives in the custom **sidebar panel**
-  (`frontend/`, a `panel_custom`-style built-in custom panel). Create/edit/delete
-  of items belongs here.
-- **Usage / display** is surfaced through **native Home Assistant entities** (the
-  `sensor` platform) and the **dashboard card**. Prefer native entities + HA's
-  built-in cards for read surfaces; keep management UI in the panel, not the card.
+## Administration and usage
+- **Administration is the Library tab of the Home Keeper panel**
+  (`/home-keeper/library/...`). The library has no sidebar panel of its own. The
+  Home Keeper panel is admin-only, so the tab is admin-only. `home_keeper.py`
+  registers the tab through `custom_components.home_keeper.panel_tabs`.
+- **Usage** is the card, the per-person `sensor` and `todo` entities, and the
+  open services and websocket commands, which are scoped to the person of the
+  caller.
+- **Home Keeper is an `after_dependency`, not a dependency.** The config flow
+  aborts with `home_keeper_missing`, `home_keeper_not_set_up` or
+  `home_keeper_too_old`. At run time `HomeKeeperLink` shows a repair issue with
+  the same reason and turns the tab and the loan tasks off, and the store, the
+  services, the card and the entities still work. Never raise
+  `ConfigEntryNotReady` for Home Keeper.
 
 ## Pure, HA-free core
-- `models.py` and `events.py` MUST NOT import anything from `homeassistant`. They
-  are pure Python so they can be unit-tested without the HA test harness
-  (`tests/unit`, `pip install pytest`). Inject HA specifics (the current time via
-  `dt_util`, validation at the boundary) from the callers instead.
-- Keep them deterministic: pass values like timestamps in (e.g. `build_item(...,
-  created=dt_util.now().isoformat())`) rather than reading a clock internally.
+- These modules import nothing from `homeassistant`: `const`, `isbn`, `models`,
+  `events`, `projections`, `openlibrary`, `csv_io`, `wishlist`, `loan_tasks`,
+  `backend_i18n` and `api_surface`. `tests/unit/conftest.py` loads them in this
+  order, and the mutation allowlist holds the ones with logic.
+- They never read a clock. The caller passes `now` (aware ISO 8601) and `today`
+  (`YYYY-MM-DD`).
+- A pure module raises `models.LibraryError(key, **placeholders)`. The key is in
+  `strings.json` `exceptions`. The service layer turns it into a localized
+  `ServiceValidationError`, and the websocket layer resolves the message with
+  `backend_i18n`.
 
 ## One mutation chokepoint
-- All item writes go through `HomeKeeperLibraryStore` (`store.py`). Entities and the panel
-  read via the `HomeKeeperLibraryCoordinator` and never mutate storage directly.
-- Items are plain JSON-serializable dicts (never model objects in storage):
-  `id, name, value, created`.
-- For a local store with no I/O cost, mutations call `await
-  coordinator.async_refresh()` (immediate, awaited, deterministic) — not the
-  debounced `async_request_refresh()`, whose cooldown collapses rapid mutations
-  and makes tests non-deterministic.
+- Every write goes through `LibraryStore` (`store.py`). It checks the input with
+  `models`, saves, fires the events and tells its listeners (the coordinator,
+  the `subscribe` command, the to-do and loan syncs). `revision` goes up by 1 on
+  each change.
+- Records are plain JSON dicts. `models.normalize_state` is the migration hook:
+  the store runs it on every load, so a new section needs no migration step.
+
+## Read projections
+- **A reply never leaks.** Every read goes through `projections.py`. A non-admin
+  reads no `price`, `value`, `acquired_from` or loan `party`, and reads the
+  reading row of another person only if that person shares it, never with
+  `private_notes`. Test each new field with an admin and with a non-admin user.
 
 ## Entities
-- Entity `unique_id`s are anchored to the item `id` so they survive renames. The
-  per-item entity set is reconciled on each coordinator refresh (new items add an
-  entity; removed items' entities go unavailable and are pruned on reload).
-- Use `has_entity_name` + a `translation_key` for fixed entities (e.g. the total
-  sensor) so their names localize via `strings.json`.
+- 1 service device holds every entity. The per-person entities have the person id
+  (the collection id of the Home Assistant person) in their `unique_id`, so a new
+  name keeps the entity. A new person gets entities on the next store change.
+- Use `has_entity_name` and a `translation_key`. A per-person name has the
+  `{person}` placeholder.
+- The `To read` list of a person is a `todo` entity. Its uid is the book id.
 
-## Services are the interoperability surface — expose every action as one
-- **Every action that mutates or exports data MUST be an `home_keeper_library.*`
-  Home Assistant service**, not only a panel websocket command. Services are what
-  automations, scripts, voice assistants, and other integrations build on.
-- **New action ⇒ service first.** It lands as a service (handler in `__init__.py`,
-  registered in `_register_services`, listed in `_SERVICES` for teardown) *and*
-  documented: a `services.yaml` entry plus `strings.json` localization at parity
-  across all `translations/<lang>.json` (the parity test + hassfest enforce this).
-  Any websocket command is added alongside and delegates to the same
-  `HomeKeeperLibraryStore` method — never a divergent code path.
-- Read-only/report services use `SupportsResponse.ONLY`/`OPTIONAL`; mutations
-  refresh the coordinator exactly as the equivalent CRUD service does.
+## Services are the interoperability surface
+- **Every action that changes or exports data is a `home_keeper_library.*`
+  service.** A service is 1 handler in `SERVICE_HANDLERS` and 1 field schema in
+  `SERVICE_FIELDS` (`services.py`), a `services.yaml` entry and `strings.json`
+  text in every language.
+- **The runtime reads the model.** `services.async_register_services` registers
+  each `api_surface.SERVICES` entry and applies its `admin_only` gate.
+  `websocket_api.async_register` registers the websocket twin of each service
+  from `api_surface.WEBSOCKET_COMMANDS` with the same fields. A twin calls the
+  same handler, so the 2 surfaces cannot differ.
+- A `caller_scoped` service is open, and its handler lets a non-admin user
+  change only their own person. A call with no user is trusted.
 
-## Events are the observation surface — fire one for every state change
-- **Every observable state change fires a documented
-  `home_keeper_library_<noun>_<verb>` bus event**, built by a **pure function in
-  `events.py`** (no HA imports) so tests and integrators assert against the exact
-  shipped payload. Fire at the **`store.py` mutation chokepoint**, not in a service
-  handler, so every surface (panel, service, websocket) is observed uniformly.
-- Payloads share a common **spine** (`events.item_event_data`); specific events
-  extend it (e.g. `item_updated` adds `changed_fields`). Don't alias the caller's
-  list into the payload — copy it.
-- **Keep the catalog in sync.** A new event isn't done until it's in
-  [`docs/EVENTS.md`](../../docs/EVENTS.md) (when it fires, payload, semantics).
-  Events are observations of changes that already flow through the store, so they
-  need **no** new service.
+## Events are the observation surface
+- Each state change fires a `home_keeper_library_<noun>_<verb>` bus event. A
+  pure function in `events.py` builds the payload, and the store fires it after
+  the save, so every surface is observed the same way.
+- The book events share the spine `{book_id, title, person_id, origin}`
+  (`events.book_event_data`). Copy a list of the caller into the payload. Never
+  alias it.
+- A new event goes in `api_surface.EVENTS` and in
+  [`docs/EVENTS.md`](../../docs/EVENTS.md) in the same change.
+- A bulk import fires only `import_completed`. `loan_overdue` fires once for each
+  due date, with the flag `overdue_fired` on the loan.
 
-## Panel navigation & deep linking
-- The panel's navigation state is **deep-linked**: every navigable destination maps
-  to a URL under the panel prefix (`/home-keeper-library`). Scheme: `/` (list),
-  `/items/<id>` (detail). Forms are ephemeral overlays and are not deep-linked.
-- **The URL is the single source of truth.** HA hands the panel a `route` for every
-  in-panel URL change, including Back/Forward. The `route` setter parses `path` and
-  is the *only* place that flips the view/detail state. Never mutate it directly to
-  navigate — that desyncs the URL and breaks Back.
-- **Navigate by changing the URL** via a `_navigate` helper
-  (`history.pushState`/`replaceState` + a bubbling `composed` `location-changed`
-  event). Drill-in (open a detail) **pushes**; lateral moves and detail-close/delete
-  **replace**, so Back never retraces and moves within the panel instead of ejecting.
-- Keep route parse/build as **pure functions in `utils.ts`** (`parseRoute`,
-  `buildPath`) so they unit-test and round-trip losslessly. Unknown/empty paths
-  fall back to the list; a detail URL whose id no longer exists renders a "gone"
-  notice rather than erroring.
+## Syncs with other integrations
+- The wishlist sync (`wishlist.py` pure, `wishlist_sync.py` HA side) and the loan
+  task sync (`loan_tasks.py` pure, `loan_sync.py` HA side) follow the shopping
+  sync of Home Keeper: an unreadable list or task list plans nothing, a
+  completed item is never touched, and each call to another integration is best
+  effort.
+- Each call to Home Keeper sends `origin: "home_keeper_library"`, and the
+  listeners ignore events with that origin.
 
-## Frontend bundles & the card-load race
-- Two IIFE bundles ship from one static path: the panel (`home-keeper-library-panel.js`, loaded
-  via the panel's `module_url`) and the card (`home-keeper-library-card.js`, auto-registered as
-  an extra module URL via `card.async_register_card` → `frontend.add_extra_js_url`).
-- `add_extra_js_url` injection is **fire-and-forget**: on a cold frontend the custom
-  card element may not upgrade before Lovelace renders the dashboard, so HA shows a
-  non-retrying error card. e2e helpers handle this with a **retry-with-reload** (see
-  `tests/e2e/tests/helpers.ts` `openCard`); don't "fix" it by removing the retry.
-- The integration must be set up **at HA startup** for the card resource to be
-  injected before dashboards render — i.e. a config entry must already exist when HA
-  boots. The Docker/e2e tiers seed one at
-  `tests/integration/ha_config/.storage/core.config_entries` (the only tracked
-  `.storage` file). Creating the entry at runtime is too late: the card resource
-  won't be injected into the onboarded app shell. Note the extra-module `<script>`
-  only appears once onboarding is complete, so verify via a real (authenticated)
-  page load, not a bare `curl /`.
+## Frontend bundles
+- `frontend_assets.py` serves `frontend/dist/` at `/home_keeper_library_static`
+  and adds the card bundle as a frontend module. The tab module URL and the card
+  URL carry a content hash in `?v=`.
+- Covers are served by an authenticated view. An `<img>` element cannot send a
+  token, so the client signs the path with `auth/sign_path` or reads the image
+  with `fetchWithAuth`.
 
 ## Errors, validation & security
-- Service handlers raise `ServiceValidationError` for user-facing errors; the pure
-  model raises `ItemValidationError`, translated at the boundary. Websocket commands
-  return structured errors via `connection.send_error`.
+- Service handlers raise `ServiceValidationError` for user-facing errors. The pure
+  core raises `LibraryError`, which the boundary translates. Websocket commands
+  return `connection.send_error` with the key as the code and the resolved text.
+  `tests/unit/test_exception_translations.py` checks that each `LibraryError` key
+  has a message.
 - **Exceptions are localized (exception-translations rule).** Every user-facing
   `ServiceValidationError` / `HomeAssistantError` is built with
   `translation_domain=DOMAIN` + a `translation_key` (and `translation_placeholders`),
@@ -111,6 +109,8 @@ your own domain.
   fails the build on a bare-string raise or a key missing from `strings.json`.
 - Escape all user-provided content before injecting into `innerHTML` in the panel
   (`escapeHTML`).
+- An upload needs a real admin user. The view reads the type from the first bytes
+  and Pillow writes a new JPEG in an executor job.
 
 ## Version single-source-of-truth
 - `manifest.json` `version` is canonical. `const.py` `PANEL_VERSION` mirrors it and
