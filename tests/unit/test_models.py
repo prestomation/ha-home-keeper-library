@@ -30,7 +30,11 @@ def test_empty_state_has_every_section() -> None:
 def test_normalize_state_fills_and_filters() -> None:
     assert m.normalize_state(None) == m.empty_state()
     raw = {
-        "books": {"b": {"id": "b"}},
+        "books": {
+            "b": {"id": "b"},
+            "t": {"id": "t", "lookup_tries": 2},
+            "x": "not a book",
+        },
         "rooms": [],
         "todo_orphans": [
             {"entity_id": "todo.a", "uid": "1"},
@@ -40,10 +44,42 @@ def test_normalize_state_fills_and_filters() -> None:
         ],
     }
     state = m.normalize_state(raw)
-    assert state["books"] == {"b": {"id": "b"}}
+    assert state["books"] == {
+        "b": {"id": "b", "lookup_tries": 0},
+        "t": {"id": "t", "lookup_tries": 2},
+        "x": "not a book",
+    }
     assert state["rooms"] == {}
     assert state["todo_orphans"] == [{"entity_id": "todo.a", "uid": "1"}]
     assert m.normalize_state({"todo_orphans": "x"})["todo_orphans"] == []
+
+
+@pytest.mark.parametrize(
+    ("value", "tries"),
+    [(None, 0), (0, 0), (1, 1), (3, 3), (-1, 0), (True, 0), ("2", 0), (2.0, 0)],
+)
+def test_lookup_tries(value, tries) -> None:
+    assert m.lookup_tries(value) == tries
+
+
+def test_books_to_look_up() -> None:
+    state = m.empty_state()
+    base = {"needs_details": True, "isbn13": "9780441478125", "openlibrary": None}
+    state["books"] = {
+        "b_late": {**base, "id": "b_late", "created_at": "2", "lookup_tries": 2},
+        "c_early": {**base, "id": "c_early", "created_at": "1"},
+        "a_ten": {**base, "id": "a_ten", "isbn13": None, "isbn10": "0441478123"},
+        "done": {**base, "id": "done", "lookup_tries": 3},
+        "known": {**base, "id": "known", "openlibrary": {"work_key": "W"}},
+        "noisbn": {**base, "id": "noisbn", "isbn13": None},
+        "full": {**base, "id": "full", "needs_details": False},
+    }
+    state["books"]["a_ten"]["created_at"] = "3"
+    assert m.books_to_look_up(state, 3) == ["c_early", "b_late", "a_ten"]
+    assert m.books_to_look_up(state, 2) == ["c_early", "a_ten"]
+    assert m.books_to_look_up(state, 4) == ["done", "c_early", "b_late", "a_ten"]
+    state["books"]["b_late"]["created_at"] = "1"
+    assert m.books_to_look_up(state, 3) == ["b_late", "c_early", "a_ten"]
 
 
 def test_new_id_and_clone() -> None:
@@ -208,7 +244,8 @@ def test_build_book_defaults() -> None:
     assert book["title"] == "Dune"
     assert book["cover"] == {"kind": "none", "file": None}
     assert book["created_at"] == book["updated_at"] == NOW
-    assert book["needs_details"] is False
+    assert book["needs_details"] is False and book["lookup_tries"] == 0
+    assert m.build_book({"title": "Dune", "isbn": ""}, now=NOW)["isbn13"] is None
     assert book["wishlist"] is None and book["isbn13"] is None
     assert _err(m.build_book, {}, now=NOW).key == "field_required"
 

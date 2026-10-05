@@ -38,6 +38,11 @@ you write or review code.
   each change.
 - Records are plain JSON dicts. `models.normalize_state` is the migration hook:
   the store runs it on every load, so a new section needs no migration step.
+- A book has `lookup_tries`: the Open Library lookups that gave no details.
+  Setup queues again each book that `models.books_to_look_up` names, and the
+  queue stops at `LOOKUP_MAX_TRIES` across restarts. It is bookkeeping of the
+  queue: it fires no event and is not in the CSV export, and an imported book
+  starts at 0.
 
 ## Read projections
 - **A reply never leaks.** Every read goes through `projections.py`. A non-admin

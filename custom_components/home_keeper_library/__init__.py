@@ -73,6 +73,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> b
     async_register_services(hass)
 
     coordinator.lookup.async_start()
+    # The queue is in memory. Queue again the books that a restart left.
+    coordinator.lookup.async_enqueue_pending()
     entry.async_on_unload(coordinator.lookup.async_stop)
     coordinator.wishlist_sync.async_start()
     entry.async_on_unload(coordinator.wishlist_sync.async_stop)

@@ -705,6 +705,19 @@ class LibraryStore:
         """The book of a loan, for an event payload."""
         return self.state["books"].get(loan["book_id"]) or {"id": loan["book_id"]}
 
+    async def set_lookup_tries(self, book_id: str, tries: int) -> None:
+        """Record the count of Open Library lookups of a book that gave no details.
+
+        The lookup queue keeps the count here, so the retry limit holds across
+        a restart. The count is bookkeeping of the queue that no user sees, so
+        it fires no event, as ``set_loan_task`` does.
+        """
+        book = self.state["books"].get(book_id)
+        if book is None or book.get("lookup_tries") == tries:
+            return
+        book["lookup_tries"] = tries
+        await self._commit([])
+
     async def set_loan_task(self, loan_id: str, task_id: str | None) -> None:
         """Record the Home Keeper task id of a loan."""
         loan = self.state["loans"].get(loan_id)

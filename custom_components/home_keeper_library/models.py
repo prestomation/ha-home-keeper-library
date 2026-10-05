@@ -166,6 +166,9 @@ def normalize_state(raw: Any) -> dict[str, Any]:
         value = raw.get(name)
         if isinstance(value, dict):
             state[name] = value
+    for book in state["books"].values():
+        if isinstance(book, dict):
+            book["lookup_tries"] = lookup_tries(book.get("lookup_tries"))
     orphans = raw.get("todo_orphans")
     if isinstance(orphans, list):
         state["todo_orphans"] = [
@@ -176,6 +179,16 @@ def normalize_state(raw: Any) -> dict[str, Any]:
             and isinstance(entry.get("uid"), str)
         ]
     return state
+
+
+def lookup_tries(value: Any) -> int:
+    """The stored count of Open Library lookups that gave no details.
+
+    A book from before the count, or a bad value, has 0.
+    """
+    if isinstance(value, bool) or not isinstance(value, int):
+        return 0
+    return max(value, 0)
 
 
 def clone(value: Any) -> Any:
@@ -499,6 +512,7 @@ def build_book(data: dict[str, Any], *, now: str) -> dict[str, Any]:
         "openlibrary": None,
         "cover": {"kind": "none", "file": None},
         "needs_details": False,
+        "lookup_tries": 0,
         "created_at": now,
         "updated_at": now,
         "wishlist": None,
@@ -906,6 +920,25 @@ def copies_of(state: dict[str, Any], book_id: str) -> list[dict[str, Any]]:
     """The copies of a book, oldest first."""
     rows = [c for c in state["copies"].values() if c.get("book_id") == book_id]
     return sorted(rows, key=lambda c: (str(c.get("created_at", "")), c["id"]))
+
+
+def books_to_look_up(state: dict[str, Any], max_tries: int) -> list[str]:
+    """The ids of the books that the lookup queue takes again at setup.
+
+    A book goes in the queue when it needs details, has an ISBN, has no Open
+    Library data and has had fewer than *max_tries* lookups with no details.
+    The oldest book is first.
+    """
+    books = [
+        book
+        for book in state["books"].values()
+        if book.get("needs_details")
+        and (book.get("isbn13") or book.get("isbn10"))
+        and not book.get("openlibrary")
+        and lookup_tries(book.get("lookup_tries")) < max_tries
+    ]
+    books.sort(key=lambda b: (str(b.get("created_at", "")), b["id"]))
+    return [book["id"] for book in books]
 
 
 def copy_clears_wishlist(state: dict[str, Any], book_id: str) -> bool:

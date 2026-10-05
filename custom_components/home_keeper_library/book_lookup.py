@@ -6,6 +6,12 @@ Library for the book (by ISBN, else by title and author), fills the empty fields
 and downloads the cover. A network failure tries again later, at most 3 times,
 with a longer wait each time. A book that Open Library does not have keeps
 ``needs_details: true``, and the user adds the details.
+
+The queue is in memory, so setup queues again each book that still needs a
+lookup (``models.books_to_look_up``). The count of tries is the book field
+``lookup_tries`` in the store, so the limit of 3 holds across restarts. A book
+that Open Library does not have gets the full count at once and is not tried
+again.
 """
 
 from __future__ import annotations
@@ -20,7 +26,7 @@ from homeassistant.helpers.event import async_call_later
 
 from .const import LOOKUP_BACKOFF_S, LOOKUP_MAX_TRIES, ORIGIN
 from .covers import async_store_openlibrary_cover
-from .models import LibraryError
+from .models import LibraryError, books_to_look_up
 from .openlibrary_client import OpenLibraryError
 
 if TYPE_CHECKING:
@@ -37,7 +43,6 @@ class BookLookup:
         self._coordinator = coordinator
         self._queue: asyncio.Queue[str] = asyncio.Queue()
         self._queued: set[str] = set()
-        self._tries: dict[str, int] = {}
         self._timers: list[Callable[[], None]] = []
         self._worker: asyncio.Task[None] | None = None
         self._started = False
@@ -67,6 +72,14 @@ class BookLookup:
         if self._worker is not None:
             self._worker.cancel()
             self._worker = None
+
+    @callback
+    def async_enqueue_pending(self) -> None:
+        """Queue each stored book that still needs a lookup, as after a restart."""
+        for book_id in books_to_look_up(
+            self._coordinator.store.state, LOOKUP_MAX_TRIES
+        ):
+            self.async_enqueue(book_id)
 
     @callback
     def async_enqueue(self, book_id: str) -> None:
@@ -100,10 +113,11 @@ class BookLookup:
         try:
             draft = await self.async_find(book)
         except OpenLibraryError as err:
-            self._retry_later(book_id, err)
+            await self._retry_later(book, err)
             return
-        self._tries.pop(book_id, None)
         if draft is None:
+            # Open Library does not have the book. Do not ask again.
+            await self._coordinator.store.set_lookup_tries(book_id, LOOKUP_MAX_TRIES)
             return
         await self.async_apply(book_id, draft)
 
@@ -128,12 +142,12 @@ class BookLookup:
         except OpenLibraryError as err:
             _LOGGER.debug("No cover for book %s: %s", book_id, err)
 
-    def _retry_later(self, book_id: str, err: Exception) -> None:
-        tries = self._tries.get(book_id, 0) + 1
-        self._tries[book_id] = tries
+    async def _retry_later(self, book: dict[str, Any], err: Exception) -> None:
+        book_id = book["id"]
+        tries = int(book.get("lookup_tries") or 0) + 1
+        await self._coordinator.store.set_lookup_tries(book_id, tries)
         if tries >= LOOKUP_MAX_TRIES:
             _LOGGER.info("Open Library lookup of book %s failed: %s", book_id, err)
-            self._tries.pop(book_id, None)
             return
         delay = LOOKUP_BACKOFF_S[min(tries - 1, len(LOOKUP_BACKOFF_S) - 1)]
 

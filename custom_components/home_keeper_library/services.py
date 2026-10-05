@@ -32,7 +32,13 @@ from homeassistant.helpers import config_validation as cv
 from . import csv_io, models, people, projections
 from .api_surface import SERVICES, ServiceSpec
 from .backend_i18n import resolve_exception
-from .const import CONF_CURRENCY, DOMAIN, MAX_CSV_BYTES, MAX_IMPORT_ROW_RESULTS
+from .const import (
+    CONF_CURRENCY,
+    DOMAIN,
+    LOOKUP_MAX_TRIES,
+    MAX_CSV_BYTES,
+    MAX_IMPORT_ROW_RESULTS,
+)
 from .coordinator import LibraryCoordinator, find_coordinator
 from .covers import async_store_openlibrary_cover, async_use_upload
 from .isbn import IsbnError
@@ -364,7 +370,10 @@ async def _add_book(
                 )
             except OpenLibraryError:
                 _LOGGER.debug("No cover for %s", book["id"])
-        elif book.get("needs_details") and status != "not_found":
+        elif status == "not_found":
+            # Open Library does not have the book, so no restart asks again.
+            await ctx.store.set_lookup_tries(book["id"], LOOKUP_MAX_TRIES)
+        elif book.get("needs_details"):
             ctx.coordinator.lookup.async_enqueue(book["id"])
     return ctx.store.book(book["id"]), existing, status
 
