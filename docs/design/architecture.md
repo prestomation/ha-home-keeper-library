@@ -1,6 +1,6 @@
 ---
 title: Architecture
-summary: How Home Keeper Library splits into a pure core and Home Assistant glue, how it sets up, and the index of the design docs.
+summary: The split of Home Keeper Library into a pure core and Home Assistant glue. The setup steps. The index of the design docs.
 implements:
   - custom_components/home_keeper_library/__init__.py
   - custom_components/home_keeper_library/const.py
@@ -9,7 +9,7 @@ implements:
   - custom_components/home_keeper_library/backend_i18n.py
   - custom_components/home_keeper_library/manifest.json
 related: [store-models, people-privilege, events-api, home-keeper-dependency, frontend-tab-card]
-source_hash: ec6db238bafe
+source_hash: 9b07182a6eea
 ---
 
 # Architecture
@@ -25,8 +25,8 @@ updates their own reading status through a card, native entities and services.
 - **G1. Testable core.** The rules for records, ISBNs, Open Library replies, CSV files,
   projections and the sync plans run without Home Assistant, so the fast unit tier and
   the mutation gate can check them.
-- **G2. One write path.** Every change goes through 1 store method that checks, saves and
-  fires its events ([store-models](store-models.md)).
+- **G2. One write path.** Every change goes through 1 store method. That method checks
+  the input, saves the change and fires its events ([store-models](store-models.md)).
 - **G3. Services first.** Each data action is a `home_keeper_library.*` service, so
   automations, scripts, voice and other integrations can do what the tab does.
 - **G4. Per-person privacy.** A non-admin user changes only their own reading data, and
@@ -48,9 +48,9 @@ updates their own reading status through a card, native entities and services.
 
 | Layer | Modules | Rule |
 |---|---|---|
-| Pure core | `const.py`, `isbn.py`, `models.py`, `events.py`, `projections.py`, `openlibrary.py`, `csv_io.py`, `wishlist.py`, `loan_tasks.py`, `backend_i18n.py`, `api_surface.py` | No `homeassistant` import. Time comes in as an argument. |
+| Pure core | `const.py`, `isbn.py`, `models.py`, `events.py`, `projections.py`, `openlibrary.py`, `csv_io.py`, `wishlist.py`, `loan_tasks.py`, `card_resource.py`, `backend_i18n.py`, `api_surface.py` | No `homeassistant` import. Time comes in as an argument. |
 | Boundary | `store.py`, `coordinator.py`, `people.py`, `openlibrary_client.py` | Talks to Home Assistant storage, the bus, the person registry and HTTP. |
-| Glue | `__init__.py`, `services.py`, `websocket_api.py`, `covers.py`, `book_lookup.py`, `home_keeper.py`, `loan_sync.py`, `wishlist_sync.py`, `frontend_assets.py`, `config_flow.py`, `diagnostics.py` | Registers surfaces and runs the syncs. |
+| Glue | `__init__.py`, `services.py`, `websocket_api.py`, `covers.py`, `book_lookup.py`, `home_keeper.py`, `loan_sync.py`, `wishlist_sync.py`, `frontend_assets.py`, `card.py`, `config_flow.py`, `diagnostics.py` | Registers surfaces and runs the syncs. |
 | Platforms | `sensor.py`, `todo.py`, with `entity.py` | `const.PLATFORMS` lists them. |
 
 The mutation allowlist (`only_mutate` in `pyproject.toml`) holds the pure modules with
@@ -65,11 +65,14 @@ logic. `api_surface.py` declares each surface that an integrator sees
 1. Read the string tables of the Home Assistant language in an executor job
    (`backend_i18n.preload`), and load the store.
 2. Make `LibraryCoordinator` and give it the Open Library client, the lookup queue and
-   the 2 syncs. Store it as `entry.runtime_data`.
-3. Register the static path and the card module, the websocket commands, and the cover
-   views ([frontend-tab-card](frontend-tab-card.md)).
+   the 2 syncs. Store it as `entry.runtime_data`. An update listener of the entry fires
+   `settings_updated` when the options flow changes the currency.
+3. Register the static path, the card delivery, the websocket commands and the cover
+   views ([frontend-tab-card](frontend-tab-card.md#delivery)).
 4. Forward `const.PLATFORMS` and register the services.
-5. Start the lookup queue, the wishlist sync and the loan sync.
+5. Start the lookup queue, and queue again each book that still needs a lookup
+   ([open-library-covers](open-library-covers.md#lookup-queue)). Start the wishlist sync
+   and the loan sync.
 6. Start `home_keeper.HomeKeeperLink`, which adds the tab and the companion or shows a
    repair issue.
 7. Fire the overdue loans, start the hourly overdue check, and delete the old uploads
@@ -79,8 +82,9 @@ logic. `api_surface.py` declares each surface that an integrator sees
 
 `async_unload_entry` unloads the platforms and removes each service in
 `api_surface.SERVICE_NAMES`. Each sync, the queue and the Home Keeper link stop through
-`entry.async_on_unload`. The link removes the tab. The static path and the card module
-stay, because most unloads are half of a reload.
+`entry.async_on_unload`. The link removes the tab. The static path and the card resource
+stay, because most unloads are half of a reload. `async_remove_entry` deletes the card
+resource when the integration is removed.
 
 ### Config entry
 

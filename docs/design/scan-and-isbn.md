@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/zxing-decoder.ts
   - custom_components/home_keeper_library/frontend/src/tab-scan.ts
 related: [open-library-covers, store-models, frontend-tab-card, loans-home-keeper]
-source_hash: 15a27a1709ab
+source_hash: 41e90aa03a97
 ---
 
 # Scan and ISBN
@@ -58,11 +58,13 @@ chunk. The decoder imports only the UPC and EAN readers.
 
 ### Scan flow
 
-The route is `/scan`, with `?shelf=<id>` to preselect the shelf and `?mode=borrowed` for
-borrowed books. The steps are setup (room, shelf, method), camera or manual entry, and the
-summary. Each result row shows Added, Already in a place, Moved here, Skipped or No match
-in Open Library. **Next shelf** goes to the next shelf in display order. The summary can
-set the status Read for the caller on each book that the session added or moved.
+The route is `/scan`, with `;shelf=<id>` to preselect the shelf and `;mode=borrowed` for
+borrowed books ([frontend-tab-card](frontend-tab-card.md#the-tab)). The steps are setup
+(room, shelf, method), camera or manual entry, and the summary. Each result row shows
+Added, Already in a place, Moved here, Skipped or No match in Open Library. A row also
+shows From wishlist when the reply has `from_wishlist: true`. **Next shelf** goes to the
+next shelf in display order. The summary can set the status Read for the caller on each
+book that the session added or moved.
 
 In borrowed mode each scan calls `borrow_book` with the ISBN, the lender and the due date
 of the session, and adds no copy ([loans-home-keeper](loans-home-keeper.md)).
@@ -80,6 +82,10 @@ of the session, and adds no copy ([loans-home-keeper](loans-home-keeper.md)).
    copies and their locations, `skip` returns `skipped`, `move` moves a copy from
    another shelf and returns `moved`, and `add_copy` adds a copy.
 
+The reply has `from_wishlist: true` when the new copy took its book off the wishlist
+([store-models](store-models.md#rules)). The service then runs the wishlist sync, so the
+to-do item goes at once.
+
 ## Trade-offs
 
 - **A service call for each scan** over **a batch at the end**: each result shows at once,
@@ -91,7 +97,8 @@ of the session, and adds no copy ([loans-home-keeper](loans-home-keeper.md)).
 
 ## One-way doors
 
-- The `scan_isbn` fields (`isbn`, `shelf_id`, `format`, `on_duplicate`) and the result
-  values `added`, `duplicate`, `moved`, `skipped` and `not_found`.
-- The scan URL and its query keys `shelf`, `mode` and `step`.
+- The `scan_isbn` fields (`isbn`, `shelf_id`, `format`, `on_duplicate`), the result
+  values `added`, `duplicate`, `moved`, `skipped` and `not_found`, and the reply key
+  `from_wishlist`.
+- The scan URL and its parameters `shelf`, `mode` and `step`.
 - ISBN-13 as the key of the duplicate check.

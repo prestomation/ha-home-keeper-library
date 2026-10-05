@@ -41,7 +41,7 @@ An admin sets these in the **Settings** page of the Library tab, for each person
 - **Wishlist to-do list**: the to-do list that gets the wishlist books with **Buy** set
   ([Wishlist](../library/wishlist.md)).
 
-<!-- screenshot: settings-desktop.png -->
+![The people settings, the currency and the export](../../images/settings-desktop.png)
 
 The **Settings** page also shows the currency, and has the
 [export](../library/import-export.md) of the library.
@@ -49,6 +49,10 @@ The **Settings** page also shows the currency, and has the
 ## Entities
 
 Each person gets a **To read** to-do list and 2 sensors: **books read this year** and
-**reading now**. Home Assistant shows entities to every user, so these entities show the
-reading of a person also when **Share reading** is off. Every user can add an item to the
-**To read** list of each person.
+**reading now**. Home Assistant shows each entity to every user, so the library applies
+its privacy rules to these entities:
+
+- Only the user of the person and an admin can change the **To read** list of that
+  person. An automation can change it too.
+- If **Share reading** is off, the 3 entities of the person are unavailable. They come
+  back when **Share reading** is on again.

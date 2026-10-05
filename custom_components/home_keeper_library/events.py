@@ -152,7 +152,9 @@ def book_finished_event_data(
 def loan_event_data(
     book: dict[str, Any], loan: dict[str, Any], origin: str | None
 ) -> dict[str, Any]:
-    """The payload of ``loan_started``, ``loan_returned`` and ``loan_overdue``."""
+    """The payload of ``loan_started``, ``loan_returned``, ``loan_overdue`` and
+    ``loan_removed``.
+    """
     return {
         **book_event_data(book, origin, loan.get("person_id")),
         "loan_id": loan["id"],

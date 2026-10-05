@@ -74,6 +74,18 @@ each signed-in user, because covers are not private.
 The viewer's own rows are full. Each book also gets `owned`, `copy_count` and
 `cover_url`. The sensors and the card use the count functions at the end of the module.
 
+### Entities
+
+An entity has no projection: Home Assistant gives its state to each user. So the
+per-person entities of [entities](entities.md) check the privacy rules in the entity:
+
+- `PersonEntity.available` is false while the settings of the person have
+  `share_reading: false`. The To read list then gives an empty `todo_items`.
+- `ToReadList` checks the caller before each item add, update and delete. The entity
+  service call of Home Assistant sets the context of the call on the entity, and the list
+  reads its `user_id` through `people.actor_for_user`. The user of the person, an admin
+  and a call with no user pass. Another user gets `todo_not_allowed`.
+
 ## Trade-offs
 
 - **Project the reply** over **gate the read**: the card and the entities work for every
@@ -89,4 +101,4 @@ The viewer's own rows are full. Each book also gets `owned`, `copy_count` and
 - The admin flag of each service in `api_surface.SERVICES`. Opening an admin-only
   service later is a change to the security model.
 - The private field lists. A field that a non-admin can read now is hard to hide later.
-- `share_reading` and its default.
+- `share_reading` and its default, and its effect on the per-person entities.

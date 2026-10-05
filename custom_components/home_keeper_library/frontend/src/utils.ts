@@ -228,7 +228,7 @@ export interface TabRoute {
   view: View;
   /** The book id for `book`, the room id for `shelves`, else null. */
   id: string | null;
-  /** The query string values that are not the default. */
+  /** The filter values that are not the default: the `;key=value` parameters. */
   query: Record<string, string>;
 }
 

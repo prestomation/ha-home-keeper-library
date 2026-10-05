@@ -71,7 +71,8 @@ automation:
 | *Person* **to read** | A to-do list of the books with status Want to read |
 
 Complete an item of a **to read** list to set the status Read. Add an item to add a book
-to the list.
+to the list. The per-person entities follow the privacy rules in
+[People and privacy](../start/people-and-privacy.md#entities).
 
 ## Reference
 

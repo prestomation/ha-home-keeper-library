@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/sensor.py
   - custom_components/home_keeper_library/todo.py
 related: [store-models, people-privilege, events-api]
-source_hash: e36c5bc237d7
+source_hash: 33a4b3741a6d
 ---
 
 # Coordinator and entities
@@ -41,6 +41,8 @@ person wants to read.
 `async_set_updated_data`. The coordinator also holds the parts of the loaded entry that
 the services, the websocket commands and the views use: the store, the Open Library
 client, the lookup queue, the 2 syncs, the Home Keeper link and the currency option.
+`async_check_settings` fires `settings_updated` for a new currency
+([events-api](events-api.md#events)).
 `coordinator.find_coordinator` returns it for a call, or None while no entry is loaded.
 
 ### Device and people
@@ -49,7 +51,8 @@ client, the lookup queue, the 2 syncs, the Home Keeper link and the currency opt
 `entity.async_track_people` adds the entities of each Home Assistant person now, and of a
 new person on the next store change. A `PersonEntity` has the person id in its
 `unique_id`, the person name in the `{person}` placeholder of its translated name, and the
-attribute `person_id`. It is unavailable while the person does not exist.
+attribute `person_id`. It is unavailable while the person does not exist, and while the
+person does not share the reading ([people-privilege](people-privilege.md#entities)).
 
 ### Sensors
 
@@ -75,13 +78,13 @@ is the book id.
   summary. If no book matches, the list adds a book with `needs_details: true`, and the
   lookup queue reads Open Library for it.
 - Deleting an item removes the `want` row.
+- Each change checks the caller first ([people-privilege](people-privilege.md#entities)).
 
 ## Trade-offs
 
 - **Per-person entities for every person** over **an opt-in list**: each person gets the
-  list and the sensors with no setup. The entities are open to every user like all Home
-  Assistant entities, so `share_reading` does not hide them
-  ([IDEAS.md](../../IDEAS.md#private-per-person-entities)).
+  list and the sensors with no setup. The cost is a privacy check in each entity, because
+  Home Assistant shows each entity to every user.
 - **A to-do list for want** over **a list for each status**: want is the status that a
   person works through.
 - **Counts as sensors** over **attributes on 1 sensor**: each count has its own history

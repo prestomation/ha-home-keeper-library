@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/websocket_api.py
   - custom_components/home_keeper_library/events.py
 related: [people-privilege, store-models, entities, architecture]
-source_hash: 07d32004af5b
+source_hash: 42653c8aa28c
 ---
 
 # Services, websocket commands, events and the API surface
@@ -77,9 +77,25 @@ order of the change: a `force` delete fires each `copy_moved`, then the `*_remov
 each child, then the `*_removed` of the parent. `book_finished` follows its
 `reading_changed`.
 
-These changes fire no event: an edit of a copy that keeps its shelf, `update_loan`,
-`delete_loan`, a reading change that keeps the status, and the person settings
-([IDEAS.md](../../IDEAS.md#events-for-every-change)).
+An update fires an event only if a field changed. Each `*_updated` event names the
+fields in `changed_fields`. A payload never holds a price, a value, private notes or the
+value of a setting of a person:
+
+| Event | Builder | Keys after the spine |
+|---|---|---|
+| `copy_updated` | `events.copy_updated_event_data` | `copy_id`, `shelf_id`, `changed_fields` |
+| `reading_updated` | `events.reading_updated_event_data` | `status`, `changed_fields` |
+| `loan_updated` | `events.loan_updated_event_data` | the loan keys, `changed_fields` |
+| `loan_removed` | `events.loan_event_data` | the loan keys, as before the delete |
+| `person_settings_updated` | `events.person_settings_event_data` | no spine: `person_id`, `changed_fields`, `origin` |
+| `settings_updated` | `events.settings_event_data` | no spine: `changed_fields`, `currency`, `origin` |
+
+`copy_updated` fires for a copy change other than the shelf, and `copy_moved` for a new
+shelf. `reading_updated` fires for a change that keeps the status, and `reading_changed`
+for a new status. The loan keys are `loan_id`, `direction`, `copy_id`, `party`, `started`,
+`due` and `returned`. `settings_updated` is not a store change: the currency is an option
+of the entry. `coordinator.async_check_settings` fires it 1 time for each new currency,
+from `set_settings` and from the update listener of the options flow.
 
 ### API surface
 

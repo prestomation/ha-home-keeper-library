@@ -1,16 +1,14 @@
-"""Pure decision logic for the Lovelace resource of the library card.
+"""The pure plan for the Lovelace resource of the library card.
 
-This is a copy of ``card_resource.py`` of Home Keeper, which met the same problem
-first (Home Keeper #368). No Home Assistant imports: this is the "what should
-change" half of the resource registration in ``card.py``, so it runs in the unit
-tier. ``card.py`` owns the "how": the calls to the ``ResourceStorageCollection``
-of Lovelace.
+This module follows ``card_resource.py`` of Home Keeper (Home Keeper #368). It
+imports no Home Assistant code, so the unit tier tests it. It decides which rows
+change. ``card.py`` makes the calls to the ``ResourceStorageCollection`` of
+Lovelace.
 
-The asymmetry this module exists to encapsulate: Lovelace's create and update
-payloads name the resource type ``res_type``, but
-``ResourceStorageCollection._process_create_data`` renames it on the way in, so
-*stored* items carry ``type``. Read ``type``; write ``res_type``. Getting that
-backwards matches nothing and quietly creates a duplicate on every restart.
+The create and update payloads of Lovelace name the resource type ``res_type``.
+``ResourceStorageCollection._process_create_data`` renames it, so a stored row has
+``type``. Read ``type`` and write ``res_type``. The other way round, no stored row
+matches, and each restart adds 1 more row.
 """
 
 from __future__ import annotations
@@ -20,32 +18,26 @@ from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlsplit
 
-# Lovelace resource type for an ES module bundle. `js` is the legacy non-module
-# loader, which would fetch the file without ever defining the custom element.
+# The Lovelace resource type of an ES module bundle. The type `js` loads the file
+# as a classic script, which does not define the custom element.
 RESOURCE_TYPE = "module"
 
 
 def resource_path(url: str) -> str:
-    """The path part of a resource URL, without the ``?v=`` cache token.
+    """The path of a resource URL, with no ``?v=`` cache token.
 
-    Matching on the path is what lets a rebuilt bundle *update* the existing row
-    instead of adding a second one beside it. It also means the absolute form a
-    user may have typed by hand (``http://homeassistant.local:8123/...``) is
-    recognised as the same resource as the relative one we register.
-
-    Ignoring scheme and host is deliberate: someone who hand-registered an absolute
-    or proxied URL for *this* bundle wanted the card, so adopting that row and
-    rewriting it to the canonical relative URL fixes it for every way they reach
-    Home Assistant, rather than leaving a host-pinned entry beside ours. A copy
-    served from a *different* path (``/local/library-card.js``) is somebody
-    else's row and is left alone.
+    A match on the path lets a new build update the stored row, and add no second
+    row. An absolute URL that a user typed for this bundle
+    (``http://homeassistant.local:8123/...``) also matches. The plan then writes
+    the relative URL into that row, which works from each host. A copy at another
+    path, such as ``/local/library-card.js``, is a different resource and stays.
     """
     return urlsplit(url).path
 
 
 @dataclass(frozen=True, slots=True)
 class ResourcePlan:
-    """What has to change to leave exactly one resource pointing at the card."""
+    """The changes that leave exactly 1 resource row for the card."""
 
     create: bool = False
     update_id: str | None = None
@@ -53,20 +45,19 @@ class ResourcePlan:
 
 
 def _serves_bundle(item: Mapping[str, Any], wanted: str) -> bool:
-    """True when *item* is a stored resource serving the bundle at *wanted*.
+    """Whether the stored row *item* serves the bundle at the path *wanted*.
 
-    The collection is user-writable storage, so don't assume the shape: a row
-    without a string URL is somebody else's problem, not a match.
+    A user can write the collection, so a row can have any shape. A row with no
+    string URL does not match.
     """
     url = item.get("url")
     return isinstance(url, str) and resource_path(url) == wanted
 
 
 def matching_ids(items: Iterable[Mapping[str, Any]], url: str) -> tuple[str, ...]:
-    """Ids of every stored resource serving the card bundle, token ignored.
+    """The ids of each stored row that serves the card bundle, at any token.
 
-    What removal uses: it has no desired URL to reconcile against, only the path
-    it has to clear.
+    The removal uses this. It has only the path to clear, and no URL to keep.
     """
     wanted = resource_path(url)
     return tuple(str(item["id"]) for item in items if _serves_bundle(item, wanted))
@@ -75,19 +66,19 @@ def matching_ids(items: Iterable[Mapping[str, Any]], url: str) -> tuple[str, ...
 def plan_card_resource(
     items: Iterable[Mapping[str, Any]], desired_url: str
 ) -> ResourcePlan:
-    """Reconcile the stored resources with *desired_url*.
+    """The plan that leaves 1 stored row with *desired_url*.
 
-    * nothing matching             -> create
-    * one match, url and type good -> no-op (a restart must not rewrite storage)
-    * one match, stale url or type -> update it in place, never a second create
-    * several matches              -> keep and fix the first, delete the rest
+    * no matching row                 -> create a row
+    * 1 row with the URL and the type -> no change, so a restart writes no row
+    * 1 row with an old URL or type   -> update that row
+    * 2 rows or more                  -> keep and update the first, delete the rest
     """
     wanted = resource_path(desired_url)
     matches = [item for item in items if _serves_bundle(item, wanted)]
     if not matches:
         return ResourcePlan(create=True)
 
-    # `keep` matched, so it has a string URL — no fallback needed reading it back.
+    # `keep` matched, so its URL is a string.
     keep, *extra = matches
     stale = keep["url"] != desired_url or keep.get("type") != RESOURCE_TYPE
     return ResourcePlan(
@@ -97,5 +88,5 @@ def plan_card_resource(
 
 
 def resource_payload(url: str) -> dict[str, str]:
-    """The create/update body Lovelace expects — ``res_type``, never ``type``."""
+    """The create and update body of Lovelace, with ``res_type`` and not ``type``."""
     return {"res_type": RESOURCE_TYPE, "url": url}

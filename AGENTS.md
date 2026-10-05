@@ -32,7 +32,7 @@ in the rules files below. Read the file for your topic before you change code or
 - Backend: `custom_components/home_keeper_library/`. The pure core imports no Home
   Assistant code.
 - Storage: 1 JSON document, `.storage/home_keeper_library`, changed only through
-  `LibraryStore`. Covers are files in `.storage/home_keeper_library/covers/`.
+  `LibraryStore`. Covers are files in `.storage/home_keeper_library_covers/`.
 - Home Keeper is an `after_dependencies` entry. The admin UI is the Library tab of the
   Home Keeper panel. Without Home Keeper, a repair issue shows and the tab is gone.
 - Frontend: TypeScript and Rollup in `custom_components/home_keeper_library/frontend/`.

@@ -45,11 +45,15 @@ How the surfaces work is in [events-api](../../docs/design/events-api.md). Integ
   `previous_shelf_id`. Copy a list into a payload. Never alias the caller's list.
 - An update that changes no field fires no event. A CSV import fires only
   `import_completed`.
+- **A change that keeps the main field still fires an event.** A copy that keeps its
+  shelf fires `copy_updated`, and a reading row that keeps its status fires
+  `reading_updated`. Each `*_updated` payload names the fields in `changed_fields`.
+- **A payload never holds a private value**: no price, no value, no private notes and no
+  setting value of a person. Name the changed field, and leave its value out.
 - An event needs no new service. It observes a change that a service already makes.
 - **A new event is not done until `docs/EVENTS.md` describes it**: when it fires, its
   payload, and an example automation.
-- Some changes fire no event yet ([IDEAS.md](../../IDEAS.md#events-for-every-change)).
-  A new change does not add to that list.
+- Bookkeeping fires no event ([architecture.md](architecture.md#administration-and-usage)).
 
 ## The declared surface
 

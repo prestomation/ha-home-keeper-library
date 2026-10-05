@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/store.py
   - custom_components/home_keeper_library/models.py
 related: [architecture, events-api, people-privilege, csv-import-export]
-source_hash: 54eaa33e4b53
+source_hash: 944bea4aca70
 ---
 
 # Store and models
@@ -41,7 +41,7 @@ only code that changes the document.
 | `rooms` | `{id: room}` | `name`, `area_id`, `order` |
 | `bookcases` | `{id: bookcase}` | `room_id`, `name`, `note`, `order` |
 | `shelves` | `{id: shelf}` | `bookcase_id`, `name`, `order` |
-| `books` | `{id: book}` | `models.BOOK_FIELDS`, `cover`, `wishlist`, time stamps |
+| `books` | `{id: book}` | `models.BOOK_FIELDS`, `cover`, `wishlist`, `lookup_tries`, time stamps |
 | `copies` | `{id: copy}` | `book_id` and `models.COPY_FIELDS` |
 | `reading` | `{person_id: {book_id: row}}` | `models.READING_FIELDS` and `updated_at` |
 | `loans` | `{id: loan}` | `direction`, `book_id`, `copy_id`, `party`, dates, `hk_task_id` |
@@ -49,7 +49,8 @@ only code that changes the document.
 | `todo_orphans` | `[{entity_id, uid}]` | To-do items that the wishlist sync must remove |
 
 `models.normalize_state` runs on every load and in the storage migration hook. It gives
-each section its type, so a section that a later version adds needs no migration.
+each section its type, so a section that a later version adds needs no migration. It also
+gives each book a whole `lookup_tries` count of 0 or more.
 
 ### Model functions
 
@@ -84,10 +85,16 @@ coordinator, the `subscribe` websocket command, the wishlist sync and the loan s
 - **Loans.** A copy has at most 1 open loan. A lent copy keeps its shelf.
 - **Overdue.** `fire_overdue` marks each loan that passed its due date with
   `overdue_fired`, so `loan_overdue` fires once for each due date.
-- **Import.** `commit_import` replaces the document with the result of a CSV import and
-  fires only `import_completed` ([csv-import-export](csv-import-export.md)).
-- **Currency.** The store does not hold the currency. `async_notify` adds 1 to the
-  revision when the option changes, so the clients read it again.
+- **Wishlist.** A new copy of a book that has a wishlist entry and no copy clears the
+  entry (`models.copy_clears_wishlist`), as `got_wishlist_book` does. The to-do item
+  goes to `todo_orphans`, and `copy_added` fires before `wishlist_removed`.
+- **Import.** `commit_import` merges the result of a CSV import into the current
+  document and fires only `import_completed` ([csv-import-export](csv-import-export.md#steps)).
+- **Bookkeeping.** `set_lookup_tries` and `set_loan_task` save a field that only a queue
+  or a sync reads, and fire no event.
+- **Currency.** The currency is an option of the config entry, not a field of the
+  document. `async_settings_updated` fires `settings_updated` and tells the listeners,
+  so the clients read it again.
 
 ## Trade-offs
 

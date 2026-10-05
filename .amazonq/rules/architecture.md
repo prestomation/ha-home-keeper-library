@@ -31,6 +31,13 @@ This file gives the rules for code that changes it.
 - All writes go through `LibraryStore` (`store.py`). Entities, the tab and the card read
   the document and never write it.
 - Records are plain JSON-serializable dicts in storage, never model objects.
+- **A bulk write never replaces the document.** Plan it on a snapshot, then write only
+  what the plan changed with `models.merge_changes`, with no `await` between the merge and
+  the save. A change made while the plan runs stays
+  ([csv-import-export](../../docs/design/csv-import-export.md#steps)).
+- A field that only a queue or a sync reads, such as `lookup_tries` or `hk_task_id`, is
+  bookkeeping. It fires no event and is not in the CSV export. A new book gets the start
+  value from `models.build_book`, and `models.normalize_state` gives it to an old book.
 - The store tells its listeners after each save. The coordinator sends the document to
   the entities with `async_set_updated_data`, so an entity never waits for a poll.
 
@@ -109,6 +116,11 @@ How the entities work is in [entities](../../docs/design/entities.md).
   collection id of the Home Assistant person, never the entity id, so a rename keeps it.
 - Use `has_entity_name` and a `translation_key`. A per-person name has the `{person}`
   placeholder.
+- **An entity applies the privacy rules itself**, because Home Assistant shows each
+  entity to every user and has no projection. A per-person entity is unavailable while
+  its person has `share_reading: false`. A write method of a per-person entity refuses a
+  user who is not the person and not an admin, with a localized error
+  ([people-privilege](../../docs/design/people-privilege.md#entities)).
 
 ## Options
 

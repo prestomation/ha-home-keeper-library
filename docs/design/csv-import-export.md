@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/csv_io.py
   - custom_components/home_keeper_library/frontend/src/tab-import.ts
 related: [store-models, open-library-covers, events-api]
-source_hash: 1de67f98c152
+source_hash: 308acf3d56d6
 ---
 
 # CSV import and export
@@ -39,12 +39,24 @@ runs as a dry run first, so the admin sees the counts before a write.
 1. `csv_io.parse` reads the text into import rows, with the same keys for each source.
    `goodreads` needs the `Title` column, and so does `storygraph`. A file of more than
    5 MB is refused with `csv_too_large`.
-2. `csv_io.apply_import` works on a copy of the document in an executor job. It returns
-   the new document, the counts, 1 result for each row and the ids of the new books that
-   need details.
+2. `csv_io.apply_import` plans the import on a snapshot of the document in an executor
+   job. It returns the planned document, the counts, 1 result for each row and the ids of
+   the new books that need details.
 3. With `dry_run: true` the service returns the counts and the first 200 row results.
-   Else `LibraryStore.commit_import` writes the new document and fires
-   `import_completed`, and the new books go to the lookup queue.
+   Else `LibraryStore.commit_import` writes the plan and fires `import_completed`, and
+   the new books go to the lookup queue.
+
+**An import never replaces the document.** Other changes can come in while the plan
+runs. `models.merge_changes` compares the snapshot with the plan, and writes into the
+current document only the records and the fields that the plan changed. The merge and
+the save have no `await` between them, so no other change comes in the middle.
+
+- A change to another field of the same record stays.
+- A record that a user deleted while the plan ran stays deleted.
+- A planned copy or reading row of a deleted book is dropped. A planned copy on a
+  deleted shelf goes to no shelf.
+- A new book starts with `lookup_tries` 0
+  ([open-library-covers](open-library-covers.md#lookup-queue)).
 
 ### Goodreads mapping
 
@@ -88,9 +100,8 @@ sends the text to `import_csv`.
 
 ## Trade-offs
 
-- **Replace the document** over **1 store call for each row**: 1 save and 1 event for
-  an import of thousands of rows. A change in another session while the import runs is
-  lost ([IDEAS.md](../../IDEAS.md#import-and-concurrent-changes)).
+- **1 merge of the plan** over **1 store call for each row**: 1 save and 1 event for
+  an import of thousands of rows. The cost is the merge, which compares 3 documents.
 - **Text in a service field** over **a file upload**: an automation can call the import.
   The limit is 5 MB.
 - **Match by title and first author** over **ISBN only**: many Goodreads rows have no

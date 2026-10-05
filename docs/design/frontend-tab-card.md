@@ -3,6 +3,8 @@ title: Tab and card
 summary: How the Library tab runs inside the Home Keeper panel, how the card shows the reading of a person, and how both read the state, route, render, translate and ship.
 implements:
   - custom_components/home_keeper_library/frontend_assets.py
+  - custom_components/home_keeper_library/card.py
+  - custom_components/home_keeper_library/card_resource.py
   - custom_components/home_keeper_library/frontend/src/tab.ts
   - custom_components/home_keeper_library/frontend/src/tab-index.ts
   - custom_components/home_keeper_library/frontend/src/tab-types.ts
@@ -23,7 +25,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/styles.ts
   - custom_components/home_keeper_library/frontend/src/global.d.ts
 related: [home-keeper-dependency, scan-and-isbn, csv-import-export, people-privilege]
-source_hash: 17b75214ddf4
+source_hash: b4d3384e4de1
 ---
 
 # Tab and card
@@ -53,12 +55,22 @@ with no runtime framework. The rules for a change are in
 
 ### Delivery
 
-`frontend_assets.async_register` serves `frontend/dist/` at
-`/home_keeper_library_static`, and adds `library-card.js?v=<hash>` as an extra module,
-so the card is in the card picker with no resource to add. The tab URL with its hash goes
-to Home Keeper ([home-keeper-dependency](home-keeper-dependency.md)). Rollup builds
-`tab-index.ts` and `card-index.ts`, with the locale tables and `PANEL_VERSION` inlined,
-and the zxing decoder as a separate chunk.
+`frontend_assets.async_register` serves `frontend/dist/` at `/home_keeper_library_static`.
+The tab URL with its hash goes to Home Keeper ([home-keeper-dependency](home-keeper-dependency.md)).
+Rollup builds `tab-index.ts` and `card-index.ts` with the locale tables and `PANEL_VERSION`
+inlined, and the zxing decoder as a separate chunk. `card.async_register_card` delivers
+`library-card.js?v=<hash>` by 1 path, so the card is in the card picker:
+
+- **Lovelace resource.** With the resources in storage, which is the default, the card
+  is a resource of type `module`. `card_resource.plan_card_resource` matches the rows by
+  path with no `?v=` and leaves 1 row with the current URL. The same bundle writes no row.
+- **Frontend module.** With `resource_mode: yaml`, or if the resource write fails, the
+  card goes to `frontend.add_extra_js_url`.
+
+Only 1 path runs. Home Assistant 2026.9 puts a scoped custom element registry in front
+of `window.customElements`, and an app shell import that runs first puts the card in the
+native registry, where the dashboard does not find it. The write waits for Lovelace, off
+the setup path. The removal of the entry deletes the resource, and an unload keeps it.
 
 ### State
 
@@ -66,30 +78,36 @@ and the zxing decoder as a separate chunk.
 `subscribe`, and read `get_state` again after each `changed` message.
 `utils.normalizeState` turns the reply into arrays in display order, and
 `utils.buildIndex` makes the lookups of a render. A cover upload posts the file with
-`fetchWithAuth` and calls `set_cover` with the returned `file_id`.
+`fetchWithAuth` and calls `set_cover` with the returned `file_id`. A CSV file above
+`MAX_WS_IMPORT_BYTES` (3 MB) goes to the `import_csv` service over REST, because Home
+Assistant closes a websocket that gets a message of 4 MB or more.
 
 ### The tab
 
 The Home Keeper panel sets `hass`, `narrow`, `route` and `host` on
 `home-keeper-library-tab`. `route.path` is the path after `/home-keeper/library`.
-`utils.parseRoute` turns it into a view, an id and a query, and `utils.buildPath` is the
-inverse. The tab moves only with `host.navigate`, and shows notices with
-`host.showToast`. `host.taskLink` links a loan to its Home Keeper task.
+`utils.parseRoute` turns it into a view, an id and the filters, and `utils.buildPath` is
+the inverse. The host gives the tab only the path and drops a `?query`. So the filters
+are `;key=value` parameters on the last segment, as in `/books;q=le%20guin;status=read`.
+`parseRoute` also reads a `?query`, and a parameter wins over it. The tab moves only with
+`host.navigate` and shows notices with `host.showToast`. A loan links to the URL of
+`host.taskLink`, and a click uses `host.openTask` if the host has it.
 
 | Path | View | Module |
 |---|---|---|
 | `/books`, `/books/<id>` | Book list with filters, book detail | `tab-books.ts` |
 | `/shelves`, `/shelves/<room_id>` | Rooms and shelves | `tab-shelves.ts` |
-| `/loans?tab=out\|in\|returned` | Loans | `tab-lists.ts` |
+| `/loans;tab=in\|returned` | Loans | `tab-lists.ts` |
 | `/wishlist`, `/settings` | Wishlist, people settings | `tab-lists.ts` |
 | `/scan`, `/import` | Scan flow, import | `tab-scan.ts`, `tab-import.ts` |
 
-The book filters are in the query: `q`, `status`, `room`, `shelf`, `reader`, `subject`,
-`owned`, `sort` and `view`. `utils.filterBooks` and `utils.sortBooks` apply them.
-Each view is a free function over `ViewCtx` (`tab-types.ts`) that returns 1 HTML string.
-`tab.ts` renders it with `dom.renderKeepFocus`, and 1 delegated listener for each event
-type reads the `data-act`, `data-chg`, `data-input` and `data-form` attributes. The
-dialogs of `tab-dialogs.ts` are a separate layer, so a data push does not clear a form.
+The book filters are `q`, `status`, `room`, `shelf`, `reader`, `subject`, `owned`, `sort`
+and `view`. `utils.filterBooks` and `utils.sortBooks` apply them. Each view is a free
+function over `ViewCtx` (`tab-types.ts`) that returns 1 HTML string. `tab.ts` renders it
+with `dom.renderKeepFocus`, which keeps the focus, the caret and the typed text of the
+focused field. For each event type, 1 delegated listener reads the `data-act`, `data-chg`,
+`data-input` and `data-form` attributes. The dialogs of `tab-dialogs.ts` are a separate
+layer, so a data push does not clear a form.
 
 ### The card
 
@@ -102,9 +120,12 @@ editor. The card calls `set_reading` with no `person_id` for its own person.
 ### Markup, text and style
 
 - `markup.ts` builds the shared pieces, such as a cover, a status label and a person dot,
-  and escapes each user value with `utils.escapeHTML`. A cover with no file is a colored
-  block with the initials. A stored cover is an `<img>` of `cover_url`. The cover view
-  requires a token, and the path is not signed yet ([IDEAS.md](../../IDEAS.md#known-gaps)).
+  and escapes each user value with `utils.escapeHTML`. A person dot has the color of the
+  place of the person in the name order (`utils.normalizePeople`). A cover with no file is a colored
+  block with the initials. The cover view requires a token, and an `<img>` cannot send
+  one. So `markup.wireCovers` signs each `cover_url` with `auth/sign_path` for 1 hour,
+  and `utils.CoverUrls` signs it again after 45 minutes. A cover shows the block until
+  its signed URL is ready.
 - `markdown.ts` renders the notes with `ha-markdown`, and plain escaped text until the
   element loads.
 - `i18n.ts` picks the table of the Home Assistant language, then its base language, then
@@ -123,6 +144,7 @@ editor. The card calls `set_reading` with no `person_id` for its own person.
 
 - The element names `home-keeper-library-tab` and `home-keeper-library-card`, and the
   bundle names `library-tab.js` and `library-card.js`.
-- The tab paths and query keys, because a user can bookmark them.
+- The tab paths and the `;key=value` filter keys, because a user can bookmark them.
+- The Lovelace resource of type `module` at `/home_keeper_library_static/library-card.js`.
 - The card config keys `person`, `title`, `search`, `reading`, `want`, `goal` and
   `household`.

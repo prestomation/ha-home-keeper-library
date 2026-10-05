@@ -1,6 +1,6 @@
 ---
 title: Events reference
-summary: The bus events that Home Keeper Library fires, when each one fires, its payload, and an example automation, for integrators.
+summary: The bus events of Home Keeper Library for integrators. When each event fires, with its payload and an example automation.
 ---
 
 # Events reference
@@ -107,9 +107,9 @@ The other keys of each event are in the generated API reference and in
 - Deleting a room, a bookcase or a shelf with `force: true` fires a `*_removed`
   event for each child and a `copy_moved` event for each copy that moves to no
   shelf.
-- These changes fire no event: an edit of a copy that keeps its shelf, `update_loan`,
-  `delete_loan`, a change of the rating, the page or the notes that keeps the status,
-  and the person settings.
+- An update that changes no field fires no event.
+- The library fires no event for its own bookkeeping: the count of Open Library
+  lookups of a book and the Home Keeper task id of a loan.
 
 ## Events that the library listens for
 

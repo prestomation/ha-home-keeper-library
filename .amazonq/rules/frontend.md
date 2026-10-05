@@ -19,8 +19,10 @@ How the tab and the card work is in [frontend-tab-card](../../docs/design/fronte
 - Keep `parseRoute` and `buildPath` pure in `utils.ts`, so they unit-test and round-trip.
   An unknown path falls back to the book list. A detail URL for a deleted book shows the
   gone notice.
-- The filters of the book list are in the query string. A default value is left out of
-  the URL.
+- **The filters of a view are `;key=value` parameters on the last path segment**, as in
+  `/books;q=le%20guin;status=read`. The Home Keeper host gives the tab only the path and
+  drops a `?query`. A default value is left out of the URL. `parseRoute` still reads a
+  `?query`, so an old link works.
 - **A new URL segment keeps old URLs working.** A user can bookmark any tab URL.
 - Dialogs are not deep-linked. A dialog is a short-lived form on its page.
 
@@ -32,23 +34,26 @@ How the tab and the card work is in [frontend-tab-card](../../docs/design/fronte
   escaped plain text.
 - All UI text comes from `t()` and `tn()` in `i18n.ts`. A lookup falls back to English and
   then to the raw key, so a missing translation never renders `undefined`.
-- Every control has a stable `data-k` attribute, so a render keeps the focus and the
-  caret (`dom.ts`).
+- Every control has a stable `data-k` attribute, so a render keeps the focus, the caret
+  and the typed text (`dom.ts`).
 
 ## Bundles and the card
 
 - 2 ES module bundles ship from `frontend/dist/` at `/home_keeper_library_static`: the tab
-  (`library-tab.js`, loaded by the Home Keeper panel) and the card (`library-card.js`,
-  added with `frontend.add_extra_js_url`). Each URL carries a content hash in `?v=`.
+  (`library-tab.js`, loaded by the Home Keeper panel) and the card (`library-card.js`).
+  Each URL carries a content hash in `?v=`.
+- **Deliver the card by 1 path only**: a Lovelace resource, or `frontend.add_extra_js_url`
+  when the resources are in YAML or the resource write fails (`card.py`). Both paths
+  together are a race in the scoped element registry of Home Assistant 2026.9.
 - The barcode decoder is a separate chunk. It loads only when the scanner opens on a
   browser with no native `BarcodeDetector`. Import nothing from `@zxing/library` outside
   `zxing-decoder.ts`.
 - The card works for every user. It never shows a management control.
-- `add_extra_js_url` is fire-and-forget. On a cold frontend the card element can upgrade
-  after the dashboard renders. The e2e helper `openCard` retries with a reload. Do not
-  remove the retry.
-- **Never tear down the tab registration or the card module on unload.** Only the Home
-  Keeper link removes the tab, when Home Keeper goes away.
+- On a cold frontend the card element can upgrade after the dashboard renders. The e2e
+  helper `openCard` retries with a reload. Do not remove the retry.
+- **Never tear down the tab registration or the card resource on unload.** Only the Home
+  Keeper link removes the tab, when Home Keeper goes away. Only `async_remove_entry`
+  removes the card resource.
 - A cover is served by an authenticated view. An `<img>` element cannot send a token, so
   sign the path with `auth/sign_path` or read the image with `fetchWithAuth`.
 

@@ -1,6 +1,6 @@
 ---
 title: Security model
-summary: What admins and non-admin users can do in Home Keeper Library, for each service, websocket command and HTTP view, and what each reply hides.
+summary: The access of admins and of non-admin users to each surface of Home Keeper Library. The fields that each reply hides from a non-admin user.
 ---
 
 # Security model
@@ -29,9 +29,9 @@ this page lists as open.
 ## The caller
 
 The library finds the person of a caller from the Home Assistant user: the `person`
-whose user is the caller. A user with no person can read, and gets the error
-`no_person` for an operation that acts for a person. A call with no user, such as an
-automation, is trusted as Home Assistant trusts it.
+whose user is the caller. A user with no person can read the library. An operation that
+acts for a person gives that user the error `no_person`. The library trusts a call with
+no user, as Home Assistant does. An automation makes that kind of call.
 
 ## Services
 
@@ -90,17 +90,26 @@ projection:
 | Reading row of another person | The whole row if that person has `share_reading: false`, else `private_notes` |
 | Settings of another person | `wishlist_todo` |
 
-The book records, the shared notes and the covers are open to every user. The
-diagnostics download is admin-only, as in all of Home Assistant, and redacts the loan
+The book records, the shared notes and the covers are open to every user. Only an admin
+can download the diagnostics. The download redacts the loan
 parties, the notes and `acquired_from`.
 
 ## Entities
 
-The entities of the library are ordinary Home Assistant entities, so every user can read
-them. The per-person sensors show the books that a person read this year and the titles
-that the person reads now. The To read list of a person accepts new items and completed
-items from every user. `share_reading` does not apply to the entities
-([IDEAS.md](../IDEAS.md#private-per-person-entities)).
+Home Assistant shows each entity to each user, and lets each user call the `todo`
+services on each to-do list. So the per-person entities apply the privacy rules of the
+library:
+
+- The To read list of a person takes a change only from the user of that person or
+  from an admin user. A call with no user, such as an automation, is trusted. A change
+  from another user fails with the error `todo_not_allowed`.
+- If a person has `share_reading: false`, the 3 entities of that person are unavailable:
+  the To read list and the sensors that show the books read this year and the books that
+  the person reads now. The list gives
+  no items, also over the `todo/item/list` websocket command. They come back when the
+  person shares the reading again.
+
+The library sensors show only counts, with no title and no person.
 
 ## Events
 
