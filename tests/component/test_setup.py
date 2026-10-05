@@ -145,8 +145,14 @@ async def test_missing_home_keeper(hass, persons, monkeypatch) -> None:
         raise IntegrationNotFound(domain)
 
     monkeypatch.setattr(home_keeper, "async_get_integration", _not_found)
-    await _library_entry(hass)
+    entry = await _library_entry(hass)
+    assert entry.state.value == "loaded"
     assert _issues(hass) == {"home_keeper_missing"}
+    room = await hass.services.async_call(
+        DOMAIN, "add_room", {"name": "Den"}, blocking=True, return_response=True
+    )
+    assert room["room"]["name"] == "Den"
+    assert hass.states.get("sensor.home_keeper_library_books").state == "0"
     issue = ir.async_get(hass).async_get_issue(DOMAIN, "home_keeper_missing")
     assert issue.translation_placeholders == {
         "url": "https://github.com/prestomation/ha-home-keeper#installation"

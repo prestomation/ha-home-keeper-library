@@ -85,10 +85,16 @@ def test_bound_open_loan() -> None:
     assert plan.deletes == [lt.DeleteTaskOp("t1")]
 
 
-def test_task_deleted_in_home_keeper() -> None:
+def test_missing_task_is_added_again() -> None:
     plan = lt.plan_reconcile({"l1": _loan(hk_task_id="t9")}, [])
-    assert plan.forgets == [lt.ForgetTaskOp("l1", disable=True)]
+    assert plan.adds == [lt.AddTaskOp("l1")] and plan.forgets == []
+    plan = lt.plan_reconcile({"l1": _loan(hk_task_id="t9", add_task=False)}, [])
+    assert plan.forgets == [lt.ForgetTaskOp("l1", disable=False)]
     assert plan.adds == []
+    returned = _loan(hk_task_id="t9", returned="2026-10-05")
+    assert lt.plan_reconcile({"l1": returned}, []).forgets == [
+        lt.ForgetTaskOp("l1", disable=False)
+    ]
 
 
 def test_returned_loan_completes_its_task() -> None:

@@ -10,8 +10,9 @@ and the store. The contract is ``docs/INTEGRATING.md`` of Home Keeper.
   the loan id in its source is bound and not added again.
 * A returned loan completes its open task.
 * A task whose loan is deleted is deleted.
-* A task that the user deleted in Home Keeper is not added again: the loan turns
-  ``add_task`` off.
+* A task that the user deletes in Home Keeper while the library runs is not
+  added again: the event turns ``add_task`` off. A task that is gone for another
+  reason, for example while Home Keeper was not loaded, is added again.
 * A task that the user completed in Home Keeper returns its loan.
 
 This module imports no Home Assistant code.
@@ -186,7 +187,13 @@ def plan_reconcile(
         task_id = loan.get("hk_task_id")
         task: dict[str, Any] | None = by_id.get(task_id) if task_id else None
         if task_id and task is None:
-            plan.forgets.append(ForgetTaskOp(loan_id))
+            # The task is gone, for example while Home Keeper was not loaded. A
+            # loan that still wants a task gets a new one. A deletion while the
+            # library runs turns add_task off first (loan_sync._on_deleted).
+            if wants_task(loan):
+                plan.adds.append(AddTaskOp(loan_id))
+            else:
+                plan.forgets.append(ForgetTaskOp(loan_id, disable=False))
             continue
         if task is None:
             candidates = [t for t in ours.get(loan_id, []) if t.get("id")]
