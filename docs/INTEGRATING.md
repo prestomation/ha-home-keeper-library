@@ -6,7 +6,11 @@ summary: How automations, scripts, voice assistants and other integrations use t
 # Integrate with Home Keeper Library
 
 Automations, scripts, voice assistants and other integrations use 3 stable surfaces:
-**services** to act, **events** to observe, and **entities** to read the current state.
+
+- **Services** change the library.
+- **Events** fire after each change.
+- **Entities** show the current state.
+
 Do not read the storage file or call the websocket commands. The tab and the card use
 those, and they can change.
 

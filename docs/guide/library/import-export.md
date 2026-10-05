@@ -4,7 +4,7 @@ The library supports an import of a CSV file from Goodreads or StoryGraph, and a
 to a CSV file in the Goodreads format. Use it to bring a reading history into
 the library, or to move the library to another Home Assistant.
 
-<!-- screenshot: import-desktop.png -->
+![The preview of a Goodreads CSV import](../../images/import-desktop.png)
 
 ## Export from Goodreads
 

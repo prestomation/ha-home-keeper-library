@@ -14,13 +14,13 @@ reading status of each person, the loans and a wishlist. Admins manage it in a
 **Library** tab of the Home Keeper panel. Every user gets a dashboard card, sensors and a
 To read list.
 
-<!-- screenshot: books-desktop.png -->
+![The book list of the Library tab in Home Keeper](docs/images/books-desktop.png)
 
 ## Features
 
-- Scan the ISBN barcode of each book with a phone. Details and covers come from
-  [Open Library](https://openlibrary.org).
-- Find each book on its room, bookcase and shelf.
+- Read the ISBN barcode of each book with the camera of a phone. Details and covers
+  come from [Open Library](https://openlibrary.org).
+- Find the shelf of each book in its room and bookcase.
 - Keep a reading status, a rating, notes and a yearly goal for each person.
 - Lend and borrow books, with a Home Keeper task on each due date.
 - Send the wishlist books to buy to a to-do list of the person.
@@ -101,9 +101,11 @@ that the release names, and closes it on a stable release (`ci/release-issues.py
 **Nightly, gating nothing:** `ha-beta.yml` runs the Docker and browser tiers against the
 Home Assistant beta and type-checks against a pre-release, then files 1 reusable issue.
 
-**In review:** desktop and phone screenshots of each changed UI surface, a walkthrough
-step for each new UI feature, and the **One-way doors** and **Security** sections of the
-PR body (`.github/pull_request_template.md`).
+**In review:** the PR body (`.github/pull_request_template.md`) has these parts.
+
+- A desktop screenshot and a phone screenshot of each changed UI surface.
+- A walkthrough step for each new UI feature.
+- The **One-way doors** and **Security** sections.
 
 ## License
 

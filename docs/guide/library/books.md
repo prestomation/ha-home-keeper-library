@@ -3,7 +3,7 @@
 The **Books** page of the Library tab lists the books of the library, with a search and
 filters. Use it to find a book and its shelf, or to see what a person has read.
 
-<!-- screenshot: books-desktop.png -->
+![The book list of the Library tab in Home Keeper](../../images/books-desktop.png)
 
 ## Search
 
@@ -45,6 +45,6 @@ second book.
 
 ## Phone
 
-<!-- screenshot: books-mobile.png -->
+![The book list of the Library tab at phone width](../../images/books-mobile.png)
 
 The Books page works at phone width.

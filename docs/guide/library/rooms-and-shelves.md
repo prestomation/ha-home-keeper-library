@@ -3,12 +3,12 @@
 The library supports a location for each copy. The location is a shelf of a bookcase in
 a room. A search then shows the shelf of each book.
 
-<!-- screenshot: shelves-desktop.png -->
+![The rooms of the home and the shelves of a bookcase](../../images/shelves-desktop.png)
 
 ## Add a room, a bookcase and shelves
 
 1. Open the **Library** tab of the Home Keeper panel, and select **Rooms and shelves**.
-2. Select **Add room**. Enter a name. You can link the room to a Home Assistant area.
+2. Select **Add room**. Enter a name. As an option, link the room to a Home Assistant area.
 3. Select the room, then **Add bookcase**. Enter a name and the number of shelves.
 4. To add 1 more shelf later, select **Add shelf** on the bookcase.
 
@@ -28,6 +28,6 @@ page shows the number of copies with no shelf. Select **Set shelf** to give a co
 
 ## Phone
 
-<!-- screenshot: shelves-mobile.png -->
+![The Rooms and shelves page at phone width](../../images/shelves-mobile.png)
 
 The page works at phone width. Select a room to open its bookcases.

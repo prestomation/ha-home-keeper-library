@@ -87,8 +87,9 @@ URL pinned to the commit that added the file. Branch names have slashes, which m
 code span:
 
 - Write attribute text with no character-entity reference. Reword around an apostrophe.
-- If an unchanged body still comes back mangled after 2 submissions, the file name is
-  the trigger. Rename the PNG in the capture script and shoot again.
+- Keep each image URL under 150 characters. The PR update path wraps a longer `src` in a
+  code span. Use the first 13 characters of the commit SHA, which
+  `raw.githubusercontent.com` accepts.
 - After each body edit, read the body again and check that each URL returns HTTP 200.
 
 ## Walkthrough video

@@ -4,7 +4,7 @@ The library supports a scan of the ISBN barcode on the back of each book with th
 of a phone. Each scan adds the book to the shelf that you select, with the details and
 the cover from [Open Library](https://openlibrary.org). Use it to fill a shelf in 1 pass.
 
-<!-- screenshot: scan-mobile.png -->
+![A shelf scan on a phone with 3 results](../../images/scan-mobile.png)
 
 ## Scan a shelf
 
@@ -47,7 +47,7 @@ again later. The book shows **Needs details** until the details arrive.
 
 ## Summary
 
-<!-- screenshot: scan-summary-mobile.png -->
+![The summary of a shelf scan on a phone](../../images/scan-summary-mobile.png)
 
 **Done** shows the summary of the scan: the books that the scan added and moved, and the
 books that need details. Select **Set status to Read for me** to set the status Read for

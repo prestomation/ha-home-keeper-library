@@ -1,7 +1,7 @@
 # Installation
 
 Home Keeper Library is a custom integration that installs with [HACS](https://hacs.xyz/).
-It requires Home Keeper.
+It requires Home Assistant 2026.9 or later, and Home Keeper.
 
 ## Install Home Keeper first
 
@@ -56,4 +56,4 @@ ready again, the issue goes away. The tab and the tasks then come back with no r
 ## Data
 
 The library is 1 JSON document in `.storage/home_keeper_library`. The covers are JPEG
-files in `.storage/home_keeper_library/covers/`. Both are in each Home Assistant backup.
+files in `.storage/home_keeper_library_covers/`. Both are in each Home Assistant backup.

@@ -8,7 +8,7 @@ records where each book is, who reads it, who borrowed it and what to buy next.
 **Library** tab to the Home Keeper panel, and puts the return date of each loan in Home
 Keeper as a task.
 
-<!-- screenshot: books-desktop.png -->
+![The book list of the Library tab in Home Keeper](../../images/books-desktop.png)
 
 ## What the library records
 
@@ -28,8 +28,8 @@ person and a book on the wishlist.
 
 ## Features
 
-- [Rooms and shelves](../library/rooms-and-shelves.md): the rooms, bookcases and shelves
-  of the home.
+- [Rooms and shelves](../library/rooms-and-shelves.md): the rooms of the home and their
+  bookcases and shelves.
 - [Scan books](../library/scan-books.md): fill a shelf with the camera of a phone.
 - [Books](../library/books.md): search and filter the library.
 - [Book detail](../library/book-detail.md): the reading status and the notes of a book,

@@ -14,7 +14,7 @@ of each person, the loans and a wishlist.
 Install and set up Home Keeper first. The library adds a **Library** tab to the Home
 Keeper panel.
 
-<!-- screenshot: books-desktop.png -->
+![The book list of the Library tab in Home Keeper](/img/screenshots/books-desktop.png)
 
 ## Features
 

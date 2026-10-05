@@ -3,7 +3,7 @@
 Select a book in the list to open its detail page. The page shows the location of each
 copy, the reading status of the household, the notes, and the details of each copy.
 
-<!-- screenshot: book-detail-desktop.png -->
+![The detail page of a book with 2 copies and a loan](../../images/book-detail-desktop.png)
 
 ## Location and loan
 
@@ -16,10 +16,12 @@ and the due date. Select **Return** when the book comes back.
 Set your reading status in **Reading status**:
 
 - **Want to read**
-- **Reading**: the start date is today, if you do not enter a date.
-- **Read**: the finished date is today and the read count goes up by 1, if you do not
-  enter those.
+- **Reading**
+- **Read**
 - **Did not finish**
+
+**Reading** with no start date sets the start date to today. **Read** with no finished
+date sets the finished date to today, and adds 1 to the read count.
 
 Set a rating of 1 to 5 stars and the page that you are on. You can also change the start
 date and the finished date.
@@ -37,8 +39,8 @@ Both support Markdown. Select **Edit notes** to change them.
 
 The library downloads the cover from Open Library when it adds a book.
 
-- Select **Change cover** to upload a photo. The library accepts JPEG, PNG and WebP up to
-  10 MB, and stores a JPEG of at most 1200 px.
+- Select **Change cover** to upload a photo. The library accepts a JPEG, PNG or WebP file
+  of up to 10 MB. The stored cover is a JPEG of at most 1200 px.
 - Select **Use Open Library cover** to go back to the cover from Open Library.
 
 ## Copies and value
@@ -53,7 +55,7 @@ of the integration.
 
 ## Change the book
 
-- **Edit**: change the details of the book, such as the title and the authors.
+- **Edit**: change the details of the book.
 - **Lend**: lend a copy ([Loans](loans.md)).
 - **Update from Open Library**: fill the empty details from Open Library. The library
   keeps each detail that you changed.
@@ -61,6 +63,6 @@ of the integration.
 
 ## Phone
 
-<!-- screenshot: book-detail-mobile.png -->
+![The detail page of a book at phone width](../../images/book-detail-mobile.png)
 
 The detail page works at phone width.

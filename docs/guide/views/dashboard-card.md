@@ -5,7 +5,7 @@ Home Keeper Library supports a dashboard card, **Home Keeper Library**
 add it to a dashboard, such as the dashboard of a phone or a wall tablet. The card
 resource is registered automatically.
 
-<!-- screenshot: card-desktop.png -->
+![The library card of a person on a dashboard](../../images/card-desktop.png)
 
 ## Add the card
 
@@ -50,6 +50,6 @@ household: true
 
 ## Phone
 
-<!-- screenshot: card-mobile.png -->
+![The library card at phone width](../../images/card-mobile.png)
 
 The card works at phone width.

@@ -1,10 +1,10 @@
 # Wishlist
 
-The library supports a wishlist for each person: the books that the person wants to get.
-A wishlist book with **Buy** set goes on a to-do list of that person, such as a shopping
-list, as "*Title* by *Author*".
+The library supports a wishlist for each person. The wishlist holds the books that the
+person wants to get. A wishlist book with **Buy** set goes on a to-do list of that person
+as "*Title* by *Author*".
 
-<!-- screenshot: wishlist-desktop.png -->
+![The wishlist with the to-do list of each person](../../images/wishlist-desktop.png)
 
 ## Add a book to the wishlist
 
@@ -30,7 +30,7 @@ Home Keeper, unless you select that list.
 
 - A book with **Buy** set gets 1 item on the list of its person.
 - When the person completes the item, the library marks the book **Bought**.
-- When **Buy** turns off, or the book leaves the wishlist, the library removes the item.
+- When **Buy** turns off or the book leaves the wishlist, the library removes the item.
 - If a person deletes the item from the list, **Buy** turns off. Set **Buy** again to put
   the item back.
 - The library never changes a completed item.

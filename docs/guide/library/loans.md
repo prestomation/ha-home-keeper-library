@@ -1,10 +1,10 @@
 # Loans
 
 The library supports 2 kinds of loans. A copy that you lend to a friend is **Lent out**.
-A book that a person borrows, such as from a public library, is **Borrowed**. Each loan
+A book that a person borrows from a public library or a friend is **Borrowed**. Each loan
 can have a task in Home Keeper on its due date.
 
-<!-- screenshot: loans-desktop.png -->
+![The books that are lent out, with their Home Keeper tasks](../../images/loans-desktop.png)
 
 ## Lend a book
 
@@ -41,11 +41,13 @@ A loan with a due date and **Add Home Keeper task** gets a one-off task in Home 
 The task is due on the due date. It shows in the to-do list, the calendar and the
 notifications of Home Keeper.
 
-- If you complete the task in Home Keeper, the library returns the loan.
-- If you return the loan in the library, the library completes the task.
-- If you delete the loan, the library deletes the task.
-- If you delete the task in Home Keeper, the loan stays open and gets no new task.
-- If you change the due date of the loan, the task moves to the new date.
+| Change | Result |
+|---|---|
+| Complete the task in Home Keeper | The library returns the loan. |
+| Return the loan in the library | The library completes the task. |
+| Delete the loan | The library deletes the task. |
+| Delete the task in Home Keeper | The loan stays open and gets no new task. |
+| Change the due date of the loan | The task moves to the new date. |
 
 Home Keeper locks the name of the task. Select **Task** on a loan to open its task in Home
 Keeper.
@@ -58,6 +60,6 @@ Use the event in an automation that sends a reminder.
 
 ## Phone
 
-<!-- screenshot: loans-mobile.png -->
+![The Loans page at phone width](../../images/loans-mobile.png)
 
 The Loans page works at phone width.
