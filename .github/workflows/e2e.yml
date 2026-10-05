@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+# A job that needs more asks for it in its own permissions block.
+permissions:
+  contents: read
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
@@ -23,16 +27,16 @@ jobs:
       - name: Build panel JS
         run: bash ci/build-panel.sh
 
+      - name: Fetch Home Keeper
+        # The library needs a real Home Keeper for its tab and loan tasks.
+        run: bash ci/fetch-home-keeper.sh
+
       - name: Install e2e deps
         run: npm ci --prefix tests/e2e
 
       - name: Install Playwright Chromium
         working-directory: tests/e2e
         run: npx playwright install --with-deps chromium
-
-      - name: Fetch Home Keeper
-        # The library needs a real Home Keeper for its tab and loan tasks.
-        run: bash ci/fetch-home-keeper.sh
 
       - name: Start Home Assistant
         working-directory: tests/integration

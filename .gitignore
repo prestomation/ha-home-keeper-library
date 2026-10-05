@@ -1,6 +1,5 @@
 # Built frontend bundles (CI builds them; never commit).
-custom_components/home_keeper_library/frontend/home-keeper-library-panel.js
-custom_components/home_keeper_library/frontend/home-keeper-library-card.js
+custom_components/home_keeper_library/frontend/dist/
 
 # Node
 node_modules/
@@ -34,7 +33,9 @@ docs/videos/
 
 # Vale style packages fetched by `vale sync` per .vale.ini. This is a synced
 # dependency, not source: vale-cli/vale-action fetches its own copy in CI.
-styles/
+styles/*
+# The house style is source, not a synced package.
+!styles/STE/
 
 # Mutation testing scratch (mutmut copies the project into mutants/; Stryker
 # sandboxes into .stryker-tmp/ and writes its report into reports/).
@@ -46,5 +47,11 @@ reports/
 
 # Build artifacts
 home_keeper_library.zip
+# The lock that ci/setup-ci-deps.sh takes while it runs.
+.setup-ci-deps.lock/
+
+# Hypothesis example database (tests/unit/test_csv_io.py).
 .hypothesis/
+
+# The Home Keeper copy that ci/fetch-home-keeper.sh puts there for the Docker tier.
 tests/integration/.home_keeper/

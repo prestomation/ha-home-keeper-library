@@ -30,10 +30,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
+      # The component tier installs Home Assistant through its test harness, so this
+      # Python is at or above the Python floor of Home Assistant. Below it, pip
+      # backtracks to an old harness and an old Home Assistant.
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: 'pip'
 
       - name: Install test dependencies
@@ -64,7 +67,7 @@ jobs:
 
       - name: "Generate coverage Comment (and possibly Post to PR)"
         id: coverage_comment
-        uses: py-cov-action/python-coverage-comment-action@v3
+        uses: py-cov-action/python-coverage-comment-action@50d15ff8768f6d897b04e5a0805bd1a98f7096c4 # v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MINIMUM_GREEN: 90
