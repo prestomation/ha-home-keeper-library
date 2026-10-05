@@ -39,16 +39,16 @@ input_text:
     max: 255
 
 automation:
-  - alias: Capture HomeKeeperLibrary item created
+  - alias: Capture Home Keeper Library room added
     trigger:
       - platform: event
-        event_type: home_keeper_library_item_created
+        event_type: home_keeper_library_room_added
     action:
       - service: input_text.set_value
         target:
           entity_id: input_text.hkl_last_event
         data:
-          value: "created:{{ trigger.event.data.item_id }}:{{ trigger.event.data.name }}"
+          value: "room_added:{{ trigger.event.data.room_id }}:{{ trigger.event.data.name }}"
 
 # Minimal logging
 logger:
