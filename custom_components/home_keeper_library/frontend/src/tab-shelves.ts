@@ -5,7 +5,7 @@ import { button, navBar } from './markup';
 import { navCounts } from './tab-books';
 import type { ViewCtx } from './tab-types';
 import type { Book, Bookcase, Shelf } from './types';
-import { escapeHTML, roomValue, shelfPath, spines } from './utils';
+import { buildPath, escapeHTML, roomValue, shelfPath, spines } from './utils';
 
 function booksOnShelf(ctx: ViewCtx, shelfId: string): Book[] {
   const ids = new Set((ctx.idx.copiesByShelf.get(shelfId) ?? []).map((c) => c.book_id));
@@ -36,8 +36,8 @@ function shelfRow(ctx: ViewCtx, shelf: Shelf): string {
       <span class="hkl-shelf-name">${escapeHTML(shelf.name)}</span>
       <span class="hkl-muted">${escapeHTML(tn('count.books', books.length))}</span>
       <span class="hkl-spacer"></span>
-      <button class="hkl-link" data-act="nav" data-path="/books?shelf=${id}" data-k="sb-${id}">${escapeHTML(t('shelves.show_books'))}</button>
-      <button class="hkl-link" data-act="nav" data-path="/scan?shelf=${id}" data-k="ss-${id}">${escapeHTML(t('action.scan'))}</button>
+      <button class="hkl-link" data-act="nav" data-path="${escapeHTML(buildPath({ view: 'books', query: { shelf: shelf.id } }))}" data-k="sb-${id}">${escapeHTML(t('shelves.show_books'))}</button>
+      <button class="hkl-link" data-act="nav" data-path="${escapeHTML(buildPath({ view: 'scan', query: { shelf: shelf.id } }))}" data-k="ss-${id}">${escapeHTML(t('action.scan'))}</button>
       <button class="hkl-link" data-act="edit-shelf" data-id="${id}" data-k="es-${id}">${escapeHTML(t('action.rename'))}</button>
       <button class="hkl-link danger" data-act="delete-shelf" data-id="${id}" data-k="ds-${id}">${escapeHTML(t('action.delete'))}</button>
     </div>
@@ -101,9 +101,11 @@ export function renderShelves(ctx: ViewCtx): string {
       <div class="hkl-card-head">
         <h1>${escapeHTML(room.name)}</h1><span class="hkl-muted">${escapeHTML(meta)}</span>
         <span class="hkl-spacer"></span>
-        ${button(escapeHTML(t('action.add_bookcase')), 'add-bookcase', 'tonal', `data-id="${rid}" data-k="ab-${rid}"`)}
-        <button class="hkl-link" data-act="edit-room" data-id="${rid}" data-k="er-${rid}">${escapeHTML(t('action.edit'))}</button>
-        <button class="hkl-link danger" data-act="delete-room" data-id="${rid}" data-k="dr-${rid}">${escapeHTML(t('action.delete'))}</button>
+        <span class="hkl-head-actions">
+          ${button(escapeHTML(t('action.add_bookcase')), 'add-bookcase', 'tonal', `data-id="${rid}" data-k="ab-${rid}"`)}
+          <button class="hkl-link" data-act="edit-room" data-id="${rid}" data-k="er-${rid}">${escapeHTML(t('action.edit'))}</button>
+          <button class="hkl-link danger" data-act="delete-room" data-id="${rid}" data-k="dr-${rid}">${escapeHTML(t('action.delete'))}</button>
+        </span>
       </div>
       ${cases.map((c) => bookcaseCard(ctx, c)).join('') || `<div class="hkl-empty">${escapeHTML(t('shelves.no_bookcases'))}</div>`}
       ${banner}

@@ -148,6 +148,7 @@ button { font: inherit; color: inherit; }
 .hkl-card > .hkl-btn, .hkl-copy .hkl-box-actions { align-self: flex-start; }
 .hkl-banner .hkl-btn.tonal { background: var(--hkl-surface); }
 .hkl-card-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.hkl-head-actions { display: inline-flex; align-items: center; gap: 12px; flex-wrap: nowrap; }
 .hkl-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 14px; border-radius: 10px; background: var(--hkl-tonal); color: var(--hkl-tonal-ink); }
 .hkl-banner.warn { background: var(--hkl-warn-soft); color: var(--hkl-warn-ink); }
 .hkl-banner.info { background: var(--hkl-surface); color: var(--hkl-text); border: 1px solid var(--hkl-divider); }
@@ -285,6 +286,7 @@ button { font: inherit; color: inherit; }
 .hkl-dlg-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 .hkl-file { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border: 1px solid var(--hkl-divider); border-radius: 10px; flex-wrap: wrap; }
 .hkl-file.empty { border-style: dashed; }
+.hkl-pills { display: inline-flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
 .hkl-inline-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 12px; }
 .hkl-checklist { display: flex; flex-direction: column; gap: 6px; max-height: 260px; overflow-y: auto; }
 

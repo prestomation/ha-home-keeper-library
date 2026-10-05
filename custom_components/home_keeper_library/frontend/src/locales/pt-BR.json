@@ -315,6 +315,7 @@
   "scan.camera_unsupported": "Este navegador não lê códigos de barras. Digite o ISBN.",
   "scan.enter_isbn": "Digitar ISBN",
   "scan.frame_hint": "Coloque o código de barras no quadro",
+  "scan.from_wishlist": "Da lista de desejos",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 ou ISBN-13",
   "scan.looking_up": "Buscando no Open Library",

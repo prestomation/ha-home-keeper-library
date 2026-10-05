@@ -302,6 +302,7 @@
   "scan.camera_unsupported": "Den här webbläsaren kan inte läsa streckkoder. Ange ISBN.",
   "scan.enter_isbn": "Ange ISBN",
   "scan.frame_hint": "Håll streckkoden inom ramen",
+  "scan.from_wishlist": "Från önskelistan",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 eller ISBN-13",
   "scan.looking_up": "Söker i Open Library",

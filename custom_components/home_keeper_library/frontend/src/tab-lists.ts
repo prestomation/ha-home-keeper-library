@@ -5,7 +5,7 @@ import { button, cover, navBar, options, personDot, statusLabel, taskLinkHtml } 
 import { navCounts } from './tab-books';
 import type { ViewCtx } from './tab-types';
 import type { Book, Loan } from './types';
-import { dueState, escapeHTML, loansFor, readingOf, type LoanTab } from './utils';
+import { buildPath, dueState, escapeHTML, loansFor, readingOf, type LoanTab } from './utils';
 
 const LOAN_TABS: LoanTab[] = ['out', 'in', 'returned'];
 
@@ -63,10 +63,10 @@ export function renderLoans(ctx: ViewCtx): string {
   const tabs = LOAN_TABS.map((k) => {
     const on = k === tab;
     const n = loansFor(ctx.lib.loans, k).length;
-    return `<button class="hkl-subtab${on ? ' on' : ''}" data-act="nav" data-replace="1" data-path="/loans${k === 'out' ? '' : `?tab=${k}`}" data-k="lt-${k}"${on ? ' aria-current="page"' : ''}>${escapeHTML(t(`loans.tab_${k}`))} <span class="hkl-seg-n">${n}</span></button>`;
+    return `<button class="hkl-subtab${on ? ' on' : ''}" data-act="nav" data-replace="1" data-path="${escapeHTML(buildPath({ view: 'loans', query: { tab: k } }))}" data-k="lt-${k}"${on ? ' aria-current="page"' : ''}>${escapeHTML(t(`loans.tab_${k}`))} <span class="hkl-seg-n">${n}</span></button>`;
   }).join('');
   const rows = loansFor(ctx.lib.loans, tab);
-  const actions = `${button(escapeHTML(t('action.lend_book')), 'lend', 'primary', 'data-k="lend-book"')}${button(escapeHTML(t('action.add_borrowed')), 'borrow', 'tonal', 'data-k="add-borrowed"')}${button(escapeHTML(t('action.scan_borrowed')), 'nav', 'text', 'data-path="/scan?mode=borrowed" data-k="scan-borrowed"')}`;
+  const actions = `${button(escapeHTML(t('action.lend_book')), 'lend', 'primary', 'data-k="lend-book"')}${button(escapeHTML(t('action.add_borrowed')), 'borrow', 'tonal', 'data-k="add-borrowed"')}${button(escapeHTML(t('action.scan_borrowed')), 'nav', 'text', `data-path="${escapeHTML(buildPath({ view: 'scan', query: { mode: 'borrowed' } }))}" data-k="scan-borrowed"`)}`;
   return `${navBar(ctx.route, navCounts(ctx), actions)}
   <section class="hkl-card">
     <div class="hkl-subtabs">${tabs}</div>

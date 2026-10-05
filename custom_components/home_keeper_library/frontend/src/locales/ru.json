@@ -328,6 +328,7 @@
   "scan.camera_unsupported": "Этот браузер не читает штрихкоды. Введите ISBN.",
   "scan.enter_isbn": "Ввести ISBN",
   "scan.frame_hint": "Поместите штрихкод в рамку",
+  "scan.from_wishlist": "Из списка желаний",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 или ISBN-13",
   "scan.looking_up": "Поиск в Open Library",

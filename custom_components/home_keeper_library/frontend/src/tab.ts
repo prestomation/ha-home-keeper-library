@@ -1152,7 +1152,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         await this._applyMarkRead();
         s.results = [];
         const room = this._idx ? shelfPath(this._idx, routeShelf(this._ctx()!)).room : null;
-        this._go(q.mode === 'borrowed' ? '/loans?tab=in' : room ? `/shelves/${encodeURIComponent(room.id)}` : '/books', true);
+        this._go(q.mode === 'borrowed' ? buildPath({ view: 'loans', query: { tab: 'in' } }) : room ? `/shelves/${encodeURIComponent(room.id)}` : '/books', true);
         return;
       }
       case 'scan-setup':

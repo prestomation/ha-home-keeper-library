@@ -75,7 +75,7 @@ describe('books view', () => {
   });
 
   it('reads the filters from the route', async () => {
-    await mount('/books?status=reading&view=rows');
+    await mount('/books;status=reading;view=rows');
     expect($$('.hkl-row').map((r) => r.querySelector('.hkl-row-title').textContent)).toEqual([
       'Every Grain of Rice',
       'Integrated Chinese 1',
@@ -86,27 +86,27 @@ describe('books view', () => {
   });
 
   it('includes books with no copy when owned is all', async () => {
-    await mount('/books?owned=all');
+    await mount('/books;owned=all');
     expect($$('.hkl-tile')).toHaveLength(44);
   });
 
   it('navigates with replace when a chip or a menu changes', async () => {
     await mount();
     $('[data-k="st-read"]').click();
-    expect(host.navigate).toHaveBeenLastCalledWith('/books?status=read', { replace: true });
+    expect(host.navigate).toHaveBeenLastCalledWith('/books;status=read', { replace: true });
     change($('[data-k="f-sort"]'), 'title');
-    expect(host.navigate).toHaveBeenLastCalledWith('/books?status=read&sort=title', { replace: true });
+    expect(host.navigate).toHaveBeenLastCalledWith('/books;status=read;sort=title', { replace: true });
     $('[data-k="clear"]').click();
-    expect(host.navigate).toHaveBeenLastCalledWith('/books?sort=title', { replace: true });
+    expect(host.navigate).toHaveBeenLastCalledWith('/books;sort=title', { replace: true });
   });
 
   it('clears a shelf that is not in the new room', async () => {
     const state = fixture();
     const shelf = Object.values(state.shelves).find((s) => s.name === 'Top').id;
     const office = Object.values(state.rooms).find((r) => r.name === 'Office').id;
-    await mount(`/books?shelf=${shelf}`);
+    await mount(`/books;shelf=${shelf}`);
     change($('[data-k="f-room"]'), office);
-    expect(host.navigate).toHaveBeenLastCalledWith(`/books?room=${office}`, { replace: true });
+    expect(host.navigate).toHaveBeenLastCalledWith(`/books;room=${office}`, { replace: true });
   });
 
   it('debounces the search into the URL and keeps the focus', async () => {
@@ -118,7 +118,7 @@ describe('books view', () => {
     input.dispatchEvent(new Event('input', { bubbles: true }));
     expect(host.navigate).not.toHaveBeenCalled();
     vi.advanceTimersByTime(260);
-    expect(host.navigate).toHaveBeenCalledWith('/books?q=le+guin', { replace: true });
+    expect(host.navigate).toHaveBeenCalledWith('/books;q=le%20guin', { replace: true });
     expect(el.shadowRoot.activeElement?.dataset.k).toBe('q');
     expect($$('.hkl-tile').length).toBe(12);
   });
@@ -346,7 +346,7 @@ describe('shelves, loans, wishlist and settings', () => {
     await mount('/loans');
     expect($$('.hkl-listrow')).toHaveLength(3);
     expect($('[data-k="lt-in"]').textContent).toContain('2');
-    await mount('/loans?tab=in');
+    await mount('/loans;tab=in');
     expect(text()).toContain('Seattle Public Library · Alex · Paperback · Reading');
   });
 
@@ -426,10 +426,10 @@ describe('scan', () => {
   it('starts the camera step and shows the HTTPS message with no camera API', async () => {
     const state = fixture();
     const shelf = Object.values(state.shelves)[0].id;
-    await mount(`/scan?shelf=${shelf}`);
+    await mount(`/scan;shelf=${shelf}`);
     expect(text()).toContain('Scan into Shelf 1');
     $('[data-k="scan-start"]').click();
-    expect(host.navigate).toHaveBeenLastCalledWith(`/scan?shelf=${shelf}&step=camera`, { replace: false });
+    expect(host.navigate).toHaveBeenLastCalledWith(`/scan;shelf=${shelf};step=camera`, { replace: false });
     await flush();
     expect(text()).toContain('The camera needs HTTPS.');
     expect($('[data-k="isbn-input"]')).not.toBeNull();
@@ -440,7 +440,7 @@ describe('scan', () => {
     const shelf = Object.values(state.shelves)[0].id;
     const dune = Object.values(state.books).find((b) => b.title === 'Dune');
     const copies = Object.values(state.copies).filter((c) => c.book_id === dune.id);
-    const fake = await mount(`/scan?shelf=${shelf}&step=camera`, {
+    const fake = await mount(`/scan;shelf=${shelf};step=camera`, {
       replies: {
         scan_isbn: (m) =>
           m.on_duplicate === 'ask'
@@ -467,11 +467,38 @@ describe('scan', () => {
     expect($$('.hkl-stat b').map((b) => b.textContent)).toEqual(['0', '1', '0']);
   });
 
+  it('marks a scanned book that comes from the wishlist', async () => {
+    const state = fixture();
+    const shelf = state.shelves[0].id;
+    const wished = state.books.find((b) => b.title === 'The Other Wind');
+    const dune = state.books.find((b) => b.title === 'Dune');
+    const fake = await mount(`/scan;shelf=${shelf};step=camera`, {
+      replies: {
+        scan_isbn: (m) =>
+          m.isbn === wished.isbn13
+            ? { result: 'added', book: wished, copy: null, existing_copies: [], from_wishlist: true }
+            : { result: 'added', book: dune, copy: null, existing_copies: [] },
+      },
+    });
+    void fake;
+    for (const isbn of [wished.isbn13, dune.isbn13]) {
+      $('[data-k="isbn-input"]').value = isbn;
+      $('[data-k="isbn-add"]').click();
+      await flush();
+    }
+    const rows = $$('.hkl-result');
+    const wishRow = rows.find((r) => r.textContent.includes('The Other Wind'));
+    const duneRow = rows.find((r) => r.textContent.includes('Dune'));
+    expect(wishRow.querySelector('[data-k^="from-wish-"]').textContent).toBe('From wishlist');
+    expect(wishRow.querySelector('.hkl-pill.ok').textContent).toBe('Added');
+    expect(duneRow.querySelector('[data-k^="from-wish-"]')).toBeNull();
+  });
+
   it('sets Read for me on the scanned books when the box is set', async () => {
     const state = fixture();
     const shelf = Object.values(state.shelves)[0].id;
     const dune = Object.values(state.books).find((b) => b.title === 'Dune');
-    const fake = await mount(`/scan?shelf=${shelf}&step=camera`, {
+    const fake = await mount(`/scan;shelf=${shelf};step=camera`, {
       replies: { scan_isbn: { result: 'added', book: dune, copy: null, existing_copies: [] } },
     });
     $('[data-k="isbn-input"]').value = dune.isbn13;

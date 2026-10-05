@@ -211,6 +211,8 @@ export interface ScanResult {
   book: Book | null;
   copy: Copy | null;
   existing_copies: Copy[];
+  /** True when the scan added the first copy of a wishlist book. Missing reads as false. */
+  from_wishlist?: boolean;
 }
 
 /** One row of the `import_csv` reply. */

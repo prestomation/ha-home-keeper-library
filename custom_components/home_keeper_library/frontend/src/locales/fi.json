@@ -302,6 +302,7 @@
   "scan.camera_unsupported": "Tämä selain ei lue viivakoodeja. Kirjoita ISBN.",
   "scan.enter_isbn": "Kirjoita ISBN",
   "scan.frame_hint": "Pidä viivakoodi kehyksen sisällä",
+  "scan.from_wishlist": "Toivelistalta",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 tai ISBN-13",
   "scan.looking_up": "Haetaan Open Librarystä",

@@ -302,6 +302,7 @@
   "scan.camera_unsupported": "Deze browser kan geen barcodes lezen. Vul het ISBN in.",
   "scan.enter_isbn": "ISBN invullen",
   "scan.frame_hint": "Houd de barcode in het kader",
+  "scan.from_wishlist": "Van verlanglijst",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 of ISBN-13",
   "scan.looking_up": "Zoeken in Open Library",

@@ -302,6 +302,7 @@
   "scan.camera_unsupported": "此浏览器无法读取条形码。请输入 ISBN。",
   "scan.enter_isbn": "输入 ISBN",
   "scan.frame_hint": "将条形码放入框内",
+  "scan.from_wishlist": "来自心愿单",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 或 ISBN-13",
   "scan.looking_up": "正在搜索 Open Library",

@@ -328,6 +328,7 @@
   "scan.camera_unsupported": "Ta przeglądarka nie odczytuje kodów kreskowych. Wpisz ISBN.",
   "scan.enter_isbn": "Wpisz ISBN",
   "scan.frame_hint": "Umieść kod kreskowy w ramce",
+  "scan.from_wishlist": "Z listy życzeń",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 lub ISBN-13",
   "scan.looking_up": "Szukanie w Open Library",

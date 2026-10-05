@@ -315,6 +315,7 @@
   "scan.camera_unsupported": "Aquest navegador no llegeix codis de barres. Escriu l’ISBN.",
   "scan.enter_isbn": "Escriu l’ISBN",
   "scan.frame_hint": "Posa el codi de barres dins del marc",
+  "scan.from_wishlist": "De la llista de desitjos",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 o ISBN-13",
   "scan.looking_up": "S’està cercant a Open Library",

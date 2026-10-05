@@ -305,9 +305,9 @@ export function renderBook(ctx: ViewCtx, book: Book | undefined): string {
   const copies = ctx.idx.copiesByBook.get(book.id) ?? [];
   const loans = ctx.idx.activeLoans.get(book.id) ?? [];
   const series = book.series?.name
-    ? ` · ${link(`/books?q=${encodeURIComponent(book.series.name)}`, escapeHTML(book.series.number != null && book.series.number !== '' ? t('book.series_n', { name: book.series.name, n: book.series.number }) : book.series.name))}`
+    ? ` · ${link(booksPath({ q: book.series.name }), escapeHTML(book.series.number != null && book.series.number !== '' ? t('book.series_n', { name: book.series.name, n: book.series.number }) : book.series.name))}`
     : '';
-  const authors = book.authors.map((a) => link(`/books?q=${encodeURIComponent(a)}`, escapeHTML(a))).join(', ');
+  const authors = book.authors.map((a) => link(booksPath({ q: a }), escapeHTML(a))).join(', ');
   const meta = [
     book.published,
     book.publisher,

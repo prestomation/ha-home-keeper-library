@@ -261,6 +261,22 @@ function parseQuery(search: string): Record<string, string> {
   return out;
 }
 
+function decodePart(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+/** Add the `;key=value` parameters of a path segment to *into*. */
+function parseParams(text: string, into: Record<string, string>): void {
+  for (const part of text.split(';')) {
+    const eq = part.indexOf('=');
+    if (eq > 0) into[decodePart(part.slice(0, eq))] = decodePart(part.slice(eq + 1));
+  }
+}
+
 function cleanQuery(view: View, query: Record<string, string>): Record<string, string> {
   const out: Record<string, string> = {};
   for (const key of VIEW_QUERY[view]) {
@@ -273,24 +289,36 @@ function cleanQuery(view: View, query: Record<string, string>): Record<string, s
 /**
  * Parse the tab path (after `/home-keeper/library`) into a route.
  *
- * The path can hold the query string. If it holds none, *search* gives it.
- * An unknown path gives the book list.
+ * The filters of a view are `;key=value` parameters on the last segment, as in
+ * `/books;q=le%20guin;status=read`. The host API of Home Keeper keeps the path
+ * and drops a `?query`, so the parameters are in the path. A `?query` in the
+ * path, or *search* when the path has none, is also read, and a parameter wins
+ * over it. An unknown path gives the book list.
  */
 export function parseRoute(path: string | undefined, search = ''): TabRoute {
   const raw = path ?? '';
   const q = raw.indexOf('?');
   const pathname = q >= 0 ? raw.slice(0, q) : raw;
   const query = parseQuery(q >= 0 ? raw.slice(q + 1) : search);
-  const parts = pathname.split('/').filter(Boolean).map(decodeURIComponent);
-  const head = parts[0] ?? 'books';
+  const parts = pathname.split('/').filter(Boolean);
+  const last = parts.length - 1;
+  if (last >= 0) {
+    const semi = parts[last].indexOf(';');
+    if (semi >= 0) {
+      parseParams(parts[last].slice(semi + 1), query);
+      parts[last] = parts[last].slice(0, semi);
+    }
+  }
+  const segs = parts.filter(Boolean).map(decodePart);
+  const head = segs[0] ?? 'books';
   let view: View = 'books';
   let id: string | null = null;
-  if (head === 'books' && parts[1]) {
+  if (head === 'books' && segs[1]) {
     view = 'book';
-    id = parts[1];
+    id = segs[1];
   } else if (head === 'shelves') {
     view = 'shelves';
-    id = parts[1] ?? null;
+    id = segs[1] ?? null;
   } else if (['loans', 'wishlist', 'scan', 'import', 'settings'].includes(head)) {
     view = head as View;
   }
@@ -305,8 +333,8 @@ export function buildPath(route: { view: View; id?: string | null; query?: Recor
   else if (route.view === 'shelves') path = `/shelves${id}`;
   else path = `/${route.view}`;
   const query = cleanQuery(route.view, route.query ?? {});
-  const search = new URLSearchParams(query).toString();
-  return search ? `${path}?${search}` : path;
+  const params = Object.entries(query).map(([key, value]) => `;${key}=${encodeURIComponent(value)}`);
+  return path + params.join('');
 }
 
 /** A copy of *query* with *key* set to *value*. An empty value removes the key. */

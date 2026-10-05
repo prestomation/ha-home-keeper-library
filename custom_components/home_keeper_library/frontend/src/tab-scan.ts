@@ -3,9 +3,9 @@
 import { t, tn } from './i18n';
 import { button, cover, ICONS, personOptions } from './markup';
 import type { ScanEntry, ViewCtx } from './tab-types';
-import { escapeHTML, locationLabel, nextShelf, scanTally, shelfPath } from './utils';
+import { buildPath, escapeHTML, locationLabel, nextShelf, scanTally, shelfPath } from './utils';
 
-/** True when the scan adds borrowed books (`?mode=borrowed`). */
+/** True when the scan adds borrowed books (`;mode=borrowed`). */
 export function isBorrowedMode(ctx: ViewCtx): boolean {
   return ctx.route.query.mode === 'borrowed';
 }
@@ -41,7 +41,7 @@ function setupShelf(ctx: ViewCtx): string {
     .map((c) => {
       const shelves = ctx.lib.shelves
         .filter((s) => s.bookcase_id === c.id)
-        .map((s) => `<button class="hkl-choice${s.id === shelfId ? ' on' : ''}" data-act="nav" data-replace="1" data-path="/scan?shelf=${escapeHTML(encodeURIComponent(s.id))}" data-k="sh-${escapeHTML(s.id)}" aria-pressed="${s.id === shelfId}">${escapeHTML(s.name)}</button>`)
+        .map((s) => `<button class="hkl-choice${s.id === shelfId ? ' on' : ''}" data-act="nav" data-replace="1" data-path="${escapeHTML(buildPath({ view: 'scan', query: { shelf: s.id } }))}" data-k="sh-${escapeHTML(s.id)}" aria-pressed="${s.id === shelfId}">${escapeHTML(s.name)}</button>`)
         .join('');
       return `<span class="hkl-sub">${escapeHTML(c.name)}</span><div class="hkl-choices">${shelves || `<span class="hkl-muted small">${escapeHTML(t('shelves.no_shelves'))}</span>`}</div>`;
     })
@@ -103,7 +103,8 @@ function resultRow(ctx: ViewCtx, e: ScanEntry): string {
     cls = 'warn';
   } else {
     const label = e.res?.result ? t(`scan.result_${e.res.result}`) : t('scan.result_added');
-    right = `<span class="hkl-pill ok">${escapeHTML(label)}</span>`;
+    const wish = e.res?.from_wishlist === true ? `<span class="hkl-pill st-want" data-k="from-wish-${e.key}">${escapeHTML(t('scan.from_wishlist'))}</span>` : '';
+    right = `<span class="hkl-pills">${wish}<span class="hkl-pill ok">${escapeHTML(label)}</span></span>`;
   }
   return `<div class="hkl-result ${cls}">${thumb}<span class="hkl-row-main"><b>${escapeHTML(title)}</b><span class="hkl-row-sub">${sub}</span></span>${right}</div>`;
 }

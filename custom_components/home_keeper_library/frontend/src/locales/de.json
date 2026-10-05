@@ -302,6 +302,7 @@
   "scan.camera_unsupported": "Dieser Browser kann keine Barcodes lesen. Die ISBN eingeben.",
   "scan.enter_isbn": "ISBN eingeben",
   "scan.frame_hint": "Den Barcode in den Rahmen halten",
+  "scan.from_wishlist": "Von der Wunschliste",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 oder ISBN-13",
   "scan.looking_up": "Suche in Open Library",

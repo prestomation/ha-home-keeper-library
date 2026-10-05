@@ -292,23 +292,38 @@ describe('parseRoute and buildPath', () => {
     expect(u.parseRoute('/books/x?q=a').query).toEqual({});
   });
 
+  it('reads the parameters of the last segment, and they win over a query', () => {
+    expect(u.parseRoute('/books;q=le%20guin;room=r1').query).toEqual({ q: 'le guin', room: 'r1' });
+    expect(u.parseRoute('/books;q=a?q=b&room=r').query).toEqual({ q: 'a', room: 'r' });
+    expect(u.parseRoute('/books;q=a', '?q=b').query).toEqual({ q: 'a' });
+    expect(u.parseRoute('/books;q=a%3Bb%3Dc').query).toEqual({ q: 'a;b=c' });
+    expect(u.parseRoute('/books;=x;q;status=read').query).toEqual({ status: 'read' });
+    expect(u.parseRoute('/books;q=%E0%A4%A').query).toEqual({ q: '%E0%A4%A' });
+    expect(u.parseRoute('/loans;tab=in')).toEqual({ view: 'loans', id: null, query: { tab: 'in' } });
+    expect(u.parseRoute('/books/b1;q=x')).toEqual({ view: 'book', id: 'b1', query: {} });
+    expect(u.parseRoute('/shelves;q=x')).toEqual({ view: 'shelves', id: null, query: {} });
+    expect(u.parseRoute(';q=x')).toEqual({ view: 'books', id: null, query: { q: 'x' } });
+    expect(u.parseRoute('/books/%E0%A4%A').id).toBe('%E0%A4%A');
+  });
+
   it('decodes ids and tolerates extra slashes', () => {
     expect(u.parseRoute('//books/a%2Fb//').id).toBe('a/b');
   });
 
   it('builds paths in a fixed key order with no defaults', () => {
     expect(u.buildPath({ view: 'books' })).toBe('/books');
-    expect(u.buildPath({ view: 'books', query: { view: 'rows', q: 'x y', sort: 'author' } })).toBe('/books?q=x+y&view=rows');
+    expect(u.buildPath({ view: 'books', query: { view: 'rows', q: 'x y', sort: 'author' } })).toBe('/books;q=x%20y;view=rows');
+    expect(u.buildPath({ view: 'books', query: { q: 'a;b=c' } })).toBe('/books;q=a%3Bb%3Dc');
     expect(u.buildPath({ view: 'book', id: 'a/b' })).toBe('/books/a%2Fb');
     expect(u.buildPath({ view: 'book', id: null })).toBe('/books');
     expect(u.buildPath({ view: 'shelves', id: 'r1' })).toBe('/shelves/r1');
     expect(u.buildPath({ view: 'shelves' })).toBe('/shelves');
-    expect(u.buildPath({ view: 'loans', query: { tab: 'returned' } })).toBe('/loans?tab=returned');
+    expect(u.buildPath({ view: 'loans', query: { tab: 'returned' } })).toBe('/loans;tab=returned');
     expect(u.buildPath({ view: 'settings', query: { q: 'x' } })).toBe('/settings');
   });
 
   it('round-trips', () => {
-    for (const p of ['/books?q=a&status=read&room=r&shelf=s&reader=p&subject=x&owned=all&sort=title&view=rows', '/books/b1', '/shelves/r', '/loans?tab=in', '/wishlist', '/scan?shelf=s&mode=borrowed&step=summary', '/import', '/settings']) {
+    for (const p of ['/books;q=a%20b;status=read;room=r;shelf=s;reader=p;subject=x;owned=all;sort=title;view=rows', '/books/b1', '/shelves/r', '/loans;tab=in', '/wishlist', '/scan;shelf=s;mode=borrowed;step=summary', '/import', '/settings']) {
       expect(u.buildPath(u.parseRoute(p))).toBe(p);
     }
   });

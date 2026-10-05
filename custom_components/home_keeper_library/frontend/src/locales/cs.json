@@ -328,6 +328,7 @@
   "scan.camera_unsupported": "Tento prohlížeč neumí číst čárové kódy. Zadejte ISBN.",
   "scan.enter_isbn": "Zadat ISBN",
   "scan.frame_hint": "Umístěte čárový kód do rámečku",
+  "scan.from_wishlist": "Ze seznamu přání",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 nebo ISBN-13",
   "scan.looking_up": "Hledání v Open Library",

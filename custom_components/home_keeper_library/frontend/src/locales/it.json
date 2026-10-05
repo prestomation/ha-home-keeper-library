@@ -315,6 +315,7 @@
   "scan.camera_unsupported": "Questo browser non legge i codici a barre. Inserisci l’ISBN.",
   "scan.enter_isbn": "Inserisci ISBN",
   "scan.frame_hint": "Metti il codice a barre nel riquadro",
+  "scan.from_wishlist": "Dalla lista dei desideri",
   "scan.isbn": "ISBN",
   "scan.isbn_placeholder": "ISBN-10 o ISBN-13",
   "scan.looking_up": "Ricerca in Open Library",
