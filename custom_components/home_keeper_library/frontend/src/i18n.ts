@@ -1,10 +1,9 @@
 import { DEFAULT_LOCALE, LOCALES } from './locales';
 
 /**
- * Tiny dependency-free i18n for the panel + card. Locale tables are bundled into
- * the IIFE at build time (see `locales/index.ts`), so there is no runtime fetch
- * and the UI works offline. Lookups fall back per-key to English and finally to
- * the raw key, so a missing translation never renders `undefined`.
+ * Small i18n module for the tab and the card. The locale tables are in the
+ * bundle (see `locales/index.ts`), so there is no fetch at run time. A lookup
+ * falls back to English for each key, and then to the key itself.
  */
 
 type Table = Record<string, string>;
@@ -14,42 +13,30 @@ let current: Table = fallback;
 let currentLang: string = DEFAULT_LOCALE;
 let plural: Intl.PluralRules = new Intl.PluralRules(DEFAULT_LOCALE);
 
-/** Resolve an HA language code (e.g. "en-GB", "de-CH") to a bundled table. */
+/** Find the table for a Home Assistant language code ("en-GB", "pt-BR", "zh-Hans"). */
 function resolve(lang: string): { table: Table; tag: string } {
-  const lc = lang.toLowerCase();
-  // Exact match first, so a bundled *regional* table ("pt-BR") wins over its
-  // base language. No shipped locale has a region yet, which makes this loop
-  // indistinguishable from the base-language loop below — every mutant here
-  // survives because the second loop returns the same answer. It is not dead
-  // code: add "pt-BR" to locales/ and it starts mattering immediately.
+  const lc = lang.toLowerCase().replace('_', '-');
+  // An exact match first, so "pt-BR" and "zh-Hans" find their own tables.
   for (const key of Object.keys(LOCALES)) {
     if (key.toLowerCase() === lc) return { table: LOCALES[key], tag: key };
   }
+  // Then the base language: "en-GB" finds "en", "pt-PT" finds "pt-BR".
   const base = lc.split('-')[0];
   for (const key of Object.keys(LOCALES)) {
-    if (key.toLowerCase() === base) return { table: LOCALES[key], tag: key };
+    if (key.toLowerCase().split('-')[0] === base) return { table: LOCALES[key], tag: key };
   }
   return { table: fallback, tag: DEFAULT_LOCALE };
 }
 
-/** Point the module at a locale; safe to call on every `hass` update. */
+/** Set the active locale. Safe to call on each `hass` update. */
 export function setLanguage(lang?: string): void {
   const { table, tag } = resolve(lang || DEFAULT_LOCALE);
   current = table;
   currentLang = tag;
-  // `tag` always comes back from `resolve` as a key of LOCALES or the default,
-  // so `Intl.PluralRules` cannot actually throw here — the guard is for a fork
-  // that bundles a tag Intl doesn't know. Unreachable, hence unkillable: every
-  // locale currently bundled shares the same plural categories, so skipping the
-  // assignment entirely is unobservable too.
-  try {
-    plural = new Intl.PluralRules(tag);
-  } catch {
-    plural = new Intl.PluralRules(DEFAULT_LOCALE);
-  }
+  plural = new Intl.PluralRules(tag);
 }
 
-/** The active locale tag (mainly for tests/diagnostics). */
+/** The active locale tag. */
 export function getLanguage(): string {
   return currentLang;
 }
@@ -61,22 +48,18 @@ function interpolate(tmpl: string, params?: Record<string, string | number>): st
   );
 }
 
-/** Translate a key, interpolating `{param}` tokens. */
+/** Translate a key and fill its `{param}` tokens. */
 export function t(key: string, params?: Record<string, string | number>): string {
   const tmpl = current[key] ?? fallback[key] ?? key;
   return interpolate(tmpl, params);
 }
 
 /**
- * Plural-aware translate. Picks `"<key>.<category>"` via the locale's CLDR
- * plural rules (one/few/many/other/…), falling back to `"<key>.other"`. The
- * count is available to the template as `{n}` unless overridden in `params`.
+ * Translate a key with a count. The locale plural rules pick
+ * `"<key>.<category>"`, with `"<key>.other"` as the fallback. The template can
+ * use the count as `{n}`.
  */
-export function tn(
-  key: string,
-  n: number,
-  params?: Record<string, string | number>,
-): string {
+export function tn(key: string, n: number, params?: Record<string, string | number>): string {
   const cat = plural.select(n);
   const tmpl =
     current[`${key}.${cat}`] ??
@@ -85,4 +68,35 @@ export function tn(
     fallback[`${key}.other`] ??
     key;
   return interpolate(tmpl, { n, ...params });
+}
+
+/** A date (YYYY-MM-DD or ISO) in the active locale, or '' for a bad value. */
+export function formatDate(value: string | null | undefined, withYear = true): string {
+  if (!value) return '';
+  const d = new Date(value.length === 10 ? `${value}T12:00:00` : value);
+  if (Number.isNaN(d.getTime())) return '';
+  const opts: Intl.DateTimeFormatOptions = withYear
+    ? { year: 'numeric', month: 'short', day: 'numeric' }
+    : { month: 'short', day: 'numeric' };
+  return d.toLocaleDateString(currentLang, opts);
+}
+
+/** An amount of money in the active locale, or '' for no amount. */
+export function formatMoney(value: number | null | undefined, currency: string): string {
+  if (value == null) return '';
+  try {
+    return new Intl.NumberFormat(currentLang, { style: 'currency', currency }).format(value);
+  } catch {
+    return `${value} ${currency}`;
+  }
+}
+
+/** A number in the active locale. */
+export function formatNumber(value: number): string {
+  return new Intl.NumberFormat(currentLang).format(value);
+}
+
+/** "3 days ago", "yesterday" and so on, in the active locale. */
+export function formatAgo(days: number): string {
+  return new Intl.RelativeTimeFormat(currentLang, { numeric: 'auto' }).format(-days, 'day');
 }
