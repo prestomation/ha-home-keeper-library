@@ -81,7 +81,7 @@ def reencode(data: bytes, dst: Path, max_px: int = COVER_MAX_PX) -> None:
     try:
         with Image.open(io.BytesIO(data), formats=_FORMATS) as image:
             if image.width * image.height > _MAX_PIXELS:
-                raise CoverError("too large")
+                raise CoverError("image_unreadable")
             image.draft("RGB", (max_px, max_px))
             frame = ImageOps.exif_transpose(image) or image
             frame.thumbnail((max_px, max_px))
@@ -99,9 +99,9 @@ def reencode(data: bytes, dst: Path, max_px: int = COVER_MAX_PX) -> None:
     except CoverError:
         raise
     except Image.DecompressionBombError as err:
-        raise CoverError("too large") from err
+        raise CoverError("image_unreadable") from err
     except (UnidentifiedImageError, OSError, SyntaxError, ValueError) as err:
-        raise CoverError("unreadable") from err
+        raise CoverError("image_unreadable") from err
 
 
 def covers_dir(hass: HomeAssistant) -> Path:

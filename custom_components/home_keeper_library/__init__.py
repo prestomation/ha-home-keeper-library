@@ -6,8 +6,8 @@ Setup order:
 2. Make the coordinator, the Open Library client and the syncs.
 3. Register the frontend, the websocket commands and the cover views.
 4. Set up the entity platforms and register the services.
-5. Add the tab to the Home Keeper panel and register as a companion.
-6. Start the lookup queue, the to-do and loan syncs and the overdue check.
+5. Start the lookup queue, the to-do and loan syncs and the overdue check.
+6. Link to Home Keeper: the tab, the companion, the loan tasks or a repair.
 """
 
 from __future__ import annotations
@@ -70,16 +70,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> b
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     async_register_services(hass)
 
-    coordinator.tab_registered = await home_keeper.async_register_tab(hass, entry)
-    await home_keeper.async_register_companion(hass, entry)
-    entry.async_on_unload(home_keeper.async_listen_register(hass, entry))
-
     coordinator.lookup.async_start()
     entry.async_on_unload(coordinator.lookup.async_stop)
     coordinator.wishlist_sync.async_start()
     entry.async_on_unload(coordinator.wishlist_sync.async_stop)
     coordinator.loan_sync.async_start()
     entry.async_on_unload(coordinator.loan_sync.async_stop)
+    # The link checks Home Keeper now and when it changes. It adds the tab and
+    # turns the loan tasks on only while Home Keeper can take them.
+    link = home_keeper.HomeKeeperLink(hass, entry, coordinator)
+    coordinator.home_keeper = link
+    await link.async_start()
+    entry.async_on_unload(link.async_stop)
 
     await store.fire_overdue(today())
 

@@ -40,10 +40,19 @@ class BookLookup:
         self._tries: dict[str, int] = {}
         self._timers: list[Callable[[], None]] = []
         self._worker: asyncio.Task[None] | None = None
+        self._started = False
 
     @callback
     def async_start(self) -> None:
-        """Start the worker."""
+        """Let the queue start a worker. A worker runs only while the queue has ids."""
+        self._started = True
+        if not self._queue.empty():
+            self._start_worker()
+
+    @callback
+    def _start_worker(self) -> None:
+        if self._worker is not None and not self._worker.done():
+            return
         self._worker = self._coordinator.entry.async_create_background_task(
             self._hass, self._run(), "home_keeper_library book lookup"
         )
@@ -51,6 +60,7 @@ class BookLookup:
     @callback
     def async_stop(self) -> None:
         """Stop the worker and the retry timers."""
+        self._started = False
         for cancel in self._timers:
             cancel()
         self._timers.clear()
@@ -65,14 +75,16 @@ class BookLookup:
             return
         self._queued.add(book_id)
         self._queue.put_nowait(book_id)
+        if self._started:
+            self._start_worker()
 
     async def async_join(self) -> None:
         """Wait until the queue is empty. Retries that wait on a timer do not count."""
         await self._queue.join()
 
     async def _run(self) -> None:
-        while True:
-            book_id = await self._queue.get()
+        while not self._queue.empty():
+            book_id = self._queue.get_nowait()
             self._queued.discard(book_id)
             try:
                 await self._lookup(book_id)

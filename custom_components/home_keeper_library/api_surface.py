@@ -503,7 +503,8 @@ SURFACE_KINDS: tuple[SurfaceKind, ...] = (
     SurfaceKind(
         "Repairs / issue registry",
         "published",
-        "A `home_keeper_too_old` issue shows when Home Keeper has no panel tab API.",
+        "An issue shows when Home Keeper is missing, not set up or too old for "
+        "the tab.",
     ),
     SurfaceKind(
         "Discovery",

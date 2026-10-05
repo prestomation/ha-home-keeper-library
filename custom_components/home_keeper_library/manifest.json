@@ -1,13 +1,15 @@
 {
   "domain": "home_keeper_library",
   "name": "Home Keeper Library",
+  "after_dependencies": [
+    "home_keeper"
+  ],
   "codeowners": [
     "@prestomation"
   ],
   "config_flow": true,
   "dependencies": [
     "frontend",
-    "home_keeper",
     "http",
     "person"
   ],

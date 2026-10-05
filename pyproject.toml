@@ -35,17 +35,21 @@ source_paths = ["custom_components/home_keeper_library"]
 # out. Directories, not bare files: mutmut `copy2`s a file without creating its
 # parent, and only `copytree`s a directory into place.
 also_copy = ["ci", "tests/integration/ha_config"]
-# The mutable surface: the pure core, which the fast `tests/unit` tier covers
-# directly. Everything else in the integration imports Home Assistant and is
-# only exercised by the component and Docker tiers — far too slow to run once
-# per mutant, and scoring it here would just report noise. Also excluded:
-# const.py and api_surface.py, which are data rather than logic — api_surface is
-# a declarative index of the integration's surfaces, pinned by
-# tests/unit/test_api_surface.py against the real registrations rather than by
-# behavioural assertions.
+# The mutable surface: the pure core, which the fast `tests/unit` tier tests
+# directly. The other modules import Home Assistant and only the component and
+# Docker tiers run them, which is too slow for each mutant. const.py and
+# api_surface.py are data, not logic: tests/unit/test_api_surface.py checks
+# api_surface against the real registrations. backend_i18n.py is a file reader
+# that the parity tests cover.
 only_mutate = [
     "custom_components/home_keeper_library/models.py",
+    "custom_components/home_keeper_library/isbn.py",
     "custom_components/home_keeper_library/events.py",
+    "custom_components/home_keeper_library/projections.py",
+    "custom_components/home_keeper_library/openlibrary.py",
+    "custom_components/home_keeper_library/csv_io.py",
+    "custom_components/home_keeper_library/wishlist.py",
+    "custom_components/home_keeper_library/loan_tasks.py",
 ]
 pytest_add_cli_args_test_selection = ["tests/unit"]
 

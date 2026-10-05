@@ -17,7 +17,10 @@
     },
     "abort": {
       "already_configured": "Home Keeper Library is already set up.",
-      "single_instance_allowed": "Home Keeper Library is already set up."
+      "single_instance_allowed": "Home Keeper Library is already set up.",
+      "home_keeper_missing": "Home Keeper Library requires Home Keeper. Install Home Keeper from HACS, restart Home Assistant, then add Home Keeper Library again. Installation steps: {url}",
+      "home_keeper_not_set_up": "Add the Home Keeper integration first.",
+      "home_keeper_too_old": "Update Home Keeper to version {version} or later."
     }
   },
   "options": {
@@ -61,9 +64,17 @@
     }
   },
   "issues": {
+    "home_keeper_missing": {
+      "title": "Home Keeper is not installed",
+      "description": "The Library tab and the loan tasks need Home Keeper. The card, the entities and the services work now. Install Home Keeper from HACS and restart Home Assistant. Installation steps: {url}"
+    },
+    "home_keeper_not_set_up": {
+      "title": "Home Keeper is not set up",
+      "description": "The Library tab and the loan tasks need a loaded Home Keeper integration. The card, the entities and the services work now. Add or enable the Home Keeper integration."
+    },
     "home_keeper_too_old": {
-      "title": "Home Keeper has no library tab",
-      "description": "The installed Home Keeper has no panel tab API. The library card, entities and services work. Update Home Keeper to show the Library tab in the Home Keeper panel."
+      "title": "Home Keeper is too old",
+      "description": "The Library tab and the loan tasks need Home Keeper version {version} or later. The card, the entities and the services work now. Update Home Keeper."
     }
   },
   "services": {

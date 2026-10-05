@@ -102,3 +102,14 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     ):
         hass.services.async_register(DOMAIN, name, handler, supports_response=response)
     return True
+
+
+async def async_setup_entry(hass: HomeAssistant, entry: Any) -> bool:
+    """Load the config entry. The services exist without it, as in Home Keeper."""
+    hass.bus.async_fire("home_keeper_register_companions")
+    return True
+
+
+async def async_unload_entry(hass: HomeAssistant, entry: Any) -> bool:
+    """Unload the config entry."""
+    return True

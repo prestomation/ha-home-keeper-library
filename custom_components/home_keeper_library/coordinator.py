@@ -20,6 +20,7 @@ from .store import LibraryStore
 
 if TYPE_CHECKING:
     from .book_lookup import BookLookup
+    from .home_keeper import HomeKeeperLink
     from .loan_sync import LoanSync
     from .openlibrary_client import OpenLibraryClient
     from .wishlist_sync import WishlistSync
@@ -43,6 +44,7 @@ class LibraryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.lookup: BookLookup
         self.wishlist_sync: WishlistSync
         self.loan_sync: LoanSync
+        self.home_keeper: HomeKeeperLink
         self.tab_registered = False
 
     @property

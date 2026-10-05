@@ -51,6 +51,8 @@ class LoanSync:
         self._unsubs: list[Callable[[], None]] = []
         self._loans_seen: str = ""
         self._pending: asyncio.Task[None] | None = None
+        # The Home Keeper link turns this on while Home Keeper takes loan tasks.
+        self.enabled = False
 
     @callback
     def async_start(self) -> None:
@@ -97,7 +99,9 @@ class LoanSync:
         )
 
     def _available(self) -> bool:
-        return self._hass.services.has_service(HOME_KEEPER_DOMAIN, "list_tasks")
+        return self.enabled and self._hass.services.has_service(
+            HOME_KEEPER_DOMAIN, "list_tasks"
+        )
 
     async def _hk(
         self, service: str, data: dict[str, Any], *, response: bool = False
@@ -186,7 +190,7 @@ class LoanSync:
 
     @callback
     def _on_completed(self, event: Event[Any]) -> None:
-        if event.data.get("origin") == ORIGIN:
+        if not self.enabled or event.data.get("origin") == ORIGIN:
             return
         loan_id = self._loan_of_event(event)
         if loan_id is None:
@@ -203,6 +207,8 @@ class LoanSync:
 
     @callback
     def _on_deleted(self, event: Event[Any]) -> None:
+        if not self.enabled:
+            return
         loan_id = self._loan_of_event(event)
         if loan_id is None:
             return

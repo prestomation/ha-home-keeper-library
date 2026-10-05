@@ -1,7 +1,9 @@
 """The config flow and the options flow of Home Keeper Library.
 
-The integration has 1 config entry. The only setting is the currency of the
-prices and values of the copies. Its default is the currency of Home Assistant.
+The integration has 1 config entry. The flow first checks Home Keeper. If Home
+Keeper is not installed, not set up or too old, the flow stops with the reason
+and a link. The only setting is the currency of the prices and values of the
+copies. Its default is the currency of Home Assistant.
 The options flow merges its input into the stored options, so a key that the
 form does not show stays.
 """
@@ -20,6 +22,7 @@ from homeassistant.config_entries import (
 from homeassistant.core import callback
 
 from .const import CONF_CURRENCY, DEFAULT_CURRENCY, DOMAIN, NAME
+from .home_keeper import async_check, placeholders
 
 
 def _currency_schema(default: str) -> vol.Schema:
@@ -48,6 +51,10 @@ class LibraryConfigFlow(ConfigFlow, domain=DOMAIN):
         """Ask for the currency."""
         await self.async_set_unique_id(DOMAIN)
         self._abort_if_unique_id_configured()
+        if (reason := await async_check(self.hass)) is not None:
+            return self.async_abort(
+                reason=reason, description_placeholders=placeholders(reason)
+            )
         default = self.hass.config.currency or DEFAULT_CURRENCY
         errors: dict[str, str] = {}
         if user_input is not None:

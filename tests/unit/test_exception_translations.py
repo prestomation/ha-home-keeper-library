@@ -16,6 +16,8 @@ import ast
 import json
 from pathlib import Path
 
+import pytest
+
 _COMPONENT = (
     Path(__file__).resolve().parents[2] / "custom_components" / "home_keeper_library"
 )
@@ -74,3 +76,48 @@ def test_translation_keys_exist_in_strings() -> None:
     assert not missing, (
         f"translation_key(s) missing from strings.json exceptions: {missing}"
     )
+
+
+def _literal_keys(func_names: set[str]) -> set[str]:
+    """The first string argument of each call to one of *func_names*."""
+    keys: set[str] = set()
+    for path in sorted(_COMPONENT.glob("*.py")):
+        for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))):
+            if not isinstance(node, ast.Call) or not node.args:
+                continue
+            func = node.func
+            name = getattr(func, "id", None) or getattr(func, "attr", None)
+            if name not in func_names:
+                continue
+            arg = (
+                node.args[0]
+                if name in ("LibraryError", "CoverError")
+                else node.args[-1]
+            )
+            if name in ("resolve_exception", "_error") and len(node.args) >= 2:
+                arg = node.args[1] if name == "resolve_exception" else node.args[3]
+            if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                keys.add(arg.value)
+    return keys
+
+
+def test_library_error_keys_exist_in_strings() -> None:
+    """Each ``LibraryError`` key and each eager lookup key has a message.
+
+    The test reads the source. In the ``mutants/`` copy of mutmut the source
+    holds mutated strings, so the test skips there.
+    """
+    if "mutants" in _COMPONENT.parts:
+        pytest.skip("mutmut copies mutated source")
+    strings = json.loads((_COMPONENT / "strings.json").read_text(encoding="utf-8"))
+    defined = set(strings["exceptions"])
+    used = _literal_keys({"LibraryError", "CoverError", "resolve_exception", "_error"})
+    # ``store._get`` builds ``<kind>_not_found`` for these kinds.
+    used |= {
+        f"{kind}_not_found"
+        for kind in ("room", "bookcase", "shelf", "book", "copy", "loan")
+    }
+    assert "invalid_field" in used and "not_loaded" in used
+    assert not used - defined, f"keys missing from strings.json: {used - defined}"
+    unused = defined - used
+    assert not unused, f"exception keys that no code uses: {sorted(unused)}"

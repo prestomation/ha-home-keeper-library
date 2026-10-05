@@ -62,7 +62,19 @@ async def persons(hass, hass_admin_user, hass_read_only_user) -> dict[str, Any]:
 
 
 @pytest.fixture
-async def setup_entry(hass, persons):
+async def hk_entry(hass):
+    """A loaded config entry of the fake Home Keeper."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    entry = MockConfigEntry(domain="home_keeper", title="Home Keeper")
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    return entry
+
+
+@pytest.fixture
+async def setup_entry(hass, persons, hk_entry):
     """Set up the library from a new config entry and return the entry."""
     from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -108,3 +120,31 @@ def call(hass, persons):
 def coordinator(entry: Any) -> Any:
     """The coordinator of the entry."""
     return entry.runtime_data
+
+
+@pytest.fixture
+async def todo_list(hass) -> str:
+    """An in-memory to-do list from the fake ``fake_todo`` integration."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    entry = MockConfigEntry(domain="fake_todo", title="Books")
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    return "todo.books"
+
+
+@pytest.fixture
+def ws(hass, hass_ws_client, hass_access_token, hass_read_only_access_token):
+    """A websocket client as ``admin`` or as ``user``."""
+
+    async def _client(as_: str = "admin") -> Any:
+        token = hass_access_token if as_ == "admin" else hass_read_only_access_token
+        return await hass_ws_client(hass, access_token=token)
+
+    return _client
+
+
+async def settle(hass) -> None:
+    """Wait for the background syncs of the library."""
+    await hass.async_block_till_done(wait_background_tasks=True)
