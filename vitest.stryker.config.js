@@ -4,18 +4,21 @@ import baseConfig from './vitest.config.js';
 
 // Vitest config used only by Stryker (see stryker.conf.json).
 //
-// It is the normal config minus the `*-parity.test.js` files, which analyse
-// `src/*.ts` as *text* read off disk rather than importing it. Inside Stryker's
-// sandbox they would read *mutated* source, so a mutant that alters any string
-// literal flips them red and gets counted as "killed" by a test that never
-// exercised the behaviour — inflating the score with pure noise. They are
-// parity/lint gates, not behavioural tests, so dropping them here costs no real
-// signal; `ci/test-frontend.sh` still runs them on every PR.
+// It is the normal config minus 2 kinds of test file:
+//
+// - `*-parity.test.js` reads `src/*.ts` as text. Inside the Stryker sandbox it
+//   reads mutated source, so a mutant that changes a string literal turns it red
+//   and counts as killed by a test that did not run the behaviour.
+// - `*-dom.test.js` mounts the whole tab or card. It runs a large part of
+//   `utils.ts` for each mutant, which makes a run take hours, and the unit tests
+//   are the stricter measure of the pure module.
+//
+// `ci/test-frontend.sh` still runs both kinds on every PR.
 export default mergeConfig(
   baseConfig,
   defineConfig({
     test: {
-      exclude: ['**/node_modules/**', '**/*-parity.test.js'],
+      exclude: ['**/node_modules/**', '**/*-parity.test.js', '**/*-dom.test.js'],
     },
   }),
 );
