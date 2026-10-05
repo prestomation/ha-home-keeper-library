@@ -9,7 +9,7 @@ implements:
   - custom_components/home_keeper_library/backend_i18n.py
   - custom_components/home_keeper_library/manifest.json
 related: [store-models, people-privilege, events-api, home-keeper-dependency, frontend-tab-card]
-source_hash: 9b07182a6eea
+source_hash: f2be7a72a09d
 ---
 
 # Architecture
@@ -59,7 +59,12 @@ logic. `api_surface.py` declares each surface that an integrator sees
 
 ### Setup
 
-`async_setup` does nothing: the integration has no YAML configuration.
+`async_setup` does nothing. The integration has no YAML configuration.
+`CONFIG_SCHEMA` is `cv.config_entry_only_config_schema`.
+
+The manifest has `lovelace` in `after_dependencies`, because the card writes a Lovelace
+resource.
+
 `async_setup_entry` runs these steps in order:
 
 1. Read the string tables of the Home Assistant language in an executor job

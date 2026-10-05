@@ -2,7 +2,8 @@
   "domain": "home_keeper_library",
   "name": "Home Keeper Library",
   "after_dependencies": [
-    "home_keeper"
+    "home_keeper",
+    "lovelace"
   ],
   "codeowners": [
     "@prestomation"

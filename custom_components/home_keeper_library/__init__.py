@@ -20,6 +20,7 @@ from typing import Any
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.typing import ConfigType
 
@@ -36,6 +37,7 @@ from .wishlist_sync import WishlistSync
 
 _LOGGER = logging.getLogger(__name__)
 _VIEWS_REGISTERED = f"{DOMAIN}_views_registered"
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 type LibraryConfigEntry = ConfigEntry[LibraryCoordinator]
 
