@@ -79,10 +79,9 @@ export function normalizePeople(raw: Record<string, RawPerson> | null | undefine
       share_reading: row.share_reading !== false,
       wishlist_todo: row.wishlist_todo ?? null,
       yearly_goal: row.yearly_goal ?? null,
-      color: '',
     }))
     .sort((a, b) => a.name.localeCompare(b.name) || a.id.localeCompare(b.id))
-    .map((p, i) => ({ ...p, color: personColor(i) }));
+    .map((p, i): Person => ({ ...p, color: personColor(i) }));
 }
 
 /** Turn the raw `get_state` reply into the `Lib` that the views read. */
@@ -874,6 +873,7 @@ export class CoverUrls {
               this._entries.set(path, { url, at: now });
               return true;
             },
+            // Stryker disable next-line ArrowFunction: undefined and false both read as "not signed" in .some(Boolean).
             () => false,
           )
           .finally(() => this._pending.delete(path));

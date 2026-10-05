@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as u from '../src/utils.ts';
 
 // Small builders, so each test shows the data it reads.
@@ -166,6 +166,7 @@ describe('asList and normalizeState', () => {
     expect(l.books[0]).toMatchObject({ authors: [], tags: [], subjects: [], reading: {} });
     expect(l.me).toEqual({ person_id: null, name: null, is_admin: false });
     expect(u.normalizeState({ me: { person_id: 'p', name: 'P', is_admin: 'yes' } }).me).toEqual({ person_id: 'p', name: 'P', is_admin: false });
+    expect(u.normalizeState({ me: { person_id: 'p', name: 'P', is_admin: true } }).me.is_admin).toBe(true);
     expect(l.currency).toBe('USD');
     expect(l.copies).toEqual([]);
     expect(l.loans).toEqual([]);
@@ -196,17 +197,21 @@ describe('personNames', () => {
 });
 
 describe('buildIndex, shelfPath and locations', () => {
-  const l = lib({
-    books: { b1: book('b1'), b2: book('b2') },
-    copies: { k1: copy('k1', 'b1', 's1'), k2: copy('k2', 'b1', null), k3: copy('k3', 'b2', 's3') },
-    loans: {
-      l1: { id: 'l1', direction: 'out', book_id: 'b1', copy_id: 'k1', returned: null },
-      l2: { id: 'l2', direction: 'out', book_id: 'b2', copy_id: 'k3', returned: '2026-01-01' },
-      l3: { id: 'l3', direction: 'in', book_id: 'b2', copy_id: null, returned: null },
-      l4: { id: 'l4', direction: 'out', book_id: 'b2', copy_id: null, returned: null },
-    },
+  let l;
+  let idx;
+  beforeAll(() => {
+    l = lib({
+      books: { b1: book('b1'), b2: book('b2') },
+      copies: { k1: copy('k1', 'b1', 's1'), k2: copy('k2', 'b1', null), k3: copy('k3', 'b2', 's3') },
+      loans: {
+        l1: { id: 'l1', direction: 'out', book_id: 'b1', copy_id: 'k1', returned: null },
+        l2: { id: 'l2', direction: 'out', book_id: 'b2', copy_id: 'k3', returned: '2026-01-01' },
+        l3: { id: 'l3', direction: 'in', book_id: 'b2', copy_id: null, returned: null },
+        l4: { id: 'l4', direction: 'out', book_id: 'b2', copy_id: null, returned: null },
+      },
+    });
+    idx = u.buildIndex(l);
   });
-  const idx = u.buildIndex(l);
 
   it('groups copies by book and by shelf, with "" for no shelf', () => {
     expect(idx.copiesByBook.get('b1').map((c) => c.id)).toEqual(['k1', 'k2']);
@@ -389,16 +394,20 @@ describe('reading helpers and search', () => {
 });
 
 describe('filterBooks, statusCounts and sortBooks', () => {
-  const l = lib({
-    books: {
-      a: book('a', { title: 'Alpha', authors: ['Zed Last'], subjects: ['SF'], reading: { me: row('read', { rating: 3 }), p2: row('read') }, created_at: '2026-01-03', published: '1999' }),
-      b: book('b', { title: 'Beta', authors: ['Amy Bee'], reading: { me: row('reading') }, needs_details: true, created_at: '2026-01-02', published: 'May 1970' }),
-      c: book('c', { title: 'Gamma', authors: ['Amy Bee'], owned: false, reading: { me: row('want', { rating: 5 }) }, created_at: '2026-01-01' }),
-      d: book('d', { title: 'Delta', authors: [], subjects: ['SF', 'Art'], created_at: '2026-01-04', published: '2001' }),
-    },
-    copies: { k1: copy('k1', 'a', 's1'), k2: copy('k2', 'b', 's3'), k3: copy('k3', 'd', null) },
+  let l;
+  let ctx;
+  beforeAll(() => {
+    l = lib({
+      books: {
+        a: book('a', { title: 'Alpha', authors: ['Zed Last'], subjects: ['SF'], reading: { me: row('read', { rating: 3 }), p2: row('read') }, created_at: '2026-01-03', published: '1999' }),
+        b: book('b', { title: 'Beta', authors: ['Amy Bee'], reading: { me: row('reading') }, needs_details: true, created_at: '2026-01-02', published: 'May 1970' }),
+        c: book('c', { title: 'Gamma', authors: ['Amy Bee'], owned: false, reading: { me: row('want', { rating: 5 }) }, created_at: '2026-01-01' }),
+        d: book('d', { title: 'Delta', authors: [], subjects: ['SF', 'Art'], created_at: '2026-01-04', published: '2001' }),
+      },
+      copies: { k1: copy('k1', 'a', 's1'), k2: copy('k2', 'b', 's3'), k3: copy('k3', 'd', null) },
+    });
+    ctx = { idx: u.buildIndex(l), me: 'me' };
   });
-  const ctx = { idx: u.buildIndex(l), me: 'me' };
   const ids = (q) => u.filterBooks(l.books, u.readFilters(q), ctx).map((x) => x.id);
 
   it('shows owned books by default, sorted by author', () => {
@@ -601,6 +610,12 @@ describe('drawing', () => {
     expect(u.spines([book('a'), book('b'), book('c')], 2)).toHaveLength(2);
     expect(u.spines(Array.from({ length: 70 }, (_, i) => book(`x${i}`)))).toHaveLength(60);
   });
+  it('has 8 distinct avatar colors', () => {
+    expect(u.PERSON_COLORS).toHaveLength(8);
+    expect(new Set(u.PERSON_COLORS).size).toBe(8);
+    for (const c of u.PERSON_COLORS) expect(c).toMatch(/^#[0-9a-f]{6}$/);
+  });
+
   it('gives a person color by place, and wraps after the last color', () => {
     const n = u.PERSON_COLORS.length;
     expect(new Set(u.PERSON_COLORS.map((_, i) => u.personColor(i))).size).toBe(n);
@@ -663,20 +678,23 @@ describe('dates and numbers', () => {
 
 describe('cardModel and pickRandom', () => {
   const now = new Date(2026, 9, 5);
-  const l = lib({
-    people: {
-      me: { share_reading: true, wishlist_todo: null, yearly_goal: 10 },
-      sam: { share_reading: true, wishlist_todo: null, yearly_goal: null },
-      shy: { share_reading: false, wishlist_todo: null, yearly_goal: null },
-    },
-    books: {
-      a: book('a', { pages: 100, reading: { me: row('read', { finished: '2026-02-01' }), sam: row('read', { updated_at: '2026-10-01' }) } }),
-      b: book('b', { pages: 200, reading: { me: row('read', { finished: '2025-12-31' }), shy: row('reading') } }),
-      c: book('c', { reading: { me: row('read', { finished: '2026-05-01' }), sam: row('want') } }),
-      d: book('d', { reading: { me: row('reading', { updated_at: '2026-01-01' }), sam: row('reading', { updated_at: '2026-10-03' }) } }),
-      e: book('e', { reading: { me: row('reading', { updated_at: '2026-03-01' }) } }),
-      f: book('f', { reading: { me: row('want') } }),
-    },
+  let l;
+  beforeAll(() => {
+    l = lib({
+      people: {
+        me: { share_reading: true, wishlist_todo: null, yearly_goal: 10 },
+        sam: { share_reading: true, wishlist_todo: null, yearly_goal: null },
+        shy: { share_reading: false, wishlist_todo: null, yearly_goal: null },
+      },
+      books: {
+        a: book('a', { pages: 100, reading: { me: row('read', { finished: '2026-02-01' }), sam: row('read', { updated_at: '2026-10-01' }) } }),
+        b: book('b', { pages: 200, reading: { me: row('read', { finished: '2025-12-31' }), shy: row('reading') } }),
+        c: book('c', { reading: { me: row('read', { finished: '2026-05-01' }), sam: row('want') } }),
+        d: book('d', { reading: { me: row('reading', { updated_at: '2026-01-01' }), sam: row('reading', { updated_at: '2026-10-03' }) } }),
+        e: book('e', { reading: { me: row('reading', { updated_at: '2026-03-01' }) } }),
+        f: book('f', { reading: { me: row('want') } }),
+      },
+    });
   });
 
   it('collects reading, want, the goal and household activity', () => {
