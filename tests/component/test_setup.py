@@ -159,13 +159,68 @@ async def test_missing_home_keeper(hass, persons, monkeypatch) -> None:
     }
 
 
-async def test_card_module_is_added_to_the_frontend(hass, setup_entry) -> None:
+def _card_resources(hass) -> list[dict]:
+    from homeassistant.components.lovelace.const import LOVELACE_DATA
+
+    return [
+        item
+        for item in hass.data[LOVELACE_DATA].resources.async_items()
+        if "library-card.js" in str(item.get("url"))
+    ]
+
+
+def _extra_card_urls(hass) -> list[str]:
     from homeassistant.components.frontend import DATA_EXTRA_MODULE_URL
 
-    urls = list(hass.data[DATA_EXTRA_MODULE_URL].urls)
-    assert any(
-        u.startswith("/home_keeper_library_static/library-card.js") for u in urls
-    )
+    return [u for u in hass.data[DATA_EXTRA_MODULE_URL].urls if "library-card.js" in u]
+
+
+async def test_card_is_a_lovelace_resource_and_not_a_module(hass, setup_entry) -> None:
+    """Storage mode uses only the resource: both paths race (Home Keeper #368)."""
+    await hass.async_block_till_done()
+    rows = _card_resources(hass)
+    assert len(rows) == 1
+    assert rows[0]["type"] == "module"
+    assert rows[0]["url"].startswith("/home_keeper_library_static/library-card.js?v=")
+    assert _extra_card_urls(hass) == []
+    # A reload keeps the 1 row and adds no module URL.
+    assert await hass.config_entries.async_reload(setup_entry.entry_id)
+    await hass.async_block_till_done()
+    assert _card_resources(hass) == rows
+    assert _extra_card_urls(hass) == []
+    # The removal of the integration removes the row.
+    assert await hass.config_entries.async_remove(setup_entry.entry_id)
+    await hass.async_block_till_done()
+    assert _card_resources(hass) == []
+    # A new entry in the same run delivers the card again.
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    again = MockConfigEntry(domain=DOMAIN, data={}, options={}, unique_id=DOMAIN)
+    again.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(again.entry_id)
+    await hass.async_block_till_done()
+    assert len(_card_resources(hass)) == 1
+
+
+async def test_card_is_a_module_when_resources_are_yaml(
+    hass, persons, hk_entry, monkeypatch
+) -> None:
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    from custom_components.home_keeper_library import card
+
+    monkeypatch.setattr(card, "_storage_resources", lambda hass: None)
+    entry = MockConfigEntry(domain=DOMAIN, data={}, options={}, unique_id=DOMAIN)
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    urls = _extra_card_urls(hass)
+    assert len(urls) == 1
+    assert urls[0].startswith("/home_keeper_library_static/library-card.js?v=")
+    assert _card_resources(hass) == []
+    assert await hass.config_entries.async_remove(entry.entry_id)
+    await hass.async_block_till_done()
+    assert _extra_card_urls(hass) == []
 
 
 async def test_diagnostics_redact_names_and_notes(hass, setup_entry, call) -> None:

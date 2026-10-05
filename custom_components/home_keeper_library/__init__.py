@@ -23,7 +23,7 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.typing import ConfigType
 
-from . import backend_i18n, covers, frontend_assets, home_keeper, websocket_api
+from . import backend_i18n, card, covers, frontend_assets, home_keeper, websocket_api
 from .api_surface import SERVICE_NAMES
 from .book_lookup import BookLookup
 from .const import DOMAIN, OVERDUE_CHECK_INTERVAL_S, PLATFORMS
@@ -113,3 +113,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> 
         for service in SERVICE_NAMES:
             hass.services.async_remove(DOMAIN, service)
     return unloaded
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> None:
+    """Remove the card resource when the integration is removed (not on unload)."""
+    await card.async_unregister_card(hass)
