@@ -467,6 +467,20 @@ describe('scan', () => {
     expect($$('.hkl-stat b').map((b) => b.textContent)).toEqual(['0', '1', '0']);
   });
 
+  it('keeps a typed ISBN when a store change renders the view', async () => {
+    const state = fixture();
+    const fake = await mount(`/scan;shelf=${state.shelves[0].id};step=camera`);
+    const input = $('[data-k="isbn-input"]');
+    input.focus();
+    input.value = '978044';
+    fake.push();
+    await flush();
+    const now = $('[data-k="isbn-input"]');
+    expect(now).not.toBe(input);
+    expect(now.value).toBe('978044');
+    expect(el.shadowRoot.activeElement).toBe(now);
+  });
+
   it('marks a scanned book that comes from the wishlist', async () => {
     const state = fixture();
     const shelf = state.shelves[0].id;
