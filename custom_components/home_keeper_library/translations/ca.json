@@ -864,6 +864,16 @@
         }
       }
     },
+    "set_settings": {
+      "name": "Defineix la configuració de la biblioteca",
+      "description": "Defineix la moneda dels preus i dels valors dels exemplars.",
+      "fields": {
+        "currency": {
+          "name": "Moneda",
+          "description": "Un codi de 3 lletres, per exemple EUR o USD."
+        }
+      }
+    },
     "import_csv": {
       "name": "Importa un CSV",
       "description": "Importa llibres de Goodreads, StoryGraph o una exportació de la biblioteca.",
@@ -1093,6 +1103,9 @@
     },
     "image_unreadable": {
       "message": "No es pot llegir la imatge."
+    },
+    "invalid_currency": {
+      "message": "{currency} no és un codi de moneda de 3 lletres."
     }
   }
 }

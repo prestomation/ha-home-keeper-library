@@ -107,7 +107,8 @@ def test_admin_reads_everything() -> None:
     emma = next(b for b in reply["books"] if b["id"] == "emma")
     assert emma["owned"] is False and emma["cover_url"].endswith("?v=0a1b2c3d")
     assert [b["id"] for b in reply["books"]] == ["dune", "emma"]
-    carol = next(p for p in reply["people"] if p["person_id"] == "carol")
+    assert list(reply["people"]) == ["alice", "bob", "carol"]
+    carol = reply["people"]["carol"]
     assert carol["share_reading"] is False and "wishlist_todo" in carol
 
 
@@ -132,8 +133,8 @@ def test_non_admin_projection_never_leaks() -> None:
     copy = reply["copies"][0]
     assert not {"price", "value", "acquired_from"} & set(copy)
     assert "party" not in reply["loans"][0]
-    alice = next(p for p in reply["people"] if p["person_id"] == "alice")
-    bob = next(p for p in reply["people"] if p["person_id"] == "bob")
+    alice = reply["people"]["alice"]
+    bob = reply["people"]["bob"]
     assert "wishlist_todo" not in alice and "wishlist_todo" in bob
     assert reply["me"]["is_admin"] is False
     assert state["copies"]["c1"]["price"] == 10, "the projection must copy"

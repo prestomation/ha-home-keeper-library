@@ -5,13 +5,27 @@
   "data": {
     "entries": [
       {
+        "entry_id": "home_keeper_test_entry",
+        "version": 1,
+        "minor_version": 1,
+        "domain": "home_keeper",
+        "title": "Home Keeper",
+        "data": {},
+        "options": {},
+        "pref_disable_new_entities": false,
+        "pref_disable_polling": false,
+        "source": "user",
+        "unique_id": "home_keeper_local",
+        "disabled_by": null
+      },
+      {
         "entry_id": "home_keeper_library_test_entry",
         "version": 1,
         "minor_version": 1,
         "domain": "home_keeper_library",
         "title": "Home Keeper Library",
         "data": {},
-        "options": {},
+        "options": {"currency": "EUR"},
         "pref_disable_new_entities": false,
         "pref_disable_polling": false,
         "source": "user",

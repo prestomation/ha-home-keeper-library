@@ -864,6 +864,16 @@
         }
       }
     },
+    "set_settings": {
+      "name": "Aseta kirjaston asetukset",
+      "description": "Aseta kappaleiden hintojen ja arvojen valuutta.",
+      "fields": {
+        "currency": {
+          "name": "Valuutta",
+          "description": "3 kirjaimen koodi, esimerkiksi EUR tai USD."
+        }
+      }
+    },
     "import_csv": {
       "name": "Tuo CSV",
       "description": "Tuo kirjoja Goodreadsista, StoryGraphista tai kirjaston viennistä.",
@@ -1093,6 +1103,9 @@
     },
     "image_unreadable": {
       "message": "Kuvaa ei voi lukea."
+    },
+    "invalid_currency": {
+      "message": "{currency} ei ole 3 kirjaimen valuuttakoodi."
     }
   }
 }

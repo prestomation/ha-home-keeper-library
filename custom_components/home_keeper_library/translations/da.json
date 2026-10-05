@@ -864,6 +864,16 @@
         }
       }
     },
+    "set_settings": {
+      "name": "Angiv biblioteksindstillinger",
+      "description": "Angiv valutaen for eksemplarernes priser og værdier.",
+      "fields": {
+        "currency": {
+          "name": "Valuta",
+          "description": "En kode på 3 bogstaver, for eksempel EUR eller USD."
+        }
+      }
+    },
     "import_csv": {
       "name": "Importér CSV",
       "description": "Importér bøger fra Goodreads, StoryGraph eller en eksport af biblioteket.",
@@ -1093,6 +1103,9 @@
     },
     "image_unreadable": {
       "message": "Billedet kan ikke læses."
+    },
+    "invalid_currency": {
+      "message": "{currency} er ikke en valutakode på 3 bogstaver."
     }
   }
 }

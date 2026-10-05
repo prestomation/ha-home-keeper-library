@@ -184,6 +184,7 @@ SERVICES: tuple[ServiceSpec, ...] = (
     ServiceSpec("remove_from_wishlist", response="optional", **_ADMIN),
     ServiceSpec("got_wishlist_book", response="optional", **_ADMIN),
     ServiceSpec("set_person_settings", response="optional", caller_scoped=True),
+    ServiceSpec("set_settings", response="optional", **_ADMIN),
     ServiceSpec("import_csv", response="optional", **_ADMIN),
     ServiceSpec("export_csv", response="only", **_ADMIN),
     ServiceSpec("list_books", response="only"),

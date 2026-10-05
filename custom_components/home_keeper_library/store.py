@@ -113,6 +113,17 @@ class LibraryStore:
 
         return remove
 
+    @callback
+    def async_notify(self) -> None:
+        """Tell the listeners about a change outside the document, such as the
+        currency option. The revision goes up."""
+        self.revision += 1
+        for listener in list(self._listeners):
+            try:
+                listener()
+            except Exception:
+                _LOGGER.exception("A library store listener failed")
+
     async def _commit(self, fired: list[Event]) -> None:
         """Save, fire the events and tell the listeners."""
         await self._storage.async_save(self.state)

@@ -864,6 +864,16 @@
         }
       }
     },
+    "set_settings": {
+      "name": "Ustaw ustawienia biblioteki",
+      "description": "Ustaw walutę cen i wartości egzemplarzy.",
+      "fields": {
+        "currency": {
+          "name": "Waluta",
+          "description": "Kod z 3 liter, na przykład EUR lub USD."
+        }
+      }
+    },
     "import_csv": {
       "name": "Importuj CSV",
       "description": "Importuj książki z Goodreads, StoryGraph lub eksportu biblioteki.",
@@ -1093,6 +1103,9 @@
     },
     "image_unreadable": {
       "message": "Nie można odczytać obrazu."
+    },
+    "invalid_currency": {
+      "message": "{currency} nie jest kodem waluty z 3 liter."
     }
   }
 }

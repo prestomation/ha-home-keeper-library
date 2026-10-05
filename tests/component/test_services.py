@@ -47,6 +47,7 @@ _ADMIN_DATA = {
     "got_wishlist_book": {"book_id": "x"},
     "import_csv": {"content": "Title\nx\n", "source": "goodreads", "person_id": BOB},
     "export_csv": {},
+    "set_settings": {"currency": "USD"},
 }
 
 
@@ -390,7 +391,29 @@ async def test_import_and_export(hass, setup_entry, call) -> None:
             "dry_run": True,
         },
     )
-    assert dry["dry_run"] is True and dry["summary"]["books_added"] == 2
+    assert dry["dry_run"] is True and dry["counts"] == {
+        "rows": 2,
+        "read": 1,
+        "reading": 0,
+        "want": 0,
+        "dnf": 0,
+        "wishlist": 1,
+        "copies": 1,
+        "tags": 0,
+        "errors": 0,
+        "existing": 0,
+        "new": 2,
+        "title_match": 0,
+    }
+    assert dry["rows"][0] == {
+        "line": 1,
+        "title": "Dune",
+        "authors": ["Frank Herbert"],
+        "isbn": "9780441013593",
+        "book_id": dry["rows"][0]["book_id"],
+        "action": "new",
+        "message": "",
+    }
     assert setup_entry.runtime_data.store.state["books"] == {}
     assert done == []
     real = await call(
@@ -402,8 +425,8 @@ async def test_import_and_export(hass, setup_entry, call) -> None:
             "shelf_id": shelf["id"],
         },
     )
-    assert real["summary"]["copies_added"] == 1 and real["truncated"] is False
-    assert [row["result"] for row in real["rows"]] == ["added", "added"]
+    assert real["counts"]["copies"] == 1 and real["truncated"] is False
+    assert [row["action"] for row in real["rows"]] == ["new", "new"]
     assert done[0].data["books_added"] == 2 and done[0].data["person_id"] == BOB
     state = setup_entry.runtime_data.store.state
     assert len(state["books"]) == 2 and len(state["copies"]) == 1
@@ -438,3 +461,33 @@ async def test_service_without_a_loaded_entry(hass, setup_entry, call) -> None:
     with pytest.raises(ServiceValidationError) as info:
         services.coordinator_or_error(hass)
     assert info.value.translation_key == "not_loaded"
+
+
+async def test_import_row_error_message(hass, setup_entry, call) -> None:
+    reply = await call(
+        "import_csv",
+        {
+            "content": "Title,Author\n,Nobody\n",
+            "source": "goodreads",
+            "person_id": BOB,
+            "dry_run": True,
+        },
+    )
+    assert reply["rows"][0]["action"] == "error"
+    assert reply["rows"][0]["message"] == "title is required."
+
+
+async def test_set_settings_changes_the_currency(hass, setup_entry, call, ws) -> None:
+    client = await ws("admin")
+    await client.send_json_auto_id({"type": "home_keeper_library/subscribe"})
+    first = await client.receive_json()
+    reply = await call("set_settings", {"currency": "usd"})
+    assert reply == {"currency": "USD"}
+    assert setup_entry.options["currency"] == "USD"
+    assert setup_entry.runtime_data.currency == "USD"
+    pushed = await client.receive_json()
+    assert pushed["event"]["revision"] == first["result"]["revision"] + 1
+    with pytest.raises(ServiceValidationError) as info:
+        await call("set_settings", {"currency": "dollars"})
+    assert info.value.translation_key == "invalid_currency"
+    assert info.value.translation_placeholders == {"currency": "dollars"}

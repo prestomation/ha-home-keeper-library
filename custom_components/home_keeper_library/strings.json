@@ -864,6 +864,16 @@
         }
       }
     },
+    "set_settings": {
+      "name": "Set library settings",
+      "description": "Set the currency of the prices and values of the copies.",
+      "fields": {
+        "currency": {
+          "name": "Currency",
+          "description": "A code of 3 letters, such as EUR or USD."
+        }
+      }
+    },
     "import_csv": {
       "name": "Import CSV",
       "description": "Import books from Goodreads, StoryGraph or a library export.",
@@ -1093,6 +1103,9 @@
     },
     "image_unreadable": {
       "message": "The image cannot be read."
+    },
+    "invalid_currency": {
+      "message": "{currency} is not a currency code of 3 letters."
     }
   }
 }

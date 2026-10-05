@@ -56,7 +56,7 @@ CARD_ELEMENT = "home-keeper-library-card"
 
 # The cover HTTP views.
 COVER_URL_PREFIX = "/api/home_keeper_library/cover"
-COVER_UPLOAD_URL = "/api/home_keeper_library/cover_upload"
+COVER_UPLOAD_URL = "/api/home_keeper_library/upload"
 COVER_MAX_BYTES = 10 * 1024 * 1024
 COVER_MAX_PX = 1200
 # The first bytes that the upload view reads to identify the image type.

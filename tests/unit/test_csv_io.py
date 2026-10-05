@@ -174,23 +174,46 @@ def test_apply_goodreads_import() -> None:
     assert state["books"].keys() == {"persuasion"}, "the input must not change"
     assert summary == {
         "rows": 6,
+        "read": 1,
+        "reading": 1,
+        "want": 1,
+        "dnf": 1,
+        "wishlist": 1,
+        "copies": 2,
+        "tags": 1,
+        "errors": 0,
+        "existing": 0,
+        "new": 5,
+        "title_match": 1,
+        "reading_kept": 0,
+    }
+    assert [r["action"] for r in results] == [
+        "new",
+        "new",
+        "new",
+        "title_match",
+        "new",
+        "new",
+    ]
+    assert results[3]["book_id"] == "persuasion"
+    assert results[0] == {
+        "line": 1,
+        "title": "The Left Hand of Darkness",
+        "authors": ["Ursula K. Le Guin"],
+        "isbn": "9780441478125",
+        "book_id": results[0]["book_id"],
+        "action": "new",
+    }
+    assert cio.summary_of(summary, 2) == {
+        "rows": 6,
         "books_added": 5,
         "books_matched": 1,
         "copies_added": 2,
         "reading_set": 4,
-        "reading_kept": 0,
+        "reading_kept": 2,
         "wishlist_added": 1,
         "errors": 0,
     }
-    assert [r["result"] for r in results] == [
-        "added",
-        "added",
-        "added",
-        "matched",
-        "added",
-        "added",
-    ]
-    assert results[3]["book_id"] == "persuasion"
     assert len(lookup) == 5
     left = next(b for b in new["books"].values() if b["isbn13"] == "9780441478125")
     assert left["needs_details"] is True and left["tags"] == ["favorites"]
@@ -232,9 +255,11 @@ def test_import_matches_and_keeps_reading() -> None:
         replace_reading=False,
         now=NOW,
     )
-    assert summary["books_added"] == 0 and summary["books_matched"] == 6
-    assert summary["copies_added"] == 0 and summary["reading_kept"] == 4
-    assert summary["reading_set"] == 0 and summary["wishlist_added"] == 0
+    assert summary["new"] == 0 and summary["existing"] == 1
+    assert summary["title_match"] == 5
+    assert summary["copies"] == 0 and summary["reading_kept"] == 4
+    assert summary["read"] + summary["reading"] + summary["want"] == 0
+    assert summary["wishlist"] == 0
     assert lookup == []
     third, summary, _, _ = cio.apply_import(
         first,
@@ -245,7 +270,8 @@ def test_import_matches_and_keeps_reading() -> None:
         replace_reading=True,
         now=NOW,
     )
-    assert summary["reading_set"] == 4 and summary["reading_kept"] == 0
+    assert summary["read"] + summary["want"] + summary["dnf"] == 3
+    assert summary["reading"] == 1 and summary["reading_kept"] == 0
     assert third["reading"]["p"][left["id"]]["private_notes"] == "Great\nbook\n\nMine"
 
 
@@ -261,7 +287,7 @@ def test_import_row_error_and_empty_person() -> None:
         replace_reading=False,
         now=NOW,
     )
-    assert summary["errors"] == 1 and results[0]["result"] == "error"
+    assert summary["errors"] == 1 and results[0]["action"] == "error"
     assert results[0]["error"] == "field_required"
     assert results[0]["placeholders"] == {"field": "title"}
     assert "p" not in new["reading"]
@@ -286,7 +312,7 @@ def test_import_library_rows_use_ids_and_locations() -> None:
         replace_reading=False,
         now=NOW,
     )
-    assert summary["books_added"] == 1 and summary["copies_added"] == 1
+    assert summary["new"] == 1 and summary["copies"] == 1
     assert new["books"]["persuasion"]["title"] == "Persuasion"
     assert new["copies"][copy["id"]]["shelf_id"] == "s"
     _, again, _, _ = cio.apply_import(
@@ -298,7 +324,7 @@ def test_import_library_rows_use_ids_and_locations() -> None:
         replace_reading=False,
         now=NOW,
     )
-    assert again["copies_added"] == 0 and again["books_matched"] == 1
+    assert again["copies"] == 0 and again["existing"] == 1
 
 
 # ── Export ───────────────────────────────────────────────────────────────────

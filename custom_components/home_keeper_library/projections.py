@@ -195,7 +195,10 @@ def project_state(
             project_loan(loan, is_admin=is_admin)
             for loan in _sorted(state["loans"], "started")
         ],
-        "people": project_people(state, persons, viewer=viewer, is_admin=is_admin),
+        "people": {
+            row["person_id"]: row
+            for row in project_people(state, persons, viewer=viewer, is_admin=is_admin)
+        },
         "me": {"person_id": viewer, "name": viewer_name, "is_admin": is_admin},
         "currency": currency,
         "home_keeper": {"tab": tab},

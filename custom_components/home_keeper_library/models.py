@@ -526,6 +526,9 @@ def update_book(
     patch = {field: data[field] for field in BOOK_FIELDS if field in data}
     if data.get("isbn") not in (None, ""):
         patch["isbn13"], patch["isbn10"] = _isbn(data["isbn"])
+    elif "isbn13" in patch and patch["isbn13"] in (None, "") and "isbn10" not in patch:
+        # Clearing the ISBN-13 clears the ISBN-10 too: they name 1 edition.
+        patch["isbn10"] = None
     for field, raw in patch.items():
         value = book_field(field, raw)
         if value != updated.get(field):

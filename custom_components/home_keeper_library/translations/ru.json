@@ -864,6 +864,16 @@
         }
       }
     },
+    "set_settings": {
+      "name": "Задать настройки библиотеки",
+      "description": "Задать валюту цен и стоимости экземпляров.",
+      "fields": {
+        "currency": {
+          "name": "Валюта",
+          "description": "Код из 3 букв, например EUR или USD."
+        }
+      }
+    },
     "import_csv": {
       "name": "Импорт CSV",
       "description": "Импортировать книги из Goodreads, StoryGraph или экспорта библиотеки.",
@@ -1093,6 +1103,9 @@
     },
     "image_unreadable": {
       "message": "Не удаётся прочитать изображение."
+    },
+    "invalid_currency": {
+      "message": "{currency} не является кодом валюты из 3 букв."
     }
   }
 }

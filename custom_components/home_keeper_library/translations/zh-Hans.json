@@ -864,6 +864,16 @@
         }
       }
     },
+    "set_settings": {
+      "name": "设置藏书设置",
+      "description": "设置藏本价格和价值所用的货币。",
+      "fields": {
+        "currency": {
+          "name": "货币",
+          "description": "3 个字母的代码，例如 EUR 或 USD。"
+        }
+      }
+    },
     "import_csv": {
       "name": "导入 CSV",
       "description": "从 Goodreads、StoryGraph 或藏书导出文件导入图书。",
@@ -1093,6 +1103,9 @@
     },
     "image_unreadable": {
       "message": "无法读取该图片。"
+    },
+    "invalid_currency": {
+      "message": "{currency} 不是 3 个字母的货币代码。"
     }
   }
 }

@@ -31,7 +31,8 @@ from homeassistant.helpers import config_validation as cv
 
 from . import csv_io, models, people, projections
 from .api_surface import SERVICES, ServiceSpec
-from .const import DOMAIN, MAX_CSV_BYTES, MAX_IMPORT_ROW_RESULTS
+from .backend_i18n import resolve_exception
+from .const import CONF_CURRENCY, DOMAIN, MAX_CSV_BYTES, MAX_IMPORT_ROW_RESULTS
 from .coordinator import LibraryCoordinator, find_coordinator
 from .covers import async_store_openlibrary_cover, async_use_upload
 from .isbn import IsbnError
@@ -252,6 +253,7 @@ SERVICE_FIELDS: dict[str, dict[Any, Any]] = {
         vol.Optional("yearly_goal"): _OPT_INT,
         vol.Optional("wishlist_todo"): _OPT_STR,
     },
+    "set_settings": {vol.Required("currency"): cv.string},
     "import_csv": {
         vol.Required("content"): cv.string,
         vol.Required("source"): vol.In(csv_io.SOURCES),
@@ -700,6 +702,19 @@ async def _set_person_settings(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]
     return {"person_id": person_id, "settings": settings}
 
 
+async def _set_settings(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+    currency = str(data["currency"]).strip().upper()
+    if len(currency) != 3 or not currency.isalpha():
+        raise LibraryError("invalid_currency", currency=data["currency"])
+    entry = ctx.coordinator.entry
+    ctx.hass.config_entries.async_update_entry(
+        entry, options={**entry.options, CONF_CURRENCY: currency}
+    )
+    # The tab and the card read the currency from get_state.
+    ctx.coordinator.store.async_notify()
+    return {"currency": currency}
+
+
 # ── Import and export ────────────────────────────────────────────────────────
 
 
@@ -711,7 +726,7 @@ async def _import_csv(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     shelf_id = ctx.store.check_shelf(data.get("shelf_id"))
     rows = csv_io.parse(content, data["source"])
     snapshot = models.clone(ctx.store.state)
-    new_state, summary, results, lookup_ids = await ctx.hass.async_add_executor_job(
+    new_state, counts, results, lookup_ids = await ctx.hass.async_add_executor_job(
         lambda: csv_io.apply_import(
             snapshot,
             rows,
@@ -723,16 +738,27 @@ async def _import_csv(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
         )
     )
     dry_run = data.get("dry_run", False)
+    summary = csv_io.summary_of(counts, counts["reading_kept"])
     if not dry_run:
         await ctx.store.commit_import(
             new_state, summary, person_id=person_id, source=data["source"]
         )
         for book_id in lookup_ids:
             ctx.coordinator.lookup.async_enqueue(book_id)
+    lang = ctx.hass.config.language
+    shown = []
+    for result in results[:MAX_IMPORT_ROW_RESULTS]:
+        row = {k: v for k, v in result.items() if k not in ("error", "placeholders")}
+        row["message"] = (
+            resolve_exception(lang, result["error"], **result["placeholders"])
+            if "error" in result
+            else ""
+        )
+        shown.append(row)
     return {
         "dry_run": dry_run,
-        "summary": summary,
-        "rows": results[:MAX_IMPORT_ROW_RESULTS],
+        "counts": {key: counts[key] for key in csv_io.COUNT_KEYS},
+        "rows": shown,
         "truncated": len(results) > MAX_IMPORT_ROW_RESULTS,
     }
 
@@ -871,6 +897,7 @@ SERVICE_HANDLERS: dict[str, Handler] = {
     "remove_from_wishlist": _remove_from_wishlist,
     "got_wishlist_book": _got_wishlist_book,
     "set_person_settings": _set_person_settings,
+    "set_settings": _set_settings,
     "import_csv": _import_csv,
     "export_csv": _export_csv,
     "list_books": _list_books,

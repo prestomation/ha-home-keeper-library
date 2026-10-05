@@ -18,13 +18,17 @@ rm -rf "$DEST/home_keeper"
 mkdir -p "$DEST"
 if [ -n "${HOME_KEEPER_SRC:-}" ]; then
   echo "[home-keeper] copying $HOME_KEEPER_SRC/custom_components/home_keeper"
-  cp -R "$HOME_KEEPER_SRC/custom_components/home_keeper" "$DEST/home_keeper"
+  mkdir -p "$DEST/home_keeper"
+  tar -C "$HOME_KEEPER_SRC/custom_components/home_keeper" \
+    --exclude=node_modules --exclude=__pycache__ -cf - . | tar -C "$DEST/home_keeper" -xf -
 else
   TMP="$(mktemp -d)"
   trap 'rm -rf "$TMP"' EXIT
   echo "[home-keeper] cloning $REPO at $REF"
   git clone --quiet --depth 1 --branch "$REF" "$REPO" "$TMP/hk"
-  cp -R "$TMP/hk/custom_components/home_keeper" "$DEST/home_keeper"
+  mkdir -p "$DEST/home_keeper"
+  tar -C "$TMP/hk/custom_components/home_keeper" \
+    --exclude=node_modules --exclude=__pycache__ -cf - . | tar -C "$DEST/home_keeper" -xf -
 fi
 find "$DEST/home_keeper" -name "__pycache__" -type d -prune -exec rm -rf {} +
 echo "[home-keeper] version: $(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['version'])" "$DEST/home_keeper/manifest.json")"

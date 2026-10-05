@@ -738,6 +738,13 @@ set_person_settings:
         entity:
           domain: "todo"
 
+set_settings:
+  fields:
+    currency:
+      required: true
+      selector:
+        text:
+
 import_csv:
   fields:
     content:

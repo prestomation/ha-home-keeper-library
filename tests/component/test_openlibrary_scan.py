@@ -215,7 +215,7 @@ async def _upload(hass_client, data: bytes, name: str = "c.png"):
     client = await hass_client()
     form = aiohttp.FormData()
     form.add_field("file", data, filename=name, content_type="image/png")
-    return await client.post("/api/home_keeper_library/cover_upload", data=form)
+    return await client.post("/api/home_keeper_library/upload", data=form)
 
 
 async def test_cover_upload_and_custom_cover(
@@ -265,19 +265,19 @@ async def test_cover_upload_rules(
     assert response.status == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
     client = await hass_client()
     response = await client.post(
-        "/api/home_keeper_library/cover_upload",
+        "/api/home_keeper_library/upload",
         data=b"x",
         headers={"Content-Type": "text/plain"},
     )
     assert response.status == HTTPStatus.BAD_REQUEST
     form = aiohttp.FormData()
     form.add_field("name", "no file", content_type="text/plain")
-    response = await client.post("/api/home_keeper_library/cover_upload", data=form)
+    response = await client.post("/api/home_keeper_library/upload", data=form)
     assert (await response.json())["message"] == "The upload has no file."
     user = await hass_client(hass_read_only_access_token)
     form = aiohttp.FormData()
     form.add_field("file", _jpeg((10, 10)), filename="c.jpg")
-    response = await user.post("/api/home_keeper_library/cover_upload", data=form)
+    response = await user.post("/api/home_keeper_library/upload", data=form)
     assert response.status == HTTPStatus.UNAUTHORIZED
     webp = _jpeg((20, 20), fmt="WEBP")
     response = await _upload(hass_client, webp, "c.webp")

@@ -864,6 +864,16 @@
         }
       }
     },
+    "set_settings": {
+      "name": "Bibliotheekinstellingen instellen",
+      "description": "De valuta van de prijzen en waarden van de exemplaren instellen.",
+      "fields": {
+        "currency": {
+          "name": "Valuta",
+          "description": "Een code van 3 letters, bijvoorbeeld EUR of USD."
+        }
+      }
+    },
     "import_csv": {
       "name": "CSV importeren",
       "description": "Boeken uit Goodreads, StoryGraph of een bibliotheekexport importeren.",
@@ -1093,6 +1103,9 @@
     },
     "image_unreadable": {
       "message": "De afbeelding kan niet worden gelezen."
+    },
+    "invalid_currency": {
+      "message": "{currency} is geen valutacode van 3 letters."
     }
   }
 }

@@ -864,6 +864,16 @@
         }
       }
     },
+    "set_settings": {
+      "name": "Nastavit nastavení knihovny",
+      "description": "Nastavit měnu cen a hodnot výtisků.",
+      "fields": {
+        "currency": {
+          "name": "Měna",
+          "description": "Kód ze 3 písmen, například EUR nebo USD."
+        }
+      }
+    },
     "import_csv": {
       "name": "Importovat CSV",
       "description": "Importovat knihy z Goodreads, StoryGraph nebo exportu knihovny.",
@@ -1093,6 +1103,9 @@
     },
     "image_unreadable": {
       "message": "Obrázek nelze přečíst."
+    },
+    "invalid_currency": {
+      "message": "{currency} není kód měny ze 3 písmen."
     }
   }
 }

@@ -479,15 +479,16 @@ class _Index:
         if key.split("|", 1)[0]:
             self.title.setdefault(key, book["id"])
 
-    def match(self, row: dict[str, Any]) -> str | None:
-        if row.get("book_id") and row["book_id"] in self.by_id:
-            return str(row["book_id"])
-        if row.get("isbn13") and row["isbn13"] in self.isbn13:
-            return self.isbn13[row["isbn13"]]
-        if row.get("isbn10") and row["isbn10"] in self.isbn10:
-            return self.isbn10[row["isbn10"]]
-        key = title_key(row.get("title"), row.get("authors"))
-        return self.title.get(key)
+    def match(self, row: dict[str, Any]) -> tuple[str | None, str]:
+        """``(book_id, action)``: ``existing``, ``title_match`` or ``new``."""
+        if row["book_id"] and row["book_id"] in self.by_id:
+            return str(row["book_id"]), ACTION_EXISTING
+        if row["isbn13"] and row["isbn13"] in self.isbn13:
+            return self.isbn13[row["isbn13"]], ACTION_EXISTING
+        if row["isbn10"] and row["isbn10"] in self.isbn10:
+            return self.isbn10[row["isbn10"]], ACTION_EXISTING
+        found = self.title.get(title_key(row["title"], row["authors"]))
+        return found, ACTION_TITLE_MATCH if found else ACTION_NEW
 
 
 def _new_book(row: dict[str, Any], now: str) -> dict[str, Any]:
@@ -518,6 +519,43 @@ def _new_book(row: dict[str, Any], now: str) -> dict[str, Any]:
     return book
 
 
+ACTION_NEW = "new"
+ACTION_EXISTING = "existing"
+ACTION_TITLE_MATCH = "title_match"
+ACTION_ERROR = "error"
+COUNT_KEYS = (
+    "rows",
+    "read",
+    "reading",
+    "want",
+    "dnf",
+    "wishlist",
+    "copies",
+    "tags",
+    "errors",
+    "existing",
+    "new",
+    "title_match",
+)
+
+
+def summary_of(counts: dict[str, int], kept: int) -> dict[str, int]:
+    """The summary of the ``import_completed`` event, from the import counts."""
+    return {
+        "rows": counts["rows"],
+        "books_added": counts["new"],
+        "books_matched": counts["existing"] + counts["title_match"],
+        "copies_added": counts["copies"],
+        "reading_set": counts["read"]
+        + counts["reading"]
+        + counts["want"]
+        + counts["dnf"],
+        "reading_kept": kept,
+        "wishlist_added": counts["wishlist"],
+        "errors": counts["errors"],
+    }
+
+
 def apply_import(
     state: dict[str, Any],
     rows: list[dict[str, Any]],
@@ -530,7 +568,11 @@ def apply_import(
 ) -> tuple[dict[str, Any], dict[str, Any], list[dict[str, Any]], list[str]]:
     """Apply import rows to a copy of *state*.
 
-    Return ``(new_state, summary, results, lookup_ids)``. ``lookup_ids`` are the
+    Return ``(new_state, counts, results, lookup_ids)``. ``counts`` has the keys
+    of :data:`COUNT_KEYS` and ``reading_kept``. Each result has ``line``,
+    ``title``, ``authors``, ``isbn``, ``book_id`` and ``action`` (``new``,
+    ``existing``, ``title_match`` or ``error``). An error result also has
+    ``error`` (a translation key) and ``placeholders``. ``lookup_ids`` are the
     new books that need details from Open Library.
     """
     new = clone(state)
@@ -538,70 +580,67 @@ def apply_import(
     reading = new["reading"].setdefault(person_id, {})
     copy_ids = set(new["copies"])
     owned_books = {c.get("book_id") for c in new["copies"].values()}
-    summary = {
-        "rows": len(rows),
-        "books_added": 0,
-        "books_matched": 0,
-        "copies_added": 0,
-        "reading_set": 0,
-        "reading_kept": 0,
-        "wishlist_added": 0,
-        "errors": 0,
-    }
+    counts = dict.fromkeys(COUNT_KEYS, 0)
+    counts["rows"] = len(rows)
+    counts["reading_kept"] = 0
     results: list[dict[str, Any]] = []
     lookup_ids: list[str] = []
     for row in rows:
         result: dict[str, Any] = {
             "line": row["line"],
-            "title": row.get("title", ""),
+            "title": row["title"],
+            "authors": list(row["authors"]),
+            "isbn": row["isbn13"] or row["isbn10"],
             "book_id": None,
-            "result": "matched",
+            "action": ACTION_NEW,
         }
         try:
-            book_id = index.match(row)
+            book_id, action = index.match(row)
             if book_id is None:
                 book = _new_book(row, now)
                 new["books"][book["id"]] = book
                 index.add(book)
                 book_id = book["id"]
-                result["result"] = "added"
-                summary["books_added"] += 1
                 if book["needs_details"]:
                     lookup_ids.append(book_id)
+                if row["tags"]:
+                    counts["tags"] += 1
             else:
-                summary["books_matched"] += 1
                 book = new["books"][book_id]
-                extra = [t for t in row.get("tags", []) if t not in book["tags"]]
+                extra = [t for t in row["tags"] if t not in book["tags"]]
                 if extra:
                     book["tags"] = [*book["tags"], *extra]
+                    counts["tags"] += 1
+            counts[action] += 1
+            result["action"] = action
             result["book_id"] = book_id
             if _import_copy(new, row, book_id, shelf_id, copy_ids, owned_books, now):
-                summary["copies_added"] += 1
-            if row.get("status"):
+                counts["copies"] += 1
+            if row["status"]:
                 if book_id in reading and not replace_reading:
-                    summary["reading_kept"] += 1
+                    counts["reading_kept"] += 1
                 else:
                     reading[book_id] = _reading_row(row, import_notes, now)
-                    summary["reading_set"] += 1
+                    counts[row["status"]] += 1
             if (
-                row.get("wishlist")
+                row["wishlist"]
                 and book_id not in owned_books
-                and not new["books"][book_id].get("wishlist")
+                and not new["books"][book_id]["wishlist"]
             ):
                 entry = build_wishlist(
-                    person_id, buy=bool(row.get("wishlist_buy")), now=now
+                    person_id, buy=bool(row["wishlist_buy"]), now=now
                 )
                 new["books"][book_id]["wishlist"] = entry
-                summary["wishlist_added"] += 1
+                counts["wishlist"] += 1
         except LibraryError as err:
-            result["result"] = "error"
+            result["action"] = ACTION_ERROR
             result["error"] = err.key
             result["placeholders"] = err.placeholders
-            summary["errors"] += 1
+            counts["errors"] += 1
         results.append(result)
     if not reading:
         new["reading"].pop(person_id, None)
-    return new, summary, results, lookup_ids
+    return new, counts, results, lookup_ids
 
 
 def _import_copy(
@@ -647,12 +686,12 @@ def _reading_row(row: dict[str, Any], import_notes: bool, now: str) -> dict[str,
     reading["status"] = row["status"]
     for field in ("rating", "page", "started", "finished"):
         reading[field] = row.get(field)
-    count = row.get("read_count")
+    count = row["read_count"]
     if count is None:
         count = 1 if row["status"] == "read" else 0
     reading["read_count"] = count
     if import_notes:
-        reading["private_notes"] = row.get("notes", "")
+        reading["private_notes"] = row["notes"]
     return reading
 
 
@@ -742,13 +781,13 @@ def _num(value: Any) -> str:
 
 
 def _goodreads_cells(row: dict[str, Any]) -> dict[str, str]:
-    authors = row.get("authors") or []
-    status = row.get("status")
+    authors = row["authors"] or []
+    status = row["status"]
     shelf = _STATUS_TO_SHELF.get(status or "", "")
-    if not shelf and row.get("wishlist"):
+    if not shelf and row["wishlist"]:
         shelf = "to-read"
-    shelves = [*([shelf] if shelf else []), *row.get("tags", [])]
-    copy = row.get("copy") or {}
+    shelves = [*([shelf] if shelf else []), *row["tags"]]
+    copy = row["copy"] or {}
     first = authors[0] if authors else ""
     last_first = first
     if " " in first:
@@ -756,29 +795,29 @@ def _goodreads_cells(row: dict[str, Any]) -> dict[str, str]:
         last_first = f"{family}, {given}"
     return {
         "Book Id": "",
-        "Title": row.get("title", ""),
+        "Title": row["title"],
         "Author": first,
         "Author l-f": last_first,
         "Additional Authors": ", ".join(authors[1:]),
-        "ISBN": f'="{row.get("isbn10") or ""}"',
-        "ISBN13": f'="{row.get("isbn13") or ""}"',
-        "My Rating": str(row.get("rating") or 0),
+        "ISBN": f'="{row["isbn10"] or ""}"',
+        "ISBN13": f'="{row["isbn13"] or ""}"',
+        "My Rating": str(row["rating"] or 0),
         "Average Rating": "",
-        "Publisher": row.get("publisher", ""),
+        "Publisher": row["publisher"],
         "Binding": _BINDINGS.get(copy.get("format", "other"), ""),
-        "Number of Pages": _num(row.get("pages")),
-        "Year Published": row.get("published", ""),
+        "Number of Pages": _num(row["pages"]),
+        "Year Published": row["published"],
         "Original Publication Year": "",
-        "Date Read": (row.get("finished") or "").replace("-", "/"),
+        "Date Read": (row["finished"] or "").replace("-", "/"),
         "Date Added": "",
         "Bookshelves": ", ".join(shelves),
         "Bookshelves with positions": "",
         "Exclusive Shelf": shelf,
         "My Review": "",
         "Spoiler": "",
-        "Private Notes": row.get("notes", ""),
-        "Read Count": _num(row.get("read_count")) if status else "",
-        "Owned Copies": str(row.get("owned") or 0),
+        "Private Notes": row["notes"],
+        "Read Count": _num(row["read_count"]) if status else "",
+        "Owned Copies": str(row["owned"] or 0),
     }
 
 
@@ -787,25 +826,25 @@ def _bool_text(value: Any) -> str:
 
 
 def _library_cells(row: dict[str, Any]) -> dict[str, str]:
-    series = row.get("series") or {}
-    copy = row.get("copy") or {}
+    series = row["series"] or {}
+    copy = row["copy"] or {}
     return {
-        "book_id": row.get("book_id") or "",
-        "title": row.get("title", ""),
-        "subtitle": row.get("subtitle", ""),
-        "authors": LIST_SEP.join(row.get("authors") or []),
-        "isbn13": row.get("isbn13") or "",
-        "isbn10": row.get("isbn10") or "",
-        "publisher": row.get("publisher", ""),
-        "published": row.get("published", ""),
-        "pages": _num(row.get("pages")),
-        "language": row.get("language") or "",
-        "subjects": LIST_SEP.join(row.get("subjects") or []),
+        "book_id": row["book_id"] or "",
+        "title": row["title"],
+        "subtitle": row["subtitle"],
+        "authors": LIST_SEP.join(row["authors"] or []),
+        "isbn13": row["isbn13"] or "",
+        "isbn10": row["isbn10"] or "",
+        "publisher": row["publisher"],
+        "published": row["published"],
+        "pages": _num(row["pages"]),
+        "language": row["language"] or "",
+        "subjects": LIST_SEP.join(row["subjects"] or []),
         "series": series.get("name", ""),
         "series_number": series.get("number") or "",
-        "description": row.get("description", ""),
-        "tags": LIST_SEP.join(row.get("tags") or []),
-        "shared_notes": row.get("shared_notes", ""),
+        "description": row["description"],
+        "tags": LIST_SEP.join(row["tags"] or []),
+        "shared_notes": row["shared_notes"],
         "copy_id": copy.get("id") or "",
         "format": copy.get("format") or "",
         "condition": copy.get("condition") or "",
@@ -816,16 +855,16 @@ def _library_cells(row: dict[str, Any]) -> dict[str, str]:
         "signed": _bool_text(copy.get("signed")) if copy else "",
         "first_edition": _bool_text(copy.get("first_edition")) if copy else "",
         "copy_note": copy.get("note") or "",
-        "location": PATH_SEP.join(row.get("location") or []),
-        "status": row.get("status") or "",
-        "rating": _num(row.get("rating")),
-        "page": _num(row.get("page")),
-        "started": row.get("started") or "",
-        "finished": row.get("finished") or "",
-        "read_count": _num(row.get("read_count")),
-        "private_notes": row.get("notes", ""),
-        "wishlist": _bool_text(row.get("wishlist")),
-        "wishlist_buy": _bool_text(row.get("wishlist_buy")),
+        "location": PATH_SEP.join(row["location"] or []),
+        "status": row["status"] or "",
+        "rating": _num(row["rating"]),
+        "page": _num(row["page"]),
+        "started": row["started"] or "",
+        "finished": row["finished"] or "",
+        "read_count": _num(row["read_count"]),
+        "private_notes": row["notes"],
+        "wishlist": _bool_text(row["wishlist"]),
+        "wishlist_buy": _bool_text(row["wishlist_buy"]),
     }
 
 
