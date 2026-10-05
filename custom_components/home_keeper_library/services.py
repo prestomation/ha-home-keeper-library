@@ -730,8 +730,9 @@ async def _set_settings(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     ctx.hass.config_entries.async_update_entry(
         entry, options={**entry.options, CONF_CURRENCY: currency}
     )
-    # The tab and the card read the currency from get_state.
-    ctx.coordinator.store.async_notify()
+    # The store fires settings_updated, and the tab and the card read the
+    # currency from get_state again.
+    ctx.coordinator.async_check_settings()
     return {"currency": currency}
 
 

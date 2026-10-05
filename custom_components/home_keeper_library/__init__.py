@@ -60,6 +60,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> b
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
     entry.async_on_unload(store.async_add_listener(coordinator.async_store_changed))
+    entry.async_on_unload(entry.add_update_listener(_async_entry_updated))
 
     await frontend_assets.async_register(hass)
     websocket_api.async_register(hass)
@@ -102,6 +103,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> b
     )
     await covers.async_cleanup_pending(hass)
     return True
+
+
+async def _async_entry_updated(hass: HomeAssistant, entry: LibraryConfigEntry) -> None:
+    """Fire ``settings_updated`` when the options flow changes the currency."""
+    entry.runtime_data.async_check_settings()
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> bool:

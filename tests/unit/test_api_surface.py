@@ -253,6 +253,12 @@ def _built() -> dict[str, dict[str, Any]]:
         const.EVENT_COPY_ADDED: events.copy_event_data(_BOOK, _COPY, None),
         const.EVENT_COPY_MOVED: events.copy_moved_event_data(_BOOK, _COPY, "s0", None),
         const.EVENT_COPY_REMOVED: events.copy_event_data(_BOOK, _COPY, None),
+        const.EVENT_COPY_UPDATED: events.copy_updated_event_data(
+            _BOOK, _COPY, ["note"], None
+        ),
+        const.EVENT_READING_UPDATED: events.reading_updated_event_data(
+            _BOOK, "p1", "reading", ["page"], None
+        ),
         const.EVENT_READING_CHANGED: events.reading_changed_event_data(
             _BOOK, "p1", "read", "reading", None
         ),
@@ -262,6 +268,16 @@ def _built() -> dict[str, dict[str, Any]]:
         const.EVENT_LOAN_STARTED: events.loan_event_data(_BOOK, _LOAN, None),
         const.EVENT_LOAN_RETURNED: events.loan_event_data(_BOOK, _LOAN, None),
         const.EVENT_LOAN_OVERDUE: events.loan_event_data(_BOOK, _LOAN, None),
+        const.EVENT_LOAN_UPDATED: events.loan_updated_event_data(
+            _BOOK, _LOAN, ["due"], None
+        ),
+        const.EVENT_LOAN_REMOVED: events.loan_event_data(_BOOK, _LOAN, None),
+        const.EVENT_PERSON_SETTINGS_UPDATED: events.person_settings_event_data(
+            "p1", ["yearly_goal"], None
+        ),
+        const.EVENT_SETTINGS_UPDATED: events.settings_event_data(
+            ["currency"], "EUR", None
+        ),
         const.EVENT_WISHLIST_ADDED: events.wishlist_event_data(_BOOK, entry, None),
         const.EVENT_WISHLIST_REMOVED: events.wishlist_event_data(_BOOK, entry, None),
         const.EVENT_IMPORT_COMPLETED: events.import_completed_event_data(

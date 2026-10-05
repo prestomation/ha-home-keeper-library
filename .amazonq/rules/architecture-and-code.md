@@ -80,6 +80,10 @@ you write or review code.
   alias it.
 - A new event goes in `api_surface.EVENTS` and in
   [`docs/EVENTS.md`](../../docs/EVENTS.md) in the same change.
+- A change that keeps the shelf of a copy or the status of a reading row still
+  fires an event (`copy_updated`, `reading_updated`). A payload names the
+  changed fields in `changed_fields` and never carries private values: no
+  price, value or private notes, and no setting values of a person.
 - A bulk import fires only `import_completed`. `loan_overdue` fires once for each
   due date, with the flag `overdue_fired` on the loan.
 

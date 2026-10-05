@@ -32,15 +32,21 @@ Names follow `home_keeper_library_<noun>_<verb>`.
 | `home_keeper_library_book_removed` | A book is deleted with its copies, reading rows and loans. |
 | `home_keeper_library_copy_added` | A copy is added. |
 | `home_keeper_library_copy_moved` | A copy moves to another shelf, or to no shelf. |
+| `home_keeper_library_copy_updated` | A field of a copy other than its shelf changes. |
 | `home_keeper_library_copy_removed` | A copy is deleted. |
 | `home_keeper_library_reading_changed` | The reading status of a person changes. |
+| `home_keeper_library_reading_updated` | The rating, page, dates, count or notes of a reading row change, and the status stays. |
 | `home_keeper_library_book_finished` | The reading status of a person becomes `read`. |
 | `home_keeper_library_loan_started` | A book is lent or borrowed. |
 | `home_keeper_library_loan_returned` | A loan is returned. |
 | `home_keeper_library_loan_overdue` | An open loan passes its due date. |
+| `home_keeper_library_loan_updated` | The party, the dates, the format or the note of a loan change. |
+| `home_keeper_library_loan_removed` | A loan is deleted. |
 | `home_keeper_library_wishlist_added` | A book goes on the wishlist of a person. |
 | `home_keeper_library_wishlist_removed` | A book leaves the wishlist. |
 | `home_keeper_library_import_completed` | A CSV import is written. |
+| `home_keeper_library_person_settings_updated` | The library settings of a person change. |
+| `home_keeper_library_settings_updated` | The options of the library change, such as the currency. |
 
 ## Payloads
 
@@ -64,17 +70,25 @@ The other keys of each event are in the generated API reference and in
 
 - `book_updated` and the location `*_updated` events add `changed_fields`.
 - The copy events add `copy_id` and `shelf_id`. `copy_moved` adds
-  `previous_shelf_id`.
+  `previous_shelf_id`. `copy_updated` adds `changed_fields`, with the names of
+  the fields only, not their values (no price or value).
 - `reading_changed` adds `status` and `previous_status`. A removed reading row
   has `status: null`.
+- `reading_updated` adds `status` and `changed_fields`. It names the changed
+  fields and never gives the private notes.
 - `book_finished` adds `finished`, `rating` and `read_count`.
 - The loan events add `loan_id`, `direction`, `copy_id`, `party`, `started`,
   `due` and `returned`. `direction` is `out` for a lent copy and `in` for a
-  borrowed book.
+  borrowed book. `loan_updated` adds `changed_fields`. `loan_removed` has the
+  loan as it was before the delete.
 - The wishlist events add `buy` and `bought`.
 - The room, bookcase and shelf events have their own ids and `name` in place of
   the book spine.
 - `import_completed` has `person_id`, `source` and the counts of the import.
+- `person_settings_updated` has `person_id`, `changed_fields` and `origin`, and
+  no setting values.
+- `settings_updated` has `changed_fields`, `currency` and `origin`. The
+  `set_settings` service and the options flow both fire it.
 
 ## Rules
 

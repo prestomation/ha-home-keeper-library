@@ -32,14 +32,20 @@ from .const import (
     EVENT_COPY_ADDED,
     EVENT_COPY_MOVED,
     EVENT_COPY_REMOVED,
+    EVENT_COPY_UPDATED,
     EVENT_IMPORT_COMPLETED,
     EVENT_LOAN_OVERDUE,
+    EVENT_LOAN_REMOVED,
     EVENT_LOAN_RETURNED,
     EVENT_LOAN_STARTED,
+    EVENT_LOAN_UPDATED,
+    EVENT_PERSON_SETTINGS_UPDATED,
     EVENT_READING_CHANGED,
+    EVENT_READING_UPDATED,
     EVENT_ROOM_ADDED,
     EVENT_ROOM_REMOVED,
     EVENT_ROOM_UPDATED,
+    EVENT_SETTINGS_UPDATED,
     EVENT_SHELF_ADDED,
     EVENT_SHELF_REMOVED,
     EVENT_SHELF_UPDATED,
@@ -123,6 +129,19 @@ class LibraryStore:
                 listener()
             except Exception:
                 _LOGGER.exception("A library store listener failed")
+
+    @callback
+    def async_settings_updated(
+        self, changed_fields: list[str], currency: str, *, origin: str | None = None
+    ) -> None:
+        """Fire ``settings_updated`` for a change of the entry options.
+
+        The options are on the config entry, not in the document, so there is
+        nothing to save. The listeners hear about the change.
+        """
+        payload = events.settings_event_data(changed_fields, currency, origin)
+        self.hass.bus.async_fire(EVENT_SETTINGS_UPDATED, payload)
+        self.async_notify()
 
     async def _commit(self, fired: list[Event]) -> None:
         """Save, fire the events and tell the listeners."""
@@ -492,7 +511,11 @@ class LibraryStore:
     async def update_copy(
         self, copy_id: str, data: dict[str, Any], *, origin: str | None = None
     ) -> dict[str, Any]:
-        """Change a copy. A new shelf fires ``copy_moved``."""
+        """Change a copy.
+
+        A new shelf fires ``copy_moved``. A change of the other fields fires
+        ``copy_updated`` with the names of those fields.
+        """
         record = self.copy(copy_id)
         if "shelf_id" in data:
             self.check_shelf(data["shelf_id"])
@@ -501,8 +524,8 @@ class LibraryStore:
             return updated
         self.state["copies"][copy_id] = updated
         fired: list[Event] = []
+        book = self.book(updated["book_id"])
         if "shelf_id" in changed:
-            book = self.book(updated["book_id"])
             fired.append(
                 (
                     EVENT_COPY_MOVED,
@@ -511,6 +534,9 @@ class LibraryStore:
                     ),
                 )
             )
+        if other := [f for f in changed if f != "shelf_id"]:
+            payload = events.copy_updated_event_data(book, updated, other, origin)
+            fired.append((EVENT_COPY_UPDATED, payload))
         await self._commit(fired)
         return dict(updated)
 
@@ -586,9 +612,13 @@ class LibraryStore:
         if not changed:
             return row
         self.state["reading"].setdefault(person_id, {})[book_id] = row
-        fired = []
         if "status" in changed:
             fired = self._reading_events(book, person_id, row, previous, origin)
+        else:
+            payload = events.reading_updated_event_data(
+                book, person_id, row["status"], changed, origin
+            )
+            fired = [(EVENT_READING_UPDATED, payload)]
         await self._commit(fired)
         return dict(row)
 
@@ -655,7 +685,10 @@ class LibraryStore:
         if not changed:
             return updated
         self.state["loans"][loan_id] = updated
-        await self._commit([])
+        payload = events.loan_updated_event_data(
+            self._loan_book(updated), updated, changed, origin
+        )
+        await self._commit([(EVENT_LOAN_UPDATED, payload)])
         return dict(updated)
 
     async def delete_loan(
@@ -664,8 +697,13 @@ class LibraryStore:
         """Delete a loan. The loan sync deletes its Home Keeper task."""
         loan = self.loan(loan_id)
         del self.state["loans"][loan_id]
-        await self._commit([])
+        payload = events.loan_event_data(self._loan_book(loan), loan, origin)
+        await self._commit([(EVENT_LOAN_REMOVED, payload)])
         return loan
+
+    def _loan_book(self, loan: dict[str, Any]) -> dict[str, Any]:
+        """The book of a loan, for an event payload."""
+        return self.state["books"].get(loan["book_id"]) or {"id": loan["book_id"]}
 
     async def set_loan_task(self, loan_id: str, task_id: str | None) -> None:
         """Record the Home Keeper task id of a loan."""
@@ -843,14 +881,15 @@ class LibraryStore:
     # ── People ───────────────────────────────────────────────────────────────
 
     async def set_person_settings(
-        self, person_id: str, data: dict[str, Any]
+        self, person_id: str, data: dict[str, Any], *, origin: str | None = None
     ) -> dict[str, Any]:
         """Change the library settings of a person."""
         current = models.person_settings(self.state["people"], person_id)
         updated, changed = models.apply_person_settings(current, data)
         if changed:
             self.state["people"][person_id] = updated
-            await self._commit([])
+            payload = events.person_settings_event_data(person_id, changed, origin)
+            await self._commit([(EVENT_PERSON_SETTINGS_UPDATED, payload)])
         return updated
 
     # ── Import ───────────────────────────────────────────────────────────────
