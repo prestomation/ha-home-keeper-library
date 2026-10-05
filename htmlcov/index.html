@@ -11,7 +11,7 @@
 <header>
     <div class="content">
         <h1>Coverage report:
-            <span class="pc_cov">94%</span>
+            <span class="pc_cov">95%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -26,6 +26,8 @@
                         <kbd>s</kbd>
                         <kbd>m</kbd>
                         <kbd>x</kbd>
+                        <kbd>b</kbd>
+                        <kbd>p</kbd>
                         <kbd>c</kbd>
                         &nbsp; change column sorting
                     </p>
@@ -54,151 +56,487 @@
         </h2>
         <p class="text">
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.1">coverage.py v7.16.1</a>,
-            created at 2026-10-04 23:23 +0000
+            created at 2026-10-05 06:38 +0000
         </p>
     </div>
 </header>
 <main id="index">
     <table class="index" data-sortable>
         <thead>
+            <tr class="tablehead grouphead">
+                <th class="spacer">&nbsp;</th>
+                <th class="spacer">&nbsp;</th>
+                <th class="left" colspan="4">Statements</th>
+                <th class="spacer">&nbsp;</th>
+                <th class="left" colspan="3">Branches</th>
+                <th class="spacer">&nbsp;</th>
+                <th>Total</th>
+            </tr>
             <tr class="tablehead" title="Click to sort">
                 <th id="file" class="name" aria-sort="none" data-shortcut="f">File<span class="arrows"></span></th>
                 <th class="spacer">&nbsp;</th>
+                <th id="statements_coverage" aria-sort="none" data-default-sort-order="descending">coverage<span class="arrows"></span></th>
                 <th id="statements" aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements<span class="arrows"></span></th>
                 <th id="missing" aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing<span class="arrows"></span></th>
                 <th id="excluded" aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded<span class="arrows"></span></th>
+                <th class="spacer">&nbsp;</th>
+                <th id="branches_coverage" aria-sort="none" data-default-sort-order="descending">coverage<span class="arrows"></span></th>
+                <th id="branches" aria-sort="none" data-default-sort-order="descending" data-shortcut="b">branches<span class="arrows"></span></th>
+                <th id="partial" aria-sort="none" data-default-sort-order="descending" data-shortcut="p">partial<span class="arrows"></span></th>
                 <th class="spacer">&nbsp;</th>
                 <th id="coverage" aria-sort="none" data-shortcut="c">coverage<span class="arrows"></span></th>
             </tr>
         </thead>
         <tbody>
             <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5___init___py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>__init__.py</a></td>
+                <td class="name"><a href="z_0ffe15f9bbf8bc84___init___py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>__init__.py</a></td>
                 <td class="spacer">&nbsp;</td>
-                <td>74</td>
-                <td>5</td>
-                <td>0</td>
-                <td class="spacer">&nbsp;</td>
-                <td data-ratio="69 74">93%</td>
-            </tr>
-            <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_api_surface_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>api_surface.py</a></td>
-                <td class="spacer">&nbsp;</td>
+                <td data-ratio="78 78">100%</td>
                 <td>78</td>
                 <td>0</td>
                 <td>0</td>
                 <td class="spacer">&nbsp;</td>
-                <td data-ratio="78 78">100%</td>
-            </tr>
-            <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_card_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>card.py</a></td>
-                <td class="spacer">&nbsp;</td>
-                <td>15</td>
+                <td data-ratio="5 6">83%</td>
+                <td>6</td>
                 <td>1</td>
-                <td>0</td>
                 <td class="spacer">&nbsp;</td>
-                <td data-ratio="14 15">93%</td>
+                <td data-ratio="83 84">99%</td>
             </tr>
             <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_config_flow_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>config_flow.py</a></td>
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_api_surface_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>api_surface.py</a></td>
                 <td class="spacer">&nbsp;</td>
+                <td data-ratio="91 91">100%</td>
+                <td>91</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="0 0">100%</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="91 91">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_backend_i18n_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>backend_i18n.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="50 56">89%</td>
+                <td>56</td>
+                <td>6</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="10 12">83%</td>
                 <td>12</td>
-                <td>0</td>
-                <td>0</td>
+                <td>2</td>
                 <td class="spacer">&nbsp;</td>
-                <td data-ratio="12 12">100%</td>
+                <td data-ratio="60 68">88%</td>
             </tr>
             <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_const_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>const.py</a></td>
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_book_lookup_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>book_lookup.py</a></td>
                 <td class="spacer">&nbsp;</td>
-                <td>18</td>
-                <td>0</td>
-                <td>0</td>
+                <td data-ratio="95 105">90%</td>
+                <td>105</td>
+                <td>10</td>
+                <td>2</td>
                 <td class="spacer">&nbsp;</td>
-                <td data-ratio="18 18">100%</td>
+                <td data-ratio="20 26">77%</td>
+                <td>26</td>
+                <td>6</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="115 131">88%</td>
             </tr>
             <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_coordinator_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>coordinator.py</a></td>
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_card_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>card.py</a></td>
                 <td class="spacer">&nbsp;</td>
-                <td>16</td>
-                <td>0</td>
-                <td>0</td>
+                <td data-ratio="58 78">74%</td>
+                <td>78</td>
+                <td>20</td>
+                <td>2</td>
                 <td class="spacer">&nbsp;</td>
-                <td data-ratio="16 16">100%</td>
+                <td data-ratio="17 28">61%</td>
+                <td>28</td>
+                <td>7</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="75 106">71%</td>
             </tr>
             <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_diagnostics_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>diagnostics.py</a></td>
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_card_resource_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>card_resource.py</a></td>
                 <td class="spacer">&nbsp;</td>
-                <td>8</td>
+                <td data-ratio="29 29">100%</td>
+                <td>29</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="2 2">100%</td>
                 <td>2</td>
                 <td>0</td>
                 <td class="spacer">&nbsp;</td>
-                <td data-ratio="6 8">75%</td>
+                <td data-ratio="31 31">100%</td>
             </tr>
             <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_events_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>events.py</a></td>
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_config_flow_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>config_flow.py</a></td>
                 <td class="spacer">&nbsp;</td>
+                <td data-ratio="43 43">100%</td>
+                <td>43</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="10 10">100%</td>
                 <td>10</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="53 53">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_const_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>const.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="81 81">100%</td>
+                <td>81</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="0 0">100%</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="81 81">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_coordinator_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>coordinator.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="44 44">100%</td>
+                <td>44</td>
+                <td>0</td>
+                <td>6</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="5 6">83%</td>
+                <td>6</td>
+                <td>1</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="49 50">98%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_covers_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>covers.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="165 182">91%</td>
+                <td>182</td>
+                <td>17</td>
+                <td>2</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="44 54">81%</td>
+                <td>54</td>
+                <td>10</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="209 236">89%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_csv_io_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>csv_io.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="403 405">99%</td>
+                <td>405</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="135 136">99%</td>
+                <td>136</td>
+                <td>1</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="538 541">99%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_diagnostics_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>diagnostics.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="10 10">100%</td>
+                <td>10</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="0 0">100%</td>
                 <td>0</td>
                 <td>0</td>
                 <td class="spacer">&nbsp;</td>
                 <td data-ratio="10 10">100%</td>
             </tr>
             <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_models_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>models.py</a></td>
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_entity_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>entity.py</a></td>
                 <td class="spacer">&nbsp;</td>
+                <td data-ratio="49 50">98%</td>
+                <td>50</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="7 8">88%</td>
+                <td>8</td>
+                <td>1</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="56 58">97%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_events_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>events.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="38 38">100%</td>
+                <td>38</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="0 0">100%</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="38 38">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_frontend_assets_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>frontend_assets.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="19 19">100%</td>
+                <td>19</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="2 2">100%</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="21 21">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_home_keeper_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>home_keeper.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="131 138">95%</td>
+                <td>138</td>
+                <td>7</td>
+                <td>2</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="34 36">94%</td>
                 <td>36</td>
+                <td>2</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="165 174">95%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_isbn_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>isbn.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="51 51">100%</td>
+                <td>51</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="16 16">100%</td>
+                <td>16</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="67 67">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_loan_sync_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>loan_sync.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="115 130">88%</td>
+                <td>130</td>
+                <td>15</td>
+                <td>2</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="37 50">74%</td>
+                <td>50</td>
+                <td>13</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="152 180">84%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_loan_tasks_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>loan_tasks.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="104 104">100%</td>
+                <td>104</td>
                 <td>0</td>
                 <td>0</td>
                 <td class="spacer">&nbsp;</td>
                 <td data-ratio="36 36">100%</td>
+                <td>36</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="140 140">100%</td>
             </tr>
             <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_panel_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>panel.py</a></td>
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_models_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>models.py</a></td>
                 <td class="spacer">&nbsp;</td>
-                <td>19</td>
+                <td data-ratio="577 578">99%</td>
+                <td>578</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="338 340">99%</td>
+                <td>340</td>
+                <td>2</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="915 918">99%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_openlibrary_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>openlibrary.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="133 134">99%</td>
+                <td>134</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="61 64">95%</td>
+                <td>64</td>
+                <td>3</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="194 198">98%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_openlibrary_client_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>openlibrary_client.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="101 105">96%</td>
+                <td>105</td>
+                <td>4</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="29 34">85%</td>
+                <td>34</td>
+                <td>5</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="130 139">94%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_people_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>people.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="33 36">92%</td>
+                <td>36</td>
                 <td>3</td>
                 <td>0</td>
                 <td class="spacer">&nbsp;</td>
-                <td data-ratio="16 19">84%</td>
-            </tr>
-            <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_sensor_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>sensor.py</a></td>
-                <td class="spacer">&nbsp;</td>
-                <td>65</td>
-                <td>0</td>
-                <td>0</td>
-                <td class="spacer">&nbsp;</td>
-                <td data-ratio="65 65">100%</td>
-            </tr>
-            <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_store_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>store.py</a></td>
-                <td class="spacer">&nbsp;</td>
-                <td>49</td>
+                <td data-ratio="7 10">70%</td>
+                <td>10</td>
                 <td>3</td>
-                <td>0</td>
                 <td class="spacer">&nbsp;</td>
-                <td data-ratio="46 49">94%</td>
+                <td data-ratio="40 46">87%</td>
             </tr>
             <tr class="region">
-                <td class="name"><a href="z_ac1f5a46cc4c81e5_websocket_api_py.html">custom_components<span class="sep">/</span>example_integration<span class="sep">/</span>websocket_api.py</a></td>
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_projections_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>projections.py</a></td>
                 <td class="spacer">&nbsp;</td>
-                <td>72</td>
+                <td data-ratio="160 161">99%</td>
+                <td>161</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="63 64">98%</td>
+                <td>64</td>
+                <td>1</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="223 225">99%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_sensor_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>sensor.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="74 74">100%</td>
+                <td>74</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="0 0">100%</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="74 74">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_services_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>services.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="394 407">97%</td>
+                <td>407</td>
                 <td>13</td>
                 <td>0</td>
                 <td class="spacer">&nbsp;</td>
-                <td data-ratio="59 72">82%</td>
+                <td data-ratio="98 108">91%</td>
+                <td>108</td>
+                <td>10</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="492 515">96%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_store_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>store.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="460 498">92%</td>
+                <td>498</td>
+                <td>38</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="116 148">78%</td>
+                <td>148</td>
+                <td>26</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="576 646">89%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_todo_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>todo.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="64 74">86%</td>
+                <td>74</td>
+                <td>10</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="11 14">79%</td>
+                <td>14</td>
+                <td>3</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="75 88">85%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_websocket_api_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>websocket_api.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="75 81">93%</td>
+                <td>81</td>
+                <td>6</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="12 14">86%</td>
+                <td>14</td>
+                <td>2</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="87 95">92%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_wishlist_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>wishlist.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="117 117">100%</td>
+                <td>117</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="44 44">100%</td>
+                <td>44</td>
+                <td>0</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="161 161">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name"><a href="z_0ffe15f9bbf8bc84_wishlist_sync_py.html">custom_components<span class="sep">/</span>home_keeper_library<span class="sep">/</span>wishlist_sync.py</a></td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="95 104">91%</td>
+                <td>104</td>
+                <td>9</td>
+                <td>2</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="24 28">86%</td>
+                <td>28</td>
+                <td>4</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="119 132">90%</td>
             </tr>
         </tbody>
         <tfoot>
             <tr class="total">
                 <td class="name">Total</td>
                 <td class="spacer">&nbsp;</td>
-                <td>472</td>
-                <td>27</td>
-                <td>0</td>
+                <td data-ratio="3937 4101">96%</td>
+                <td>4101</td>
+                <td>164</td>
+                <td>18</td>
                 <td class="spacer">&nbsp;</td>
-                <td data-ratio="445 472">94%</td>
+                <td data-ratio="1183 1296">91%</td>
+                <td>1296</td>
+                <td>103</td>
+                <td class="spacer">&nbsp;</td>
+                <td data-ratio="5120 5397">95%</td>
             </tr>
         </tfoot>
     </table>
@@ -210,12 +548,12 @@
     <div class="content">
         <p>
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.1">coverage.py v7.16.1</a>,
-            created at 2026-10-04 23:23 +0000
+            created at 2026-10-05 06:38 +0000
         </p>
     </div>
     <aside class="hidden">
-        <a id="prevFileLink" class="nav" href="z_ac1f5a46cc4c81e5_websocket_api_py.html"></a>
-        <a id="nextFileLink" class="nav" href="z_ac1f5a46cc4c81e5___init___py.html"></a>
+        <a id="prevFileLink" class="nav" href="z_0ffe15f9bbf8bc84_wishlist_sync_py.html"></a>
+        <a id="nextFileLink" class="nav" href="z_0ffe15f9bbf8bc84___init___py.html"></a>
         <button type="button" class="button_prev_file" data-shortcut="["></button>
         <button type="button" class="button_next_file" data-shortcut="]"></button>
         <button type="button" class="button_show_hide_help" data-shortcut="?"></button>
