@@ -1,0 +1,1114 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Home Keeper Library",
+        "description": "Defineix la moneda dels preus i dels valors dels exemplars.",
+        "data": {
+          "currency": "Moneda"
+        },
+        "data_description": {
+          "currency": "Un codi de 3 lletres, per exemple EUR o USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Introdueix un codi de moneda de 3 lletres."
+    },
+    "abort": {
+      "already_configured": "Home Keeper Library ja està configurat.",
+      "single_instance_allowed": "Home Keeper Library ja està configurat.",
+      "home_keeper_missing": "Home Keeper Library necessita Home Keeper. Instal·la Home Keeper des d'HACS, reinicia Home Assistant i torna a afegir Home Keeper Library. Passos d'instal·lació: {url}",
+      "home_keeper_not_set_up": "Afegeix primer la integració Home Keeper.",
+      "home_keeper_too_old": "Actualitza Home Keeper a la versió {version} o posterior."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opcions de la biblioteca",
+        "data": {
+          "currency": "Moneda"
+        },
+        "data_description": {
+          "currency": "Un codi de 3 lletres, per exemple EUR o USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Introdueix un codi de moneda de 3 lletres."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "books": {
+        "name": "Llibres"
+      },
+      "loans_out": {
+        "name": "Préstecs fora"
+      },
+      "loans_overdue": {
+        "name": "Préstecs vençuts"
+      },
+      "books_read_this_year": {
+        "name": "{person} llibres llegits aquest any"
+      },
+      "reading_now": {
+        "name": "{person} llegint ara"
+      }
+    },
+    "todo": {
+      "to_read": {
+        "name": "{person} per llegir"
+      }
+    }
+  },
+  "issues": {
+    "home_keeper_missing": {
+      "title": "Home Keeper no està instal·lat",
+      "description": "La pestanya Biblioteca i les tasques de préstec necessiten Home Keeper. La targeta, les entitats i els serveis ja funcionen. Instal·la Home Keeper des d'HACS i reinicia Home Assistant. Passos d'instal·lació: {url}"
+    },
+    "home_keeper_not_set_up": {
+      "title": "Home Keeper no està configurat",
+      "description": "La pestanya Biblioteca i les tasques de préstec necessiten una integració Home Keeper carregada. La targeta, les entitats i els serveis ja funcionen. Afegeix o activa la integració Home Keeper."
+    },
+    "home_keeper_too_old": {
+      "title": "Home Keeper és massa antic",
+      "description": "La pestanya Biblioteca i les tasques de préstec necessiten Home Keeper versió {version} o posterior. La targeta, les entitats i els serveis ja funcionen. Actualitza Home Keeper."
+    }
+  },
+  "services": {
+    "add_room": {
+      "name": "Afegeix una habitació",
+      "description": "Afegeix una habitació a la biblioteca.",
+      "fields": {
+        "name": {
+          "name": "Nom",
+          "description": "El nom visible."
+        },
+        "area_id": {
+          "name": "Àrea",
+          "description": "L'àrea de Home Assistant de l'habitació."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La posició d'ordenació. El menor va primer."
+        }
+      }
+    },
+    "update_room": {
+      "name": "Canvia una habitació",
+      "description": "Canvia una habitació.",
+      "fields": {
+        "room_id": {
+          "name": "Habitació",
+          "description": "L'ID de l'habitació."
+        },
+        "name": {
+          "name": "Nom",
+          "description": "El nom visible."
+        },
+        "area_id": {
+          "name": "Àrea",
+          "description": "L'àrea de Home Assistant de l'habitació."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La posició d'ordenació. El menor va primer."
+        }
+      }
+    },
+    "delete_room": {
+      "name": "Esborra una habitació",
+      "description": "Esborra una habitació. Una habitació amb llibreries necessita force.",
+      "fields": {
+        "room_id": {
+          "name": "Habitació",
+          "description": "L'ID de l'habitació."
+        },
+        "force": {
+          "name": "Força",
+          "description": "Esborra també el contingut. Els exemplars queden sense prestatge."
+        }
+      }
+    },
+    "add_bookcase": {
+      "name": "Afegeix una llibreria",
+      "description": "Afegeix una llibreria a una habitació.",
+      "fields": {
+        "room_id": {
+          "name": "Habitació",
+          "description": "L'ID de l'habitació."
+        },
+        "name": {
+          "name": "Nom",
+          "description": "El nom visible."
+        },
+        "note": {
+          "name": "Nota",
+          "description": "Una nota curta."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La posició d'ordenació. El menor va primer."
+        }
+      }
+    },
+    "update_bookcase": {
+      "name": "Canvia una llibreria",
+      "description": "Canvia una llibreria o mou-la a una altra habitació.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Llibreria",
+          "description": "L'ID de la llibreria."
+        },
+        "room_id": {
+          "name": "Habitació",
+          "description": "L'ID de l'habitació."
+        },
+        "name": {
+          "name": "Nom",
+          "description": "El nom visible."
+        },
+        "note": {
+          "name": "Nota",
+          "description": "Una nota curta."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La posició d'ordenació. El menor va primer."
+        }
+      }
+    },
+    "delete_bookcase": {
+      "name": "Esborra una llibreria",
+      "description": "Esborra una llibreria. Una llibreria amb prestatges necessita force.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Llibreria",
+          "description": "L'ID de la llibreria."
+        },
+        "force": {
+          "name": "Força",
+          "description": "Esborra també el contingut. Els exemplars queden sense prestatge."
+        }
+      }
+    },
+    "add_shelf": {
+      "name": "Afegeix un prestatge",
+      "description": "Afegeix un prestatge a una llibreria.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Llibreria",
+          "description": "L'ID de la llibreria."
+        },
+        "name": {
+          "name": "Nom",
+          "description": "El nom visible."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La posició d'ordenació. El menor va primer."
+        }
+      }
+    },
+    "update_shelf": {
+      "name": "Canvia un prestatge",
+      "description": "Canvia un prestatge o mou-lo a una altra llibreria.",
+      "fields": {
+        "shelf_id": {
+          "name": "Prestatge",
+          "description": "L'ID del prestatge. Buit per a cap prestatge."
+        },
+        "bookcase_id": {
+          "name": "Llibreria",
+          "description": "L'ID de la llibreria."
+        },
+        "name": {
+          "name": "Nom",
+          "description": "El nom visible."
+        },
+        "order": {
+          "name": "Ordre",
+          "description": "La posició d'ordenació. El menor va primer."
+        }
+      }
+    },
+    "delete_shelf": {
+      "name": "Esborra un prestatge",
+      "description": "Esborra un prestatge. Un prestatge amb exemplars necessita force.",
+      "fields": {
+        "shelf_id": {
+          "name": "Prestatge",
+          "description": "L'ID del prestatge. Buit per a cap prestatge."
+        },
+        "force": {
+          "name": "Força",
+          "description": "Esborra també el contingut. Els exemplars queden sense prestatge."
+        }
+      }
+    },
+    "lookup_isbn": {
+      "name": "Cerca un ISBN",
+      "description": "Llegeix els detalls d'un ISBN d'Open Library. La biblioteca no canvia.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 o un ISBN-13."
+        }
+      }
+    },
+    "add_book": {
+      "name": "Afegeix un llibre",
+      "description": "Afegeix un llibre. Si un llibre té el mateix ISBN, el servei retorna aquest llibre.",
+      "fields": {
+        "title": {
+          "name": "Títol",
+          "description": "El títol del llibre."
+        },
+        "subtitle": {
+          "name": "Subtítol",
+          "description": "El subtítol del llibre."
+        },
+        "authors": {
+          "name": "Autors",
+          "description": "Els autors, en ordre."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 o un ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13",
+          "description": "L'ISBN de 13 xifres."
+        },
+        "isbn10": {
+          "name": "ISBN-10",
+          "description": "L'ISBN de 10 xifres."
+        },
+        "publisher": {
+          "name": "Editorial",
+          "description": "L'editorial del llibre."
+        },
+        "published": {
+          "name": "Publicat",
+          "description": "La data de publicació, normalment un any."
+        },
+        "pages": {
+          "name": "Pàgines",
+          "description": "El nombre de pàgines."
+        },
+        "language": {
+          "name": "Idioma",
+          "description": "El codi d'idioma, per exemple en."
+        },
+        "subjects": {
+          "name": "Temes",
+          "description": "Els temes del llibre."
+        },
+        "series": {
+          "name": "Sèrie",
+          "description": "El nom de la sèrie, o un nom i un número."
+        },
+        "description": {
+          "name": "Descripció",
+          "description": "La descripció del llibre."
+        },
+        "tags": {
+          "name": "Etiquetes",
+          "description": "Les etiquetes del llibre."
+        },
+        "shared_notes": {
+          "name": "Notes compartides",
+          "description": "Notes que cada usuari pot llegir, en Markdown."
+        },
+        "needs_details": {
+          "name": "Falten detalls",
+          "description": "Marca el llibre com a incomplet."
+        },
+        "lookup": {
+          "name": "Cerca",
+          "description": "Llegeix els detalls d'Open Library."
+        }
+      }
+    },
+    "update_book": {
+      "name": "Canvia un llibre",
+      "description": "Canvia els detalls d'un llibre.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "title": {
+          "name": "Títol",
+          "description": "El títol del llibre."
+        },
+        "subtitle": {
+          "name": "Subtítol",
+          "description": "El subtítol del llibre."
+        },
+        "authors": {
+          "name": "Autors",
+          "description": "Els autors, en ordre."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 o un ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13",
+          "description": "L'ISBN de 13 xifres."
+        },
+        "isbn10": {
+          "name": "ISBN-10",
+          "description": "L'ISBN de 10 xifres."
+        },
+        "publisher": {
+          "name": "Editorial",
+          "description": "L'editorial del llibre."
+        },
+        "published": {
+          "name": "Publicat",
+          "description": "La data de publicació, normalment un any."
+        },
+        "pages": {
+          "name": "Pàgines",
+          "description": "El nombre de pàgines."
+        },
+        "language": {
+          "name": "Idioma",
+          "description": "El codi d'idioma, per exemple en."
+        },
+        "subjects": {
+          "name": "Temes",
+          "description": "Els temes del llibre."
+        },
+        "series": {
+          "name": "Sèrie",
+          "description": "El nom de la sèrie, o un nom i un número."
+        },
+        "description": {
+          "name": "Descripció",
+          "description": "La descripció del llibre."
+        },
+        "tags": {
+          "name": "Etiquetes",
+          "description": "Les etiquetes del llibre."
+        },
+        "shared_notes": {
+          "name": "Notes compartides",
+          "description": "Notes que cada usuari pot llegir, en Markdown."
+        },
+        "needs_details": {
+          "name": "Falten detalls",
+          "description": "Marca el llibre com a incomplet."
+        }
+      }
+    },
+    "delete_book": {
+      "name": "Esborra un llibre",
+      "description": "Esborra un llibre amb els exemplars, l'estat de lectura, els préstecs i la coberta.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        }
+      }
+    },
+    "refresh_book": {
+      "name": "Actualitza des d'Open Library",
+      "description": "Omple els camps buits d'un llibre des d'Open Library.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        }
+      }
+    },
+    "scan_isbn": {
+      "name": "Escaneja un ISBN",
+      "description": "Afegeix un llibre escanejat a un prestatge.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 o un ISBN-13."
+        },
+        "shelf_id": {
+          "name": "Prestatge",
+          "description": "L'ID del prestatge. Buit per a cap prestatge."
+        },
+        "format": {
+          "name": "Format",
+          "description": "El format de l'exemplar."
+        },
+        "on_duplicate": {
+          "name": "Si existeix un exemplar",
+          "description": "L'acció si la biblioteca té un exemplar del llibre."
+        }
+      }
+    },
+    "add_copy": {
+      "name": "Afegeix un exemplar",
+      "description": "Afegeix un exemplar d'un llibre.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "shelf_id": {
+          "name": "Prestatge",
+          "description": "L'ID del prestatge. Buit per a cap prestatge."
+        },
+        "format": {
+          "name": "Format",
+          "description": "El format de l'exemplar."
+        },
+        "condition": {
+          "name": "Estat",
+          "description": "L'estat de l'exemplar."
+        },
+        "acquired": {
+          "name": "Adquirit",
+          "description": "La data en què es va adquirir l'exemplar."
+        },
+        "acquired_from": {
+          "name": "Adquirit a",
+          "description": "La botiga o la persona."
+        },
+        "price": {
+          "name": "Preu",
+          "description": "El preu pagat."
+        },
+        "value": {
+          "name": "Valor",
+          "description": "El valor actual de l'exemplar."
+        },
+        "signed": {
+          "name": "Signat",
+          "description": "L'exemplar està signat."
+        },
+        "first_edition": {
+          "name": "Primera edició",
+          "description": "L'exemplar és una primera edició."
+        },
+        "note": {
+          "name": "Nota",
+          "description": "Una nota curta."
+        }
+      }
+    },
+    "update_copy": {
+      "name": "Canvia un exemplar",
+      "description": "Canvia un exemplar.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplar",
+          "description": "L'ID de l'exemplar."
+        },
+        "shelf_id": {
+          "name": "Prestatge",
+          "description": "L'ID del prestatge. Buit per a cap prestatge."
+        },
+        "format": {
+          "name": "Format",
+          "description": "El format de l'exemplar."
+        },
+        "condition": {
+          "name": "Estat",
+          "description": "L'estat de l'exemplar."
+        },
+        "acquired": {
+          "name": "Adquirit",
+          "description": "La data en què es va adquirir l'exemplar."
+        },
+        "acquired_from": {
+          "name": "Adquirit a",
+          "description": "La botiga o la persona."
+        },
+        "price": {
+          "name": "Preu",
+          "description": "El preu pagat."
+        },
+        "value": {
+          "name": "Valor",
+          "description": "El valor actual de l'exemplar."
+        },
+        "signed": {
+          "name": "Signat",
+          "description": "L'exemplar està signat."
+        },
+        "first_edition": {
+          "name": "Primera edició",
+          "description": "L'exemplar és una primera edició."
+        },
+        "note": {
+          "name": "Nota",
+          "description": "Una nota curta."
+        }
+      }
+    },
+    "move_copy": {
+      "name": "Mou un exemplar",
+      "description": "Mou un exemplar a un prestatge.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplar",
+          "description": "L'ID de l'exemplar."
+        },
+        "shelf_id": {
+          "name": "Prestatge",
+          "description": "L'ID del prestatge. Buit per a cap prestatge."
+        }
+      }
+    },
+    "delete_copy": {
+      "name": "Esborra un exemplar",
+      "description": "Esborra un exemplar.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplar",
+          "description": "L'ID de l'exemplar."
+        }
+      }
+    },
+    "set_cover": {
+      "name": "Defineix la coberta",
+      "description": "Defineix la coberta d'un llibre.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "kind": {
+          "name": "Tipus de coberta",
+          "description": "L'origen de la coberta."
+        },
+        "file_id": {
+          "name": "ID del fitxer",
+          "description": "L'ID de la pujada de la coberta."
+        }
+      }
+    },
+    "set_reading": {
+      "name": "Defineix l'estat de lectura",
+      "description": "Defineix l'estat de lectura d'un llibre per a una persona. Un usuari no administrador només pot definir el seu propi estat.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "person_id": {
+          "name": "Persona",
+          "description": "L'ID de la persona de Home Assistant."
+        },
+        "status": {
+          "name": "Estat de lectura",
+          "description": "L'estat de lectura."
+        },
+        "rating": {
+          "name": "Puntuació",
+          "description": "Una puntuació de 1 a 5."
+        },
+        "page": {
+          "name": "Pàgina",
+          "description": "La pàgina actual."
+        },
+        "started": {
+          "name": "Començat",
+          "description": "La data d'inici."
+        },
+        "finished": {
+          "name": "Acabat",
+          "description": "La data en què es va acabar el llibre."
+        },
+        "read_count": {
+          "name": "Vegades llegit",
+          "description": "El nombre de vegades que s'ha llegit el llibre."
+        },
+        "private_notes": {
+          "name": "Notes privades",
+          "description": "Notes que només la persona pot llegir."
+        }
+      }
+    },
+    "lend_book": {
+      "name": "Presta un llibre",
+      "description": "Presta un exemplar a una altra persona.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplar",
+          "description": "L'ID de l'exemplar."
+        },
+        "party": {
+          "name": "Altra persona",
+          "description": "El nom de l'altra persona del préstec."
+        },
+        "started": {
+          "name": "Començat",
+          "description": "La data d'inici."
+        },
+        "due": {
+          "name": "Venciment",
+          "description": "La data de venciment."
+        },
+        "note": {
+          "name": "Nota",
+          "description": "Una nota curta."
+        },
+        "add_task": {
+          "name": "Afegeix una tasca",
+          "description": "Afegeix una tasca de Home Keeper a la data de venciment."
+        }
+      }
+    },
+    "borrow_book": {
+      "name": "Afegeix un llibre manllevat",
+      "description": "Registra un llibre que una persona ha manllevat.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 o un ISBN-13."
+        },
+        "title": {
+          "name": "Títol",
+          "description": "El títol del llibre."
+        },
+        "authors": {
+          "name": "Autors",
+          "description": "Els autors, en ordre."
+        },
+        "party": {
+          "name": "Altra persona",
+          "description": "El nom de l'altra persona del préstec."
+        },
+        "started": {
+          "name": "Començat",
+          "description": "La data d'inici."
+        },
+        "due": {
+          "name": "Venciment",
+          "description": "La data de venciment."
+        },
+        "note": {
+          "name": "Nota",
+          "description": "Una nota curta."
+        },
+        "add_task": {
+          "name": "Afegeix una tasca",
+          "description": "Afegeix una tasca de Home Keeper a la data de venciment."
+        },
+        "person_id": {
+          "name": "Persona",
+          "description": "L'ID de la persona de Home Assistant."
+        },
+        "format": {
+          "name": "Format",
+          "description": "El format de l'exemplar."
+        }
+      }
+    },
+    "return_loan": {
+      "name": "Retorna un préstec",
+      "description": "Registra el retorn d'un préstec.",
+      "fields": {
+        "loan_id": {
+          "name": "Préstec",
+          "description": "L'ID del préstec."
+        },
+        "returned": {
+          "name": "Retornat",
+          "description": "La data de retorn. Per defecte, avui."
+        }
+      }
+    },
+    "update_loan": {
+      "name": "Canvia un préstec",
+      "description": "Canvia un préstec.",
+      "fields": {
+        "loan_id": {
+          "name": "Préstec",
+          "description": "L'ID del préstec."
+        },
+        "party": {
+          "name": "Altra persona",
+          "description": "El nom de l'altra persona del préstec."
+        },
+        "started": {
+          "name": "Començat",
+          "description": "La data d'inici."
+        },
+        "due": {
+          "name": "Venciment",
+          "description": "La data de venciment."
+        },
+        "note": {
+          "name": "Nota",
+          "description": "Una nota curta."
+        },
+        "format": {
+          "name": "Format",
+          "description": "El format de l'exemplar."
+        }
+      }
+    },
+    "delete_loan": {
+      "name": "Esborra un préstec",
+      "description": "Esborra un préstec i la seva tasca de Home Keeper.",
+      "fields": {
+        "loan_id": {
+          "name": "Préstec",
+          "description": "L'ID del préstec."
+        }
+      }
+    },
+    "add_to_wishlist": {
+      "name": "Afegeix als desitjos",
+      "description": "Posa un llibre a la llista de desitjos d'una persona.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Un ISBN-10 o un ISBN-13."
+        },
+        "title": {
+          "name": "Títol",
+          "description": "El títol del llibre."
+        },
+        "authors": {
+          "name": "Autors",
+          "description": "Els autors, en ordre."
+        },
+        "person_id": {
+          "name": "Persona",
+          "description": "L'ID de la persona de Home Assistant."
+        },
+        "buy": {
+          "name": "Compra",
+          "description": "Posa el llibre a la llista de tasques de desitjos de la persona."
+        }
+      }
+    },
+    "update_wishlist": {
+      "name": "Canvia un desig",
+      "description": "Canvia una entrada de la llista de desitjos.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "buy": {
+          "name": "Compra",
+          "description": "Posa el llibre a la llista de tasques de desitjos de la persona."
+        },
+        "person_id": {
+          "name": "Persona",
+          "description": "L'ID de la persona de Home Assistant."
+        }
+      }
+    },
+    "remove_from_wishlist": {
+      "name": "Treu dels desitjos",
+      "description": "Treu un llibre de la llista de desitjos.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        }
+      }
+    },
+    "got_wishlist_book": {
+      "name": "Llibre desitjat rebut",
+      "description": "Afegeix un exemplar d'un llibre desitjat i treu-lo de la llista de desitjos.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "shelf_id": {
+          "name": "Prestatge",
+          "description": "L'ID del prestatge. Buit per a cap prestatge."
+        },
+        "format": {
+          "name": "Format",
+          "description": "El format de l'exemplar."
+        }
+      }
+    },
+    "set_person_settings": {
+      "name": "Defineix la configuració d'una persona",
+      "description": "Defineix la configuració de biblioteca d'una persona. Un usuari no administrador només pot definir la seva compartició i el seu objectiu.",
+      "fields": {
+        "person_id": {
+          "name": "Persona",
+          "description": "L'ID de la persona de Home Assistant."
+        },
+        "share_reading": {
+          "name": "Comparteix l'estat de lectura",
+          "description": "Els altres usuaris veuen l'estat. Si està desactivat, els sensors i la llista de tasques de la persona no estan disponibles."
+        },
+        "yearly_goal": {
+          "name": "Objectiu anual",
+          "description": "El nombre de llibres a llegir aquest any."
+        },
+        "wishlist_todo": {
+          "name": "Llista de desitjos",
+          "description": "La llista de tasques dels llibres a comprar."
+        }
+      }
+    },
+    "set_settings": {
+      "name": "Defineix la configuració de la biblioteca",
+      "description": "Defineix la moneda dels preus i dels valors dels exemplars.",
+      "fields": {
+        "currency": {
+          "name": "Moneda",
+          "description": "Un codi de 3 lletres, per exemple EUR o USD."
+        }
+      }
+    },
+    "import_csv": {
+      "name": "Importa un CSV",
+      "description": "Importa llibres de Goodreads, StoryGraph o una exportació de la biblioteca.",
+      "fields": {
+        "content": {
+          "name": "Contingut CSV",
+          "description": "El text CSV. Com a màxim 5 MB."
+        },
+        "source": {
+          "name": "Origen",
+          "description": "L'aplicació que va crear el fitxer CSV."
+        },
+        "person_id": {
+          "name": "Persona",
+          "description": "L'ID de la persona de Home Assistant."
+        },
+        "shelf_id": {
+          "name": "Prestatge",
+          "description": "L'ID del prestatge. Buit per a cap prestatge."
+        },
+        "import_notes": {
+          "name": "Importa les notes",
+          "description": "Importa les ressenyes i notes com a notes privades."
+        },
+        "replace_reading": {
+          "name": "Substitueix l'estat de lectura",
+          "description": "Substitueix un estat de lectura existent."
+        },
+        "dry_run": {
+          "name": "Prova",
+          "description": "Només informa dels canvis de la importació."
+        }
+      }
+    },
+    "export_csv": {
+      "name": "Exporta un CSV",
+      "description": "Exporta la biblioteca com a text CSV.",
+      "fields": {
+        "person_id": {
+          "name": "Persona",
+          "description": "L'ID de la persona de Home Assistant."
+        },
+        "format": {
+          "name": "Format del fitxer",
+          "description": "goodreads o library."
+        }
+      }
+    },
+    "list_books": {
+      "name": "Llista els llibres",
+      "description": "Retorna els llibres que coincideixen amb els filtres.",
+      "fields": {
+        "query": {
+          "name": "Cerca de text",
+          "description": "Text al títol, als autors, a l'ISBN o a les etiquetes."
+        },
+        "room_id": {
+          "name": "Habitació",
+          "description": "L'ID de l'habitació."
+        },
+        "shelf_id": {
+          "name": "Prestatge",
+          "description": "L'ID del prestatge. Buit per a cap prestatge."
+        },
+        "owned": {
+          "name": "En propietat",
+          "description": "Només llibres amb un exemplar, o només llibres sense exemplar."
+        },
+        "status": {
+          "name": "Estat de lectura",
+          "description": "L'estat de lectura."
+        },
+        "person_id": {
+          "name": "Persona",
+          "description": "L'ID de la persona de Home Assistant."
+        },
+        "limit": {
+          "name": "Límit",
+          "description": "El nombre màxim de llibres."
+        }
+      }
+    },
+    "get_book": {
+      "name": "Obtén un llibre",
+      "description": "Retorna un llibre amb els exemplars i els préstecs.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        }
+      }
+    },
+    "list_locations": {
+      "name": "Llista les ubicacions",
+      "description": "Retorna les habitacions, les llibreries i els prestatges."
+    },
+    "list_loans": {
+      "name": "Llista els préstecs",
+      "description": "Retorna els préstecs.",
+      "fields": {
+        "status": {
+          "name": "Estat del préstec",
+          "description": "open, returned o all."
+        },
+        "direction": {
+          "name": "Direcció",
+          "description": "out per a un llibre prestat a algú, in per a un llibre que s'ha manllevat."
+        }
+      }
+    },
+    "list_people": {
+      "name": "Llista les persones",
+      "description": "Retorna les persones i la seva configuració de biblioteca."
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "Home Keeper Library no està carregat."
+    },
+    "admin_required": {
+      "message": "Només un usuari administrador pot fer això."
+    },
+    "invalid_field": {
+      "message": "El valor de {field} no és vàlid."
+    },
+    "field_required": {
+      "message": "{field} és obligatori."
+    },
+    "field_too_long": {
+      "message": "{field} és massa llarg. El màxim és {max}."
+    },
+    "out_of_range": {
+      "message": "{field} ha d'estar entre {low} i {high}."
+    },
+    "invalid_date": {
+      "message": "{field} ha de ser una data amb el format YYYY-MM-DD."
+    },
+    "invalid_choice": {
+      "message": "{field} ha de ser un d'aquests valors: {options}."
+    },
+    "invalid_isbn": {
+      "message": "{isbn} no és un ISBN vàlid."
+    },
+    "room_not_found": {
+      "message": "Cap habitació té l'ID {id}."
+    },
+    "bookcase_not_found": {
+      "message": "Cap llibreria té l'ID {id}."
+    },
+    "shelf_not_found": {
+      "message": "Cap prestatge té l'ID {id}."
+    },
+    "book_not_found": {
+      "message": "Cap llibre té l'ID {id}."
+    },
+    "copy_not_found": {
+      "message": "Cap exemplar té l'ID {id}."
+    },
+    "loan_not_found": {
+      "message": "Cap préstec té l'ID {id}."
+    },
+    "person_not_found": {
+      "message": "Cap persona té l'ID {id}."
+    },
+    "no_person": {
+      "message": "El teu usuari no té cap persona de Home Assistant. Vincula una persona a l'usuari."
+    },
+    "room_not_empty": {
+      "message": "L'habitació té {count} llibreries. Fes servir force per esborrar-les també."
+    },
+    "bookcase_not_empty": {
+      "message": "La llibreria té {count} prestatges. Fes servir force per esborrar-los també."
+    },
+    "shelf_not_empty": {
+      "message": "El prestatge té {count} exemplars. Fes servir force per deixar-los sense prestatge."
+    },
+    "duplicate_isbn": {
+      "message": "Un altre llibre té l'ISBN {isbn}."
+    },
+    "copy_on_loan": {
+      "message": "L'exemplar està prestat. Retorna primer el préstec."
+    },
+    "due_before_start": {
+      "message": "La data de venciment és anterior a la data d'inici."
+    },
+    "already_on_wishlist": {
+      "message": "El llibre ja és en una llista de desitjos."
+    },
+    "not_on_wishlist": {
+      "message": "El llibre no és en cap llista de desitjos."
+    },
+    "upload_not_found": {
+      "message": "Cap coberta pujada té l'ID {file_id}."
+    },
+    "isbn_or_title_required": {
+      "message": "Indica un ID de llibre, un ISBN o un títol."
+    },
+    "lookup_unavailable": {
+      "message": "Open Library no està disponible. Torna-ho a provar més tard."
+    },
+    "no_openlibrary_cover": {
+      "message": "Open Library no té coberta per a aquest llibre."
+    },
+    "todo_entity_not_found": {
+      "message": "{entity_id} no és una llista de tasques."
+    },
+    "csv_too_large": {
+      "message": "El text CSV és massa gran. El màxim és {mb} MB."
+    },
+    "csv_unreadable": {
+      "message": "El text CSV no té la columna {column}."
+    },
+    "upload_requires_user": {
+      "message": "Una pujada necessita un usuari amb la sessió iniciada."
+    },
+    "expected_multipart_upload": {
+      "message": "La pujada ha de ser un formulari multipart."
+    },
+    "no_file_in_upload": {
+      "message": "La pujada no té cap fitxer."
+    },
+    "file_too_large": {
+      "message": "El fitxer és massa gran. El màxim és {mb} MB."
+    },
+    "unsupported_image": {
+      "message": "El fitxer ha de ser una imatge JPEG, PNG o WebP."
+    },
+    "image_unreadable": {
+      "message": "No es pot llegir la imatge."
+    },
+    "invalid_currency": {
+      "message": "{currency} no és un codi de moneda de 3 lletres."
+    },
+    "todo_not_allowed": {
+      "message": "Només {person} o un usuari administrador pot canviar aquesta llista de tasques."
+    }
+  }
+}

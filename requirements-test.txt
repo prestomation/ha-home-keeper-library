@@ -4,10 +4,13 @@ pytest-timeout
 requests
 websockets
 
-# For the API-surface drift guard, which reads services.yaml. The pure unit tier
-# otherwise needs only `pip install pytest`, so those two checks skip when PyYAML
-# is absent and the rest of the tier still runs.
+# The pure unit tier needs it: ci/docs.py reads the docs' YAML front matter, and
+# the API-surface drift guard and ci/generate_api_docs.py read services.yaml. A
+# missing test dependency fails the run rather than skipping a gate.
 PyYAML
+
+# The pure unit tier needs it too: the ISBN and CSV tests are property-based.
+hypothesis
 
 # Linting / formatting (also enforced in CI by .github/workflows/lint.yml).
 ruff
@@ -16,7 +19,7 @@ ruff
 # Assistant via this harness. It pulls in pytest-socket, which BLOCKS real
 # network access — so it must NOT be installed for the Docker integration tier
 # (tests/integration), and the two run as separate pytest invocations. The pure
-# unit tier (tests/unit) needs only `pip install pytest`.
+# unit tier (tests/unit) needs only `pip install pytest PyYAML hypothesis`.
 pytest-homeassistant-custom-component
 
 # Provides the ``hass_frontend`` module that the ``frontend`` dependency imports

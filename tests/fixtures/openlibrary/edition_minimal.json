@@ -1,0 +1,9 @@
+{
+  "key": "/books/OL1M",
+  "title": "Untitled Pamphlet",
+  "by_statement": "by Jane Doe",
+  "publish_date": "n.d.",
+  "isbn_13": ["9780000000002"],
+  "description": "A short pamphlet.",
+  "series": ["Pamphlets", "#3"]
+}

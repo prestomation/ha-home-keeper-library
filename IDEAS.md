@@ -1,36 +1,62 @@
-# Ideas / deferred work
+---
+title: Ideas and open work
+summary: The single backlog of Home Keeper Library work that is not built, for maintainers and agents.
+---
 
-A scratchpad of things this template deliberately leaves out, with the hook points
-to build them. Keeping them here (rather than half-built) keeps the template small
-and the conventions clear.
+# Ideas and open work
 
-## Config/options flow with real options
-The config flow is single-step with no input. A real integration usually adds an
-options flow (`async_get_options_flow`) for tunables. Hook: `config_flow.py`.
+This file is the only list of work that is not built: bugs, gaps, refactors and ideas.
+Nothing here is committed scope. When an item ships, remove it. The design docs in
+`docs/design/` describe what is built.
 
-## More entity platforms
-Only `sensor` ships. A real integration might add `binary_sensor`, `button`,
-`number`, `todo`, `calendar`, etc. Pattern to follow: add the platform module, list
-it in `const.PLATFORMS`, drive it from the coordinator, anchor `unique_id`s to the
-item `id`. Per-item device pages (`DeviceInfo`) are a natural next step.
+## Known gaps
 
-## Device triggers for events
-Events are global today. If items map to devices, expose `device_trigger.py` triggers
-(with `strings.json` `device_automation` labels at translation parity) so the visual
-automation editor lists them.
+- **Query of a tab path.** Home Keeper's host drops a `?query` from a tab path. Ask Home
+  Keeper to keep it, then the `;key=value` form of the tab filters can go
+  (see `docs/design/frontend-tab-card.md`).
 
-## Diagnostics redaction
-`diagnostics.py` dumps everything because the item model has no secrets. If your model
-stores credentials, wrap the output with `homeassistant.components.diagnostics.async_redact_data`.
+## Product ideas
 
-## Cross-integration contribution API (DEFERRED)
-A stable interface for *other* integrations to push items here (a dispatcher signal +
-a `contribute_item` service) is intentionally not built. If you need it, add a
-`SIGNAL_ITEM_CONTRIBUTION` const and a documented service rather than letting callers
-touch the store directly.
+- **QR shelf labels.** Print a QR label for each shelf, built on the QR label work of
+  Home Keeper. A scan of the label opens `/home-keeper/library/scan;shelf=<id>`.
+- **Series gaps.** List the numbers that are missing from each series that the library
+  holds, and put them on the wishlist in 1 step.
+- **Reading log for children.** Minutes or pages for each day, a streak, and a goal for a
+  person who is a child.
+- **Insurance value report.** The total value and price of the copies for each room,
+  with a CSV or PDF download for an insurance claim. Admin-only.
+- **Phone walkthrough tour.** A second walkthrough capture at phone width: scan a shelf
+  with **Enter ISBN**, read the summary, set a status in the card.
 
-## More locales
-The template ships `en` + `de` to exercise the parity gates. Add locales by dropping
-`<lang>.json` next to the English source (backend `translations/` and frontend
-`src/locales/`), wiring the frontend one into `locales/index.ts`. The parity tests
-then require full coverage.
+### Shelf photo
+
+Take a photo of a shelf, and let the AI task service of Home Assistant read the spines.
+Show each title as a scan result row with the same duplicate choices. The photo is never
+stored.
+
+### JSON backup
+
+A JSON export and import of the whole library, as an `export_json` and `import_json`
+service pair for the document and the covers. The CSV library format keeps the books,
+the copies and the reading of 1 person. A JSON backup keeps every section, every person
+and the loans. A new persisted field round-trips through it, or is excluded with a
+reason.
+
+## Testing and CI
+
+### Upgrade test tier
+
+Boot a frozen older Home Assistant and Home Keeper on a seeded config dir, then the
+current ones on the same dir, and check that the library, the tab and the loan tasks
+load. Add a job in `ha-beta.yml` for it.
+
+- **Browser test of the scan with a camera.** The e2e tier uses **Enter ISBN**. A fake
+  video stream with a barcode would cover the decoder chunk.
+
+## Docs and quality
+
+### Quality scale ledger
+
+The integration uses the practices of the Platinum quality scale, and `manifest.json`
+declares no tier. Add `quality_scale` and a `quality_scale.yaml` ledger with each rule
+and its state.

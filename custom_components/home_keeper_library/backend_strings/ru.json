@@ -1,0 +1,8 @@
+{
+  "tab.title": "Библиотека",
+  "companion.description": "Книги, полки, выдачи и статус чтения.",
+  "loan_task.name_out": "Забрать «{title}» у {party}",
+  "loan_task.name_in": "Вернуть «{title}»: {party}",
+  "loan_task.completion_prompt": "Выполнение задачи завершает выдачу.",
+  "item.summary": "«{title}», {author}"
+}

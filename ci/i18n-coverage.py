@@ -16,9 +16,9 @@ import json
 from pathlib import Path
 
 _ROOT = Path(__file__).resolve().parent.parent
-_BACKEND = _ROOT / "custom_components" / "example_integration" / "translations"
+_BACKEND = _ROOT / "custom_components" / "home_keeper_library" / "translations"
 _FRONTEND = (
-    _ROOT / "custom_components" / "example_integration" / "frontend" / "src" / "locales"
+    _ROOT / "custom_components" / "home_keeper_library" / "frontend" / "src" / "locales"
 )
 
 

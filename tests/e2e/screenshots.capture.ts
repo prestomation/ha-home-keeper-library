@@ -1,35 +1,178 @@
 /**
- * One-off screenshot capture for PR/README embedding (the screenshot hard gate).
+ * The screenshots of the Library tab and the card, for docs/images/ and the PR.
  *
- * Run via `screenshots.config.ts` against a running HA (see ci/e2e-up.sh with
- * KEEP_UP=1). Writes PNGs to ../../docs/images/. Add a capture block here in the
- * same PR whenever you add or change a UI surface.
+ *   KEEP_UP=1 NO_TESTS=1 bash ci/e2e-up.sh
+ *   cd tests/e2e && SHOT_DIR=../../docs/images npx playwright test --config=screenshots.config.ts
+ *
+ * Desktop shots are 1280 px wide and phone shots 390 px wide (`viewports.ts`). The
+ * phone shots come last, in 1 `setViewportSize(PHONE)` block, and have `-mobile` in
+ * the name. The capture puts the seed back: it deletes the books that the scan adds.
+ * A spec under tests/ asserts on each surface here.
  */
-import { test } from '@playwright/test';
-import { addItem, openCard, openPanel } from './tests/helpers';
+import { expect, test, type Locator, type Page } from '@playwright/test';
+import { resolve } from 'node:path';
+import { library } from './ha-ws';
+import { adminState, bookByTitle, libraryTab, noServiceWorker, openCard, openTab } from './tests/helpers';
+import { PHONE } from './viewports';
 
-const OUT = '../../docs/images';
+const SHOT_DIR = resolve(__dirname, process.env.SHOT_DIR || '../../docs/images');
+const DESKTOP_SHOT = { width: 1280, height: 900 };
+const SCAN_ISBNS = ['9780553418606', '9780441478125', '9781250313188'];
+/** The scanned books that are not in the seed. The 2nd ISBN is a seeded book. */
+const NEW_ISBNS = [SCAN_ISBNS[0], SCAN_ISBNS[2]];
 
-test('capture: panel list with items', async ({ page }) => {
-  await openPanel(page);
-  // Seed a few items so the screenshot is representative.
-  await addItem(page, 'Garage shelf', 4);
-  await addItem(page, 'Kitchen drawer', 12);
-  await addItem(page, 'Attic box', 2);
-  const panel = page.locator('example-panel').first();
-  await panel.locator('.ex-row').first().waitFor();
-  await page.screenshot({ path: `${OUT}/panel-list.png`, fullPage: false });
-});
+async function shot(page: Page, name: string): Promise<void> {
+  // Let the covers and the fonts settle, and move the pointer out of the way.
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(600);
+  await page.screenshot({ path: resolve(SHOT_DIR, `${name}.png`) });
+}
 
-test('capture: panel item detail', async ({ page }) => {
-  await openPanel(page);
-  const panel = page.locator('example-panel').first();
-  await panel.locator('.detail-open').first().click();
-  await panel.locator('#back-btn').waitFor();
-  await page.screenshot({ path: `${OUT}/panel-detail.png`, fullPage: false });
-});
+/** A screenshot from the top of the page to a little below *el*. */
+async function shotTo(page: Page, el: Locator, name: string): Promise<void> {
+  await page.mouse.move(0, 0);
+  await page.waitForTimeout(600);
+  const box = await el.boundingBox();
+  const view = page.viewportSize();
+  if (!box || !view) throw new Error(`no box for ${name}`);
+  const height = Math.min(view.height, Math.ceil(box.y + box.height + 16));
+  await page.screenshot({ path: resolve(SHOT_DIR, `${name}.png`), clip: { x: 0, y: 0, width: view.width, height } });
+}
 
-test('capture: dashboard card', async ({ page }) => {
+async function coversLoaded(page: Page): Promise<void> {
+  const tab = libraryTab(page);
+  await expect
+    .poll(() =>
+      tab.evaluate((el) =>
+        [...(el.shadowRoot?.querySelectorAll<HTMLImageElement>('.hkl-cover img') ?? [])]
+          // A lazy image below the fold does not load; only the ones on screen count.
+          .filter((img) => {
+            const box = img.getBoundingClientRect();
+            return box.bottom > 0 && box.top < window.innerHeight;
+          })
+          .every((img) => img.complete && img.naturalWidth > 0),
+      ),
+    )
+    .toBe(true);
+}
+
+async function deleteScanned(): Promise<void> {
+  const state = await adminState();
+  for (const book of state.books) {
+    if (NEW_ISBNS.includes(book.isbn13)) {
+      await library('delete_book', { book_id: book.id });
+    }
+  }
+}
+
+async function scanSession(page: Page): Promise<void> {
+  const state = await adminState();
+  const office = state.rooms.find((r: { name: string }) => r.name === 'Office');
+  const tall = state.bookcases.find((c: { room_id: string }) => c.room_id === office.id);
+  const shelf = state.shelves.find((s: { bookcase_id: string; name: string }) => s.bookcase_id === tall.id && s.name === 'Shelf 3');
+  const tab = await openTab(page, `/scan;shelf=${shelf.id}`);
+  await tab.locator('[data-k="m-manual"]').check();
+  await expect(tab.locator('[data-k="m-manual"]')).toBeChecked();
+  await tab.locator('[data-k="scan-start"]').click();
+  for (const isbn of SCAN_ISBNS) {
+    await tab.locator('[data-k="isbn-input"]').fill(isbn);
+    await tab.locator('[data-k="isbn-add"]').click();
+    // Each lookup reads Open Library 1 request a second, so wait for it to end.
+    await expect(tab.locator('.hkl-result').filter({ hasText: 'Searching Open Library' })).toHaveCount(0, { timeout: 30_000 });
+  }
+  await expect(tab.locator('.hkl-result')).toHaveCount(3);
+}
+
+test.describe.configure({ mode: 'serial' });
+
+test('capture the Library screenshots', async ({ page, browser }) => {
+  test.setTimeout(300_000);
+  await noServiceWorker(page.context());
+  await deleteScanned();
+  await page.setViewportSize(DESKTOP_SHOT);
+
+  // Books grid.
+  await openTab(page, '/books');
+  await coversLoaded(page);
+  await shot(page, 'books-desktop');
+
+  // Book detail: a custom cover, a loan with its task, shared notes in Markdown. The
+  // window is tall enough to show the notes.
+  await page.setViewportSize({ width: 1280, height: 1400 });
+  const left = await bookByTitle('The Left Hand of Darkness');
+  let tab = await openTab(page, `/books/${left.id}`);
+  await expect(tab.locator('ha-markdown strong')).toHaveText('Oct 2026');
+  await coversLoaded(page);
+  await shot(page, 'book-detail-desktop');
+
+  // Rooms and shelves.
+  await page.setViewportSize(DESKTOP_SHOT);
+  await openTab(page, '/shelves');
+  await shot(page, 'shelves-desktop');
+
+  // Loans.
+  tab = await openTab(page, '/loans');
+  await expect(tab.locator('a.hkl-task').first()).toBeVisible({ timeout: 30_000 });
+  await coversLoaded(page);
+  await shot(page, 'loans-desktop');
+
+  // Wishlist.
+  tab = await openTab(page, '/wishlist');
+  await expect(tab.locator('.hkl-todo').first()).toContainText('Alex books');
+  await coversLoaded(page);
+  await shot(page, 'wishlist-desktop');
+
+  // Import, after the dry run of the sample Goodreads file.
+  tab = await openTab(page, '/import');
+  await tab.locator('[data-k="im-file"]').setInputFiles(resolve(__dirname, 'seed/goodreads_sample.csv'));
+  await expect(tab.locator('.hkl-dialog .hkl-chips')).toContainText('New books', { timeout: 30_000 });
+  await tab.locator('.hkl-details summary').click();
+  await shot(page, 'import-desktop');
+
+  // Settings.
+  tab = await openTab(page, '/settings');
+  await expect(tab.locator('[data-k="currency"]')).toHaveValue('EUR');
+  await shot(page, 'settings-desktop');
+
+  // The card on a dashboard, as Alex. The window is tall enough for the whole card.
+  await page.setViewportSize({ width: 1280, height: 1500 });
   const card = await openCard(page);
-  await card.locator('ha-card').first().screenshot({ path: `${OUT}/card.png` });
+  await expect(card.locator('.ring')).toBeVisible();
+  await shotTo(page, card, 'card-desktop');
+
+  // ── Phone ────────────────────────────────────────────────────────────────
+  await page.setViewportSize(PHONE);
+  await openTab(page, '/books');
+  await coversLoaded(page);
+  await shot(page, 'books-mobile');
+
+  await openTab(page, `/books/${left.id}`);
+  await coversLoaded(page);
+  await shot(page, 'book-detail-mobile');
+
+  await openTab(page, '/shelves');
+  await shot(page, 'shelves-mobile');
+
+  tab = await openTab(page, '/loans');
+  await expect(tab.locator('a.hkl-task').first()).toBeVisible({ timeout: 30_000 });
+  await shot(page, 'loans-mobile');
+
+  await scanSession(page);
+  await shot(page, 'scan-mobile');
+  // Skip the duplicate, so the seed keeps its copies.
+  await libraryTab(page).locator('.hkl-result.dup').getByRole('button', { name: 'Skip' }).click();
+  await expect(libraryTab(page).locator('.hkl-result.dup')).toHaveCount(0);
+  await libraryTab(page).locator('[data-k="scan-done"]').click();
+  await expect(libraryTab(page).locator('.hkl-scan-head')).toContainText('Scan summary');
+  await shot(page, 'scan-summary-mobile');
+  await deleteScanned();
+
+  // The card on a phone, as Sam (a user who is not an admin).
+  const sam = await browser.newContext({ storageState: './.auth/sam.json', viewport: { width: PHONE.width, height: 1250 } });
+  await noServiceWorker(sam);
+  const samPage = await sam.newPage();
+  const samCard = await openCard(samPage);
+  await expect(samCard.locator('.head h2')).toHaveText('Library: Sam');
+  await shotTo(samPage, samCard, 'card-mobile');
+  await sam.close();
 });

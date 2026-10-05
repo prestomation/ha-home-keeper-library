@@ -1,0 +1,1114 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Home Keeper Library",
+        "description": "De valuta van de prijzen en waarden van de exemplaren instellen.",
+        "data": {
+          "currency": "Valuta"
+        },
+        "data_description": {
+          "currency": "Een code van 3 letters, bijvoorbeeld EUR of USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Voer een valutacode van 3 letters in."
+    },
+    "abort": {
+      "already_configured": "Home Keeper Library is al ingesteld.",
+      "single_instance_allowed": "Home Keeper Library is al ingesteld.",
+      "home_keeper_missing": "Home Keeper Library heeft Home Keeper nodig. Installeer Home Keeper via HACS, start Home Assistant opnieuw en voeg Home Keeper Library daarna opnieuw toe. Installatiestappen: {url}",
+      "home_keeper_not_set_up": "Voeg eerst de Home Keeper-integratie toe.",
+      "home_keeper_too_old": "Werk Home Keeper bij naar versie {version} of nieuwer."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Bibliotheekopties",
+        "data": {
+          "currency": "Valuta"
+        },
+        "data_description": {
+          "currency": "Een code van 3 letters, bijvoorbeeld EUR of USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Voer een valutacode van 3 letters in."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "books": {
+        "name": "Boeken"
+      },
+      "loans_out": {
+        "name": "Uitgeleend"
+      },
+      "loans_overdue": {
+        "name": "Te late uitleningen"
+      },
+      "books_read_this_year": {
+        "name": "{person} boeken gelezen dit jaar"
+      },
+      "reading_now": {
+        "name": "{person} leest nu"
+      }
+    },
+    "todo": {
+      "to_read": {
+        "name": "{person} wil lezen"
+      }
+    }
+  },
+  "issues": {
+    "home_keeper_missing": {
+      "title": "Home Keeper is niet geïnstalleerd",
+      "description": "Het tabblad Bibliotheek en de uitleentaken hebben Home Keeper nodig. De kaart, de entiteiten en de diensten werken nu. Installeer Home Keeper via HACS en start Home Assistant opnieuw. Installatiestappen: {url}"
+    },
+    "home_keeper_not_set_up": {
+      "title": "Home Keeper is niet ingesteld",
+      "description": "Het tabblad Bibliotheek en de uitleentaken hebben een geladen Home Keeper-integratie nodig. De kaart, de entiteiten en de diensten werken nu. Voeg de Home Keeper-integratie toe of schakel haar in."
+    },
+    "home_keeper_too_old": {
+      "title": "Home Keeper is te oud",
+      "description": "Het tabblad Bibliotheek en de uitleentaken hebben Home Keeper versie {version} of nieuwer nodig. De kaart, de entiteiten en de diensten werken nu. Werk Home Keeper bij."
+    }
+  },
+  "services": {
+    "add_room": {
+      "name": "Kamer toevoegen",
+      "description": "Een kamer aan de bibliotheek toevoegen.",
+      "fields": {
+        "name": {
+          "name": "Naam",
+          "description": "De weergavenaam."
+        },
+        "area_id": {
+          "name": "Ruimte",
+          "description": "De Home Assistant-ruimte van de kamer."
+        },
+        "order": {
+          "name": "Volgorde",
+          "description": "De sorteerpositie. Lager komt eerst."
+        }
+      }
+    },
+    "update_room": {
+      "name": "Kamer wijzigen",
+      "description": "Een kamer wijzigen.",
+      "fields": {
+        "room_id": {
+          "name": "Kamer",
+          "description": "De ID van de kamer."
+        },
+        "name": {
+          "name": "Naam",
+          "description": "De weergavenaam."
+        },
+        "area_id": {
+          "name": "Ruimte",
+          "description": "De Home Assistant-ruimte van de kamer."
+        },
+        "order": {
+          "name": "Volgorde",
+          "description": "De sorteerpositie. Lager komt eerst."
+        }
+      }
+    },
+    "delete_room": {
+      "name": "Kamer verwijderen",
+      "description": "Een kamer verwijderen. Een kamer met boekenkasten heeft force nodig.",
+      "fields": {
+        "room_id": {
+          "name": "Kamer",
+          "description": "De ID van de kamer."
+        },
+        "force": {
+          "name": "Forceren",
+          "description": "Ook de inhoud verwijderen. De exemplaren komen op geen plank."
+        }
+      }
+    },
+    "add_bookcase": {
+      "name": "Boekenkast toevoegen",
+      "description": "Een boekenkast aan een kamer toevoegen.",
+      "fields": {
+        "room_id": {
+          "name": "Kamer",
+          "description": "De ID van de kamer."
+        },
+        "name": {
+          "name": "Naam",
+          "description": "De weergavenaam."
+        },
+        "note": {
+          "name": "Notitie",
+          "description": "Een korte notitie."
+        },
+        "order": {
+          "name": "Volgorde",
+          "description": "De sorteerpositie. Lager komt eerst."
+        }
+      }
+    },
+    "update_bookcase": {
+      "name": "Boekenkast wijzigen",
+      "description": "Een boekenkast wijzigen of naar een andere kamer verplaatsen.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Boekenkast",
+          "description": "De ID van de boekenkast."
+        },
+        "room_id": {
+          "name": "Kamer",
+          "description": "De ID van de kamer."
+        },
+        "name": {
+          "name": "Naam",
+          "description": "De weergavenaam."
+        },
+        "note": {
+          "name": "Notitie",
+          "description": "Een korte notitie."
+        },
+        "order": {
+          "name": "Volgorde",
+          "description": "De sorteerpositie. Lager komt eerst."
+        }
+      }
+    },
+    "delete_bookcase": {
+      "name": "Boekenkast verwijderen",
+      "description": "Een boekenkast verwijderen. Een boekenkast met planken heeft force nodig.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Boekenkast",
+          "description": "De ID van de boekenkast."
+        },
+        "force": {
+          "name": "Forceren",
+          "description": "Ook de inhoud verwijderen. De exemplaren komen op geen plank."
+        }
+      }
+    },
+    "add_shelf": {
+      "name": "Plank toevoegen",
+      "description": "Een plank aan een boekenkast toevoegen.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Boekenkast",
+          "description": "De ID van de boekenkast."
+        },
+        "name": {
+          "name": "Naam",
+          "description": "De weergavenaam."
+        },
+        "order": {
+          "name": "Volgorde",
+          "description": "De sorteerpositie. Lager komt eerst."
+        }
+      }
+    },
+    "update_shelf": {
+      "name": "Plank wijzigen",
+      "description": "Een plank wijzigen of naar een andere boekenkast verplaatsen.",
+      "fields": {
+        "shelf_id": {
+          "name": "Plank",
+          "description": "De ID van de plank. Leeg voor geen plank."
+        },
+        "bookcase_id": {
+          "name": "Boekenkast",
+          "description": "De ID van de boekenkast."
+        },
+        "name": {
+          "name": "Naam",
+          "description": "De weergavenaam."
+        },
+        "order": {
+          "name": "Volgorde",
+          "description": "De sorteerpositie. Lager komt eerst."
+        }
+      }
+    },
+    "delete_shelf": {
+      "name": "Plank verwijderen",
+      "description": "Een plank verwijderen. Een plank met exemplaren heeft force nodig.",
+      "fields": {
+        "shelf_id": {
+          "name": "Plank",
+          "description": "De ID van de plank. Leeg voor geen plank."
+        },
+        "force": {
+          "name": "Forceren",
+          "description": "Ook de inhoud verwijderen. De exemplaren komen op geen plank."
+        }
+      }
+    },
+    "lookup_isbn": {
+      "name": "ISBN opzoeken",
+      "description": "De details van een ISBN uit Open Library lezen. De bibliotheek blijft gelijk.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN",
+          "description": "Een ISBN-10 of een ISBN-13."
+        }
+      }
+    },
+    "add_book": {
+      "name": "Boek toevoegen",
+      "description": "Een boek toevoegen. Als een boek hetzelfde ISBN heeft, geeft de dienst dat boek terug.",
+      "fields": {
+        "title": {
+          "name": "Titel van het boek",
+          "description": "De titel van het boek."
+        },
+        "subtitle": {
+          "name": "Ondertitel",
+          "description": "De ondertitel van het boek."
+        },
+        "authors": {
+          "name": "Auteurs",
+          "description": "De auteurs, op volgorde."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Een ISBN-10 of een ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13",
+          "description": "Het ISBN van 13 cijfers."
+        },
+        "isbn10": {
+          "name": "ISBN-10",
+          "description": "Het ISBN van 10 cijfers."
+        },
+        "publisher": {
+          "name": "Uitgever",
+          "description": "De uitgever van het boek."
+        },
+        "published": {
+          "name": "Verschenen",
+          "description": "De datum van verschijnen, meestal een jaar."
+        },
+        "pages": {
+          "name": "Pagina's",
+          "description": "Het aantal pagina's."
+        },
+        "language": {
+          "name": "Taal",
+          "description": "De taalcode, bijvoorbeeld en."
+        },
+        "subjects": {
+          "name": "Onderwerpen",
+          "description": "De onderwerpen van het boek."
+        },
+        "series": {
+          "name": "Reeks",
+          "description": "De naam van de reeks, of een naam en een nummer."
+        },
+        "description": {
+          "name": "Beschrijving",
+          "description": "De beschrijving van het boek."
+        },
+        "tags": {
+          "name": "Labels",
+          "description": "De labels van het boek."
+        },
+        "shared_notes": {
+          "name": "Gedeelde notities",
+          "description": "Notities die elke gebruiker kan lezen, in Markdown."
+        },
+        "needs_details": {
+          "name": "Details ontbreken",
+          "description": "Het boek als onvolledig markeren."
+        },
+        "lookup": {
+          "name": "Opzoeken",
+          "description": "De details uit Open Library lezen."
+        }
+      }
+    },
+    "update_book": {
+      "name": "Boek wijzigen",
+      "description": "De details van een boek wijzigen.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        },
+        "title": {
+          "name": "Titel van het boek",
+          "description": "De titel van het boek."
+        },
+        "subtitle": {
+          "name": "Ondertitel",
+          "description": "De ondertitel van het boek."
+        },
+        "authors": {
+          "name": "Auteurs",
+          "description": "De auteurs, op volgorde."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Een ISBN-10 of een ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13",
+          "description": "Het ISBN van 13 cijfers."
+        },
+        "isbn10": {
+          "name": "ISBN-10",
+          "description": "Het ISBN van 10 cijfers."
+        },
+        "publisher": {
+          "name": "Uitgever",
+          "description": "De uitgever van het boek."
+        },
+        "published": {
+          "name": "Verschenen",
+          "description": "De datum van verschijnen, meestal een jaar."
+        },
+        "pages": {
+          "name": "Pagina's",
+          "description": "Het aantal pagina's."
+        },
+        "language": {
+          "name": "Taal",
+          "description": "De taalcode, bijvoorbeeld en."
+        },
+        "subjects": {
+          "name": "Onderwerpen",
+          "description": "De onderwerpen van het boek."
+        },
+        "series": {
+          "name": "Reeks",
+          "description": "De naam van de reeks, of een naam en een nummer."
+        },
+        "description": {
+          "name": "Beschrijving",
+          "description": "De beschrijving van het boek."
+        },
+        "tags": {
+          "name": "Labels",
+          "description": "De labels van het boek."
+        },
+        "shared_notes": {
+          "name": "Gedeelde notities",
+          "description": "Notities die elke gebruiker kan lezen, in Markdown."
+        },
+        "needs_details": {
+          "name": "Details ontbreken",
+          "description": "Het boek als onvolledig markeren."
+        }
+      }
+    },
+    "delete_book": {
+      "name": "Boek verwijderen",
+      "description": "Een boek verwijderen met de exemplaren, de leesstatus, de uitleningen en de omslag.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        }
+      }
+    },
+    "refresh_book": {
+      "name": "Bijwerken vanuit Open Library",
+      "description": "De lege velden van een boek vanuit Open Library vullen.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        }
+      }
+    },
+    "scan_isbn": {
+      "name": "ISBN scannen",
+      "description": "Een gescand boek aan een plank toevoegen.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN",
+          "description": "Een ISBN-10 of een ISBN-13."
+        },
+        "shelf_id": {
+          "name": "Plank",
+          "description": "De ID van de plank. Leeg voor geen plank."
+        },
+        "format": {
+          "name": "Formaat",
+          "description": "Het formaat van het exemplaar."
+        },
+        "on_duplicate": {
+          "name": "Als er een exemplaar is",
+          "description": "De actie als de bibliotheek een exemplaar van het boek heeft."
+        }
+      }
+    },
+    "add_copy": {
+      "name": "Exemplaar toevoegen",
+      "description": "Een exemplaar van een boek toevoegen.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        },
+        "shelf_id": {
+          "name": "Plank",
+          "description": "De ID van de plank. Leeg voor geen plank."
+        },
+        "format": {
+          "name": "Formaat",
+          "description": "Het formaat van het exemplaar."
+        },
+        "condition": {
+          "name": "Staat",
+          "description": "De staat van het exemplaar."
+        },
+        "acquired": {
+          "name": "Verkregen",
+          "description": "De datum waarop het exemplaar is verkregen."
+        },
+        "acquired_from": {
+          "name": "Verkregen bij",
+          "description": "De winkel of de persoon."
+        },
+        "price": {
+          "name": "Prijs",
+          "description": "De betaalde prijs."
+        },
+        "value": {
+          "name": "Waarde",
+          "description": "De huidige waarde van het exemplaar."
+        },
+        "signed": {
+          "name": "Gesigneerd",
+          "description": "Het exemplaar is gesigneerd."
+        },
+        "first_edition": {
+          "name": "Eerste druk",
+          "description": "Het exemplaar is een eerste druk."
+        },
+        "note": {
+          "name": "Notitie",
+          "description": "Een korte notitie."
+        }
+      }
+    },
+    "update_copy": {
+      "name": "Exemplaar wijzigen",
+      "description": "Een exemplaar wijzigen.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplaar",
+          "description": "De ID van het exemplaar."
+        },
+        "shelf_id": {
+          "name": "Plank",
+          "description": "De ID van de plank. Leeg voor geen plank."
+        },
+        "format": {
+          "name": "Formaat",
+          "description": "Het formaat van het exemplaar."
+        },
+        "condition": {
+          "name": "Staat",
+          "description": "De staat van het exemplaar."
+        },
+        "acquired": {
+          "name": "Verkregen",
+          "description": "De datum waarop het exemplaar is verkregen."
+        },
+        "acquired_from": {
+          "name": "Verkregen bij",
+          "description": "De winkel of de persoon."
+        },
+        "price": {
+          "name": "Prijs",
+          "description": "De betaalde prijs."
+        },
+        "value": {
+          "name": "Waarde",
+          "description": "De huidige waarde van het exemplaar."
+        },
+        "signed": {
+          "name": "Gesigneerd",
+          "description": "Het exemplaar is gesigneerd."
+        },
+        "first_edition": {
+          "name": "Eerste druk",
+          "description": "Het exemplaar is een eerste druk."
+        },
+        "note": {
+          "name": "Notitie",
+          "description": "Een korte notitie."
+        }
+      }
+    },
+    "move_copy": {
+      "name": "Exemplaar verplaatsen",
+      "description": "Een exemplaar naar een plank verplaatsen.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplaar",
+          "description": "De ID van het exemplaar."
+        },
+        "shelf_id": {
+          "name": "Plank",
+          "description": "De ID van de plank. Leeg voor geen plank."
+        }
+      }
+    },
+    "delete_copy": {
+      "name": "Exemplaar verwijderen",
+      "description": "Een exemplaar verwijderen.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplaar",
+          "description": "De ID van het exemplaar."
+        }
+      }
+    },
+    "set_cover": {
+      "name": "Omslag instellen",
+      "description": "De omslag van een boek instellen.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        },
+        "kind": {
+          "name": "Soort omslag",
+          "description": "De bron van de omslag."
+        },
+        "file_id": {
+          "name": "Bestands-ID",
+          "description": "De ID van de upload van de omslag."
+        }
+      }
+    },
+    "set_reading": {
+      "name": "Leesstatus instellen",
+      "description": "De leesstatus van een boek voor een persoon instellen. Een gebruiker zonder beheerdersrechten kan alleen de eigen status instellen.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        },
+        "person_id": {
+          "name": "Persoon",
+          "description": "De ID van de Home Assistant-persoon."
+        },
+        "status": {
+          "name": "Leesstatus",
+          "description": "De leesstatus."
+        },
+        "rating": {
+          "name": "Beoordeling",
+          "description": "Een beoordeling van 1 tot 5."
+        },
+        "page": {
+          "name": "Pagina",
+          "description": "De huidige pagina."
+        },
+        "started": {
+          "name": "Begonnen",
+          "description": "De startdatum."
+        },
+        "finished": {
+          "name": "Uitgelezen",
+          "description": "De datum waarop het boek is uitgelezen."
+        },
+        "read_count": {
+          "name": "Aantal keer gelezen",
+          "description": "Het aantal keer dat het boek is gelezen."
+        },
+        "private_notes": {
+          "name": "Privénotities",
+          "description": "Notities die alleen de persoon kan lezen."
+        }
+      }
+    },
+    "lend_book": {
+      "name": "Boek uitlenen",
+      "description": "Een exemplaar aan een andere persoon uitlenen.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplaar",
+          "description": "De ID van het exemplaar."
+        },
+        "party": {
+          "name": "Andere persoon",
+          "description": "De naam van de andere persoon van de uitlening."
+        },
+        "started": {
+          "name": "Begonnen",
+          "description": "De startdatum."
+        },
+        "due": {
+          "name": "Vervaldatum",
+          "description": "De vervaldatum."
+        },
+        "note": {
+          "name": "Notitie",
+          "description": "Een korte notitie."
+        },
+        "add_task": {
+          "name": "Taak toevoegen",
+          "description": "Een Home Keeper-taak op de vervaldatum toevoegen."
+        }
+      }
+    },
+    "borrow_book": {
+      "name": "Geleend boek toevoegen",
+      "description": "Een boek vastleggen dat een persoon heeft geleend.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Een ISBN-10 of een ISBN-13."
+        },
+        "title": {
+          "name": "Titel van het boek",
+          "description": "De titel van het boek."
+        },
+        "authors": {
+          "name": "Auteurs",
+          "description": "De auteurs, op volgorde."
+        },
+        "party": {
+          "name": "Andere persoon",
+          "description": "De naam van de andere persoon van de uitlening."
+        },
+        "started": {
+          "name": "Begonnen",
+          "description": "De startdatum."
+        },
+        "due": {
+          "name": "Vervaldatum",
+          "description": "De vervaldatum."
+        },
+        "note": {
+          "name": "Notitie",
+          "description": "Een korte notitie."
+        },
+        "add_task": {
+          "name": "Taak toevoegen",
+          "description": "Een Home Keeper-taak op de vervaldatum toevoegen."
+        },
+        "person_id": {
+          "name": "Persoon",
+          "description": "De ID van de Home Assistant-persoon."
+        },
+        "format": {
+          "name": "Formaat",
+          "description": "Het formaat van het exemplaar."
+        }
+      }
+    },
+    "return_loan": {
+      "name": "Uitlening terugbrengen",
+      "description": "Het terugbrengen van een uitlening vastleggen.",
+      "fields": {
+        "loan_id": {
+          "name": "Uitlening",
+          "description": "De ID van de uitlening."
+        },
+        "returned": {
+          "name": "Teruggebracht",
+          "description": "De datum van terugbrengen. Standaard vandaag."
+        }
+      }
+    },
+    "update_loan": {
+      "name": "Uitlening wijzigen",
+      "description": "Een uitlening wijzigen.",
+      "fields": {
+        "loan_id": {
+          "name": "Uitlening",
+          "description": "De ID van de uitlening."
+        },
+        "party": {
+          "name": "Andere persoon",
+          "description": "De naam van de andere persoon van de uitlening."
+        },
+        "started": {
+          "name": "Begonnen",
+          "description": "De startdatum."
+        },
+        "due": {
+          "name": "Vervaldatum",
+          "description": "De vervaldatum."
+        },
+        "note": {
+          "name": "Notitie",
+          "description": "Een korte notitie."
+        },
+        "format": {
+          "name": "Formaat",
+          "description": "Het formaat van het exemplaar."
+        }
+      }
+    },
+    "delete_loan": {
+      "name": "Uitlening verwijderen",
+      "description": "Een uitlening en de Home Keeper-taak ervan verwijderen.",
+      "fields": {
+        "loan_id": {
+          "name": "Uitlening",
+          "description": "De ID van de uitlening."
+        }
+      }
+    },
+    "add_to_wishlist": {
+      "name": "Aan verlanglijst toevoegen",
+      "description": "Een boek op de verlanglijst van een persoon zetten.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Een ISBN-10 of een ISBN-13."
+        },
+        "title": {
+          "name": "Titel van het boek",
+          "description": "De titel van het boek."
+        },
+        "authors": {
+          "name": "Auteurs",
+          "description": "De auteurs, op volgorde."
+        },
+        "person_id": {
+          "name": "Persoon",
+          "description": "De ID van de Home Assistant-persoon."
+        },
+        "buy": {
+          "name": "Kopen",
+          "description": "Het boek op de takenlijst met wensen van de persoon zetten."
+        }
+      }
+    },
+    "update_wishlist": {
+      "name": "Verlanglijst wijzigen",
+      "description": "Een item van de verlanglijst wijzigen.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        },
+        "buy": {
+          "name": "Kopen",
+          "description": "Het boek op de takenlijst met wensen van de persoon zetten."
+        },
+        "person_id": {
+          "name": "Persoon",
+          "description": "De ID van de Home Assistant-persoon."
+        }
+      }
+    },
+    "remove_from_wishlist": {
+      "name": "Van verlanglijst halen",
+      "description": "Een boek van de verlanglijst halen.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        }
+      }
+    },
+    "got_wishlist_book": {
+      "name": "Gewenst boek ontvangen",
+      "description": "Een exemplaar van een gewenst boek toevoegen en het van de verlanglijst halen.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        },
+        "shelf_id": {
+          "name": "Plank",
+          "description": "De ID van de plank. Leeg voor geen plank."
+        },
+        "format": {
+          "name": "Formaat",
+          "description": "Het formaat van het exemplaar."
+        }
+      }
+    },
+    "set_person_settings": {
+      "name": "Persoonsinstellingen instellen",
+      "description": "De bibliotheekinstellingen van een persoon instellen. Een gebruiker zonder beheerdersrechten kan alleen het eigen delen en doel instellen.",
+      "fields": {
+        "person_id": {
+          "name": "Persoon",
+          "description": "De ID van de Home Assistant-persoon."
+        },
+        "share_reading": {
+          "name": "Leesstatus delen",
+          "description": "Andere gebruikers zien de status. Als dit uit staat, zijn de sensoren en de takenlijst van de persoon niet beschikbaar."
+        },
+        "yearly_goal": {
+          "name": "Jaardoel",
+          "description": "Het aantal boeken om dit jaar te lezen."
+        },
+        "wishlist_todo": {
+          "name": "Verlanglijst",
+          "description": "De takenlijst voor de boeken om te kopen."
+        }
+      }
+    },
+    "set_settings": {
+      "name": "Bibliotheekinstellingen instellen",
+      "description": "De valuta van de prijzen en waarden van de exemplaren instellen.",
+      "fields": {
+        "currency": {
+          "name": "Valuta",
+          "description": "Een code van 3 letters, bijvoorbeeld EUR of USD."
+        }
+      }
+    },
+    "import_csv": {
+      "name": "CSV importeren",
+      "description": "Boeken uit Goodreads, StoryGraph of een bibliotheekexport importeren.",
+      "fields": {
+        "content": {
+          "name": "CSV-inhoud",
+          "description": "De CSV-tekst. Hoogstens 5 MB."
+        },
+        "source": {
+          "name": "Bron",
+          "description": "De app die het CSV-bestand heeft gemaakt."
+        },
+        "person_id": {
+          "name": "Persoon",
+          "description": "De ID van de Home Assistant-persoon."
+        },
+        "shelf_id": {
+          "name": "Plank",
+          "description": "De ID van de plank. Leeg voor geen plank."
+        },
+        "import_notes": {
+          "name": "Notities importeren",
+          "description": "De recensies en notities als privénotities importeren."
+        },
+        "replace_reading": {
+          "name": "Leesstatus vervangen",
+          "description": "Een bestaande leesstatus vervangen."
+        },
+        "dry_run": {
+          "name": "Proefrun",
+          "description": "Alleen de wijzigingen van de import melden."
+        }
+      }
+    },
+    "export_csv": {
+      "name": "CSV exporteren",
+      "description": "De bibliotheek als CSV-tekst exporteren.",
+      "fields": {
+        "person_id": {
+          "name": "Persoon",
+          "description": "De ID van de Home Assistant-persoon."
+        },
+        "format": {
+          "name": "Bestandsformaat",
+          "description": "goodreads of library."
+        }
+      }
+    },
+    "list_books": {
+      "name": "Boeken weergeven",
+      "description": "De boeken teruggeven die bij de filters passen.",
+      "fields": {
+        "query": {
+          "name": "Zoeken",
+          "description": "Tekst in de titel, de auteurs, het ISBN of de labels."
+        },
+        "room_id": {
+          "name": "Kamer",
+          "description": "De ID van de kamer."
+        },
+        "shelf_id": {
+          "name": "Plank",
+          "description": "De ID van de plank. Leeg voor geen plank."
+        },
+        "owned": {
+          "name": "In bezit",
+          "description": "Alleen boeken met een exemplaar, of alleen boeken zonder exemplaar."
+        },
+        "status": {
+          "name": "Leesstatus",
+          "description": "De leesstatus."
+        },
+        "person_id": {
+          "name": "Persoon",
+          "description": "De ID van de Home Assistant-persoon."
+        },
+        "limit": {
+          "name": "Maximum",
+          "description": "Het maximale aantal boeken."
+        }
+      }
+    },
+    "get_book": {
+      "name": "Boek ophalen",
+      "description": "Een boek met de exemplaren en uitleningen teruggeven.",
+      "fields": {
+        "book_id": {
+          "name": "Boek",
+          "description": "De ID van het boek."
+        }
+      }
+    },
+    "list_locations": {
+      "name": "Locaties weergeven",
+      "description": "De kamers, boekenkasten en planken teruggeven."
+    },
+    "list_loans": {
+      "name": "Uitleningen weergeven",
+      "description": "De uitleningen teruggeven.",
+      "fields": {
+        "status": {
+          "name": "Status van de uitlening",
+          "description": "open, returned of all."
+        },
+        "direction": {
+          "name": "Richting",
+          "description": "out voor een uitgeleend boek, in voor een geleend boek."
+        }
+      }
+    },
+    "list_people": {
+      "name": "Personen weergeven",
+      "description": "De personen en hun bibliotheekinstellingen teruggeven."
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "Home Keeper Library is niet geladen."
+    },
+    "admin_required": {
+      "message": "Alleen een beheerder kan dit doen."
+    },
+    "invalid_field": {
+      "message": "De waarde van {field} is ongeldig."
+    },
+    "field_required": {
+      "message": "{field} is verplicht."
+    },
+    "field_too_long": {
+      "message": "{field} is te lang. Het maximum is {max}."
+    },
+    "out_of_range": {
+      "message": "{field} moet tussen {low} en {high} liggen."
+    },
+    "invalid_date": {
+      "message": "{field} moet een datum in de vorm YYYY-MM-DD zijn."
+    },
+    "invalid_choice": {
+      "message": "{field} moet een van deze waarden zijn: {options}."
+    },
+    "invalid_isbn": {
+      "message": "{isbn} is geen geldig ISBN."
+    },
+    "room_not_found": {
+      "message": "Geen kamer heeft de ID {id}."
+    },
+    "bookcase_not_found": {
+      "message": "Geen boekenkast heeft de ID {id}."
+    },
+    "shelf_not_found": {
+      "message": "Geen plank heeft de ID {id}."
+    },
+    "book_not_found": {
+      "message": "Geen boek heeft de ID {id}."
+    },
+    "copy_not_found": {
+      "message": "Geen exemplaar heeft de ID {id}."
+    },
+    "loan_not_found": {
+      "message": "Geen uitlening heeft de ID {id}."
+    },
+    "person_not_found": {
+      "message": "Geen persoon heeft de ID {id}."
+    },
+    "no_person": {
+      "message": "Je gebruiker heeft geen Home Assistant-persoon. Koppel een persoon aan de gebruiker."
+    },
+    "room_not_empty": {
+      "message": "De kamer heeft {count} boekenkasten. Gebruik force om ze ook te verwijderen."
+    },
+    "bookcase_not_empty": {
+      "message": "De boekenkast heeft {count} planken. Gebruik force om ze ook te verwijderen."
+    },
+    "shelf_not_empty": {
+      "message": "De plank heeft {count} exemplaren. Gebruik force om ze op geen plank te zetten."
+    },
+    "duplicate_isbn": {
+      "message": "Een ander boek heeft het ISBN {isbn}."
+    },
+    "copy_on_loan": {
+      "message": "Het exemplaar is uitgeleend. Breng eerst de uitlening terug."
+    },
+    "due_before_start": {
+      "message": "De vervaldatum ligt voor de startdatum."
+    },
+    "already_on_wishlist": {
+      "message": "Het boek staat al op een verlanglijst."
+    },
+    "not_on_wishlist": {
+      "message": "Het boek staat op geen verlanglijst."
+    },
+    "upload_not_found": {
+      "message": "Geen geüploade omslag heeft de ID {file_id}."
+    },
+    "isbn_or_title_required": {
+      "message": "Geef een boek-ID, een ISBN of een titel."
+    },
+    "lookup_unavailable": {
+      "message": "Open Library is niet beschikbaar. Probeer het later opnieuw."
+    },
+    "no_openlibrary_cover": {
+      "message": "Open Library heeft geen omslag voor dit boek."
+    },
+    "todo_entity_not_found": {
+      "message": "{entity_id} is geen takenlijst."
+    },
+    "csv_too_large": {
+      "message": "De CSV-tekst is te groot. Het maximum is {mb} MB."
+    },
+    "csv_unreadable": {
+      "message": "De CSV-tekst heeft geen kolom {column}."
+    },
+    "upload_requires_user": {
+      "message": "Een upload heeft een aangemelde gebruiker nodig."
+    },
+    "expected_multipart_upload": {
+      "message": "De upload moet een multipart-formulier zijn."
+    },
+    "no_file_in_upload": {
+      "message": "De upload bevat geen bestand."
+    },
+    "file_too_large": {
+      "message": "Het bestand is te groot. Het maximum is {mb} MB."
+    },
+    "unsupported_image": {
+      "message": "Het bestand moet een JPEG-, PNG- of WebP-afbeelding zijn."
+    },
+    "image_unreadable": {
+      "message": "De afbeelding kan niet worden gelezen."
+    },
+    "invalid_currency": {
+      "message": "{currency} is geen valutacode van 3 letters."
+    },
+    "todo_not_allowed": {
+      "message": "Alleen {person} of een beheerder kan deze takenlijst wijzigen."
+    }
+  }
+}

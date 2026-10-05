@@ -1,0 +1,1114 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Home Keeper Library",
+        "description": "Set the currency of the prices and values of the copies.",
+        "data": {
+          "currency": "Currency"
+        },
+        "data_description": {
+          "currency": "A code of 3 letters, such as EUR or USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Enter a currency code of 3 letters."
+    },
+    "abort": {
+      "already_configured": "Home Keeper Library is already set up.",
+      "single_instance_allowed": "Home Keeper Library is already set up.",
+      "home_keeper_missing": "Home Keeper Library requires Home Keeper. Install Home Keeper from HACS, restart Home Assistant, then add Home Keeper Library again. Installation steps: {url}",
+      "home_keeper_not_set_up": "Add the Home Keeper integration first.",
+      "home_keeper_too_old": "Update Home Keeper to version {version} or later."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Library options",
+        "data": {
+          "currency": "Currency"
+        },
+        "data_description": {
+          "currency": "A code of 3 letters, such as EUR or USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Enter a currency code of 3 letters."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "books": {
+        "name": "Books"
+      },
+      "loans_out": {
+        "name": "Loans out"
+      },
+      "loans_overdue": {
+        "name": "Loans overdue"
+      },
+      "books_read_this_year": {
+        "name": "{person} books read this year"
+      },
+      "reading_now": {
+        "name": "{person} reading now"
+      }
+    },
+    "todo": {
+      "to_read": {
+        "name": "{person} to read"
+      }
+    }
+  },
+  "issues": {
+    "home_keeper_missing": {
+      "title": "Home Keeper is not installed",
+      "description": "The Library tab and the loan tasks need Home Keeper. The card, the entities and the services work now. Install Home Keeper from HACS and restart Home Assistant. Installation steps: {url}"
+    },
+    "home_keeper_not_set_up": {
+      "title": "Home Keeper is not set up",
+      "description": "The Library tab and the loan tasks need a loaded Home Keeper integration. The card, the entities and the services work now. Add or enable the Home Keeper integration."
+    },
+    "home_keeper_too_old": {
+      "title": "Home Keeper is too old",
+      "description": "The Library tab and the loan tasks need Home Keeper version {version} or later. The card, the entities and the services work now. Update Home Keeper."
+    }
+  },
+  "services": {
+    "add_room": {
+      "name": "Add room",
+      "description": "Add a room to the library.",
+      "fields": {
+        "name": {
+          "name": "Name",
+          "description": "The display name."
+        },
+        "area_id": {
+          "name": "Area",
+          "description": "The Home Assistant area of the room."
+        },
+        "order": {
+          "name": "Order",
+          "description": "The sort position. Lower comes first."
+        }
+      }
+    },
+    "update_room": {
+      "name": "Update room",
+      "description": "Change a room.",
+      "fields": {
+        "room_id": {
+          "name": "Room",
+          "description": "The ID of the room."
+        },
+        "name": {
+          "name": "Name",
+          "description": "The display name."
+        },
+        "area_id": {
+          "name": "Area",
+          "description": "The Home Assistant area of the room."
+        },
+        "order": {
+          "name": "Order",
+          "description": "The sort position. Lower comes first."
+        }
+      }
+    },
+    "delete_room": {
+      "name": "Delete room",
+      "description": "Delete a room. A room with bookcases needs force.",
+      "fields": {
+        "room_id": {
+          "name": "Room",
+          "description": "The ID of the room."
+        },
+        "force": {
+          "name": "Force",
+          "description": "Also delete the contents. The copies move to no shelf."
+        }
+      }
+    },
+    "add_bookcase": {
+      "name": "Add bookcase",
+      "description": "Add a bookcase to a room.",
+      "fields": {
+        "room_id": {
+          "name": "Room",
+          "description": "The ID of the room."
+        },
+        "name": {
+          "name": "Name",
+          "description": "The display name."
+        },
+        "note": {
+          "name": "Note",
+          "description": "A short note."
+        },
+        "order": {
+          "name": "Order",
+          "description": "The sort position. Lower comes first."
+        }
+      }
+    },
+    "update_bookcase": {
+      "name": "Update bookcase",
+      "description": "Change a bookcase or move it to another room.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Bookcase",
+          "description": "The ID of the bookcase."
+        },
+        "room_id": {
+          "name": "Room",
+          "description": "The ID of the room."
+        },
+        "name": {
+          "name": "Name",
+          "description": "The display name."
+        },
+        "note": {
+          "name": "Note",
+          "description": "A short note."
+        },
+        "order": {
+          "name": "Order",
+          "description": "The sort position. Lower comes first."
+        }
+      }
+    },
+    "delete_bookcase": {
+      "name": "Delete bookcase",
+      "description": "Delete a bookcase. A bookcase with shelves needs force.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Bookcase",
+          "description": "The ID of the bookcase."
+        },
+        "force": {
+          "name": "Force",
+          "description": "Also delete the contents. The copies move to no shelf."
+        }
+      }
+    },
+    "add_shelf": {
+      "name": "Add shelf",
+      "description": "Add a shelf to a bookcase.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Bookcase",
+          "description": "The ID of the bookcase."
+        },
+        "name": {
+          "name": "Name",
+          "description": "The display name."
+        },
+        "order": {
+          "name": "Order",
+          "description": "The sort position. Lower comes first."
+        }
+      }
+    },
+    "update_shelf": {
+      "name": "Update shelf",
+      "description": "Change a shelf or move it to another bookcase.",
+      "fields": {
+        "shelf_id": {
+          "name": "Shelf",
+          "description": "The ID of the shelf. Empty for no shelf."
+        },
+        "bookcase_id": {
+          "name": "Bookcase",
+          "description": "The ID of the bookcase."
+        },
+        "name": {
+          "name": "Name",
+          "description": "The display name."
+        },
+        "order": {
+          "name": "Order",
+          "description": "The sort position. Lower comes first."
+        }
+      }
+    },
+    "delete_shelf": {
+      "name": "Delete shelf",
+      "description": "Delete a shelf. A shelf with copies needs force.",
+      "fields": {
+        "shelf_id": {
+          "name": "Shelf",
+          "description": "The ID of the shelf. Empty for no shelf."
+        },
+        "force": {
+          "name": "Force",
+          "description": "Also delete the contents. The copies move to no shelf."
+        }
+      }
+    },
+    "lookup_isbn": {
+      "name": "Look up ISBN",
+      "description": "Read the details of an ISBN from Open Library. The library stays the same.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN",
+          "description": "An ISBN-10 or an ISBN-13."
+        }
+      }
+    },
+    "add_book": {
+      "name": "Add book",
+      "description": "Add a book. If a book has the same ISBN, the service returns that book.",
+      "fields": {
+        "title": {
+          "name": "Title",
+          "description": "The title of the book."
+        },
+        "subtitle": {
+          "name": "Subtitle",
+          "description": "The subtitle of the book."
+        },
+        "authors": {
+          "name": "Authors",
+          "description": "The authors, in order."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "An ISBN-10 or an ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13",
+          "description": "The 13-digit ISBN."
+        },
+        "isbn10": {
+          "name": "ISBN-10",
+          "description": "The 10-digit ISBN."
+        },
+        "publisher": {
+          "name": "Publisher",
+          "description": "The publisher of the book."
+        },
+        "published": {
+          "name": "Published",
+          "description": "The publication date, usually a year."
+        },
+        "pages": {
+          "name": "Pages",
+          "description": "The number of pages."
+        },
+        "language": {
+          "name": "Language",
+          "description": "The language code, such as en."
+        },
+        "subjects": {
+          "name": "Subjects",
+          "description": "The subjects of the book."
+        },
+        "series": {
+          "name": "Series",
+          "description": "The series name, or a name and a number."
+        },
+        "description": {
+          "name": "Description",
+          "description": "The description of the book."
+        },
+        "tags": {
+          "name": "Tags",
+          "description": "The tags of the book."
+        },
+        "shared_notes": {
+          "name": "Shared notes",
+          "description": "Notes that each user can read, in Markdown."
+        },
+        "needs_details": {
+          "name": "Needs details",
+          "description": "Mark the book as incomplete."
+        },
+        "lookup": {
+          "name": "Look up",
+          "description": "Read the details from Open Library."
+        }
+      }
+    },
+    "update_book": {
+      "name": "Update book",
+      "description": "Change the details of a book.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "title": {
+          "name": "Title",
+          "description": "The title of the book."
+        },
+        "subtitle": {
+          "name": "Subtitle",
+          "description": "The subtitle of the book."
+        },
+        "authors": {
+          "name": "Authors",
+          "description": "The authors, in order."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "An ISBN-10 or an ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13",
+          "description": "The 13-digit ISBN."
+        },
+        "isbn10": {
+          "name": "ISBN-10",
+          "description": "The 10-digit ISBN."
+        },
+        "publisher": {
+          "name": "Publisher",
+          "description": "The publisher of the book."
+        },
+        "published": {
+          "name": "Published",
+          "description": "The publication date, usually a year."
+        },
+        "pages": {
+          "name": "Pages",
+          "description": "The number of pages."
+        },
+        "language": {
+          "name": "Language",
+          "description": "The language code, such as en."
+        },
+        "subjects": {
+          "name": "Subjects",
+          "description": "The subjects of the book."
+        },
+        "series": {
+          "name": "Series",
+          "description": "The series name, or a name and a number."
+        },
+        "description": {
+          "name": "Description",
+          "description": "The description of the book."
+        },
+        "tags": {
+          "name": "Tags",
+          "description": "The tags of the book."
+        },
+        "shared_notes": {
+          "name": "Shared notes",
+          "description": "Notes that each user can read, in Markdown."
+        },
+        "needs_details": {
+          "name": "Needs details",
+          "description": "Mark the book as incomplete."
+        }
+      }
+    },
+    "delete_book": {
+      "name": "Delete book",
+      "description": "Delete a book with its copies, reading status, loans and cover.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        }
+      }
+    },
+    "refresh_book": {
+      "name": "Update from Open Library",
+      "description": "Fill the empty fields of a book from Open Library.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        }
+      }
+    },
+    "scan_isbn": {
+      "name": "Scan ISBN",
+      "description": "Add a scanned book to a shelf.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN",
+          "description": "An ISBN-10 or an ISBN-13."
+        },
+        "shelf_id": {
+          "name": "Shelf",
+          "description": "The ID of the shelf. Empty for no shelf."
+        },
+        "format": {
+          "name": "Format",
+          "description": "The format of the copy."
+        },
+        "on_duplicate": {
+          "name": "If a copy exists",
+          "description": "The action if the library has a copy of the book."
+        }
+      }
+    },
+    "add_copy": {
+      "name": "Add copy",
+      "description": "Add a copy of a book.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "shelf_id": {
+          "name": "Shelf",
+          "description": "The ID of the shelf. Empty for no shelf."
+        },
+        "format": {
+          "name": "Format",
+          "description": "The format of the copy."
+        },
+        "condition": {
+          "name": "Condition",
+          "description": "The condition of the copy."
+        },
+        "acquired": {
+          "name": "Acquired",
+          "description": "The date when the copy was acquired."
+        },
+        "acquired_from": {
+          "name": "Acquired from",
+          "description": "The shop or the person."
+        },
+        "price": {
+          "name": "Price",
+          "description": "The price that was paid."
+        },
+        "value": {
+          "name": "Value",
+          "description": "The value of the copy now."
+        },
+        "signed": {
+          "name": "Signed",
+          "description": "The copy is signed."
+        },
+        "first_edition": {
+          "name": "First edition",
+          "description": "The copy is a first edition."
+        },
+        "note": {
+          "name": "Note",
+          "description": "A short note."
+        }
+      }
+    },
+    "update_copy": {
+      "name": "Update copy",
+      "description": "Change a copy.",
+      "fields": {
+        "copy_id": {
+          "name": "Copy",
+          "description": "The ID of the copy."
+        },
+        "shelf_id": {
+          "name": "Shelf",
+          "description": "The ID of the shelf. Empty for no shelf."
+        },
+        "format": {
+          "name": "Format",
+          "description": "The format of the copy."
+        },
+        "condition": {
+          "name": "Condition",
+          "description": "The condition of the copy."
+        },
+        "acquired": {
+          "name": "Acquired",
+          "description": "The date when the copy was acquired."
+        },
+        "acquired_from": {
+          "name": "Acquired from",
+          "description": "The shop or the person."
+        },
+        "price": {
+          "name": "Price",
+          "description": "The price that was paid."
+        },
+        "value": {
+          "name": "Value",
+          "description": "The value of the copy now."
+        },
+        "signed": {
+          "name": "Signed",
+          "description": "The copy is signed."
+        },
+        "first_edition": {
+          "name": "First edition",
+          "description": "The copy is a first edition."
+        },
+        "note": {
+          "name": "Note",
+          "description": "A short note."
+        }
+      }
+    },
+    "move_copy": {
+      "name": "Move copy",
+      "description": "Move a copy to a shelf.",
+      "fields": {
+        "copy_id": {
+          "name": "Copy",
+          "description": "The ID of the copy."
+        },
+        "shelf_id": {
+          "name": "Shelf",
+          "description": "The ID of the shelf. Empty for no shelf."
+        }
+      }
+    },
+    "delete_copy": {
+      "name": "Delete copy",
+      "description": "Delete a copy.",
+      "fields": {
+        "copy_id": {
+          "name": "Copy",
+          "description": "The ID of the copy."
+        }
+      }
+    },
+    "set_cover": {
+      "name": "Set cover",
+      "description": "Set the cover of a book.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "kind": {
+          "name": "Cover type",
+          "description": "The source of the cover."
+        },
+        "file_id": {
+          "name": "File ID",
+          "description": "The ID from the cover upload."
+        }
+      }
+    },
+    "set_reading": {
+      "name": "Set reading status",
+      "description": "Set the reading status of a book for a person. A non-admin user can set only their own status.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "The ID of the Home Assistant person."
+        },
+        "status": {
+          "name": "Status",
+          "description": "The reading status."
+        },
+        "rating": {
+          "name": "Rating",
+          "description": "A rating from 1 to 5."
+        },
+        "page": {
+          "name": "Page",
+          "description": "The current page."
+        },
+        "started": {
+          "name": "Started",
+          "description": "The start date."
+        },
+        "finished": {
+          "name": "Finished",
+          "description": "The date when the book was finished."
+        },
+        "read_count": {
+          "name": "Read count",
+          "description": "The number of times that the book was read."
+        },
+        "private_notes": {
+          "name": "Private notes",
+          "description": "Notes that only the person can read."
+        }
+      }
+    },
+    "lend_book": {
+      "name": "Lend book",
+      "description": "Lend a copy to another person.",
+      "fields": {
+        "copy_id": {
+          "name": "Copy",
+          "description": "The ID of the copy."
+        },
+        "party": {
+          "name": "Other person",
+          "description": "The name of the other person of the loan."
+        },
+        "started": {
+          "name": "Started",
+          "description": "The start date."
+        },
+        "due": {
+          "name": "Due",
+          "description": "The due date."
+        },
+        "note": {
+          "name": "Note",
+          "description": "A short note."
+        },
+        "add_task": {
+          "name": "Add task",
+          "description": "Add a Home Keeper task on the due date."
+        }
+      }
+    },
+    "borrow_book": {
+      "name": "Add borrowed book",
+      "description": "Record a book that a person borrowed.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "An ISBN-10 or an ISBN-13."
+        },
+        "title": {
+          "name": "Title",
+          "description": "The title of the book."
+        },
+        "authors": {
+          "name": "Authors",
+          "description": "The authors, in order."
+        },
+        "party": {
+          "name": "Other person",
+          "description": "The name of the other person of the loan."
+        },
+        "started": {
+          "name": "Started",
+          "description": "The start date."
+        },
+        "due": {
+          "name": "Due",
+          "description": "The due date."
+        },
+        "note": {
+          "name": "Note",
+          "description": "A short note."
+        },
+        "add_task": {
+          "name": "Add task",
+          "description": "Add a Home Keeper task on the due date."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "The ID of the Home Assistant person."
+        },
+        "format": {
+          "name": "Format",
+          "description": "The format of the copy."
+        }
+      }
+    },
+    "return_loan": {
+      "name": "Return loan",
+      "description": "Record the return of a loan.",
+      "fields": {
+        "loan_id": {
+          "name": "Loan",
+          "description": "The ID of the loan."
+        },
+        "returned": {
+          "name": "Returned",
+          "description": "The return date. The default is today."
+        }
+      }
+    },
+    "update_loan": {
+      "name": "Update loan",
+      "description": "Change a loan.",
+      "fields": {
+        "loan_id": {
+          "name": "Loan",
+          "description": "The ID of the loan."
+        },
+        "party": {
+          "name": "Other person",
+          "description": "The name of the other person of the loan."
+        },
+        "started": {
+          "name": "Started",
+          "description": "The start date."
+        },
+        "due": {
+          "name": "Due",
+          "description": "The due date."
+        },
+        "note": {
+          "name": "Note",
+          "description": "A short note."
+        },
+        "format": {
+          "name": "Format",
+          "description": "The format of the copy."
+        }
+      }
+    },
+    "delete_loan": {
+      "name": "Delete loan",
+      "description": "Delete a loan and its Home Keeper task.",
+      "fields": {
+        "loan_id": {
+          "name": "Loan",
+          "description": "The ID of the loan."
+        }
+      }
+    },
+    "add_to_wishlist": {
+      "name": "Add to wishlist",
+      "description": "Put a book on the wishlist of a person.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "An ISBN-10 or an ISBN-13."
+        },
+        "title": {
+          "name": "Title",
+          "description": "The title of the book."
+        },
+        "authors": {
+          "name": "Authors",
+          "description": "The authors, in order."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "The ID of the Home Assistant person."
+        },
+        "buy": {
+          "name": "Buy",
+          "description": "Put the book on the wishlist to-do list of the person."
+        }
+      }
+    },
+    "update_wishlist": {
+      "name": "Update wishlist",
+      "description": "Change a wishlist entry.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "buy": {
+          "name": "Buy",
+          "description": "Put the book on the wishlist to-do list of the person."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "The ID of the Home Assistant person."
+        }
+      }
+    },
+    "remove_from_wishlist": {
+      "name": "Remove from wishlist",
+      "description": "Take a book off the wishlist.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        }
+      }
+    },
+    "got_wishlist_book": {
+      "name": "Got wishlist book",
+      "description": "Add a copy of a wishlist book and take it off the wishlist.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "shelf_id": {
+          "name": "Shelf",
+          "description": "The ID of the shelf. Empty for no shelf."
+        },
+        "format": {
+          "name": "Format",
+          "description": "The format of the copy."
+        }
+      }
+    },
+    "set_person_settings": {
+      "name": "Set person settings",
+      "description": "Set the library settings of a person. A non-admin user can set only their own sharing and goal.",
+      "fields": {
+        "person_id": {
+          "name": "Person",
+          "description": "The ID of the Home Assistant person."
+        },
+        "share_reading": {
+          "name": "Share reading status",
+          "description": "Other users can see the status. When off, the sensors and the to-do list of the person are unavailable."
+        },
+        "yearly_goal": {
+          "name": "Yearly goal",
+          "description": "The number of books to read this year."
+        },
+        "wishlist_todo": {
+          "name": "Wishlist list",
+          "description": "The to-do list for the books to buy."
+        }
+      }
+    },
+    "set_settings": {
+      "name": "Set library settings",
+      "description": "Set the currency of the prices and values of the copies.",
+      "fields": {
+        "currency": {
+          "name": "Currency",
+          "description": "A code of 3 letters, such as EUR or USD."
+        }
+      }
+    },
+    "import_csv": {
+      "name": "Import CSV",
+      "description": "Import books from Goodreads, StoryGraph or a library export.",
+      "fields": {
+        "content": {
+          "name": "CSV content",
+          "description": "The CSV text. At most 5 MB."
+        },
+        "source": {
+          "name": "Source",
+          "description": "The app that made the CSV file."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "The ID of the Home Assistant person."
+        },
+        "shelf_id": {
+          "name": "Shelf",
+          "description": "The ID of the shelf. Empty for no shelf."
+        },
+        "import_notes": {
+          "name": "Import notes",
+          "description": "Import the reviews and notes as private notes."
+        },
+        "replace_reading": {
+          "name": "Replace reading status",
+          "description": "Replace a reading status that exists."
+        },
+        "dry_run": {
+          "name": "Dry run",
+          "description": "Only report the changes of the import."
+        }
+      }
+    },
+    "export_csv": {
+      "name": "Export CSV",
+      "description": "Export the library as CSV text.",
+      "fields": {
+        "person_id": {
+          "name": "Person",
+          "description": "The ID of the Home Assistant person."
+        },
+        "format": {
+          "name": "File format",
+          "description": "goodreads or library."
+        }
+      }
+    },
+    "list_books": {
+      "name": "List books",
+      "description": "Return the books that match the filters.",
+      "fields": {
+        "query": {
+          "name": "Search",
+          "description": "Text in the title, the authors, the ISBN or the tags."
+        },
+        "room_id": {
+          "name": "Room",
+          "description": "The ID of the room."
+        },
+        "shelf_id": {
+          "name": "Shelf",
+          "description": "The ID of the shelf. Empty for no shelf."
+        },
+        "owned": {
+          "name": "Owned",
+          "description": "Only books with a copy, or only books with no copy."
+        },
+        "status": {
+          "name": "Status",
+          "description": "The reading status."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "The ID of the Home Assistant person."
+        },
+        "limit": {
+          "name": "Limit",
+          "description": "The maximum number of books."
+        }
+      }
+    },
+    "get_book": {
+      "name": "Get book",
+      "description": "Return a book with its copies and loans.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        }
+      }
+    },
+    "list_locations": {
+      "name": "List locations",
+      "description": "Return the rooms, bookcases and shelves."
+    },
+    "list_loans": {
+      "name": "List loans",
+      "description": "Return the loans.",
+      "fields": {
+        "status": {
+          "name": "Loan status",
+          "description": "open, returned or all."
+        },
+        "direction": {
+          "name": "Direction",
+          "description": "out for a lent book, in for a borrowed book."
+        }
+      }
+    },
+    "list_people": {
+      "name": "List people",
+      "description": "Return the people and their library settings."
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "Home Keeper Library is not loaded."
+    },
+    "admin_required": {
+      "message": "Only an admin user can do this."
+    },
+    "invalid_field": {
+      "message": "The value of {field} is not valid."
+    },
+    "field_required": {
+      "message": "{field} is required."
+    },
+    "field_too_long": {
+      "message": "{field} is too long. The maximum is {max}."
+    },
+    "out_of_range": {
+      "message": "{field} must be from {low} to {high}."
+    },
+    "invalid_date": {
+      "message": "{field} must be a date in the form YYYY-MM-DD."
+    },
+    "invalid_choice": {
+      "message": "{field} must be one of: {options}."
+    },
+    "invalid_isbn": {
+      "message": "{isbn} is not a valid ISBN."
+    },
+    "room_not_found": {
+      "message": "No room has the ID {id}."
+    },
+    "bookcase_not_found": {
+      "message": "No bookcase has the ID {id}."
+    },
+    "shelf_not_found": {
+      "message": "No shelf has the ID {id}."
+    },
+    "book_not_found": {
+      "message": "No book has the ID {id}."
+    },
+    "copy_not_found": {
+      "message": "No copy has the ID {id}."
+    },
+    "loan_not_found": {
+      "message": "No loan has the ID {id}."
+    },
+    "person_not_found": {
+      "message": "No person has the ID {id}."
+    },
+    "no_person": {
+      "message": "Your user has no Home Assistant person. Link a person to the user."
+    },
+    "room_not_empty": {
+      "message": "The room has {count} bookcases. Use force to delete them too."
+    },
+    "bookcase_not_empty": {
+      "message": "The bookcase has {count} shelves. Use force to delete them too."
+    },
+    "shelf_not_empty": {
+      "message": "The shelf has {count} copies. Use force to move them to no shelf."
+    },
+    "duplicate_isbn": {
+      "message": "Another book has the ISBN {isbn}."
+    },
+    "copy_on_loan": {
+      "message": "The copy is lent out. Return the loan first."
+    },
+    "due_before_start": {
+      "message": "The due date is before the start date."
+    },
+    "already_on_wishlist": {
+      "message": "The book is already on a wishlist."
+    },
+    "not_on_wishlist": {
+      "message": "The book is not on a wishlist."
+    },
+    "upload_not_found": {
+      "message": "No uploaded cover has the ID {file_id}."
+    },
+    "isbn_or_title_required": {
+      "message": "Give a book ID, an ISBN or a title."
+    },
+    "lookup_unavailable": {
+      "message": "Open Library is not available. Try again later."
+    },
+    "no_openlibrary_cover": {
+      "message": "Open Library has no cover for this book."
+    },
+    "todo_entity_not_found": {
+      "message": "{entity_id} is not a to-do list."
+    },
+    "csv_too_large": {
+      "message": "The CSV text is too large. The maximum is {mb} MB."
+    },
+    "csv_unreadable": {
+      "message": "The CSV text has no {column} column."
+    },
+    "upload_requires_user": {
+      "message": "An upload needs a signed-in user."
+    },
+    "expected_multipart_upload": {
+      "message": "The upload must be a multipart form."
+    },
+    "no_file_in_upload": {
+      "message": "The upload has no file."
+    },
+    "file_too_large": {
+      "message": "The file is too large. The maximum is {mb} MB."
+    },
+    "unsupported_image": {
+      "message": "The file must be a JPEG, PNG or WebP image."
+    },
+    "image_unreadable": {
+      "message": "The image cannot be read."
+    },
+    "invalid_currency": {
+      "message": "{currency} is not a currency code of 3 letters."
+    },
+    "todo_not_allowed": {
+      "message": "Only {person} or an admin user can change this to-do list."
+    }
+  }
+}

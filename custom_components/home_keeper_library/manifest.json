@@ -1,0 +1,24 @@
+{
+  "domain": "home_keeper_library",
+  "name": "Home Keeper Library",
+  "after_dependencies": [
+    "home_keeper",
+    "lovelace"
+  ],
+  "codeowners": [
+    "@prestomation"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "frontend",
+    "http",
+    "person"
+  ],
+  "documentation": "https://github.com/prestomation/ha-home-keeper-library",
+  "integration_type": "service",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/prestomation/ha-home-keeper-library/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "0.1.0b1"
+}

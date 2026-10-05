@@ -1,0 +1,8 @@
+{
+  "tab.title": "Kirjasto",
+  "companion.description": "Kirjat, hyllyt, lainat ja lukutila.",
+  "loan_task.name_out": "Hae {title} takaisin: {party}",
+  "loan_task.name_in": "Palauta {title}: {party}",
+  "loan_task.completion_prompt": "Tehtävän suorittaminen palauttaa lainan.",
+  "item.summary": "{title}, {author}"
+}

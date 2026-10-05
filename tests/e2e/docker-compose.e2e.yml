@@ -1,0 +1,23 @@
+# The browser tests add this file to tests/integration/docker-compose.yml:
+#
+#   docker compose -p hkl-e2e -f tests/integration/docker-compose.yml \
+#     -f tests/e2e/docker-compose.e2e.yml up -d
+#
+# Open Library is not reachable from the test machines, so a fixture server
+# (tests/e2e/seed/openlibrary/server.py) runs next to Home Assistant, and only
+# this file sets the 2 environment variables that point the library at it.
+# The server uses the Home Assistant image, because that image has Python and
+# is on the machine already. Relative paths start at tests/integration/, the
+# folder of the first compose file.
+services:
+  homeassistant:
+    environment:
+      - HOME_KEEPER_LIBRARY_OPENLIBRARY_URL=http://openlibrary:8080
+      - HOME_KEEPER_LIBRARY_OPENLIBRARY_COVERS_URL=http://openlibrary:8080
+    depends_on:
+      - openlibrary
+  openlibrary:
+    image: ghcr.io/home-assistant/home-assistant:${HA_TAG:-stable}
+    entrypoint: ["python3", "-u", "/fixture/server.py"]
+    volumes:
+      - ../e2e/seed/openlibrary:/fixture:ro

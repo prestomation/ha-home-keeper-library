@@ -1,0 +1,1114 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Home Keeper Library",
+        "description": "Nastavit měnu cen a hodnot výtisků.",
+        "data": {
+          "currency": "Měna"
+        },
+        "data_description": {
+          "currency": "Kód ze 3 písmen, například EUR nebo USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Zadejte kód měny ze 3 písmen."
+    },
+    "abort": {
+      "already_configured": "Home Keeper Library je už nastaven.",
+      "single_instance_allowed": "Home Keeper Library je už nastaven.",
+      "home_keeper_missing": "Home Keeper Library vyžaduje Home Keeper. Nainstalujte Home Keeper z HACS, restartujte Home Assistant a potom znovu přidejte Home Keeper Library. Kroky instalace: {url}",
+      "home_keeper_not_set_up": "Nejdříve přidejte integraci Home Keeper.",
+      "home_keeper_too_old": "Aktualizujte Home Keeper na verzi {version} nebo novější."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Možnosti knihovny",
+        "data": {
+          "currency": "Měna"
+        },
+        "data_description": {
+          "currency": "Kód ze 3 písmen, například EUR nebo USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Zadejte kód měny ze 3 písmen."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "books": {
+        "name": "Knihy"
+      },
+      "loans_out": {
+        "name": "Půjčeno"
+      },
+      "loans_overdue": {
+        "name": "Výpůjčky po termínu"
+      },
+      "books_read_this_year": {
+        "name": "{person} přečtené knihy letos"
+      },
+      "reading_now": {
+        "name": "{person} právě čte"
+      }
+    },
+    "todo": {
+      "to_read": {
+        "name": "{person} chce číst"
+      }
+    }
+  },
+  "issues": {
+    "home_keeper_missing": {
+      "title": "Home Keeper není nainstalován",
+      "description": "Karta Knihovna a úkoly výpůjček vyžadují Home Keeper. Karta na nástěnce, entity a služby teď fungují. Nainstalujte Home Keeper z HACS a restartujte Home Assistant. Kroky instalace: {url}"
+    },
+    "home_keeper_not_set_up": {
+      "title": "Home Keeper není nastaven",
+      "description": "Karta Knihovna a úkoly výpůjček vyžadují načtenou integraci Home Keeper. Karta na nástěnce, entity a služby teď fungují. Přidejte nebo povolte integraci Home Keeper."
+    },
+    "home_keeper_too_old": {
+      "title": "Home Keeper je příliš starý",
+      "description": "Karta Knihovna a úkoly výpůjček vyžadují Home Keeper verze {version} nebo novější. Karta na nástěnce, entity a služby teď fungují. Aktualizujte Home Keeper."
+    }
+  },
+  "services": {
+    "add_room": {
+      "name": "Přidat místnost",
+      "description": "Přidat místnost do knihovny.",
+      "fields": {
+        "name": {
+          "name": "Název",
+          "description": "Zobrazovaný název."
+        },
+        "area_id": {
+          "name": "Oblast",
+          "description": "Oblast Home Assistant pro místnost."
+        },
+        "order": {
+          "name": "Pořadí",
+          "description": "Pozice řazení. Nižší je první."
+        }
+      }
+    },
+    "update_room": {
+      "name": "Změnit místnost",
+      "description": "Změnit místnost.",
+      "fields": {
+        "room_id": {
+          "name": "Místnost",
+          "description": "ID místnosti."
+        },
+        "name": {
+          "name": "Název",
+          "description": "Zobrazovaný název."
+        },
+        "area_id": {
+          "name": "Oblast",
+          "description": "Oblast Home Assistant pro místnost."
+        },
+        "order": {
+          "name": "Pořadí",
+          "description": "Pozice řazení. Nižší je první."
+        }
+      }
+    },
+    "delete_room": {
+      "name": "Smazat místnost",
+      "description": "Smazat místnost. Místnost s knihovničkami potřebuje force.",
+      "fields": {
+        "room_id": {
+          "name": "Místnost",
+          "description": "ID místnosti."
+        },
+        "force": {
+          "name": "Vynutit",
+          "description": "Smazat i obsah. Výtisky zůstanou bez police."
+        }
+      }
+    },
+    "add_bookcase": {
+      "name": "Přidat knihovničku",
+      "description": "Přidat knihovničku do místnosti.",
+      "fields": {
+        "room_id": {
+          "name": "Místnost",
+          "description": "ID místnosti."
+        },
+        "name": {
+          "name": "Název",
+          "description": "Zobrazovaný název."
+        },
+        "note": {
+          "name": "Poznámka",
+          "description": "Krátká poznámka."
+        },
+        "order": {
+          "name": "Pořadí",
+          "description": "Pozice řazení. Nižší je první."
+        }
+      }
+    },
+    "update_bookcase": {
+      "name": "Změnit knihovničku",
+      "description": "Změnit knihovničku nebo ji přesunout do jiné místnosti.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Knihovnička",
+          "description": "ID knihovničky."
+        },
+        "room_id": {
+          "name": "Místnost",
+          "description": "ID místnosti."
+        },
+        "name": {
+          "name": "Název",
+          "description": "Zobrazovaný název."
+        },
+        "note": {
+          "name": "Poznámka",
+          "description": "Krátká poznámka."
+        },
+        "order": {
+          "name": "Pořadí",
+          "description": "Pozice řazení. Nižší je první."
+        }
+      }
+    },
+    "delete_bookcase": {
+      "name": "Smazat knihovničku",
+      "description": "Smazat knihovničku. Knihovnička s policemi potřebuje force.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Knihovnička",
+          "description": "ID knihovničky."
+        },
+        "force": {
+          "name": "Vynutit",
+          "description": "Smazat i obsah. Výtisky zůstanou bez police."
+        }
+      }
+    },
+    "add_shelf": {
+      "name": "Přidat polici",
+      "description": "Přidat polici do knihovničky.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Knihovnička",
+          "description": "ID knihovničky."
+        },
+        "name": {
+          "name": "Název",
+          "description": "Zobrazovaný název."
+        },
+        "order": {
+          "name": "Pořadí",
+          "description": "Pozice řazení. Nižší je první."
+        }
+      }
+    },
+    "update_shelf": {
+      "name": "Změnit polici",
+      "description": "Změnit polici nebo ji přesunout do jiné knihovničky.",
+      "fields": {
+        "shelf_id": {
+          "name": "Police",
+          "description": "ID police. Prázdné pro žádnou polici."
+        },
+        "bookcase_id": {
+          "name": "Knihovnička",
+          "description": "ID knihovničky."
+        },
+        "name": {
+          "name": "Název",
+          "description": "Zobrazovaný název."
+        },
+        "order": {
+          "name": "Pořadí",
+          "description": "Pozice řazení. Nižší je první."
+        }
+      }
+    },
+    "delete_shelf": {
+      "name": "Smazat polici",
+      "description": "Smazat polici. Police s výtisky potřebuje force.",
+      "fields": {
+        "shelf_id": {
+          "name": "Police",
+          "description": "ID police. Prázdné pro žádnou polici."
+        },
+        "force": {
+          "name": "Vynutit",
+          "description": "Smazat i obsah. Výtisky zůstanou bez police."
+        }
+      }
+    },
+    "lookup_isbn": {
+      "name": "Vyhledat ISBN",
+      "description": "Načíst podrobnosti ISBN z Open Library. Knihovna se nemění.",
+      "fields": {
+        "isbn": {
+          "name": "Číslo ISBN",
+          "description": "ISBN-10 nebo ISBN-13."
+        }
+      }
+    },
+    "add_book": {
+      "name": "Přidat knihu",
+      "description": "Přidat knihu. Pokud má kniha stejné ISBN, služba vrátí tuto knihu.",
+      "fields": {
+        "title": {
+          "name": "Titul",
+          "description": "Titul knihy."
+        },
+        "subtitle": {
+          "name": "Podtitul",
+          "description": "Podtitul knihy."
+        },
+        "authors": {
+          "name": "Autoři",
+          "description": "Autoři v pořadí."
+        },
+        "isbn": {
+          "name": "Číslo ISBN",
+          "description": "ISBN-10 nebo ISBN-13."
+        },
+        "isbn13": {
+          "name": "Číslo ISBN-13",
+          "description": "13místné ISBN."
+        },
+        "isbn10": {
+          "name": "Číslo ISBN-10",
+          "description": "10místné ISBN."
+        },
+        "publisher": {
+          "name": "Nakladatel",
+          "description": "Nakladatel knihy."
+        },
+        "published": {
+          "name": "Vydáno",
+          "description": "Datum vydání, obvykle rok."
+        },
+        "pages": {
+          "name": "Strany",
+          "description": "Počet stran."
+        },
+        "language": {
+          "name": "Jazyk",
+          "description": "Kód jazyka, například en."
+        },
+        "subjects": {
+          "name": "Témata",
+          "description": "Témata knihy."
+        },
+        "series": {
+          "name": "Série",
+          "description": "Název série nebo název a číslo."
+        },
+        "description": {
+          "name": "Popis",
+          "description": "Popis knihy."
+        },
+        "tags": {
+          "name": "Štítky",
+          "description": "Štítky knihy."
+        },
+        "shared_notes": {
+          "name": "Sdílené poznámky",
+          "description": "Poznámky, které může číst každý uživatel, v Markdownu."
+        },
+        "needs_details": {
+          "name": "Chybí podrobnosti",
+          "description": "Označit knihu jako neúplnou."
+        },
+        "lookup": {
+          "name": "Vyhledat",
+          "description": "Načíst podrobnosti z Open Library."
+        }
+      }
+    },
+    "update_book": {
+      "name": "Změnit knihu",
+      "description": "Změnit podrobnosti knihy.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "title": {
+          "name": "Titul",
+          "description": "Titul knihy."
+        },
+        "subtitle": {
+          "name": "Podtitul",
+          "description": "Podtitul knihy."
+        },
+        "authors": {
+          "name": "Autoři",
+          "description": "Autoři v pořadí."
+        },
+        "isbn": {
+          "name": "Číslo ISBN",
+          "description": "ISBN-10 nebo ISBN-13."
+        },
+        "isbn13": {
+          "name": "Číslo ISBN-13",
+          "description": "13místné ISBN."
+        },
+        "isbn10": {
+          "name": "Číslo ISBN-10",
+          "description": "10místné ISBN."
+        },
+        "publisher": {
+          "name": "Nakladatel",
+          "description": "Nakladatel knihy."
+        },
+        "published": {
+          "name": "Vydáno",
+          "description": "Datum vydání, obvykle rok."
+        },
+        "pages": {
+          "name": "Strany",
+          "description": "Počet stran."
+        },
+        "language": {
+          "name": "Jazyk",
+          "description": "Kód jazyka, například en."
+        },
+        "subjects": {
+          "name": "Témata",
+          "description": "Témata knihy."
+        },
+        "series": {
+          "name": "Série",
+          "description": "Název série nebo název a číslo."
+        },
+        "description": {
+          "name": "Popis",
+          "description": "Popis knihy."
+        },
+        "tags": {
+          "name": "Štítky",
+          "description": "Štítky knihy."
+        },
+        "shared_notes": {
+          "name": "Sdílené poznámky",
+          "description": "Poznámky, které může číst každý uživatel, v Markdownu."
+        },
+        "needs_details": {
+          "name": "Chybí podrobnosti",
+          "description": "Označit knihu jako neúplnou."
+        }
+      }
+    },
+    "delete_book": {
+      "name": "Smazat knihu",
+      "description": "Smazat knihu s jejími výtisky, stavem čtení, výpůjčkami a obálkou.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        }
+      }
+    },
+    "refresh_book": {
+      "name": "Aktualizovat z Open Library",
+      "description": "Vyplnit prázdná pole knihy z Open Library.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        }
+      }
+    },
+    "scan_isbn": {
+      "name": "Naskenovat ISBN",
+      "description": "Přidat naskenovanou knihu na polici.",
+      "fields": {
+        "isbn": {
+          "name": "Číslo ISBN",
+          "description": "ISBN-10 nebo ISBN-13."
+        },
+        "shelf_id": {
+          "name": "Police",
+          "description": "ID police. Prázdné pro žádnou polici."
+        },
+        "format": {
+          "name": "Formát",
+          "description": "Formát výtisku."
+        },
+        "on_duplicate": {
+          "name": "Pokud výtisk existuje",
+          "description": "Akce, pokud knihovna má výtisk knihy."
+        }
+      }
+    },
+    "add_copy": {
+      "name": "Přidat výtisk",
+      "description": "Přidat výtisk knihy.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "shelf_id": {
+          "name": "Police",
+          "description": "ID police. Prázdné pro žádnou polici."
+        },
+        "format": {
+          "name": "Formát",
+          "description": "Formát výtisku."
+        },
+        "condition": {
+          "name": "Stav výtisku",
+          "description": "Stav výtisku."
+        },
+        "acquired": {
+          "name": "Získáno",
+          "description": "Datum, kdy byl výtisk získán."
+        },
+        "acquired_from": {
+          "name": "Získáno od",
+          "description": "Obchod nebo osoba."
+        },
+        "price": {
+          "name": "Cena",
+          "description": "Zaplacená cena."
+        },
+        "value": {
+          "name": "Hodnota",
+          "description": "Současná hodnota výtisku."
+        },
+        "signed": {
+          "name": "S podpisem",
+          "description": "Výtisk je podepsaný."
+        },
+        "first_edition": {
+          "name": "První vydání",
+          "description": "Výtisk je první vydání."
+        },
+        "note": {
+          "name": "Poznámka",
+          "description": "Krátká poznámka."
+        }
+      }
+    },
+    "update_copy": {
+      "name": "Změnit výtisk",
+      "description": "Změnit výtisk.",
+      "fields": {
+        "copy_id": {
+          "name": "Výtisk",
+          "description": "ID výtisku."
+        },
+        "shelf_id": {
+          "name": "Police",
+          "description": "ID police. Prázdné pro žádnou polici."
+        },
+        "format": {
+          "name": "Formát",
+          "description": "Formát výtisku."
+        },
+        "condition": {
+          "name": "Stav výtisku",
+          "description": "Stav výtisku."
+        },
+        "acquired": {
+          "name": "Získáno",
+          "description": "Datum, kdy byl výtisk získán."
+        },
+        "acquired_from": {
+          "name": "Získáno od",
+          "description": "Obchod nebo osoba."
+        },
+        "price": {
+          "name": "Cena",
+          "description": "Zaplacená cena."
+        },
+        "value": {
+          "name": "Hodnota",
+          "description": "Současná hodnota výtisku."
+        },
+        "signed": {
+          "name": "S podpisem",
+          "description": "Výtisk je podepsaný."
+        },
+        "first_edition": {
+          "name": "První vydání",
+          "description": "Výtisk je první vydání."
+        },
+        "note": {
+          "name": "Poznámka",
+          "description": "Krátká poznámka."
+        }
+      }
+    },
+    "move_copy": {
+      "name": "Přesunout výtisk",
+      "description": "Přesunout výtisk na polici.",
+      "fields": {
+        "copy_id": {
+          "name": "Výtisk",
+          "description": "ID výtisku."
+        },
+        "shelf_id": {
+          "name": "Police",
+          "description": "ID police. Prázdné pro žádnou polici."
+        }
+      }
+    },
+    "delete_copy": {
+      "name": "Smazat výtisk",
+      "description": "Smazat výtisk.",
+      "fields": {
+        "copy_id": {
+          "name": "Výtisk",
+          "description": "ID výtisku."
+        }
+      }
+    },
+    "set_cover": {
+      "name": "Nastavit obálku",
+      "description": "Nastavit obálku knihy.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "kind": {
+          "name": "Typ obálky",
+          "description": "Zdroj obálky."
+        },
+        "file_id": {
+          "name": "ID souboru",
+          "description": "ID z nahrání obálky."
+        }
+      }
+    },
+    "set_reading": {
+      "name": "Nastavit stav čtení",
+      "description": "Nastavit stav čtení knihy pro osobu. Uživatel bez práv správce může nastavit jen svůj vlastní stav.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "person_id": {
+          "name": "Osoba",
+          "description": "ID osoby v Home Assistant."
+        },
+        "status": {
+          "name": "Stav čtení",
+          "description": "Stav čtení."
+        },
+        "rating": {
+          "name": "Hodnocení",
+          "description": "Hodnocení od 1 do 5."
+        },
+        "page": {
+          "name": "Strana",
+          "description": "Aktuální strana."
+        },
+        "started": {
+          "name": "Začato",
+          "description": "Datum začátku."
+        },
+        "finished": {
+          "name": "Dočteno",
+          "description": "Datum, kdy byla kniha dočtena."
+        },
+        "read_count": {
+          "name": "Počet přečtení",
+          "description": "Kolikrát byla kniha přečtena."
+        },
+        "private_notes": {
+          "name": "Soukromé poznámky",
+          "description": "Poznámky, které může číst jen tato osoba."
+        }
+      }
+    },
+    "lend_book": {
+      "name": "Půjčit knihu",
+      "description": "Půjčit výtisk jiné osobě.",
+      "fields": {
+        "copy_id": {
+          "name": "Výtisk",
+          "description": "ID výtisku."
+        },
+        "party": {
+          "name": "Druhá osoba",
+          "description": "Jméno druhé osoby výpůjčky."
+        },
+        "started": {
+          "name": "Začato",
+          "description": "Datum začátku."
+        },
+        "due": {
+          "name": "Termín",
+          "description": "Termín vrácení."
+        },
+        "note": {
+          "name": "Poznámka",
+          "description": "Krátká poznámka."
+        },
+        "add_task": {
+          "name": "Přidat úkol",
+          "description": "Přidat úkol Home Keeper na termín vrácení."
+        }
+      }
+    },
+    "borrow_book": {
+      "name": "Přidat vypůjčenou knihu",
+      "description": "Zaznamenat knihu, kterou si osoba vypůjčila.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "isbn": {
+          "name": "Číslo ISBN",
+          "description": "ISBN-10 nebo ISBN-13."
+        },
+        "title": {
+          "name": "Titul",
+          "description": "Titul knihy."
+        },
+        "authors": {
+          "name": "Autoři",
+          "description": "Autoři v pořadí."
+        },
+        "party": {
+          "name": "Druhá osoba",
+          "description": "Jméno druhé osoby výpůjčky."
+        },
+        "started": {
+          "name": "Začato",
+          "description": "Datum začátku."
+        },
+        "due": {
+          "name": "Termín",
+          "description": "Termín vrácení."
+        },
+        "note": {
+          "name": "Poznámka",
+          "description": "Krátká poznámka."
+        },
+        "add_task": {
+          "name": "Přidat úkol",
+          "description": "Přidat úkol Home Keeper na termín vrácení."
+        },
+        "person_id": {
+          "name": "Osoba",
+          "description": "ID osoby v Home Assistant."
+        },
+        "format": {
+          "name": "Formát",
+          "description": "Formát výtisku."
+        }
+      }
+    },
+    "return_loan": {
+      "name": "Vrátit výpůjčku",
+      "description": "Zaznamenat vrácení výpůjčky.",
+      "fields": {
+        "loan_id": {
+          "name": "Výpůjčka",
+          "description": "ID výpůjčky."
+        },
+        "returned": {
+          "name": "Vráceno",
+          "description": "Datum vrácení. Výchozí je dnes."
+        }
+      }
+    },
+    "update_loan": {
+      "name": "Změnit výpůjčku",
+      "description": "Změnit výpůjčku.",
+      "fields": {
+        "loan_id": {
+          "name": "Výpůjčka",
+          "description": "ID výpůjčky."
+        },
+        "party": {
+          "name": "Druhá osoba",
+          "description": "Jméno druhé osoby výpůjčky."
+        },
+        "started": {
+          "name": "Začato",
+          "description": "Datum začátku."
+        },
+        "due": {
+          "name": "Termín",
+          "description": "Termín vrácení."
+        },
+        "note": {
+          "name": "Poznámka",
+          "description": "Krátká poznámka."
+        },
+        "format": {
+          "name": "Formát",
+          "description": "Formát výtisku."
+        }
+      }
+    },
+    "delete_loan": {
+      "name": "Smazat výpůjčku",
+      "description": "Smazat výpůjčku a její úkol Home Keeper.",
+      "fields": {
+        "loan_id": {
+          "name": "Výpůjčka",
+          "description": "ID výpůjčky."
+        }
+      }
+    },
+    "add_to_wishlist": {
+      "name": "Přidat do přání",
+      "description": "Dát knihu na seznam přání osoby.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "isbn": {
+          "name": "Číslo ISBN",
+          "description": "ISBN-10 nebo ISBN-13."
+        },
+        "title": {
+          "name": "Titul",
+          "description": "Titul knihy."
+        },
+        "authors": {
+          "name": "Autoři",
+          "description": "Autoři v pořadí."
+        },
+        "person_id": {
+          "name": "Osoba",
+          "description": "ID osoby v Home Assistant."
+        },
+        "buy": {
+          "name": "Koupit",
+          "description": "Dát knihu na seznam úkolů přání osoby."
+        }
+      }
+    },
+    "update_wishlist": {
+      "name": "Změnit přání",
+      "description": "Změnit položku seznamu přání.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "buy": {
+          "name": "Koupit",
+          "description": "Dát knihu na seznam úkolů přání osoby."
+        },
+        "person_id": {
+          "name": "Osoba",
+          "description": "ID osoby v Home Assistant."
+        }
+      }
+    },
+    "remove_from_wishlist": {
+      "name": "Odebrat z přání",
+      "description": "Odebrat knihu ze seznamu přání.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        }
+      }
+    },
+    "got_wishlist_book": {
+      "name": "Kniha z přání získána",
+      "description": "Přidat výtisk knihy ze seznamu přání a odebrat ji ze seznamu.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "shelf_id": {
+          "name": "Police",
+          "description": "ID police. Prázdné pro žádnou polici."
+        },
+        "format": {
+          "name": "Formát",
+          "description": "Formát výtisku."
+        }
+      }
+    },
+    "set_person_settings": {
+      "name": "Nastavit nastavení osoby",
+      "description": "Nastavit nastavení knihovny pro osobu. Uživatel bez práv správce může nastavit jen své vlastní sdílení a cíl.",
+      "fields": {
+        "person_id": {
+          "name": "Osoba",
+          "description": "ID osoby v Home Assistant."
+        },
+        "share_reading": {
+          "name": "Sdílet stav čtení",
+          "description": "Ostatní uživatelé vidí stav. Když je vypnuto, senzory a seznam úkolů osoby nejsou dostupné."
+        },
+        "yearly_goal": {
+          "name": "Roční cíl",
+          "description": "Počet knih k přečtení v tomto roce."
+        },
+        "wishlist_todo": {
+          "name": "Seznam přání",
+          "description": "Seznam úkolů pro knihy ke koupi."
+        }
+      }
+    },
+    "set_settings": {
+      "name": "Nastavit nastavení knihovny",
+      "description": "Nastavit měnu cen a hodnot výtisků.",
+      "fields": {
+        "currency": {
+          "name": "Měna",
+          "description": "Kód ze 3 písmen, například EUR nebo USD."
+        }
+      }
+    },
+    "import_csv": {
+      "name": "Importovat CSV",
+      "description": "Importovat knihy z Goodreads, StoryGraph nebo exportu knihovny.",
+      "fields": {
+        "content": {
+          "name": "Obsah CSV",
+          "description": "Text CSV. Nejvýše 5 MB."
+        },
+        "source": {
+          "name": "Zdroj",
+          "description": "Aplikace, která vytvořila soubor CSV."
+        },
+        "person_id": {
+          "name": "Osoba",
+          "description": "ID osoby v Home Assistant."
+        },
+        "shelf_id": {
+          "name": "Police",
+          "description": "ID police. Prázdné pro žádnou polici."
+        },
+        "import_notes": {
+          "name": "Importovat poznámky",
+          "description": "Importovat recenze a poznámky jako soukromé poznámky."
+        },
+        "replace_reading": {
+          "name": "Nahradit stav čtení",
+          "description": "Nahradit existující stav čtení."
+        },
+        "dry_run": {
+          "name": "Zkušební běh",
+          "description": "Jen ohlásit změny importu."
+        }
+      }
+    },
+    "export_csv": {
+      "name": "Exportovat CSV",
+      "description": "Exportovat knihovnu jako text CSV.",
+      "fields": {
+        "person_id": {
+          "name": "Osoba",
+          "description": "ID osoby v Home Assistant."
+        },
+        "format": {
+          "name": "Formát souboru",
+          "description": "goodreads nebo library."
+        }
+      }
+    },
+    "list_books": {
+      "name": "Vypsat knihy",
+      "description": "Vrátit knihy, které odpovídají filtrům.",
+      "fields": {
+        "query": {
+          "name": "Hledat",
+          "description": "Text v titulu, autorech, ISBN nebo štítcích."
+        },
+        "room_id": {
+          "name": "Místnost",
+          "description": "ID místnosti."
+        },
+        "shelf_id": {
+          "name": "Police",
+          "description": "ID police. Prázdné pro žádnou polici."
+        },
+        "owned": {
+          "name": "Vlastněno",
+          "description": "Jen knihy s výtiskem, nebo jen knihy bez výtisku."
+        },
+        "status": {
+          "name": "Stav čtení",
+          "description": "Stav čtení."
+        },
+        "person_id": {
+          "name": "Osoba",
+          "description": "ID osoby v Home Assistant."
+        },
+        "limit": {
+          "name": "Omezení",
+          "description": "Největší počet knih."
+        }
+      }
+    },
+    "get_book": {
+      "name": "Získat knihu",
+      "description": "Vrátit knihu s jejími výtisky a výpůjčkami.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        }
+      }
+    },
+    "list_locations": {
+      "name": "Vypsat umístění",
+      "description": "Vrátit místnosti, knihovničky a police."
+    },
+    "list_loans": {
+      "name": "Vypsat výpůjčky",
+      "description": "Vrátit výpůjčky.",
+      "fields": {
+        "status": {
+          "name": "Stav výpůjčky",
+          "description": "open, returned nebo all."
+        },
+        "direction": {
+          "name": "Směr",
+          "description": "out pro půjčenou knihu, in pro vypůjčenou knihu."
+        }
+      }
+    },
+    "list_people": {
+      "name": "Vypsat osoby",
+      "description": "Vrátit osoby a jejich nastavení knihovny."
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "Home Keeper Library není načten."
+    },
+    "admin_required": {
+      "message": "Toto může udělat jen správce."
+    },
+    "invalid_field": {
+      "message": "Hodnota {field} není platná."
+    },
+    "field_required": {
+      "message": "{field} je povinné."
+    },
+    "field_too_long": {
+      "message": "{field} je příliš dlouhé. Maximum je {max}."
+    },
+    "out_of_range": {
+      "message": "{field} musí být od {low} do {high}."
+    },
+    "invalid_date": {
+      "message": "{field} musí být datum ve tvaru YYYY-MM-DD."
+    },
+    "invalid_choice": {
+      "message": "{field} musí být jedna z hodnot: {options}."
+    },
+    "invalid_isbn": {
+      "message": "{isbn} není platné ISBN."
+    },
+    "room_not_found": {
+      "message": "Žádná místnost nemá ID {id}."
+    },
+    "bookcase_not_found": {
+      "message": "Žádná knihovnička nemá ID {id}."
+    },
+    "shelf_not_found": {
+      "message": "Žádná police nemá ID {id}."
+    },
+    "book_not_found": {
+      "message": "Žádná kniha nemá ID {id}."
+    },
+    "copy_not_found": {
+      "message": "Žádný výtisk nemá ID {id}."
+    },
+    "loan_not_found": {
+      "message": "Žádná výpůjčka nemá ID {id}."
+    },
+    "person_not_found": {
+      "message": "Žádná osoba nemá ID {id}."
+    },
+    "no_person": {
+      "message": "Váš uživatel nemá osobu v Home Assistant. Propojte osobu s uživatelem."
+    },
+    "room_not_empty": {
+      "message": "Místnost má knihovničky: {count}. Použijte force, chcete-li je také smazat."
+    },
+    "bookcase_not_empty": {
+      "message": "Knihovnička má police: {count}. Použijte force, chcete-li je také smazat."
+    },
+    "shelf_not_empty": {
+      "message": "Police má výtisky: {count}. Použijte force, chcete-li je nechat bez police."
+    },
+    "duplicate_isbn": {
+      "message": "Jiná kniha má ISBN {isbn}."
+    },
+    "copy_on_loan": {
+      "message": "Výtisk je půjčený. Nejdříve vraťte výpůjčku."
+    },
+    "due_before_start": {
+      "message": "Termín vrácení je před datem začátku."
+    },
+    "already_on_wishlist": {
+      "message": "Kniha už je na seznamu přání."
+    },
+    "not_on_wishlist": {
+      "message": "Kniha není na žádném seznamu přání."
+    },
+    "upload_not_found": {
+      "message": "Žádná nahraná obálka nemá ID {file_id}."
+    },
+    "isbn_or_title_required": {
+      "message": "Zadejte ID knihy, ISBN nebo titul."
+    },
+    "lookup_unavailable": {
+      "message": "Open Library není dostupná. Zkuste to později."
+    },
+    "no_openlibrary_cover": {
+      "message": "Open Library nemá obálku této knihy."
+    },
+    "todo_entity_not_found": {
+      "message": "{entity_id} není seznam úkolů."
+    },
+    "csv_too_large": {
+      "message": "Text CSV je příliš velký. Maximum je {mb} MB."
+    },
+    "csv_unreadable": {
+      "message": "Text CSV nemá sloupec {column}."
+    },
+    "upload_requires_user": {
+      "message": "Nahrání vyžaduje přihlášeného uživatele."
+    },
+    "expected_multipart_upload": {
+      "message": "Nahrání musí být formulář multipart."
+    },
+    "no_file_in_upload": {
+      "message": "Nahrání neobsahuje soubor."
+    },
+    "file_too_large": {
+      "message": "Soubor je příliš velký. Maximum je {mb} MB."
+    },
+    "unsupported_image": {
+      "message": "Soubor musí být obrázek JPEG, PNG nebo WebP."
+    },
+    "image_unreadable": {
+      "message": "Obrázek nelze přečíst."
+    },
+    "invalid_currency": {
+      "message": "{currency} není kód měny ze 3 písmen."
+    },
+    "todo_not_allowed": {
+      "message": "Tento seznam úkolů může změnit jen {person} nebo správce."
+    }
+  }
+}

@@ -1,0 +1,8 @@
+# YAML dashboard for the Playwright e2e suite. The card shows the library of the
+# user who opens the dashboard: Alex (an admin) or Sam (a user who is not an admin).
+title: Library E2E
+views:
+  - title: Library
+    path: library
+    cards:
+      - type: custom:home-keeper-library-card

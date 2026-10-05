@@ -1,0 +1,18 @@
+{
+  "publishers": ["Crown"],
+  "number_of_pages": 388,
+  "isbn_10": ["0553418602"],
+  "covers": [8167231],
+  "key": "/books/OL27187370M",
+  "authors": [{"key": "/authors/OL7348045A"}],
+  "languages": [{"key": "/languages/eng"}],
+  "subjects": ["Fantasy fiction", "Horror fiction", "Libraries"],
+  "title": "The Library at Mount Char",
+  "isbn_13": ["9780553418606"],
+  "publish_date": "June 16, 2015",
+  "physical_format": "Hardcover",
+  "works": [{"key": "/works/OL17357740W"}],
+  "type": {"key": "/type/edition"},
+  "latest_revision": 6,
+  "revision": 6
+}

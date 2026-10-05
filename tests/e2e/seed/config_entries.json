@@ -1,0 +1,16 @@
+[
+  {
+    "entry_id": "local_todo_alex_books",
+    "version": 1,
+    "minor_version": 1,
+    "domain": "local_todo",
+    "title": "Alex books",
+    "data": {"todo_list_name": "Alex books", "storage_key": "alex_books"},
+    "options": {},
+    "pref_disable_new_entities": false,
+    "pref_disable_polling": false,
+    "source": "user",
+    "unique_id": null,
+    "disabled_by": null
+  }
+]

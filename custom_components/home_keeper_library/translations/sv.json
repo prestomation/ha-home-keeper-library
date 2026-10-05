@@ -1,0 +1,1114 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Home Keeper Library",
+        "description": "Ange valutan för exemplarens priser och värden.",
+        "data": {
+          "currency": "Valuta"
+        },
+        "data_description": {
+          "currency": "En kod med 3 bokstäver, till exempel EUR eller USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Ange en valutakod med 3 bokstäver."
+    },
+    "abort": {
+      "already_configured": "Home Keeper Library är redan konfigurerat.",
+      "single_instance_allowed": "Home Keeper Library är redan konfigurerat.",
+      "home_keeper_missing": "Home Keeper Library kräver Home Keeper. Installera Home Keeper från HACS, starta om Home Assistant och lägg sedan till Home Keeper Library igen. Installationssteg: {url}",
+      "home_keeper_not_set_up": "Lägg först till Home Keeper-integrationen.",
+      "home_keeper_too_old": "Uppdatera Home Keeper till version {version} eller senare."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Biblioteksalternativ",
+        "data": {
+          "currency": "Valuta"
+        },
+        "data_description": {
+          "currency": "En kod med 3 bokstäver, till exempel EUR eller USD."
+        }
+      }
+    },
+    "error": {
+      "invalid_currency": "Ange en valutakod med 3 bokstäver."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "books": {
+        "name": "Böcker"
+      },
+      "loans_out": {
+        "name": "Utlånade"
+      },
+      "loans_overdue": {
+        "name": "Försenade lån"
+      },
+      "books_read_this_year": {
+        "name": "{person} lästa böcker i år"
+      },
+      "reading_now": {
+        "name": "{person} läser nu"
+      }
+    },
+    "todo": {
+      "to_read": {
+        "name": "{person} vill läsa"
+      }
+    }
+  },
+  "issues": {
+    "home_keeper_missing": {
+      "title": "Home Keeper är inte installerat",
+      "description": "Fliken Bibliotek och låneuppgifterna kräver Home Keeper. Kortet, entiteterna och tjänsterna fungerar nu. Installera Home Keeper från HACS och starta om Home Assistant. Installationssteg: {url}"
+    },
+    "home_keeper_not_set_up": {
+      "title": "Home Keeper är inte konfigurerat",
+      "description": "Fliken Bibliotek och låneuppgifterna kräver en inläst Home Keeper-integration. Kortet, entiteterna och tjänsterna fungerar nu. Lägg till eller aktivera Home Keeper-integrationen."
+    },
+    "home_keeper_too_old": {
+      "title": "Home Keeper är för gammalt",
+      "description": "Fliken Bibliotek och låneuppgifterna kräver Home Keeper version {version} eller senare. Kortet, entiteterna och tjänsterna fungerar nu. Uppdatera Home Keeper."
+    }
+  },
+  "services": {
+    "add_room": {
+      "name": "Lägg till rum",
+      "description": "Lägg till ett rum i biblioteket.",
+      "fields": {
+        "name": {
+          "name": "Namn",
+          "description": "Visningsnamnet."
+        },
+        "area_id": {
+          "name": "Område",
+          "description": "Rummets område i Home Assistant."
+        },
+        "order": {
+          "name": "Ordning",
+          "description": "Sorteringspositionen. Lägre kommer först."
+        }
+      }
+    },
+    "update_room": {
+      "name": "Ändra rum",
+      "description": "Ändra ett rum.",
+      "fields": {
+        "room_id": {
+          "name": "Rum",
+          "description": "Rummets ID."
+        },
+        "name": {
+          "name": "Namn",
+          "description": "Visningsnamnet."
+        },
+        "area_id": {
+          "name": "Område",
+          "description": "Rummets område i Home Assistant."
+        },
+        "order": {
+          "name": "Ordning",
+          "description": "Sorteringspositionen. Lägre kommer först."
+        }
+      }
+    },
+    "delete_room": {
+      "name": "Ta bort rum",
+      "description": "Ta bort ett rum. Ett rum med bokhyllor behöver force.",
+      "fields": {
+        "room_id": {
+          "name": "Rum",
+          "description": "Rummets ID."
+        },
+        "force": {
+          "name": "Tvinga",
+          "description": "Ta också bort innehållet. Exemplaren hamnar utan hyllplan."
+        }
+      }
+    },
+    "add_bookcase": {
+      "name": "Lägg till bokhylla",
+      "description": "Lägg till en bokhylla i ett rum.",
+      "fields": {
+        "room_id": {
+          "name": "Rum",
+          "description": "Rummets ID."
+        },
+        "name": {
+          "name": "Namn",
+          "description": "Visningsnamnet."
+        },
+        "note": {
+          "name": "Anteckning",
+          "description": "En kort anteckning."
+        },
+        "order": {
+          "name": "Ordning",
+          "description": "Sorteringspositionen. Lägre kommer först."
+        }
+      }
+    },
+    "update_bookcase": {
+      "name": "Ändra bokhylla",
+      "description": "Ändra en bokhylla eller flytta den till ett annat rum.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Bokhylla",
+          "description": "Bokhyllans ID."
+        },
+        "room_id": {
+          "name": "Rum",
+          "description": "Rummets ID."
+        },
+        "name": {
+          "name": "Namn",
+          "description": "Visningsnamnet."
+        },
+        "note": {
+          "name": "Anteckning",
+          "description": "En kort anteckning."
+        },
+        "order": {
+          "name": "Ordning",
+          "description": "Sorteringspositionen. Lägre kommer först."
+        }
+      }
+    },
+    "delete_bookcase": {
+      "name": "Ta bort bokhylla",
+      "description": "Ta bort en bokhylla. En bokhylla med hyllplan behöver force.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Bokhylla",
+          "description": "Bokhyllans ID."
+        },
+        "force": {
+          "name": "Tvinga",
+          "description": "Ta också bort innehållet. Exemplaren hamnar utan hyllplan."
+        }
+      }
+    },
+    "add_shelf": {
+      "name": "Lägg till hyllplan",
+      "description": "Lägg till ett hyllplan i en bokhylla.",
+      "fields": {
+        "bookcase_id": {
+          "name": "Bokhylla",
+          "description": "Bokhyllans ID."
+        },
+        "name": {
+          "name": "Namn",
+          "description": "Visningsnamnet."
+        },
+        "order": {
+          "name": "Ordning",
+          "description": "Sorteringspositionen. Lägre kommer först."
+        }
+      }
+    },
+    "update_shelf": {
+      "name": "Ändra hyllplan",
+      "description": "Ändra ett hyllplan eller flytta det till en annan bokhylla.",
+      "fields": {
+        "shelf_id": {
+          "name": "Hyllplan",
+          "description": "Hyllplanets ID. Tomt för inget hyllplan."
+        },
+        "bookcase_id": {
+          "name": "Bokhylla",
+          "description": "Bokhyllans ID."
+        },
+        "name": {
+          "name": "Namn",
+          "description": "Visningsnamnet."
+        },
+        "order": {
+          "name": "Ordning",
+          "description": "Sorteringspositionen. Lägre kommer först."
+        }
+      }
+    },
+    "delete_shelf": {
+      "name": "Ta bort hyllplan",
+      "description": "Ta bort ett hyllplan. Ett hyllplan med exemplar behöver force.",
+      "fields": {
+        "shelf_id": {
+          "name": "Hyllplan",
+          "description": "Hyllplanets ID. Tomt för inget hyllplan."
+        },
+        "force": {
+          "name": "Tvinga",
+          "description": "Ta också bort innehållet. Exemplaren hamnar utan hyllplan."
+        }
+      }
+    },
+    "lookup_isbn": {
+      "name": "Slå upp ISBN",
+      "description": "Läs uppgifterna för ett ISBN från Open Library. Biblioteket förblir detsamma.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN",
+          "description": "Ett ISBN-10 eller ett ISBN-13."
+        }
+      }
+    },
+    "add_book": {
+      "name": "Lägg till bok",
+      "description": "Lägg till en bok. Om en bok har samma ISBN returnerar tjänsten den boken.",
+      "fields": {
+        "title": {
+          "name": "Titel",
+          "description": "Bokens titel."
+        },
+        "subtitle": {
+          "name": "Undertitel",
+          "description": "Bokens undertitel."
+        },
+        "authors": {
+          "name": "Författare",
+          "description": "Författarna, i ordning."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Ett ISBN-10 eller ett ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13",
+          "description": "ISBN med 13 siffror."
+        },
+        "isbn10": {
+          "name": "ISBN-10",
+          "description": "ISBN med 10 siffror."
+        },
+        "publisher": {
+          "name": "Förlag",
+          "description": "Bokens förlag."
+        },
+        "published": {
+          "name": "Utgiven",
+          "description": "Utgivningsdatumet, oftast ett år."
+        },
+        "pages": {
+          "name": "Sidor",
+          "description": "Antalet sidor."
+        },
+        "language": {
+          "name": "Språk",
+          "description": "Språkkoden, till exempel en."
+        },
+        "subjects": {
+          "name": "Ämnen",
+          "description": "Bokens ämnen."
+        },
+        "series": {
+          "name": "Serie",
+          "description": "Seriens namn, eller ett namn och ett nummer."
+        },
+        "description": {
+          "name": "Beskrivning",
+          "description": "Bokens beskrivning."
+        },
+        "tags": {
+          "name": "Taggar",
+          "description": "Bokens taggar."
+        },
+        "shared_notes": {
+          "name": "Delade anteckningar",
+          "description": "Anteckningar som varje användare kan läsa, i Markdown."
+        },
+        "needs_details": {
+          "name": "Uppgifter saknas",
+          "description": "Markera boken som ofullständig."
+        },
+        "lookup": {
+          "name": "Slå upp",
+          "description": "Läs uppgifterna från Open Library."
+        }
+      }
+    },
+    "update_book": {
+      "name": "Ändra bok",
+      "description": "Ändra uppgifterna för en bok.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        },
+        "title": {
+          "name": "Titel",
+          "description": "Bokens titel."
+        },
+        "subtitle": {
+          "name": "Undertitel",
+          "description": "Bokens undertitel."
+        },
+        "authors": {
+          "name": "Författare",
+          "description": "Författarna, i ordning."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Ett ISBN-10 eller ett ISBN-13."
+        },
+        "isbn13": {
+          "name": "ISBN-13",
+          "description": "ISBN med 13 siffror."
+        },
+        "isbn10": {
+          "name": "ISBN-10",
+          "description": "ISBN med 10 siffror."
+        },
+        "publisher": {
+          "name": "Förlag",
+          "description": "Bokens förlag."
+        },
+        "published": {
+          "name": "Utgiven",
+          "description": "Utgivningsdatumet, oftast ett år."
+        },
+        "pages": {
+          "name": "Sidor",
+          "description": "Antalet sidor."
+        },
+        "language": {
+          "name": "Språk",
+          "description": "Språkkoden, till exempel en."
+        },
+        "subjects": {
+          "name": "Ämnen",
+          "description": "Bokens ämnen."
+        },
+        "series": {
+          "name": "Serie",
+          "description": "Seriens namn, eller ett namn och ett nummer."
+        },
+        "description": {
+          "name": "Beskrivning",
+          "description": "Bokens beskrivning."
+        },
+        "tags": {
+          "name": "Taggar",
+          "description": "Bokens taggar."
+        },
+        "shared_notes": {
+          "name": "Delade anteckningar",
+          "description": "Anteckningar som varje användare kan läsa, i Markdown."
+        },
+        "needs_details": {
+          "name": "Uppgifter saknas",
+          "description": "Markera boken som ofullständig."
+        }
+      }
+    },
+    "delete_book": {
+      "name": "Ta bort bok",
+      "description": "Ta bort en bok med dess exemplar, lässtatus, lån och omslag.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        }
+      }
+    },
+    "refresh_book": {
+      "name": "Uppdatera från Open Library",
+      "description": "Fyll i de tomma fälten för en bok från Open Library.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        }
+      }
+    },
+    "scan_isbn": {
+      "name": "Skanna ISBN",
+      "description": "Lägg till en skannad bok på ett hyllplan.",
+      "fields": {
+        "isbn": {
+          "name": "ISBN",
+          "description": "Ett ISBN-10 eller ett ISBN-13."
+        },
+        "shelf_id": {
+          "name": "Hyllplan",
+          "description": "Hyllplanets ID. Tomt för inget hyllplan."
+        },
+        "format": {
+          "name": "Format",
+          "description": "Exemplarets format."
+        },
+        "on_duplicate": {
+          "name": "Om ett exemplar finns",
+          "description": "Åtgärden om biblioteket har ett exemplar av boken."
+        }
+      }
+    },
+    "add_copy": {
+      "name": "Lägg till exemplar",
+      "description": "Lägg till ett exemplar av en bok.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        },
+        "shelf_id": {
+          "name": "Hyllplan",
+          "description": "Hyllplanets ID. Tomt för inget hyllplan."
+        },
+        "format": {
+          "name": "Format",
+          "description": "Exemplarets format."
+        },
+        "condition": {
+          "name": "Skick",
+          "description": "Exemplarets skick."
+        },
+        "acquired": {
+          "name": "Anskaffad",
+          "description": "Datumet då exemplaret anskaffades."
+        },
+        "acquired_from": {
+          "name": "Anskaffad från",
+          "description": "Butiken eller personen."
+        },
+        "price": {
+          "name": "Pris",
+          "description": "Det betalda priset."
+        },
+        "value": {
+          "name": "Värde",
+          "description": "Exemplarets nuvarande värde."
+        },
+        "signed": {
+          "name": "Signerad",
+          "description": "Exemplaret är signerat."
+        },
+        "first_edition": {
+          "name": "Förstautgåva",
+          "description": "Exemplaret är en förstautgåva."
+        },
+        "note": {
+          "name": "Anteckning",
+          "description": "En kort anteckning."
+        }
+      }
+    },
+    "update_copy": {
+      "name": "Ändra exemplar",
+      "description": "Ändra ett exemplar.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplar",
+          "description": "Exemplarets ID."
+        },
+        "shelf_id": {
+          "name": "Hyllplan",
+          "description": "Hyllplanets ID. Tomt för inget hyllplan."
+        },
+        "format": {
+          "name": "Format",
+          "description": "Exemplarets format."
+        },
+        "condition": {
+          "name": "Skick",
+          "description": "Exemplarets skick."
+        },
+        "acquired": {
+          "name": "Anskaffad",
+          "description": "Datumet då exemplaret anskaffades."
+        },
+        "acquired_from": {
+          "name": "Anskaffad från",
+          "description": "Butiken eller personen."
+        },
+        "price": {
+          "name": "Pris",
+          "description": "Det betalda priset."
+        },
+        "value": {
+          "name": "Värde",
+          "description": "Exemplarets nuvarande värde."
+        },
+        "signed": {
+          "name": "Signerad",
+          "description": "Exemplaret är signerat."
+        },
+        "first_edition": {
+          "name": "Förstautgåva",
+          "description": "Exemplaret är en förstautgåva."
+        },
+        "note": {
+          "name": "Anteckning",
+          "description": "En kort anteckning."
+        }
+      }
+    },
+    "move_copy": {
+      "name": "Flytta exemplar",
+      "description": "Flytta ett exemplar till ett hyllplan.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplar",
+          "description": "Exemplarets ID."
+        },
+        "shelf_id": {
+          "name": "Hyllplan",
+          "description": "Hyllplanets ID. Tomt för inget hyllplan."
+        }
+      }
+    },
+    "delete_copy": {
+      "name": "Ta bort exemplar",
+      "description": "Ta bort ett exemplar.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplar",
+          "description": "Exemplarets ID."
+        }
+      }
+    },
+    "set_cover": {
+      "name": "Ange omslag",
+      "description": "Ange omslaget för en bok.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        },
+        "kind": {
+          "name": "Omslagstyp",
+          "description": "Omslagets källa."
+        },
+        "file_id": {
+          "name": "Fil-ID",
+          "description": "ID från uppladdningen av omslaget."
+        }
+      }
+    },
+    "set_reading": {
+      "name": "Ange lässtatus",
+      "description": "Ange lässtatusen för en bok för en person. En användare som inte är admin kan bara ange sin egen status.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "ID för personen i Home Assistant."
+        },
+        "status": {
+          "name": "Lässtatus",
+          "description": "Lässtatusen."
+        },
+        "rating": {
+          "name": "Betyg",
+          "description": "Ett betyg från 1 till 5."
+        },
+        "page": {
+          "name": "Sida",
+          "description": "Den aktuella sidan."
+        },
+        "started": {
+          "name": "Påbörjad",
+          "description": "Startdatumet."
+        },
+        "finished": {
+          "name": "Utläst",
+          "description": "Datumet då boken lästes ut."
+        },
+        "read_count": {
+          "name": "Antal läsningar",
+          "description": "Antalet gånger som boken har lästs."
+        },
+        "private_notes": {
+          "name": "Privata anteckningar",
+          "description": "Anteckningar som bara personen kan läsa."
+        }
+      }
+    },
+    "lend_book": {
+      "name": "Låna ut bok",
+      "description": "Låna ut ett exemplar till en annan person.",
+      "fields": {
+        "copy_id": {
+          "name": "Exemplar",
+          "description": "Exemplarets ID."
+        },
+        "party": {
+          "name": "Annan person",
+          "description": "Namnet på lånets andra person."
+        },
+        "started": {
+          "name": "Påbörjad",
+          "description": "Startdatumet."
+        },
+        "due": {
+          "name": "Förfaller",
+          "description": "Förfallodatumet."
+        },
+        "note": {
+          "name": "Anteckning",
+          "description": "En kort anteckning."
+        },
+        "add_task": {
+          "name": "Lägg till uppgift",
+          "description": "Lägg till en Home Keeper-uppgift på förfallodatumet."
+        }
+      }
+    },
+    "borrow_book": {
+      "name": "Lägg till lånad bok",
+      "description": "Registrera en bok som en person har lånat.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Ett ISBN-10 eller ett ISBN-13."
+        },
+        "title": {
+          "name": "Titel",
+          "description": "Bokens titel."
+        },
+        "authors": {
+          "name": "Författare",
+          "description": "Författarna, i ordning."
+        },
+        "party": {
+          "name": "Annan person",
+          "description": "Namnet på lånets andra person."
+        },
+        "started": {
+          "name": "Påbörjad",
+          "description": "Startdatumet."
+        },
+        "due": {
+          "name": "Förfaller",
+          "description": "Förfallodatumet."
+        },
+        "note": {
+          "name": "Anteckning",
+          "description": "En kort anteckning."
+        },
+        "add_task": {
+          "name": "Lägg till uppgift",
+          "description": "Lägg till en Home Keeper-uppgift på förfallodatumet."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "ID för personen i Home Assistant."
+        },
+        "format": {
+          "name": "Format",
+          "description": "Exemplarets format."
+        }
+      }
+    },
+    "return_loan": {
+      "name": "Återlämna lån",
+      "description": "Registrera att ett lån har återlämnats.",
+      "fields": {
+        "loan_id": {
+          "name": "Lån",
+          "description": "Lånets ID."
+        },
+        "returned": {
+          "name": "Återlämnad",
+          "description": "Återlämningsdatumet. Standard är i dag."
+        }
+      }
+    },
+    "update_loan": {
+      "name": "Ändra lån",
+      "description": "Ändra ett lån.",
+      "fields": {
+        "loan_id": {
+          "name": "Lån",
+          "description": "Lånets ID."
+        },
+        "party": {
+          "name": "Annan person",
+          "description": "Namnet på lånets andra person."
+        },
+        "started": {
+          "name": "Påbörjad",
+          "description": "Startdatumet."
+        },
+        "due": {
+          "name": "Förfaller",
+          "description": "Förfallodatumet."
+        },
+        "note": {
+          "name": "Anteckning",
+          "description": "En kort anteckning."
+        },
+        "format": {
+          "name": "Format",
+          "description": "Exemplarets format."
+        }
+      }
+    },
+    "delete_loan": {
+      "name": "Ta bort lån",
+      "description": "Ta bort ett lån och dess Home Keeper-uppgift.",
+      "fields": {
+        "loan_id": {
+          "name": "Lån",
+          "description": "Lånets ID."
+        }
+      }
+    },
+    "add_to_wishlist": {
+      "name": "Lägg till på önskelistan",
+      "description": "Sätt en bok på en persons önskelista.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        },
+        "isbn": {
+          "name": "ISBN",
+          "description": "Ett ISBN-10 eller ett ISBN-13."
+        },
+        "title": {
+          "name": "Titel",
+          "description": "Bokens titel."
+        },
+        "authors": {
+          "name": "Författare",
+          "description": "Författarna, i ordning."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "ID för personen i Home Assistant."
+        },
+        "buy": {
+          "name": "Köp",
+          "description": "Sätt boken på personens att göra-lista för önskningar."
+        }
+      }
+    },
+    "update_wishlist": {
+      "name": "Ändra önskelistan",
+      "description": "Ändra en post på önskelistan.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        },
+        "buy": {
+          "name": "Köp",
+          "description": "Sätt boken på personens att göra-lista för önskningar."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "ID för personen i Home Assistant."
+        }
+      }
+    },
+    "remove_from_wishlist": {
+      "name": "Ta bort från önskelistan",
+      "description": "Ta bort en bok från önskelistan.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        }
+      }
+    },
+    "got_wishlist_book": {
+      "name": "Önskad bok mottagen",
+      "description": "Lägg till ett exemplar av en önskad bok och ta bort den från önskelistan.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        },
+        "shelf_id": {
+          "name": "Hyllplan",
+          "description": "Hyllplanets ID. Tomt för inget hyllplan."
+        },
+        "format": {
+          "name": "Format",
+          "description": "Exemplarets format."
+        }
+      }
+    },
+    "set_person_settings": {
+      "name": "Ange personinställningar",
+      "description": "Ange bibliotekets inställningar för en person. En användare som inte är admin kan bara ange sin egen delning och sitt eget mål.",
+      "fields": {
+        "person_id": {
+          "name": "Person",
+          "description": "ID för personen i Home Assistant."
+        },
+        "share_reading": {
+          "name": "Dela lässtatus",
+          "description": "Andra användare ser statusen. När den är av är personens sensorer och att göra-lista inte tillgängliga."
+        },
+        "yearly_goal": {
+          "name": "Årsmål",
+          "description": "Antalet böcker att läsa i år."
+        },
+        "wishlist_todo": {
+          "name": "Önskelista",
+          "description": "Att göra-listan för böckerna att köpa."
+        }
+      }
+    },
+    "set_settings": {
+      "name": "Ange biblioteksinställningar",
+      "description": "Ange valutan för exemplarens priser och värden.",
+      "fields": {
+        "currency": {
+          "name": "Valuta",
+          "description": "En kod med 3 bokstäver, till exempel EUR eller USD."
+        }
+      }
+    },
+    "import_csv": {
+      "name": "Importera CSV",
+      "description": "Importera böcker från Goodreads, StoryGraph eller en biblioteksexport.",
+      "fields": {
+        "content": {
+          "name": "CSV-innehåll",
+          "description": "CSV-texten. Högst 5 MB."
+        },
+        "source": {
+          "name": "Källa",
+          "description": "Appen som skapade CSV-filen."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "ID för personen i Home Assistant."
+        },
+        "shelf_id": {
+          "name": "Hyllplan",
+          "description": "Hyllplanets ID. Tomt för inget hyllplan."
+        },
+        "import_notes": {
+          "name": "Importera anteckningar",
+          "description": "Importera recensioner och anteckningar som privata anteckningar."
+        },
+        "replace_reading": {
+          "name": "Ersätt lässtatus",
+          "description": "Ersätt en befintlig lässtatus."
+        },
+        "dry_run": {
+          "name": "Testkörning",
+          "description": "Rapportera bara importens ändringar."
+        }
+      }
+    },
+    "export_csv": {
+      "name": "Exportera CSV",
+      "description": "Exportera biblioteket som CSV-text.",
+      "fields": {
+        "person_id": {
+          "name": "Person",
+          "description": "ID för personen i Home Assistant."
+        },
+        "format": {
+          "name": "Filformat",
+          "description": "goodreads eller library."
+        }
+      }
+    },
+    "list_books": {
+      "name": "Lista böcker",
+      "description": "Returnera böckerna som matchar filtren.",
+      "fields": {
+        "query": {
+          "name": "Sök",
+          "description": "Text i titeln, författarna, ISBN eller taggarna."
+        },
+        "room_id": {
+          "name": "Rum",
+          "description": "Rummets ID."
+        },
+        "shelf_id": {
+          "name": "Hyllplan",
+          "description": "Hyllplanets ID. Tomt för inget hyllplan."
+        },
+        "owned": {
+          "name": "Ägd",
+          "description": "Bara böcker med ett exemplar, eller bara böcker utan exemplar."
+        },
+        "status": {
+          "name": "Lässtatus",
+          "description": "Lässtatusen."
+        },
+        "person_id": {
+          "name": "Person",
+          "description": "ID för personen i Home Assistant."
+        },
+        "limit": {
+          "name": "Gräns",
+          "description": "Det högsta antalet böcker."
+        }
+      }
+    },
+    "get_book": {
+      "name": "Hämta bok",
+      "description": "Returnera en bok med dess exemplar och lån.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "Bokens ID."
+        }
+      }
+    },
+    "list_locations": {
+      "name": "Lista platser",
+      "description": "Returnera rummen, bokhyllorna och hyllplanen."
+    },
+    "list_loans": {
+      "name": "Lista lån",
+      "description": "Returnera lånen.",
+      "fields": {
+        "status": {
+          "name": "Lånets status",
+          "description": "open, returned eller all."
+        },
+        "direction": {
+          "name": "Riktning",
+          "description": "out för en utlånad bok, in för en lånad bok."
+        }
+      }
+    },
+    "list_people": {
+      "name": "Lista personer",
+      "description": "Returnera personerna och deras biblioteksinställningar."
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "Home Keeper Library är inte inläst."
+    },
+    "admin_required": {
+      "message": "Bara en adminanvändare kan göra detta."
+    },
+    "invalid_field": {
+      "message": "Värdet för {field} är ogiltigt."
+    },
+    "field_required": {
+      "message": "{field} krävs."
+    },
+    "field_too_long": {
+      "message": "{field} är för lång. Maximum är {max}."
+    },
+    "out_of_range": {
+      "message": "{field} måste vara från {low} till {high}."
+    },
+    "invalid_date": {
+      "message": "{field} måste vara ett datum i formen YYYY-MM-DD."
+    },
+    "invalid_choice": {
+      "message": "{field} måste vara ett av: {options}."
+    },
+    "invalid_isbn": {
+      "message": "{isbn} är inte ett giltigt ISBN."
+    },
+    "room_not_found": {
+      "message": "Inget rum har ID {id}."
+    },
+    "bookcase_not_found": {
+      "message": "Ingen bokhylla har ID {id}."
+    },
+    "shelf_not_found": {
+      "message": "Inget hyllplan har ID {id}."
+    },
+    "book_not_found": {
+      "message": "Ingen bok har ID {id}."
+    },
+    "copy_not_found": {
+      "message": "Inget exemplar har ID {id}."
+    },
+    "loan_not_found": {
+      "message": "Inget lån har ID {id}."
+    },
+    "person_not_found": {
+      "message": "Ingen person har ID {id}."
+    },
+    "no_person": {
+      "message": "Din användare har ingen person i Home Assistant. Koppla en person till användaren."
+    },
+    "room_not_empty": {
+      "message": "Rummet har {count} bokhyllor. Använd force för att ta bort dem också."
+    },
+    "bookcase_not_empty": {
+      "message": "Bokhyllan har {count} hyllplan. Använd force för att ta bort dem också."
+    },
+    "shelf_not_empty": {
+      "message": "Hyllplanet har {count} exemplar. Använd force för att flytta dem till inget hyllplan."
+    },
+    "duplicate_isbn": {
+      "message": "En annan bok har ISBN {isbn}."
+    },
+    "copy_on_loan": {
+      "message": "Exemplaret är utlånat. Återlämna lånet först."
+    },
+    "due_before_start": {
+      "message": "Förfallodatumet är före startdatumet."
+    },
+    "already_on_wishlist": {
+      "message": "Boken finns redan på en önskelista."
+    },
+    "not_on_wishlist": {
+      "message": "Boken finns inte på någon önskelista."
+    },
+    "upload_not_found": {
+      "message": "Inget uppladdat omslag har ID {file_id}."
+    },
+    "isbn_or_title_required": {
+      "message": "Ange ett bok-ID, ett ISBN eller en titel."
+    },
+    "lookup_unavailable": {
+      "message": "Open Library är inte tillgängligt. Försök igen senare."
+    },
+    "no_openlibrary_cover": {
+      "message": "Open Library har inget omslag för den här boken."
+    },
+    "todo_entity_not_found": {
+      "message": "{entity_id} är ingen att göra-lista."
+    },
+    "csv_too_large": {
+      "message": "CSV-texten är för stor. Maximum är {mb} MB."
+    },
+    "csv_unreadable": {
+      "message": "CSV-texten har ingen kolumn {column}."
+    },
+    "upload_requires_user": {
+      "message": "En uppladdning behöver en inloggad användare."
+    },
+    "expected_multipart_upload": {
+      "message": "Uppladdningen måste vara ett multipart-formulär."
+    },
+    "no_file_in_upload": {
+      "message": "Uppladdningen har ingen fil."
+    },
+    "file_too_large": {
+      "message": "Filen är för stor. Maximum är {mb} MB."
+    },
+    "unsupported_image": {
+      "message": "Filen måste vara en JPEG-, PNG- eller WebP-bild."
+    },
+    "image_unreadable": {
+      "message": "Bilden kan inte läsas."
+    },
+    "invalid_currency": {
+      "message": "{currency} är inte en valutakod med 3 bokstäver."
+    },
+    "todo_not_allowed": {
+      "message": "Bara {person} eller en adminanvändare kan ändra denna att göra-lista."
+    }
+  }
+}

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Capture the Example Integration panel *video* walkthrough and transcode it for
+# Capture the Home Keeper Library panel *video* walkthrough and transcode it for
 # embedding on the PR (see .github/workflows/walkthrough-preview.yml).
 #
 # Produces, under docs/videos/ (override with VIDEO_DIR):
@@ -37,7 +37,7 @@ mkdir -p "$VIDEO_DIR"
 echo "[capture-video] recording walkthrough (Playwright)..."
 ( cd tests/e2e
   if [ ! -d node_modules ]; then npm ci 2>/dev/null || npm install --no-audit --no-fund; fi
-  VIDEO_DIR="$VIDEO_DIR" npx playwright test --config=videos.config.ts )
+  VIDEO_DIR="$VIDEO_DIR" npx playwright test --config=walkthrough.config.ts )
 
 WEBM="$VIDEO_DIR/walkthrough.webm"
 MP4="$VIDEO_DIR/walkthrough.mp4"

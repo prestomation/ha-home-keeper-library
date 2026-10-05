@@ -23,35 +23,35 @@ recorder:
 lovelace:
   mode: storage
   dashboards:
-    example-e2e:
+    home-keeper-library-e2e:
       mode: yaml
-      title: Example E2E
-      icon: mdi:view-list
+      title: Library
+      icon: mdi:bookshelf
       show_in_sidebar: true
-      filename: example-e2e.yaml
+      filename: home-keeper-library-e2e.yaml
 
 # Helper + automation used by test_events to observe the item lifecycle events
 # (the public cross-integration hook). The automation records the last event's
 # payload so a REST test can assert the event fired with the right data.
 input_text:
-  ex_last_event:
-    name: Example last event
+  hkl_last_event:
+    name: HomeKeeperLibrary last event
     max: 255
 
 automation:
-  - alias: Capture Example item created
+  - alias: Capture Home Keeper Library room added
     trigger:
       - platform: event
-        event_type: example_integration_item_created
+        event_type: home_keeper_library_room_added
     action:
       - service: input_text.set_value
         target:
-          entity_id: input_text.ex_last_event
+          entity_id: input_text.hkl_last_event
         data:
-          value: "created:{{ trigger.event.data.item_id }}:{{ trigger.event.data.name }}"
+          value: "room_added:{{ trigger.event.data.room_id }}:{{ trigger.event.data.name }}"
 
 # Minimal logging
 logger:
   default: info
   logs:
-    custom_components.example_integration: debug
+    custom_components.home_keeper_library: debug

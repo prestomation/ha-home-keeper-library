@@ -6,6 +6,16 @@ on:
   pull_request:
     branches: [main]
 
+# A job that needs more asks for it in its own permissions block.
+permissions:
+  contents: read
+
+# The Home Keeper branch that ci/fetch-home-keeper.sh clones. The Library tab
+# needs the panel tab API of prestomation/ha-home-keeper#434. Change this to
+# `main` after #434 merges (RELEASE.md, "Before the first stable release").
+env:
+  HOME_KEEPER_REF: ccr-bca5cf7c-40042x
+
 jobs:
   integration:
     runs-on: ubuntu-latest
@@ -14,7 +24,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.13"
 
@@ -28,13 +38,17 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: custom_components/example_integration/frontend/package-lock.json
+          cache-dependency-path: custom_components/home_keeper_library/frontend/package-lock.json
 
       - name: Install frontend deps
-        run: npm ci --prefix custom_components/example_integration/frontend
+        run: npm ci --prefix custom_components/home_keeper_library/frontend
 
       - name: Build panel JS
         run: bash ci/build-panel.sh
+
+      - name: Fetch Home Keeper
+        # The library needs a real Home Keeper for its tab and loan tasks.
+        run: bash ci/fetch-home-keeper.sh
 
       - name: Start Home Assistant
         working-directory: tests/integration

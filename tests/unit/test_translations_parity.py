@@ -11,6 +11,7 @@
 
 from __future__ import annotations
 
+import fnmatch
 import json
 import re
 from pathlib import Path
@@ -18,26 +19,43 @@ from pathlib import Path
 import pytest
 
 _COMPONENT = (
-    Path(__file__).resolve().parents[2] / "custom_components" / "example_integration"
+    Path(__file__).resolve().parents[2] / "custom_components" / "home_keeper_library"
 )
 _STRINGS = _COMPONENT / "strings.json"
 _TRANSLATIONS = _COMPONENT / "translations"
 
-# Keys whose value is intentionally identical to English in some locale (reviewed
-# cognates/loanwords). Keyed by locale -> set of dotted key paths.
+# Keys whose value is the same word in English and in the language (reviewed
+# cognates). Keyed by locale, as ``fnmatch`` patterns of dotted key paths.
 _COGNATE_IDENTICAL: dict[str, set[str]] = {
-    # German: the field label "Name" is the same word in both languages.
-    "de": {
-        "services.add_item.fields.name.name",
-        "services.update_item.fields.name.name",
+    "ca": {"services.*.fields.format.name"},
+    "da": {
+        "services.*.fields.format.name",
+        "services.*.fields.note.name",
+        "services.*.fields.person_id.name",
+        "services.scan_isbn.name",
     },
+    "de": {
+        "services.*.fields.format.name",
+        "services.*.fields.name.name",
+        "services.*.fields.person_id.name",
+    },
+    "fr": {"services.*.fields.note.name"},
+    "it": {"services.*.fields.area_id.name"},
+    "nb": {"services.*.fields.format.name", "services.*.fields.person_id.name"},
+    "sv": {"services.*.fields.format.name", "services.*.fields.person_id.name"},
 }
-# Globally-allowed identical values (symbols, product-name fragments, and
-# messages that are a bare ``{placeholder}`` — identical by design in every
-# language because the substituted text carries the meaning).
+# Values that are the same in each language: the product name, and the ISBN
+# field labels, which are a standard code name.
 _INTENTIONALLY_IDENTICAL: set[str] = {
-    "exceptions.invalid_item.message",  # "{error}" — the wrapped error text
+    "config.step.user.title",
+    "services.*.fields.isbn.name",
+    "services.*.fields.isbn10.name",
+    "services.*.fields.isbn13.name",
 }
+
+
+def _allowed(key: str, patterns: set[str]) -> bool:
+    return any(fnmatch.fnmatchcase(key, pattern) for pattern in patterns)
 
 
 def _flatten(obj, prefix: str = "") -> dict[str, str]:
@@ -94,6 +112,6 @@ def test_no_untranslated_leaks(path: Path):
     leaks = [
         key
         for key, src_value in _SOURCE.items()
-        if key not in allow and locale[key] == src_value
+        if not _allowed(key, allow) and locale[key] == src_value
     ]
     assert not leaks, f"{path.stem}: untranslated (identical to English): {leaks}"

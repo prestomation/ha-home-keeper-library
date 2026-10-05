@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+# A job that needs more asks for it in its own permissions block.
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -19,10 +23,13 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
+      # The component tier installs Home Assistant through its test harness, so this
+      # Python is at or above the Python floor of Home Assistant. Below it, pip
+      # backtracks to an old harness and an old Home Assistant.
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
 
       - name: Install dependencies
         run: bash ci/install-deps.sh
@@ -44,7 +51,7 @@ jobs:
         run: python3 ci/i18n-coverage.py --markdown >> "$GITHUB_STEP_SUMMARY"
 
       - name: Clean node_modules before validation
-        run: rm -rf custom_components/example_integration/frontend/node_modules
+        run: rm -rf custom_components/home_keeper_library/frontend/node_modules
 
       - name: HACS validation
         uses: hacs/action@main

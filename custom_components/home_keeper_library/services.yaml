@@ -1,0 +1,851 @@
+# The services of Home Keeper Library. The names and descriptions are in
+# strings.json and translations/. The fields of each service are the keys of
+# services.SERVICE_FIELDS, and tests/unit/test_api_surface.py checks that.
+
+add_room:
+  fields:
+    name:
+      required: true
+      example: "Living room"
+      selector:
+        text:
+    area_id:
+      selector:
+        area:
+    order:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+
+update_room:
+  fields:
+    room_id:
+      required: true
+      selector:
+        text:
+    name:
+      example: "Living room"
+      selector:
+        text:
+    area_id:
+      selector:
+        area:
+    order:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+
+delete_room:
+  fields:
+    room_id:
+      required: true
+      selector:
+        text:
+    force:
+      selector:
+        boolean:
+
+add_bookcase:
+  fields:
+    room_id:
+      required: true
+      selector:
+        text:
+    name:
+      required: true
+      example: "Living room"
+      selector:
+        text:
+    note:
+      selector:
+        text:
+          multiline: true
+    order:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+
+update_bookcase:
+  fields:
+    bookcase_id:
+      required: true
+      selector:
+        text:
+    room_id:
+      selector:
+        text:
+    name:
+      example: "Living room"
+      selector:
+        text:
+    note:
+      selector:
+        text:
+          multiline: true
+    order:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+
+delete_bookcase:
+  fields:
+    bookcase_id:
+      required: true
+      selector:
+        text:
+    force:
+      selector:
+        boolean:
+
+add_shelf:
+  fields:
+    bookcase_id:
+      required: true
+      selector:
+        text:
+    name:
+      required: true
+      example: "Living room"
+      selector:
+        text:
+    order:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+
+update_shelf:
+  fields:
+    shelf_id:
+      required: true
+      selector:
+        text:
+    bookcase_id:
+      selector:
+        text:
+    name:
+      example: "Living room"
+      selector:
+        text:
+    order:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+
+delete_shelf:
+  fields:
+    shelf_id:
+      required: true
+      selector:
+        text:
+    force:
+      selector:
+        boolean:
+
+lookup_isbn:
+  fields:
+    isbn:
+      required: true
+      example: "9780441478125"
+      selector:
+        text:
+
+add_book:
+  fields:
+    title:
+      example: "The Left Hand of Darkness"
+      selector:
+        text:
+    subtitle:
+      selector:
+        text:
+    authors:
+      selector:
+        text:
+          multiple: true
+    isbn:
+      example: "9780441478125"
+      selector:
+        text:
+    isbn13:
+      selector:
+        text:
+    isbn10:
+      selector:
+        text:
+    publisher:
+      selector:
+        text:
+    published:
+      selector:
+        text:
+    pages:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+    language:
+      selector:
+        text:
+    subjects:
+      selector:
+        text:
+          multiple: true
+    series:
+      selector:
+        text:
+    description:
+      selector:
+        text:
+          multiline: true
+    tags:
+      selector:
+        text:
+          multiple: true
+    shared_notes:
+      selector:
+        text:
+          multiline: true
+    needs_details:
+      selector:
+        boolean:
+    lookup:
+      selector:
+        boolean:
+
+update_book:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+    title:
+      example: "The Left Hand of Darkness"
+      selector:
+        text:
+    subtitle:
+      selector:
+        text:
+    authors:
+      selector:
+        text:
+          multiple: true
+    isbn:
+      example: "9780441478125"
+      selector:
+        text:
+    isbn13:
+      selector:
+        text:
+    isbn10:
+      selector:
+        text:
+    publisher:
+      selector:
+        text:
+    published:
+      selector:
+        text:
+    pages:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+    language:
+      selector:
+        text:
+    subjects:
+      selector:
+        text:
+          multiple: true
+    series:
+      selector:
+        text:
+    description:
+      selector:
+        text:
+          multiline: true
+    tags:
+      selector:
+        text:
+          multiple: true
+    shared_notes:
+      selector:
+        text:
+          multiline: true
+    needs_details:
+      selector:
+        boolean:
+
+delete_book:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+
+refresh_book:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+
+scan_isbn:
+  fields:
+    isbn:
+      required: true
+      example: "9780441478125"
+      selector:
+        text:
+    shelf_id:
+      selector:
+        text:
+    format:
+      selector:
+        select:
+          options:
+            - hardcover
+            - paperback
+            - ebook
+            - audiobook
+            - other
+    on_duplicate:
+      selector:
+        select:
+          options:
+            - ask
+            - add_copy
+            - move
+            - skip
+
+add_copy:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+    shelf_id:
+      selector:
+        text:
+    format:
+      selector:
+        select:
+          options:
+            - hardcover
+            - paperback
+            - ebook
+            - audiobook
+            - other
+    condition:
+      selector:
+        select:
+          options:
+            - new
+            - fine
+            - good
+            - fair
+            - poor
+    acquired:
+      selector:
+        date:
+    acquired_from:
+      selector:
+        text:
+    price:
+      selector:
+        number:
+          min: 0
+          max: 1000000000
+          step: 0.01
+          mode: "box"
+    value:
+      selector:
+        number:
+          min: 0
+          max: 1000000000
+          step: 0.01
+          mode: "box"
+    signed:
+      selector:
+        boolean:
+    first_edition:
+      selector:
+        boolean:
+    note:
+      selector:
+        text:
+          multiline: true
+
+update_copy:
+  fields:
+    copy_id:
+      required: true
+      selector:
+        text:
+    shelf_id:
+      selector:
+        text:
+    format:
+      selector:
+        select:
+          options:
+            - hardcover
+            - paperback
+            - ebook
+            - audiobook
+            - other
+    condition:
+      selector:
+        select:
+          options:
+            - new
+            - fine
+            - good
+            - fair
+            - poor
+    acquired:
+      selector:
+        date:
+    acquired_from:
+      selector:
+        text:
+    price:
+      selector:
+        number:
+          min: 0
+          max: 1000000000
+          step: 0.01
+          mode: "box"
+    value:
+      selector:
+        number:
+          min: 0
+          max: 1000000000
+          step: 0.01
+          mode: "box"
+    signed:
+      selector:
+        boolean:
+    first_edition:
+      selector:
+        boolean:
+    note:
+      selector:
+        text:
+          multiline: true
+
+move_copy:
+  fields:
+    copy_id:
+      required: true
+      selector:
+        text:
+    shelf_id:
+      selector:
+        text:
+
+delete_copy:
+  fields:
+    copy_id:
+      required: true
+      selector:
+        text:
+
+set_cover:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+    kind:
+      required: true
+      selector:
+        select:
+          options:
+            - openlibrary
+            - custom
+            - none
+    file_id:
+      selector:
+        text:
+
+set_reading:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+    person_id:
+      selector:
+        text:
+    status:
+      selector:
+        select:
+          options:
+            - want
+            - reading
+            - read
+            - dnf
+            - none
+    rating:
+      selector:
+        number:
+          min: 1
+          max: 5
+          mode: "slider"
+    page:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+    started:
+      selector:
+        date:
+    finished:
+      selector:
+        date:
+    read_count:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+    private_notes:
+      selector:
+        text:
+          multiline: true
+
+lend_book:
+  fields:
+    copy_id:
+      required: true
+      selector:
+        text:
+    party:
+      required: true
+      example: "Alex"
+      selector:
+        text:
+    started:
+      selector:
+        date:
+    due:
+      example: "2026-11-01"
+      selector:
+        date:
+    note:
+      selector:
+        text:
+          multiline: true
+    add_task:
+      selector:
+        boolean:
+
+borrow_book:
+  fields:
+    book_id:
+      selector:
+        text:
+    isbn:
+      example: "9780441478125"
+      selector:
+        text:
+    title:
+      example: "The Left Hand of Darkness"
+      selector:
+        text:
+    authors:
+      selector:
+        text:
+          multiple: true
+    party:
+      required: true
+      example: "Alex"
+      selector:
+        text:
+    started:
+      selector:
+        date:
+    due:
+      example: "2026-11-01"
+      selector:
+        date:
+    note:
+      selector:
+        text:
+          multiline: true
+    add_task:
+      selector:
+        boolean:
+    person_id:
+      required: true
+      selector:
+        text:
+    format:
+      selector:
+        select:
+          options:
+            - hardcover
+            - paperback
+            - ebook
+            - audiobook
+            - other
+
+return_loan:
+  fields:
+    loan_id:
+      required: true
+      selector:
+        text:
+    returned:
+      selector:
+        date:
+
+update_loan:
+  fields:
+    loan_id:
+      required: true
+      selector:
+        text:
+    party:
+      example: "Alex"
+      selector:
+        text:
+    started:
+      selector:
+        date:
+    due:
+      example: "2026-11-01"
+      selector:
+        date:
+    note:
+      selector:
+        text:
+          multiline: true
+    format:
+      selector:
+        select:
+          options:
+            - hardcover
+            - paperback
+            - ebook
+            - audiobook
+            - other
+
+delete_loan:
+  fields:
+    loan_id:
+      required: true
+      selector:
+        text:
+
+add_to_wishlist:
+  fields:
+    book_id:
+      selector:
+        text:
+    isbn:
+      example: "9780441478125"
+      selector:
+        text:
+    title:
+      example: "The Left Hand of Darkness"
+      selector:
+        text:
+    authors:
+      selector:
+        text:
+          multiple: true
+    person_id:
+      required: true
+      selector:
+        text:
+    buy:
+      selector:
+        boolean:
+
+update_wishlist:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+    buy:
+      selector:
+        boolean:
+    person_id:
+      selector:
+        text:
+
+remove_from_wishlist:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+
+got_wishlist_book:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+    shelf_id:
+      selector:
+        text:
+    format:
+      selector:
+        select:
+          options:
+            - hardcover
+            - paperback
+            - ebook
+            - audiobook
+            - other
+
+set_person_settings:
+  fields:
+    person_id:
+      required: true
+      selector:
+        text:
+    share_reading:
+      selector:
+        boolean:
+    yearly_goal:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+    wishlist_todo:
+      selector:
+        entity:
+          domain: "todo"
+
+set_settings:
+  fields:
+    currency:
+      required: true
+      selector:
+        text:
+
+import_csv:
+  fields:
+    content:
+      required: true
+      selector:
+        text:
+          multiline: true
+    source:
+      required: true
+      selector:
+        select:
+          options:
+            - goodreads
+            - storygraph
+            - library
+    person_id:
+      required: true
+      selector:
+        text:
+    shelf_id:
+      selector:
+        text:
+    import_notes:
+      selector:
+        boolean:
+    replace_reading:
+      selector:
+        boolean:
+    dry_run:
+      selector:
+        boolean:
+
+export_csv:
+  fields:
+    person_id:
+      selector:
+        text:
+    format:
+      selector:
+        select:
+          options:
+            - goodreads
+            - library
+
+list_books:
+  fields:
+    query:
+      selector:
+        text:
+    room_id:
+      selector:
+        text:
+    shelf_id:
+      selector:
+        text:
+    owned:
+      selector:
+        boolean:
+    status:
+      selector:
+        select:
+          options:
+            - want
+            - reading
+            - read
+            - dnf
+    person_id:
+      selector:
+        text:
+    limit:
+      selector:
+        number:
+          min: 0
+          max: 100000
+          mode: "box"
+
+get_book:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+
+list_locations:
+  fields: {}
+
+list_loans:
+  fields:
+    status:
+      selector:
+        select:
+          options:
+            - open
+            - returned
+            - all
+    direction:
+      selector:
+        select:
+          options:
+            - out
+            - in
+
+list_people:
+  fields: {}

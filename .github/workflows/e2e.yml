@@ -6,10 +6,20 @@ on:
   pull_request:
     branches: [main]
 
+# A job that needs more asks for it in its own permissions block.
+permissions:
+  contents: read
+
+# The Home Keeper branch that ci/fetch-home-keeper.sh clones. The Library tab
+# needs the panel tab API of prestomation/ha-home-keeper#434. Change this to
+# `main` after #434 merges (RELEASE.md, "Before the first stable release").
+env:
+  HOME_KEEPER_REF: ccr-bca5cf7c-40042x
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
 
@@ -18,10 +28,7 @@ jobs:
           node-version: "22"
 
       - name: Install frontend deps
-        run: npm ci --prefix custom_components/example_integration/frontend
-
-      - name: Build panel JS
-        run: bash ci/build-panel.sh
+        run: npm ci --prefix custom_components/home_keeper_library/frontend
 
       - name: Install e2e deps
         run: npm ci --prefix tests/e2e
@@ -30,24 +37,15 @@ jobs:
         working-directory: tests/e2e
         run: npx playwright install --with-deps chromium
 
-      - name: Start Home Assistant
-        working-directory: tests/integration
-        run: docker compose up -d
-
-      - name: Wait for Home Assistant
-        run: |
-          for i in $(seq 1 60); do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8123/api/ 2>/dev/null || true)
-            if [ "$code" = "200" ] || [ "$code" = "401" ]; then
-              echo "Home Assistant is responding (HTTP $code, attempt $i)"
-              exit 0
-            fi
-            echo "Attempt $i/60 - HTTP $code - waiting..."
-            sleep 2
-          done
-          echo "Home Assistant failed to start within 120s"
-          (cd tests/integration && docker compose logs)
-          exit 1
+      # The same script as a local run: it builds the bundles, fetches and builds
+      # Home Keeper, seeds the config and starts the hkl-e2e stack with both
+      # compose files (ci/e2e-compose.sh). It fails if Home Assistant does not start.
+      - name: Build, seed and start Home Assistant
+        env:
+          NO_TESTS: "1"
+          KEEP_UP: "1"
+          SKIP_BROWSER_ENV: "1"
+        run: bash ci/e2e-up.sh
 
       - name: Run Playwright e2e
         run: bash ci/test-e2e.sh
@@ -64,10 +62,8 @@ jobs:
 
       - name: Dump Home Assistant logs on failure
         if: failure()
-        working-directory: tests/integration
-        run: docker compose logs homeassistant
+        run: bash ci/e2e-compose.sh logs homeassistant
 
       - name: Cleanup
         if: always()
-        working-directory: tests/integration
-        run: docker compose down -v
+        run: bash ci/e2e-compose.sh down -v
