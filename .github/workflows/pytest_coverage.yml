@@ -30,10 +30,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v7
 
+      # The component tier installs Home Assistant through its test harness, so this
+      # Python is at or above the Python floor of Home Assistant. Below it, pip
+      # backtracks to an old harness and an old Home Assistant.
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: 'pip'
 
       - name: Install test dependencies
