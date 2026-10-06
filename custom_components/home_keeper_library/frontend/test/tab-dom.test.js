@@ -430,6 +430,8 @@ describe('scan', () => {
     expect(text()).toContain('Scan into Shelf 1');
     expect($('[data-k="m-https"]').textContent).toContain('The camera needs HTTPS.');
     expect($('[data-k="scan-start"]').disabled).toBe(true);
+    expect($('[data-k="scan-start"]').getAttribute('aria-describedby')).toBe('scan-https');
+    expect($('#scan-https')).toBe($('[data-k="m-https"]'));
     $('[data-k="scan-start"]').click();
     expect(host.navigate).not.toHaveBeenCalled();
 

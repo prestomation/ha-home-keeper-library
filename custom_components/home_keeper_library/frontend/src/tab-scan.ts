@@ -28,7 +28,7 @@ function methodStep(ctx: ViewCtx): string {
   return `<div class="hkl-step"><span class="hkl-eyebrow">${escapeHTML(t('scan.method'))}</span>
     ${radio('camera', t('scan.method_camera'), t('scan.method_camera_hint'))}
     ${radio('manual', t('scan.method_manual'), t('scan.method_manual_hint'))}
-    ${cameraBlocked(ctx) ? `<div class="hkl-banner warn" role="alert" data-k="m-https">${escapeHTML(t('scan.camera_insecure'))}</div>` : ''}
+    ${cameraBlocked(ctx) ? `<div class="hkl-banner warn" role="alert" id="scan-https" data-k="m-https">${escapeHTML(t('scan.camera_insecure'))}</div>` : ''}
   </div>`;
 }
 
@@ -38,7 +38,7 @@ export function cameraBlocked(ctx: ViewCtx): boolean {
 }
 
 function startButton(ctx: ViewCtx, label: string): string {
-  return button(escapeHTML(label), 'scan-start', 'primary', `data-k="scan-start"${cameraBlocked(ctx) ? ' disabled' : ''}`);
+  return button(escapeHTML(label), 'scan-start', 'primary', `data-k="scan-start"${cameraBlocked(ctx) ? ' disabled aria-describedby="scan-https"' : ''}`);
 }
 
 function setupShelf(ctx: ViewCtx): string {
