@@ -117,6 +117,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   private _ui: UiState = freshUi();
   private _dialog: DialogState | null = null;
   private _scanner: Scanner | null = null;
+  private _stopTimer: ReturnType<typeof setTimeout> | undefined;
   private _gate = makeCodeGate(3000);
   private _scanKey = 0;
   private _booksPath = '/books';
@@ -190,13 +191,24 @@ export class HomeKeeperLibraryTab extends HTMLElement {
 
   connectedCallback(): void {
     if (this._hass && !this._unsub && !this._subscribing) void this._subscribe();
+    // Home Keeper redraws its panel when the data changes. The redraw moves this
+    // tab out of the page and back in. Keep the camera, or start it again.
+    clearTimeout(this._stopTimer);
+    this._stopTimer = undefined;
+    this._scanner?.resume();
+    this._syncScanner();
   }
 
   disconnectedCallback(): void {
     void this._unsub?.();
     this._unsub = undefined;
     this._search.cancel();
-    this._stopScanner();
+    // Stop the camera only if the tab does not come back at once.
+    clearTimeout(this._stopTimer);
+    this._stopTimer = setTimeout(() => {
+      this._stopTimer = undefined;
+      if (!this.isConnected) this._stopScanner();
+    }, 0);
   }
 
   // ── Data ───────────────────────────────────────────────────────────────────

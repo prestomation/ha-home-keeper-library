@@ -55,6 +55,10 @@ chunk. The decoder imports only the UPC and EAN readers.
 - If the browser refuses the camera, the tab shows the reason and offers **Enter ISBN**.
 - The torch button shows when the camera track has a torch.
 - The same code is ignored for 3 seconds (`makeCodeGate`), so 1 book is 1 scan.
+- The camera runs only on the camera step. Home Keeper redraws its panel when the data
+  changes, and that moves the tab out of the page and back in. So the tab stops the
+  camera only when it is still out of the page after the redraw, and it starts the
+  camera again when it comes back.
 
 ### Scan flow
 

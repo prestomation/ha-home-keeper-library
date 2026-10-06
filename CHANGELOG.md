@@ -12,6 +12,11 @@ is the single source of truth (see `RELEASE.md`).
 - **Home Keeper betas.** The library works with a beta of Home Keeper. It does not
   check the Home Keeper version number now.
 
+### Fixed
+
+- **Black camera after scan.** The camera picture stays on after each scan, so you can
+  scan the next book at once.
+
 ## [0.2.0] - 2026-10-05
 
 ### Added
