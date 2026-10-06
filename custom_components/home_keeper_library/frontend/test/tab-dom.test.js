@@ -423,16 +423,42 @@ describe('scan', () => {
     Object.defineProperty(window, 'isSecureContext', { value: false, configurable: true });
   });
 
-  it('starts the camera step and shows the HTTPS message with no camera API', async () => {
+  it('blocks the camera on a page that is not HTTPS, and Enter ISBN still starts', async () => {
     const state = fixture();
     const shelf = Object.values(state.shelves)[0].id;
     await mount(`/scan;shelf=${shelf}`);
     expect(text()).toContain('Scan into Shelf 1');
+    expect($('[data-k="m-https"]').textContent).toContain('The camera needs HTTPS.');
+    expect($('[data-k="scan-start"]').disabled).toBe(true);
+    expect($('[data-k="scan-start"]').getAttribute('aria-describedby')).toBe('scan-https');
+    expect($('#scan-https')).toBe($('[data-k="m-https"]'));
+    $('[data-k="scan-start"]').click();
+    expect(host.navigate).not.toHaveBeenCalled();
+
+    change($('[data-k="m-manual"]'), 'manual');
+    await flush();
+    expect($('[data-k="m-https"]')).toBeNull();
+    expect($('[data-k="scan-start"]').disabled).toBe(false);
     $('[data-k="scan-start"]').click();
     expect(host.navigate).toHaveBeenLastCalledWith(`/scan;shelf=${shelf};step=camera`, { replace: false });
     await flush();
+    expect($('[data-k="isbn-input"]')).not.toBeNull();
+  });
+
+  it('shows the HTTPS message on the camera step of a page that is not HTTPS', async () => {
+    const state = fixture();
+    await mount(`/scan;shelf=${Object.values(state.shelves)[0].id};step=camera`);
+    await flush();
     expect(text()).toContain('The camera needs HTTPS.');
     expect($('[data-k="isbn-input"]')).not.toBeNull();
+  });
+
+  it('lets the camera start on an HTTPS page', async () => {
+    Object.defineProperty(window, 'isSecureContext', { value: true, configurable: true });
+    const state = fixture();
+    await mount(`/scan;shelf=${Object.values(state.shelves)[0].id}`);
+    expect($('[data-k="m-https"]')).toBeNull();
+    expect($('[data-k="scan-start"]').disabled).toBe(false);
   });
 
   it('scans an ISBN and resolves a duplicate', async () => {

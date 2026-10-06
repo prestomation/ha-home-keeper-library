@@ -4,7 +4,7 @@ summary: How the library checks Home Keeper, registers its tab and its companion
 implements:
   - custom_components/home_keeper_library/home_keeper.py
 related: [architecture, loans-home-keeper, frontend-tab-card]
-source_hash: 026cb55961b9
+source_hash: 4b6ddf69e66f
 ---
 
 # Home Keeper dependency
@@ -39,7 +39,7 @@ both are present, and loads alone when Home Keeper is absent.
 |---|---|
 | `home_keeper_missing` | Home Assistant has no `home_keeper` integration. |
 | `home_keeper_not_set_up` | Home Keeper has no loaded config entry. |
-| `home_keeper_too_old` | The version is below `const.HOME_KEEPER_MIN_VERSION`, or there is no `panel_tabs` module. |
+| `home_keeper_too_old` | There is no `panel_tabs` module. The version number is not checked, so a Home Keeper beta works. |
 
 Each reason is a config flow abort reason and a repair issue with the same translation
 key. The placeholders give the install URL and the minimum version.

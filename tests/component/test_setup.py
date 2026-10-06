@@ -126,14 +126,16 @@ async def test_repair_issue_cycle(hass, persons, monkeypatch) -> None:
     assert entry.runtime_data.loan_sync.enabled is False
 
 
-async def test_old_home_keeper_version(hass, persons, hk_entry, monkeypatch) -> None:
+async def test_old_home_keeper_version_is_not_checked(
+    hass, persons, hk_entry, monkeypatch
+) -> None:
     from homeassistant import loader
 
     integration = await loader.async_get_integration(hass, "home_keeper")
-    monkeypatch.setitem(integration.manifest, "version", "0.29.0")
+    monkeypatch.setitem(integration.manifest, "version", "0.29.0b1")
     entry = await _library_entry(hass)
-    assert _issues(hass) == {"home_keeper_too_old"}
-    assert entry.runtime_data.tab_registered is False
+    assert _issues(hass) == set()
+    assert entry.runtime_data.tab_registered is True
 
 
 async def test_missing_home_keeper(hass, persons, monkeypatch) -> None:

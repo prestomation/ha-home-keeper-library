@@ -167,6 +167,16 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await shot(page, 'scan-summary-mobile');
   await deleteScanned();
 
+  // The setup step on a page that is not HTTPS: the camera is blocked.
+  const http = await browser.newContext({ storageState: './.auth/state.json', viewport: PHONE });
+  await noServiceWorker(http);
+  await http.addInitScript(() => Object.defineProperty(window, 'isSecureContext', { value: false }));
+  const httpPage = await http.newPage();
+  const httpTab = await openTab(httpPage, '/scan');
+  await expect(httpTab.locator('[data-k="m-https"]')).toBeVisible();
+  await shot(httpPage, 'scan-https-mobile');
+  await http.close();
+
   // The card on a phone, as Sam (a user who is not an admin).
   const sam = await browser.newContext({ storageState: './.auth/sam.json', viewport: { width: PHONE.width, height: 1250 } });
   await noServiceWorker(sam);

@@ -5,6 +5,20 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
+## [Unreleased]
+
+### Changed
+
+- **Home Keeper betas.** The library works with a beta of Home Keeper. It does not
+  check the Home Keeper version number now.
+- **Camera on HTTP pages.** On an `http://` address, the scan says at once that the
+  camera needs HTTPS, and it does not start the camera. **Enter ISBN** still works.
+
+### Fixed
+
+- **Black camera after scan.** The camera picture stays on after each scan, so you can
+  scan the next book at once.
+
 ## [0.2.0] - 2026-10-05
 
 ### Added

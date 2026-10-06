@@ -1,6 +1,7 @@
 // The Scan flow views: setup (room, shelf, method), camera and summary.
 
 import { t, tn } from './i18n';
+import { cameraNeedsHttps } from './scanner';
 import { button, cover, ICONS, personOptions } from './markup';
 import type { ScanEntry, ViewCtx } from './tab-types';
 import { buildPath, escapeHTML, locationLabel, nextShelf, scanTally, shelfPath } from './utils';
@@ -27,7 +28,17 @@ function methodStep(ctx: ViewCtx): string {
   return `<div class="hkl-step"><span class="hkl-eyebrow">${escapeHTML(t('scan.method'))}</span>
     ${radio('camera', t('scan.method_camera'), t('scan.method_camera_hint'))}
     ${radio('manual', t('scan.method_manual'), t('scan.method_manual_hint'))}
+    ${cameraBlocked(ctx) ? `<div class="hkl-banner warn" role="alert" id="scan-https" data-k="m-https">${escapeHTML(t('scan.camera_insecure'))}</div>` : ''}
   </div>`;
+}
+
+/** True when the camera method is selected on a page that cannot use the camera. */
+export function cameraBlocked(ctx: ViewCtx): boolean {
+  return ctx.ui.scan.method === 'camera' && cameraNeedsHttps();
+}
+
+function startButton(ctx: ViewCtx, label: string): string {
+  return button(escapeHTML(label), 'scan-start', 'primary', `data-k="scan-start"${cameraBlocked(ctx) ? ' disabled aria-describedby="scan-https"' : ''}`);
 }
 
 function setupShelf(ctx: ViewCtx): string {
@@ -55,7 +66,7 @@ function setupShelf(ctx: ViewCtx): string {
       <div class="hkl-step"><span class="hkl-eyebrow">${escapeHTML(t('scan.shelf'))}</span>${cases}${none}</div>
       ${methodStep(ctx)}
     </div>
-    <div class="hkl-scan-foot">${button(escapeHTML(t('scan.start_into', { shelf: target })), 'scan-start', 'primary', 'data-k="scan-start"')}</div>
+    <div class="hkl-scan-foot">${startButton(ctx, t('scan.start_into', { shelf: target }))}</div>
   </div>`;
 }
 
@@ -72,7 +83,7 @@ function setupBorrowed(ctx: ViewCtx): string {
       </div>
       ${methodStep(ctx)}
     </div>
-    <div class="hkl-scan-foot">${button(escapeHTML(t('scan.start')), 'scan-start', 'primary', 'data-k="scan-start"')}</div>
+    <div class="hkl-scan-foot">${startButton(ctx, t('scan.start'))}</div>
   </div>`;
 }
 

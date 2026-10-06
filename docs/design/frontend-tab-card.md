@@ -25,7 +25,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/styles.ts
   - custom_components/home_keeper_library/frontend/src/global.d.ts
 related: [home-keeper-dependency, scan-and-isbn, csv-import-export, people-privilege]
-source_hash: b4d3384e4de1
+source_hash: 84531f8b017a
 ---
 
 # Tab and card

@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/zxing-decoder.ts
   - custom_components/home_keeper_library/frontend/src/tab-scan.ts
 related: [open-library-covers, store-models, frontend-tab-card, loans-home-keeper]
-source_hash: 41e90aa03a97
+source_hash: 0465cac972ed
 ---
 
 # Scan and ISBN
@@ -50,11 +50,17 @@ the same rules for the tab, so the tab can refuse a bad code before a call.
 `zxing-decoder.ts` with a dynamic import, so Rollup puts `@zxing/library` in a separate
 chunk. The decoder imports only the UPC and EAN readers.
 
-- If `navigator.mediaDevices` is missing, the origin is not secure. The tab shows the
-  HTTPS message and offers **Enter ISBN**.
+- On a page that is not a secure context (`cameraNeedsHttps`), the setup step shows the
+  HTTPS message under the camera method and turns off **Start**. **Enter ISBN** still
+  starts. If the camera step opens from its URL, it shows the same message and offers
+  **Enter ISBN**.
 - If the browser refuses the camera, the tab shows the reason and offers **Enter ISBN**.
 - The torch button shows when the camera track has a torch.
 - The same code is ignored for 3 seconds (`makeCodeGate`), so 1 book is 1 scan.
+- The camera runs only on the camera step. Home Keeper redraws its panel when the data
+  changes, and that moves the tab out of the page and back in. So the tab stops the
+  camera only when it is still out of the page after the redraw, and it starts the
+  camera again when it comes back.
 
 ### Scan flow
 

@@ -6,8 +6,8 @@ take the library tab, or None:
 
 * ``home_keeper_missing``: Home Keeper is not installed.
 * ``home_keeper_not_set_up``: Home Keeper has no loaded config entry.
-* ``home_keeper_too_old``: the installed Home Keeper is older than
-  ``HOME_KEEPER_MIN_VERSION``, or it has no ``panel_tabs`` module.
+* ``home_keeper_too_old``: the installed Home Keeper has no ``panel_tabs``
+  module. The version number is not checked, so a Home Keeper beta works.
 
 The config flow aborts with that reason. :class:`HomeKeeperLink` runs the same
 check at setup and each time a Home Keeper config entry changes state. While
@@ -28,7 +28,6 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from awesomeversion import AwesomeVersion
 from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
     ConfigEntry,
@@ -101,14 +100,13 @@ async def async_panel_tabs(hass: HomeAssistant) -> Any | None:
 async def async_check(hass: HomeAssistant) -> str | None:
     """The reason why Home Keeper cannot take the tab, or None."""
     try:
-        integration = await async_get_integration(hass, HOME_KEEPER_DOMAIN)
+        await async_get_integration(hass, HOME_KEEPER_DOMAIN)
     except IntegrationNotFound:
         return "home_keeper_missing"
     if not hass.config_entries.async_loaded_entries(HOME_KEEPER_DOMAIN):
         return "home_keeper_not_set_up"
-    version = integration.version
-    if version is not None and version < AwesomeVersion(HOME_KEEPER_MIN_VERSION):
-        return "home_keeper_too_old"
+    # The version check is off, so a Home Keeper beta works. IDEAS.md has the
+    # item to bring it back.
     if await async_panel_tabs(hass) is None:
         return "home_keeper_too_old"
     return None
