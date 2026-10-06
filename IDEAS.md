@@ -11,6 +11,9 @@ Nothing here is committed scope. When an item ships, remove it. The design docs 
 
 ## Known gaps
 
+- **Home Keeper version check.** The check of the Home Keeper version against
+  `const.HOME_KEEPER_MIN_VERSION` is off, so the library works with a Home Keeper beta.
+  Bring it back in `home_keeper.async_check` and in its tests when that beta is stable.
 - **Query of a tab path.** Home Keeper's host drops a `?query` from a tab path. Ask Home
   Keeper to keep it, then the `;key=value` form of the tab filters can go
   (see `docs/design/frontend-tab-card.md`).

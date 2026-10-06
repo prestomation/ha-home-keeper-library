@@ -97,8 +97,6 @@ async def test_abort_when_home_keeper_is_too_old(
     from homeassistant import loader
 
     integration = await loader.async_get_integration(hass, "home_keeper")
-    monkeypatch.setitem(integration.manifest, "version", "0.30.0b1")
-    assert await _abort_reason(hass) == ("home_keeper_too_old", {"version": "0.30.0b2"})
     monkeypatch.setitem(integration.manifest, "version", "0.30.0")
     monkeypatch.setitem(sys.modules, "custom_components.home_keeper.panel_tabs", None)
-    assert (await _abort_reason(hass))[0] == "home_keeper_too_old"
+    assert await _abort_reason(hass) == ("home_keeper_too_old", {"version": "0.30.0b2"})

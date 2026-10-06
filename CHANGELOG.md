@@ -5,6 +5,13 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
+## [Unreleased]
+
+### Changed
+
+- **Home Keeper betas.** The library works with a beta of Home Keeper. It does not
+  check the Home Keeper version number now.
+
 ## [0.2.0] - 2026-10-05
 
 ### Added
