@@ -19,7 +19,7 @@
 | custom\_components/home\_keeper\_library/entity.py              |       50 |        1 |        8 |        1 |     97% |        62 |
 | custom\_components/home\_keeper\_library/events.py              |       38 |        0 |        0 |        0 |    100% |           |
 | custom\_components/home\_keeper\_library/frontend\_assets.py    |       19 |        0 |        2 |        0 |    100% |           |
-| custom\_components/home\_keeper\_library/home\_keeper.py        |      138 |        7 |       36 |        2 |     95% |141, 154-155, 253, 271-273 |
+| custom\_components/home\_keeper\_library/home\_keeper.py        |      134 |        7 |       34 |        2 |     95% |139, 152-153, 251, 269-271 |
 | custom\_components/home\_keeper\_library/isbn.py                |       51 |        0 |       16 |        0 |    100% |           |
 | custom\_components/home\_keeper\_library/loan\_sync.py          |      130 |       15 |       50 |       13 |     84% |78-\>exit, 96, 111, 120-122, 127-\>130, 139, 146, 150, 167-\>147, 180, 184-185, 197, 204, 211, 214 |
 | custom\_components/home\_keeper\_library/loan\_tasks.py         |      104 |        0 |       36 |        0 |    100% |           |
@@ -35,7 +35,7 @@
 | custom\_components/home\_keeper\_library/websocket\_api.py      |       81 |        6 |       14 |        2 |     92% |101-102, 118-119, 146-147 |
 | custom\_components/home\_keeper\_library/wishlist.py            |      117 |        0 |       44 |        0 |    100% |           |
 | custom\_components/home\_keeper\_library/wishlist\_sync.py      |      104 |        9 |       28 |        4 |     90% |70-71, 72-\>exit, 92-\>exit, 98, 108-110, 128-130 |
-| **TOTAL**                                                       | **4101** |  **164** | **1296** |  **103** | **95%** |           |
+| **TOTAL**                                                       | **4097** |  **164** | **1294** |  **103** | **95%** |           |
 
 
 ## Setup coverage badge
