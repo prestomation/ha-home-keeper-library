@@ -154,3 +154,17 @@ test.describe('Scan camera', { tag: '@responsive' }, () => {
       .toBe('ended');
   });
 });
+
+test.describe('Scan on a page that is not HTTPS', { tag: '@responsive' }, () => {
+  test('the camera is blocked with the HTTPS message, and Enter ISBN still starts', async ({ page }) => {
+    await page.addInitScript(() => Object.defineProperty(window, 'isSecureContext', { value: false }));
+    const tab = await openTab(page, '/scan');
+    await expect(tab.locator('[data-k="m-https"]')).toContainText('The camera needs HTTPS.');
+    await expect(tab.locator('[data-k="scan-start"]')).toBeDisabled();
+    await tab.locator('[data-k="m-manual"]').check();
+    await expect(tab.locator('[data-k="m-https"]')).toHaveCount(0);
+    await tab.locator('[data-k="scan-start"]').click();
+    await expect(page).toHaveURL(/step=camera/);
+    await expect(tab.locator('[data-k="isbn-input"]')).toBeVisible();
+  });
+});

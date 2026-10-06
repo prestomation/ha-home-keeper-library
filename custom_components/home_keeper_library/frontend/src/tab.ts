@@ -18,7 +18,7 @@ import { booksPath, renderBook, renderBooks } from './tab-books';
 import { renderDialog, type Dialog, type DialogState } from './tab-dialogs';
 import { renderImport } from './tab-import';
 import { renderLoans, renderSettings, renderWishlist } from './tab-lists';
-import { isBorrowedMode, renderScan, routeShelf } from './tab-scan';
+import { cameraBlocked, isBorrowedMode, renderScan, routeShelf } from './tab-scan';
 import { renderShelves } from './tab-shelves';
 import type { ImportState, ScanEntry, UiState, ViewCtx } from './tab-types';
 import type { Book, HomeAssistant, Lib, RawState, ReadingStatus, ScanResult, TabHost } from './types';
@@ -1129,6 +1129,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         this._render();
         return;
       case 'scan-start':
+        if (this._ctx() && cameraBlocked(this._ctx()!)) return;
         s.results = [];
         s.manualOpen = s.method === 'manual';
         this._gate = makeCodeGate(3000);

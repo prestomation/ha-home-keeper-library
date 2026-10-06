@@ -61,9 +61,16 @@ such as library books. Each scan adds a [loan](loans.md) with no copy.
 ## Camera and HTTPS
 
 The browser gives the camera only to a page with an HTTPS address. If Home Assistant
-opens with an `http://` address, the scan shows **The camera needs HTTPS** and offers
-**Enter ISBN**. Use an HTTPS address, such as Home Assistant Cloud or a reverse proxy with
-a certificate.
+opens with an `http://` address, the scan does not start the camera. When you select
+**Scan barcodes**, the scan shows **The camera needs HTTPS**, and **Start scan** stays
+off. Select **Enter ISBN** to add books without the camera.
+
+![The scan setup on a page with an http address](../../images/scan-https-mobile.png)
+
+To use the camera, open Home Assistant with an HTTPS address, such as Home Assistant
+Cloud or a reverse proxy with a certificate. The Home Assistant phone app uses the
+internal URL on your home network and the external URL away from home. If the camera
+works only away from home, set the internal URL in the app to an HTTPS address too.
 
 If the browser asks for the camera, allow it. If the browser cannot read barcodes, the
 library loads a barcode reader of its own the first time.

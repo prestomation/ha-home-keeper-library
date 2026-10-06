@@ -11,6 +11,11 @@ export interface Detector {
 
 export type StartResult = 'ok' | 'insecure' | 'denied' | 'unsupported';
 
+/** True when the page is not secure (an `http://` address), so the browser gives no camera. */
+export function cameraNeedsHttps(): boolean {
+  return globalThis.isSecureContext === false;
+}
+
 const BOOK_FORMATS = ['ean_13', 'ean_8', 'upc_a'];
 
 interface NativeDetector {
@@ -63,7 +68,7 @@ export class Scanner {
   async start(): Promise<StartResult> {
     if (!this.stopped) return 'ok';
     const media = navigator.mediaDevices;
-    if (!media?.getUserMedia) return window.isSecureContext === false ? 'insecure' : 'unsupported';
+    if (!media?.getUserMedia) return cameraNeedsHttps() ? 'insecure' : 'unsupported';
     try {
       this.stream = await media.getUserMedia({
         audio: false,

@@ -11,6 +11,8 @@ is the single source of truth (see `RELEASE.md`).
 
 - **Home Keeper betas.** The library works with a beta of Home Keeper. It does not
   check the Home Keeper version number now.
+- **Camera on HTTP pages.** On an `http://` address, the scan says at once that the
+  camera needs HTTPS, and it does not start the camera. **Enter ISBN** still works.
 
 ### Fixed
 
