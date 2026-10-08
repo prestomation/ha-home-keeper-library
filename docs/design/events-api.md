@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/websocket_api.py
   - custom_components/home_keeper_library/events.py
 related: [people-privilege, store-models, entities, architecture]
-source_hash: 42653c8aa28c
+source_hash: ec222cebbd74
 ---
 
 # Services, websocket commands, events and the API surface
@@ -60,12 +60,15 @@ that is not a read service:
 - `home_keeper_library/get_state` returns the projected document, the caller (`me`), the
   currency, the tab state and the revision.
 - `home_keeper_library/subscribe` sends `{"type": "changed", "revision": n}` after each
-  store change. The client then calls `get_state` again.
+  store change. The client then calls `get_state` again. The command listens to the
+  dispatcher signal `const.SIGNAL_STORE_CHANGED`, so a subscription stays after a reload
+  of the entry.
 - `home_keeper_library/list_todo_entities` lists the `todo` entities for the wishlist
   picker, without the library's own lists. It is admin-only.
-- `home_keeper_library/<service>` takes the fields of the service. It checks the admin
-  flag of the connection user first, then calls `services.async_run`. A `LibraryError`
-  becomes `send_error` with the key as the code and the resolved message.
+- `home_keeper_library/<service>` takes the fields of the service and calls
+  `services.async_run`, which applies the gate. A `LibraryError` or a
+  `ServiceValidationError` becomes `send_error` with the key as the code and the message
+  resolved with its placeholders.
 
 ### Events
 

@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/sensor.py
   - custom_components/home_keeper_library/todo.py
 related: [store-models, people-privilege, events-api]
-source_hash: 33a4b3741a6d
+source_hash: bc558fbdc9f3
 ---
 
 # Coordinator and entities

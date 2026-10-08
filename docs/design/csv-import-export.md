@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/csv_io.py
   - custom_components/home_keeper_library/frontend/src/tab-import.ts
 related: [store-models, open-library-covers, events-api]
-source_hash: 308acf3d56d6
+source_hash: be6af1ad44e6
 ---
 
 # CSV import and export
@@ -85,6 +85,10 @@ bookcase and shelf names, and the reading row of the chosen person. A row puts i
 on the shelf of its path when that shelf exists, else on the chosen shelf. A copy id that
 is already stored is not added again.
 
+- A `book_id` or `copy_id` that is not 32 lower-case hex characters is dropped.
+- The import checks the copy of a row first, so a row with a bad copy changes no record.
+- A book has 1 row for each copy. The first row of the book sets the reading status.
+
 ### Export
 
 `csv_io.export` writes the Goodreads header, which Goodreads and StoryGraph read, or the
@@ -96,7 +100,8 @@ with the format and the date.
 
 `tab-import.ts` is the Import dialog at `/import`: source, person, shelf for new books,
 file, preview table and counts, then **Import**. It reads the file in the browser and
-sends the text to `import_csv`.
+sends the text to `import_csv`. A new source, person or shelf starts a new preview, and the
+tab uses only the reply of the latest preview.
 
 ## Trade-offs
 

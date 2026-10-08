@@ -9,7 +9,7 @@ implements:
   - custom_components/home_keeper_library/backend_i18n.py
   - custom_components/home_keeper_library/manifest.json
 related: [store-models, people-privilege, events-api, home-keeper-dependency, frontend-tab-card]
-source_hash: a2cc2b83c079
+source_hash: bef471995077
 ---
 
 # Architecture
@@ -70,8 +70,9 @@ resource.
 1. Read the string tables of the Home Assistant language in an executor job
    (`backend_i18n.preload`), and load the store.
 2. Make `LibraryCoordinator` and give it the Open Library client, the lookup queue and
-   the 2 syncs. Store it as `entry.runtime_data`. An update listener of the entry fires
-   `settings_updated` when the options flow changes the currency.
+   the 2 syncs. Store it as `entry.runtime_data`. A store listener sends the dispatcher
+   signal `const.SIGNAL_STORE_CHANGED` for the websocket subscriptions. An update listener
+   of the entry fires `settings_updated` when the options flow changes the currency.
 3. Register the static path, the card delivery, the websocket commands and the cover
    views ([frontend-tab-card](frontend-tab-card.md#delivery)).
 4. Forward `const.PLATFORMS` and register the services.
