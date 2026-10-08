@@ -24,7 +24,7 @@ HOME_KEEPER_EVENT_TASK_COMPLETED = "home_keeper_task_completed"
 HOME_KEEPER_EVENT_TASK_DELETED = "home_keeper_task_deleted"
 HOME_KEEPER_EVENT_REGISTER_COMPANIONS = "home_keeper_register_companions"
 # The first Home Keeper version with the panel tab API (``panel_tabs.py``).
-HOME_KEEPER_MIN_VERSION = "0.30.0b2"
+HOME_KEEPER_MIN_VERSION = "0.30.0"
 HOME_KEEPER_INSTALL_URL = "https://github.com/prestomation/ha-home-keeper#installation"
 # The reasons why Home Keeper cannot take the library tab. Each is a config flow
 # abort reason and a repair issue id with the same translation key.

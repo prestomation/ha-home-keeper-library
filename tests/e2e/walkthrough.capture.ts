@@ -125,7 +125,7 @@ test('record the Library walkthrough', async ({ browser }) => {
     await beat(page, 2);
     await tab.locator('.hkl-listrow').filter({ hasText: LEND_TITLE }).locator('a.hkl-task').click();
     await expect(page).toHaveURL(/\/home-keeper\/tasks\//);
-    // Home Keeper 0.30.0b2 loads a task that a companion added only on a page load.
+    // Home Keeper 0.30.0 loads a task that a companion added only on a page load.
     await page.reload();
     await expect(page.locator('home-keeper-panel')).toContainText(`Get ${LEND_TITLE} back from ${PARTY}`, { timeout: 30_000 });
     await beat(page, 2);

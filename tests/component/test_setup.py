@@ -112,7 +112,7 @@ async def test_repair_issue_cycle(hass, persons, monkeypatch) -> None:
     await link.async_refresh()
     assert _issues(hass) == {"home_keeper_too_old"}
     issue = ir.async_get(hass).async_get_issue(DOMAIN, "home_keeper_too_old")
-    assert issue.translation_placeholders == {"version": "0.30.0b2"}
+    assert issue.translation_placeholders == {"version": "0.30.0"}
     assert hass.data[TABS].tabs() == []
     monkeypatch.delitem(sys.modules, "custom_components.home_keeper.panel_tabs")
 

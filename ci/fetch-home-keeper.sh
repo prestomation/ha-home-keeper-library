@@ -12,12 +12,12 @@
 # HOME_KEEPER_SRC must have a built dist/ already.
 #
 #   HOME_KEEPER_SRC=/path/to/ha-home-keeper bash ci/fetch-home-keeper.sh
-#   HOME_KEEPER_REF=main bash ci/fetch-home-keeper.sh   # clone and build
+#   HOME_KEEPER_REF=v0.30.0 bash ci/fetch-home-keeper.sh   # clone and build
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEST="$ROOT/tests/integration/.home_keeper/custom_components"
 REPO="${HOME_KEEPER_REPO:-https://github.com/prestomation/ha-home-keeper.git}"
-REF="${HOME_KEEPER_REF:-main}"
+REF="${HOME_KEEPER_REF:-v0.30.0}"
 
 rm -rf "$DEST/home_keeper"
 mkdir -p "$DEST"

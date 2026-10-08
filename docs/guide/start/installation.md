@@ -11,7 +11,7 @@ It requires Home Assistant 2026.9 or later, and Home Keeper.
 3. Add the Home Keeper integration in **Settings → Devices & services → Add
    integration**.
 
-The Library tab needs Home Keeper version 0.30.0b2 or later.
+The Library tab needs Home Keeper version 0.30.0 or later.
 
 ## Install the library
 
@@ -38,7 +38,7 @@ If Home Keeper is not ready, the setup stops with 1 of these messages:
 |---|---|
 | Home Keeper Library requires Home Keeper. | Install Home Keeper from HACS, restart Home Assistant, then add Home Keeper Library again. |
 | Add the Home Keeper integration first. | Add the Home Keeper integration, then add Home Keeper Library again. |
-| Update Home Keeper to version 0.30.0b2 or later. | Update Home Keeper in HACS, restart Home Assistant, then add Home Keeper Library again. |
+| Update Home Keeper to version 0.30.0 or later. | Update Home Keeper in HACS, restart Home Assistant, then add Home Keeper Library again. |
 
 ## Repair issues
 
