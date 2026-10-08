@@ -28,11 +28,10 @@ on:
 permissions:
   contents: read
 
-# The Home Keeper branch that ci/fetch-home-keeper.sh clones. The Library tab
-# needs the panel tab API of prestomation/ha-home-keeper#434. Change this to
-# `main` after #434 merges (RELEASE.md, "Before the first stable release").
+# The Home Keeper tag that ci/fetch-home-keeper.sh clones. The Library tab
+# needs the panel tab API, first in Home Keeper 0.30.0.
 env:
-  HOME_KEEPER_REF: ccr-bca5cf7c-40042x
+  HOME_KEEPER_REF: v0.30.0
 
 concurrency:
   group: walkthrough-preview-${{ github.event.number }}

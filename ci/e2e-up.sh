@@ -7,7 +7,7 @@
 #   KEEP_UP=1 bash ci/e2e-up.sh                # leave the containers running
 #   NO_TESTS=1 KEEP_UP=1 bash ci/e2e-up.sh     # only start (for a capture)
 #   HOME_KEEPER_SRC=/path/to/ha-home-keeper bash ci/e2e-up.sh   # a local Home Keeper
-#   HOME_KEEPER_REF=<branch> bash ci/e2e-up.sh                   # clone from GitHub
+#   HOME_KEEPER_REF=<tag or branch> bash ci/e2e-up.sh                   # clone from GitHub
 #   SKIP_BROWSER_ENV=1 bash ci/e2e-up.sh   # CI: Docker and Chromium are ready
 #
 # CI runs this script too (NO_TESTS=1 KEEP_UP=1), so CI and a local run seed and

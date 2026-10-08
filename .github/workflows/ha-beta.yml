@@ -35,13 +35,11 @@ on:
         required: false
         default: "beta"
 
-# HOME_KEEPER_REF is the Home Keeper branch that ci/fetch-home-keeper.sh clones.
-# The Library tab needs the panel tab API of prestomation/ha-home-keeper#434.
-# Change it to `main` after #434 merges (RELEASE.md, "Before the first stable
-# release").
+# HOME_KEEPER_REF is the Home Keeper tag that ci/fetch-home-keeper.sh clones.
+# The Library tab needs the panel tab API, first in Home Keeper 0.30.0.
 env:
   HA_TAG: ${{ github.event.inputs.ha_tag || 'beta' }}
-  HOME_KEEPER_REF: ccr-bca5cf7c-40042x
+  HOME_KEEPER_REF: v0.30.0
 
 # A job that needs more asks for it in its own permissions block.
 permissions:

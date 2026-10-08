@@ -45,7 +45,7 @@ test.describe('Loans', { tag: '@responsive' }, () => {
 
     await link.click();
     await expect(page).toHaveURL(new RegExp(`/home-keeper/tasks/${loan.hk_task_id}$`));
-    // The Home Keeper panel (0.30.0b2) does not update its task list while a
+    // The Home Keeper panel (0.30.0) does not update its task list while a
     // companion tab is open, so a task that the library added shows only after a
     // load. Reported to Home Keeper; the reload keeps this test on the library side.
     await page.reload();
