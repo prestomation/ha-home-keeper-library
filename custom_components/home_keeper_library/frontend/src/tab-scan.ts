@@ -90,7 +90,7 @@ function setupBorrowed(ctx: ViewCtx): string {
 function resultRow(ctx: ViewCtx, e: ScanEntry): string {
   const book = e.res?.book ?? null;
   const thumb = book ? cover(book, 'thumb') : '<span class="hkl-cover hkl-cover-thumb blank" aria-hidden="true"></span>';
-  const title = book?.title ?? e.title ?? e.isbn;
+  const title = book?.title ?? e.isbn;
   const by = book ? [book.authors.join(', '), book.published].filter(Boolean).join(' · ') : '';
   const k = `data-key="${e.key}"`;
   let sub = escapeHTML(by);

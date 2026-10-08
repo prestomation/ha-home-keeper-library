@@ -58,7 +58,7 @@ class BookLookup:
     def _start_worker(self) -> None:
         if self._worker is not None and not self._worker.done():
             return
-        self._worker = self._coordinator.entry.async_create_background_task(
+        self._worker = self._coordinator.config_entry.async_create_background_task(
             self._hass, self._run(), "home_keeper_library book lookup"
         )
 

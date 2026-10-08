@@ -69,6 +69,19 @@ async def test_subscribe_pushes_changes(hass, setup_entry, call, ws) -> None:
     assert event["event"] == {"type": "changed", "revision": revision + 1}
 
 
+async def test_subscription_continues_after_a_reload(
+    hass, setup_entry, call, ws
+) -> None:
+    client = await ws("user")
+    assert (await _send(client, type=WS + "subscribe"))["success"]
+    assert await hass.config_entries.async_reload(setup_entry.entry_id)
+    await hass.async_block_till_done()
+    revision = setup_entry.runtime_data.store.revision
+    await call("add_room", {"name": "Den"})
+    event = await client.receive_json()
+    assert event["event"] == {"type": "changed", "revision": revision + 1}
+
+
 async def test_twin_commands_share_the_gate(hass, setup_entry, ws) -> None:
     admin = await ws("admin")
     reply = await _send(admin, type=WS + "add_room", name="Den")

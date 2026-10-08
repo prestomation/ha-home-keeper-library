@@ -189,6 +189,11 @@ export class HomeKeeperLibraryCard extends HTMLElement {
     this._subscribing = true;
     try {
       this._unsub = await this._api.subscribe(() => void this._refresh());
+      // The card can leave the page while the subscription starts.
+      if (!this.isConnected) {
+        void this._unsub();
+        this._unsub = undefined;
+      }
     } catch {
       // The card still shows the first fetch.
     } finally {
@@ -259,8 +264,9 @@ export class HomeKeeperLibraryCard extends HTMLElement {
         .map((b) => `<span class="${b.id === this._pick ? 'pick' : ''}" title="${escapeHTML(b.title)}">${cover(b, 'tile')}</span>`)
         .join('');
       const pick = this._pick ? idx.book.get(this._pick) : undefined;
+      const where = pick ? this._where(idx, pick) : '';
       const pickLine = pick
-        ? `<span class="small">${escapeHTML(t('card.pick', { title: pick.title }))}${this._where(idx, pick) ? ` · ${escapeHTML(this._where(idx, pick))}` : ''}</span>`
+        ? `<span class="small">${escapeHTML(t('card.pick', { title: pick.title }))}${where ? ` · ${escapeHTML(where)}` : ''}</span>`
         : '';
       parts.push(`<div class="sec"><span class="eyebrow">${escapeHTML(t('status.want'))} · ${model.want.length}</span>${covers ? `<div class="covers">${covers}</div>` : `<span class="muted">${escapeHTML(t('card.no_want'))}</span>`}${model.want.length ? `<div class="btns"><button class="btn" data-act="random" data-k="random">${escapeHTML(t('card.random'))}</button></div>${pickLine}` : ''}</div>`);
     }

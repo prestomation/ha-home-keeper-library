@@ -6,6 +6,15 @@ import { adminState, bookByTitle, expect, libraryTab, openTab, restoreReading, t
  * (tests/e2e/seed/build_seed.py). A test that changes a reading row puts the seed
  * row back after.
  */
+/** A book with a paper copy that is not lent, so the Lend dialog has a copy. */
+async function lendableBook(): Promise<Record<string, any>> {
+  const state = await adminState();
+  const lent = new Set(state.loans.filter((l: any) => !l.returned).map((l: any) => l.copy_id));
+  const copy = state.copies.find((c: any) => !lent.has(c.id) && c.format !== 'ebook' && c.format !== 'audiobook');
+  if (!copy) throw new Error('no copy to lend in the seed');
+  return state.books.find((b: any) => b.id === copy.book_id);
+}
+
 test.describe('Library tab', { tag: '@responsive' }, () => {
   test('Home Keeper shows the Library tab at /home-keeper/library', async ({ page }) => {
     const errors = trackErrors(page);
@@ -30,6 +39,20 @@ test.describe('Library tab', { tag: '@responsive' }, () => {
     await expect(tab.locator('.hkl-summary')).toContainText(`${leGuin.length} books`);
     await tab.locator('[data-k="clear"]').click();
     await expect(page).toHaveURL(/\/home-keeper\/library\/books$/);
+  });
+
+  test('a dialog error keeps the text that the user typed', async ({ page }) => {
+    const book = await lendableBook();
+    const tab = await openTab(page, `/books/${book.id}`);
+    await tab.locator('[data-k="lend"]').click();
+    const dialog = tab.locator('.hkl-dialog');
+    await dialog.locator('[name="note"]').fill('Back by the trip');
+    await dialog.locator('[data-k="d-submit"]').click();
+    await expect(dialog.locator('.hkl-error')).toHaveText('Enter the book and the name of the person.');
+    await expect(dialog.locator('[name="note"]')).toHaveValue('Back by the trip');
+    await expect(dialog.locator('[data-k="d-submit"]')).toBeEnabled();
+    await dialog.locator('[data-k="d-cancel"]').click();
+    await expect(dialog).toHaveCount(0);
   });
 
   test('a cover loads through a signed URL', async ({ page }) => {

@@ -21,13 +21,14 @@ from typing import Any
 import voluptuous as vol
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import ServiceValidationError, Unauthorized
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
 from . import people, projections
 from .api_surface import SERVICES, WEBSOCKET_COMMANDS
 from .backend_i18n import resolve_exception
-from .const import DOMAIN
+from .const import DOMAIN, SIGNAL_STORE_CHANGED
 from .coordinator import find_coordinator
 from .models import LibraryError
 from .services import SERVICE_FIELDS, async_run
@@ -47,16 +48,16 @@ def _error(
     )
 
 
-async def _actor(
+def _actor(
     hass: HomeAssistant, connection: websocket_api.ActiveConnection
 ) -> people.Actor:
-    actor = await people.actor_for_user(hass, connection.user.id)
     # The connection user is the authority on the admin flag.
+    found = people.person_for_user(hass, connection.user.id)
     return people.Actor(
-        user_id=actor.user_id,
+        user_id=connection.user.id,
         is_admin=connection.user.is_admin,
-        person_id=actor.person_id,
-        name=actor.name,
+        person_id=found["person_id"] if found else None,
+        name=found["name"] if found else None,
     )
 
 
@@ -88,17 +89,22 @@ def _service_command(service: str) -> websocket_api.const.WebSocketCommandHandle
         connection: websocket_api.ActiveConnection,
         msg: dict[str, Any],
     ) -> None:
-        # Home Assistant answers ``Unauthorized`` with the ``unauthorized`` code.
-        if spec.admin_only and not connection.user.is_admin:
-            raise Unauthorized
         data = {k: v for k, v in msg.items() if k not in ("id", "type")}
         try:
-            result = await async_run(hass, spec, await _actor(hass, connection), data)
+            # ``async_run`` gates the call. Home Assistant answers its
+            # ``Unauthorized`` with the ``unauthorized`` code.
+            result = await async_run(hass, spec, _actor(hass, connection), data)
         except LibraryError as err:
             _error(connection, msg["id"], hass, err.key, **err.placeholders)
             return
         except ServiceValidationError as err:
-            _error(connection, msg["id"], hass, err.translation_key or "not_loaded")
+            _error(
+                connection,
+                msg["id"],
+                hass,
+                err.translation_key or "not_loaded",
+                **(err.translation_placeholders or {}),
+            )
             return
         connection.send_result(msg["id"], result)
 
@@ -117,7 +123,7 @@ async def ws_get_state(
     if coordinator is None:
         _error(connection, msg["id"], hass, "not_loaded")
         return
-    actor = await _actor(hass, connection)
+    actor = _actor(hass, connection)
     connection.send_result(
         msg["id"],
         projections.project_state(
@@ -145,18 +151,19 @@ def ws_subscribe(
     if coordinator is None:
         _error(connection, msg["id"], hass, "not_loaded")
         return
-    store = coordinator.store
 
     @callback
-    def _changed() -> None:
+    def _changed(revision: int) -> None:
         connection.send_message(
             websocket_api.event_message(
-                msg["id"], {"type": "changed", "revision": store.revision}
+                msg["id"], {"type": "changed", "revision": revision}
             )
         )
 
-    connection.subscriptions[msg["id"]] = store.async_add_listener(_changed)
-    connection.send_result(msg["id"], {"revision": store.revision})
+    connection.subscriptions[msg["id"]] = async_dispatcher_connect(
+        hass, SIGNAL_STORE_CHANGED, _changed
+    )
+    connection.send_result(msg["id"], {"revision": coordinator.store.revision})
 
 
 @websocket_api.websocket_command({vol.Required("type"): f"{DOMAIN}/list_todo_entities"})

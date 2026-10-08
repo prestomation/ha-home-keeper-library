@@ -26,7 +26,7 @@ from homeassistant.components.todo import (
     TodoListEntityFeature,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import LibraryConfigEntry, people
@@ -36,6 +36,7 @@ from .coordinator import LibraryCoordinator
 from .entity import PersonEntity, async_track_people
 from .models import LibraryError, book_summary, fold
 from .projections import want_to_read
+from .services import service_error
 
 
 async def async_setup_entry(
@@ -51,14 +52,6 @@ async def async_setup_entry(
 
     entry.async_on_unload(
         async_track_people(hass, coordinator, _build, async_add_entities)
-    )
-
-
-def _error(err: LibraryError) -> ServiceValidationError:
-    return ServiceValidationError(
-        translation_domain=DOMAIN,
-        translation_key=err.key,
-        translation_placeholders=err.placeholders,
     )
 
 
@@ -137,7 +130,7 @@ class ToReadList(PersonEntity, TodoListEntity):
                 self.coordinator.lookup.async_enqueue(match["id"])
             await store.set_reading(match["id"], self.person_id, {"status": "want"})
         except LibraryError as err:
-            raise _error(err) from err
+            raise service_error(err) from err
 
     async def async_update_todo_item(self, item: TodoItem) -> None:
         """A completed item sets the status to ``read``."""
@@ -149,7 +142,7 @@ class ToReadList(PersonEntity, TodoListEntity):
                 item.uid, self.person_id, {"status": "read"}
             )
         except LibraryError as err:
-            raise _error(err) from err
+            raise service_error(err) from err
 
     async def async_delete_todo_items(self, uids: list[str]) -> None:
         """Remove the ``want`` row of each item."""
@@ -162,4 +155,4 @@ class ToReadList(PersonEntity, TodoListEntity):
             try:
                 await store.set_reading(uid, self.person_id, {"status": "none"})
             except LibraryError as err:
-                raise _error(err) from err
+                raise service_error(err) from err

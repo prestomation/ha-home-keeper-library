@@ -19,6 +19,7 @@ from __future__ import annotations
 import functools
 import json
 import re
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -47,17 +48,30 @@ def _interpolate(template: str, params: dict[str, Any]) -> str:
     )
 
 
+def _read_json(path: Path) -> Any:
+    """The JSON value of the file at *path*, or None if it cannot be read."""
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def _resolve(
+    table: Callable[[str], dict[str, str]], lang: str, key: str, params: dict[str, Any]
+) -> str:
+    """The first template for *key* in the language chain of *lang*, filled."""
+    template = next(
+        (t for name in language_chain(lang) if (t := table(name).get(key))),
+        key,
+    )
+    return _interpolate(template, params)
+
+
 @functools.cache
 def _exceptions(lang: str) -> dict[str, str]:
     """The ``exceptions.<key>.message`` templates for *lang*, flattened."""
-    path = _TRANSLATIONS_DIR / f"{lang}.json"
-    if not path.exists():
-        return {}
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return {}
-    exceptions = data.get("exceptions")
+    data = _read_json(_TRANSLATIONS_DIR / f"{lang}.json")
+    exceptions = data.get("exceptions") if isinstance(data, dict) else None
     if not isinstance(exceptions, dict):
         return {}
     return {
@@ -72,23 +86,13 @@ def resolve_exception(lang: str, key: str, **params: Any) -> str:
 
     The key itself is the last fallback.
     """
-    template = next(
-        (t for name in language_chain(lang) if (t := _exceptions(name).get(key))),
-        key,
-    )
-    return _interpolate(template, params)
+    return _resolve(_exceptions, lang, key, params)
 
 
 @functools.cache
 def _backend_strings(lang: str) -> dict[str, str]:
     """The flat ``backend_strings/<lang>.json`` table for *lang*."""
-    path = _BACKEND_STRINGS_DIR / f"{lang}.json"
-    if not path.exists():
-        return {}
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return {}
+    data = _read_json(_BACKEND_STRINGS_DIR / f"{lang}.json")
     return data if isinstance(data, dict) else {}
 
 
@@ -97,11 +101,7 @@ def resolve_string(lang: str, key: str, **params: Any) -> str:
 
     The key itself is the last fallback.
     """
-    template = next(
-        (t for name in language_chain(lang) if (t := _backend_strings(name).get(key))),
-        key,
-    )
-    return _interpolate(template, params)
+    return _resolve(_backend_strings, lang, key, params)
 
 
 def preload(lang: str) -> None:

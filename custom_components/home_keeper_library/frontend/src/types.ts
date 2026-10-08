@@ -45,7 +45,8 @@ export interface Wishlist {
   person_id: string;
   buy: boolean;
   added_at: string;
-  todo_uid: string | null;
+  /** Absent for a non-admin user who reads the wishlist of another person. */
+  todo_uid?: string | null;
   bought: boolean;
 }
 

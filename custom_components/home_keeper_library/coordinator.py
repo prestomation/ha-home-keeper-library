@@ -37,7 +37,6 @@ class LibraryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self, hass: HomeAssistant, entry: ConfigEntry, store: LibraryStore
     ) -> None:
         super().__init__(hass, _LOGGER, config_entry=entry, name=DOMAIN)
-        self.entry = entry
         self.store = store
         # Set by async_setup_entry.
         self.client: OpenLibraryClient
@@ -51,9 +50,8 @@ class LibraryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     @property
     def currency(self) -> str:
         """The currency option of the entry."""
-        value = self.entry.options.get(CONF_CURRENCY) or self.entry.data.get(
-            CONF_CURRENCY
-        )
+        entry = self.config_entry
+        value = entry.options.get(CONF_CURRENCY) or entry.data.get(CONF_CURRENCY)
         return str(value or self.hass.config.currency or DEFAULT_CURRENCY)
 
     @callback

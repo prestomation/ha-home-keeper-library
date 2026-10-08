@@ -19,6 +19,14 @@ class IsbnError(ValueError):
     """The value is not a valid ISBN."""
 
 
+_DIGITS = frozenset("0123456789")
+
+
+def _all_digits(value: str) -> bool:
+    # ``str.isdigit`` is also true for digits such as "²", which ``int`` refuses.
+    return all(ch in _DIGITS for ch in value)
+
+
 def clean(raw: object) -> str:
     """Return *raw* with only its digits and an upper-case ``X``.
 
@@ -29,7 +37,7 @@ def clean(raw: object) -> str:
         raw = str(raw)
     if not isinstance(raw, str):
         return ""
-    return "".join(ch for ch in raw.upper() if ch.isdigit() or ch == "X")
+    return "".join(ch for ch in raw.upper() if ch in _DIGITS or ch == "X")
 
 
 def isbn13_check_digit(first12: str) -> str:
@@ -47,14 +55,14 @@ def isbn10_check_char(first9: str) -> str:
 
 def is_valid_isbn13(value: str) -> bool:
     """Whether *value* is 13 digits with a correct check digit."""
-    if len(value) != 13 or not value.isdigit():
+    if len(value) != 13 or not _all_digits(value):
         return False
     return isbn13_check_digit(value[:12]) == value[12]
 
 
 def is_valid_isbn10(value: str) -> bool:
     """Whether *value* is 9 digits and a correct check character."""
-    if len(value) != 10 or not value[:9].isdigit():
+    if len(value) != 10 or not _all_digits(value[:9]):
         return False
     return isbn10_check_char(value[:9]) == value[9]
 

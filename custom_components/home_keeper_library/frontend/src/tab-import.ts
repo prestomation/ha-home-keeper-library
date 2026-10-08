@@ -54,7 +54,7 @@ export function renderImport(ctx: ViewCtx): string {
       <div class="hkl-fields">
         <label class="hkl-field">${escapeHTML(t('import.source'))}<select data-chg="import" data-key="source" data-k="im-source">${options(sources, s.source)}</select></label>
         <label class="hkl-field">${escapeHTML(t('common.person'))}<select data-chg="import" data-key="personId" data-k="im-person">${personOptions(ctx.lib, person)}</select></label>
-        <label class="hkl-field">${escapeHTML(t('import.shelf'))}<select data-chg="import" data-key="shelfId" data-k="im-shelf">${shelfOptions(ctx.lib, ctx.idx, s.shelfId)}</select></label>
+        <label class="hkl-field">${escapeHTML(t('import.shelf'))}<select data-chg="import" data-key="shelfId" data-k="im-shelf">${shelfOptions(ctx.lib, s.shelfId)}</select></label>
       </div>
       ${file}
       <input type="file" accept=".csv,text/csv" data-chg="import-file" data-k="im-file" hidden />

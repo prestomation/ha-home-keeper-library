@@ -8,8 +8,6 @@ export interface ScanEntry {
   isbn: string;
   pending: boolean;
   res: ScanResult | null;
-  /** The title of a borrowed book, from the `borrow_book` reply. */
-  title?: string;
   error?: string;
   /** What the user picked for a duplicate. */
   choice?: 'move' | 'add_copy' | 'skip';
@@ -18,8 +16,6 @@ export interface ScanEntry {
 export interface ScanSession {
   method: 'camera' | 'manual';
   roomId: string | null;
-  /** The shelf of the running session. Null is "No shelf". */
-  shelfId: string | null;
   results: ScanEntry[];
   manualOpen: boolean;
   markRead: boolean;

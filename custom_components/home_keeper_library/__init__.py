@@ -12,7 +12,6 @@ Setup order:
 
 from __future__ import annotations
 
-import logging
 import os
 from datetime import timedelta
 from functools import partial
@@ -21,13 +20,14 @@ from typing import Any
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.typing import ConfigType
 
 from . import backend_i18n, card, covers, frontend_assets, home_keeper, websocket_api
 from .api_surface import SERVICE_NAMES
 from .book_lookup import BookLookup
-from .const import DOMAIN, OVERDUE_CHECK_INTERVAL_S, PLATFORMS
+from .const import DOMAIN, OVERDUE_CHECK_INTERVAL_S, PLATFORMS, SIGNAL_STORE_CHANGED
 from .coordinator import LibraryCoordinator
 from .loan_sync import LoanSync
 from .openlibrary_client import OpenLibraryClient, openlibrary_urls
@@ -35,7 +35,6 @@ from .services import async_register_services
 from .store import LibraryStore, today
 from .wishlist_sync import WishlistSync
 
-_LOGGER = logging.getLogger(__name__)
 _VIEWS_REGISTERED = f"{DOMAIN}_views_registered"
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
@@ -62,6 +61,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> b
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
     entry.async_on_unload(store.async_add_listener(coordinator.async_store_changed))
+
+    @callback
+    def _send_changed() -> None:
+        # The websocket subscriptions listen to the signal, not to the store,
+        # so they keep working after a reload makes a new store.
+        async_dispatcher_send(hass, SIGNAL_STORE_CHANGED, store.revision)
+
+    entry.async_on_unload(store.async_add_listener(_send_changed))
     entry.async_on_unload(entry.add_update_listener(_async_entry_updated))
 
     await frontend_assets.async_register(hass)

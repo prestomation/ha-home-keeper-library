@@ -116,6 +116,15 @@ def test_orphan_tasks_are_deleted() -> None:
     assert lt.plan_reconcile({}, [{"source": {}}]).empty
 
 
+def test_tasks_with_no_id_are_left_alone() -> None:
+    no_id = _task()
+    del no_id["id"]
+    for task in (no_id, _task("")):
+        assert lt.plan_reconcile({}, [task]).empty
+        plan = lt.plan_reconcile({"l1": _loan()}, [task])
+        assert plan.adds == [lt.AddTaskOp("l1")] and plan.binds == []
+
+
 def test_plan_empty_flag() -> None:
     assert lt.LoanTaskPlan().empty
     for field, op in (

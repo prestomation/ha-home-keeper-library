@@ -166,6 +166,22 @@ async def test_books_and_duplicates(hass, setup_entry, call) -> None:
     assert info.value.translation_key == "out_of_range"
 
 
+async def test_fill_book_keeps_the_isbn10_on_a_duplicate_isbn13(
+    hass, setup_entry, call
+) -> None:
+    store = setup_entry.runtime_data.store
+    await _book(call, isbn="9780441478125", title="First")
+    book = await _book(call, title="Second")
+    await call("update_book", {"book_id": book["id"], "isbn10": "0306406152"})
+    updated = async_capture_events(hass, EVENT("book_updated"))
+    filled = await store.fill_book(
+        book["id"], {"isbn13": "9780441478125", "isbn10": "0441478123", "pages": 9}
+    )
+    assert (filled["isbn13"], filled["isbn10"]) == (None, "0306406152")
+    assert filled["pages"] == 9
+    assert updated[0].data["changed_fields"] == ["pages"]
+
+
 async def test_delete_book_cascades(hass, setup_entry, call) -> None:
     book = await _book(call)
     copy = (await call("add_copy", {"book_id": book["id"]}))["copy"]

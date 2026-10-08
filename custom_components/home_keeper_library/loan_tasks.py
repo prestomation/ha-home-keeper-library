@@ -176,9 +176,10 @@ def plan_reconcile(
 ) -> LoanTaskPlan:
     """The steps that make the Home Keeper tasks match the loans."""
     plan = LoanTaskPlan()
-    by_id = {t["id"]: t for t in tasks if isinstance(t.get("id"), str)}
+    # A task with no id cannot be bound, changed or deleted.
+    by_id = {t["id"]: t for t in tasks if isinstance(t.get("id"), str) and t["id"]}
     ours: dict[str, list[dict[str, Any]]] = {}
-    for item in tasks:
+    for item in by_id.values():
         if (loan_id := loan_id_of(item)) is not None:
             ours.setdefault(loan_id, []).append(item)
 
@@ -196,7 +197,7 @@ def plan_reconcile(
                 plan.forgets.append(ForgetTaskOp(loan_id, disable=False))
             continue
         if task is None:
-            candidates = [t for t in ours.get(loan_id, []) if t.get("id")]
+            candidates = ours.get(loan_id, [])
             if candidates:
                 task = candidates[0]
                 plan.binds.append(BindTaskOp(loan_id, task["id"]))
@@ -208,7 +209,7 @@ def plan_reconcile(
         if is_open(loan):
             if task_is_completed(task):
                 plan.returns.append(ReturnLoanOp(loan_id))
-            elif not loan.get("due") or not loan.get("add_task"):
+            elif not wants_task(loan):
                 plan.deletes.append(DeleteTaskOp(task["id"]))
                 plan.forgets.append(ForgetTaskOp(loan_id, disable=False))
             elif _due_date(task) != loan["due"]:

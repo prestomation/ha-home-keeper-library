@@ -52,7 +52,6 @@ TAB_ID = "library"
 TAB_ELEMENT = "home-keeper-library-tab"
 TAB_ORDER = 50
 TAB_HOST_API = 1
-CARD_ELEMENT = "home-keeper-library-card"
 
 # The cover HTTP views.
 COVER_URL_PREFIX = "/api/home_keeper_library/cover"
@@ -61,6 +60,8 @@ COVER_MAX_BYTES = 10 * 1024 * 1024
 COVER_MAX_PX = 1200
 # The cover files, below `.storage/`. The store file has the name of the domain.
 COVERS_DIR = f"{DOMAIN}_covers"
+# The dispatcher signal of a store change. Its argument is the store revision.
+SIGNAL_STORE_CHANGED = f"{DOMAIN}_store_changed"
 # The first bytes that the upload view reads to identify the image type.
 SNIFF_BYTES = 16
 

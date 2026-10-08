@@ -15,17 +15,15 @@ has no sidebar panel of its own: its admin UI is a tab in the Home Keeper panel
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.core import HomeAssistant
 
 from . import card
 from .const import CARD_JS_FILENAME, DOMAIN, STATIC_URL
-from .home_keeper import content_hash
+from .home_keeper import DIST_DIR, content_hash
 
 _LOGGER = logging.getLogger(__name__)
-DIST_DIR = Path(__file__).parent / "frontend" / "dist"
 _REGISTERED = f"{DOMAIN}_frontend_registered"
 
 

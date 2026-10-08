@@ -29,7 +29,7 @@ def _currency_schema(default: str) -> vol.Schema:
     return vol.Schema({vol.Required(CONF_CURRENCY, default=default): str})
 
 
-def _clean_currency(value: Any) -> str | None:
+def clean_currency(value: Any) -> str | None:
     """An upper-case code of 3 letters, or None."""
     text = str(value or "").strip().upper()
     return text if len(text) == 3 and text.isalpha() else None
@@ -58,7 +58,7 @@ class LibraryConfigFlow(ConfigFlow, domain=DOMAIN):
         default = self.hass.config.currency or DEFAULT_CURRENCY
         errors: dict[str, str] = {}
         if user_input is not None:
-            currency = _clean_currency(user_input.get(CONF_CURRENCY))
+            currency = clean_currency(user_input.get(CONF_CURRENCY))
             if currency is not None:
                 return self.async_create_entry(
                     title=NAME, data={}, options={CONF_CURRENCY: currency}
@@ -84,7 +84,7 @@ class LibraryOptionsFlow(OptionsFlow):
         """Show the currency form."""
         errors: dict[str, str] = {}
         if user_input is not None:
-            currency = _clean_currency(user_input.get(CONF_CURRENCY))
+            currency = clean_currency(user_input.get(CONF_CURRENCY))
             if currency is not None:
                 return self.async_create_entry(
                     data=merge_flow_input(self.config_entry, {CONF_CURRENCY: currency})

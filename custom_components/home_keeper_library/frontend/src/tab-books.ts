@@ -6,6 +6,7 @@ import {
   button,
   cover,
   taskLinkHtml,
+  href,
   ICONS,
   link,
   navBar,
@@ -73,7 +74,7 @@ function tile(ctx: ViewCtx, book: Book): string {
   const path = `/books/${encodeURIComponent(book.id)}`;
   const loc = book.owned ? shortLocation(ctx.idx, firstShelf(ctx, book)) || t('common.no_shelf') : '';
   const badge = book.cover?.kind === 'custom' ? `<span class="hkl-cover-badge">${escapeHTML(t('book.custom_cover'))}</span>` : '';
-  return `<a class="hkl-tile" href="/home-keeper/library${escapeHTML(path)}" data-act="nav" data-path="${escapeHTML(path)}" data-k="b-${escapeHTML(book.id)}">
+  return `<a class="hkl-tile" href="${escapeHTML(href(path))}" data-act="nav" data-path="${escapeHTML(path)}" data-k="b-${escapeHTML(book.id)}">
     ${cover(book, 'tile', badge)}
     <span class="hkl-tile-title">${escapeHTML(book.title)}</span>
     <span class="hkl-tile-author">${escapeHTML(book.authors.join(', '))}</span>
@@ -87,7 +88,7 @@ function tile(ctx: ViewCtx, book: Book): string {
 function row(ctx: ViewCtx, book: Book): string {
   const path = `/books/${encodeURIComponent(book.id)}`;
   const loc = book.owned ? shortLocation(ctx.idx, firstShelf(ctx, book)) || t('common.no_shelf') : t('book.not_owned');
-  return `<a class="hkl-row" href="/home-keeper/library${escapeHTML(path)}" data-act="nav" data-path="${escapeHTML(path)}" data-k="b-${escapeHTML(book.id)}">
+  return `<a class="hkl-row" href="${escapeHTML(href(path))}" data-act="nav" data-path="${escapeHTML(path)}" data-k="b-${escapeHTML(book.id)}">
     ${cover(book, 'thumb')}
     <span class="hkl-row-main"><span class="hkl-row-title">${escapeHTML(book.title)}</span><span class="hkl-row-sub">${escapeHTML(book.authors.join(', '))}</span><span class="hkl-row-loc">${escapeHTML(loc)}</span></span>
     <span class="hkl-row-dots">${readerDots(ctx, book)}${loanPill(ctx, book)}</span>

@@ -53,6 +53,22 @@ describe('data', () => {
     expect(fake.calls('get_state')).toHaveLength(2);
   });
 
+  it('ends a subscription that starts after the tab leaves the page', async () => {
+    const fake = fakeHass();
+    const unsub = vi.fn();
+    let resolve;
+    fake.hass.connection.subscribeMessage = vi.fn(() => new Promise((r) => (resolve = r)));
+    el = document.createElement('home-keeper-library-tab');
+    el.route = { path: '/books' };
+    document.body.appendChild(el);
+    el.hass = fake.hass;
+    await flush();
+    el.remove();
+    resolve(unsub);
+    await flush();
+    expect(unsub).toHaveBeenCalledTimes(1);
+  });
+
   it('shows the error of a failed fetch', async () => {
     const fake = fakeHass();
     fake.send.mockRejectedValueOnce({ message: 'boom' });
@@ -307,14 +323,62 @@ describe('book detail', () => {
     expect(dlg.innerHTML).toBe('');
   });
 
-  it('shows the error of a failed dialog inline', async () => {
+  it('shows the error of a failed dialog inline and keeps what the user typed', async () => {
     const state = fixture();
-    const fake = await mount(`/books/${bookId(state, 'Dune')}`, { replies: { update_book: () => Promise.reject({ message: 'Not allowed' }) } });
-    void fake;
+    let n = 0;
+    await mount(`/books/${bookId(state, 'Dune')}`, { replies: { update_book: () => Promise.reject({ message: `Not allowed ${++n}` }) } });
     $('[data-k="edit-book"]').click();
-    $('[data-k="d-submit"]').click();
+    const dlg = el.shadowRoot.getElementById('dlg');
+    dlg.querySelector('[name="subtitle"]').value = 'Typed text';
+    dlg.querySelector('[data-k="d-submit"]').click();
     await flush();
-    expect(el.shadowRoot.getElementById('dlg').textContent).toContain('Not allowed');
+    expect(dlg.querySelectorAll('.hkl-error')).toHaveLength(1);
+    expect(dlg.querySelector('.hkl-error').textContent).toBe('Not allowed 1');
+    expect(dlg.querySelector('[name="subtitle"]').value).toBe('Typed text');
+    expect(dlg.querySelector('[data-k="d-submit"]').disabled).toBe(false);
+    dlg.querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect([...dlg.querySelectorAll('.hkl-error')].map((e) => e.textContent)).toEqual(['Not allowed 2']);
+  });
+
+  it('disables the submit button while the call runs, and a late reply leaves a new dialog open', async () => {
+    const state = fixture();
+    let finish;
+    await mount(`/books/${bookId(state, 'Dune')}`, { replies: { update_book: () => new Promise((r) => (finish = r)) } });
+    $('[data-k="edit-book"]').click();
+    const dlg = el.shadowRoot.getElementById('dlg');
+    dlg.querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(dlg.querySelector('[data-k="d-submit"]').disabled).toBe(true);
+    dlg.querySelector('[data-k="d-x"]').click();
+    expect(dlg.innerHTML).toBe('');
+    $('[data-k="edit-book"]').click();
+    finish({});
+    await flush();
+    expect(dlg.querySelector('[data-k="d-submit"]').disabled).toBe(false);
+  });
+
+  it('keeps the notes editor open with the text when the save fails', async () => {
+    const state = fixture();
+    const id = bookId(state, 'Dune');
+    await mount(`/books/${id}`, { replies: { update_book: () => Promise.reject({ message: 'No' }) } });
+    $('[data-k="notes-edit"]').click();
+    $('[data-k="notes-text"]').value = 'Kept';
+    $('[data-k="notes-save"]').click();
+    await flush();
+    expect($('[data-k="notes-text"]').value).toBe('Kept');
+    expect(host.showToast).toHaveBeenCalledWith('No');
+  });
+
+  it('shows the stored status again when a change fails', async () => {
+    const state = fixture();
+    const id = bookId(state, 'The Lathe of Heaven');
+    await mount(`/books/${id}`, { replies: { set_reading: () => Promise.reject({ message: 'No' }) } });
+    const page = $('[data-k="r-page"]');
+    const before = page.value;
+    change(page, '42');
+    await flush();
+    expect($('[data-k="r-page"]').value).toBe(before);
   });
 });
 

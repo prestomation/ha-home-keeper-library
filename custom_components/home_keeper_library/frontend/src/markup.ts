@@ -4,7 +4,7 @@
 import { t } from './i18n';
 import type { Book, Lib, Person, ReadingStatus } from './types';
 import type { LibraryApi } from './api';
-import { COVER_SIGN_SECONDS, coverColors, CoverUrls, escapeHTML, initials, type Index, type TabRoute } from './utils';
+import { COVER_SIGN_SECONDS, coverColors, CoverUrls, escapeHTML, initials, type TabRoute } from './utils';
 
 /** The panel URL of the tab. A tab path is added after it. */
 export const TAB_BASE = '/home-keeper/library';
@@ -31,8 +31,8 @@ export function href(path: string): string {
 }
 
 /** A link inside the tab. The click goes through `host.navigate`. */
-export function link(path: string, label: string, cls = ''): string {
-  return `<a href="${escapeHTML(href(path))}" data-act="nav" data-path="${escapeHTML(path)}"${cls ? ` class="${cls}"` : ''}>${label}</a>`;
+export function link(path: string, label: string): string {
+  return `<a href="${escapeHTML(href(path))}" data-act="nav" data-path="${escapeHTML(path)}">${label}</a>`;
 }
 
 /** The signed cover URLs of this bundle. The tab and each card share them. */
@@ -100,7 +100,7 @@ export function options(items: Array<[string, string]>, selected: string | null 
 }
 
 /** The shelf options in display order, with "No shelf" first. */
-export function shelfOptions(lib: Lib, idx: Index, selected: string | null, withNone = true): string {
+export function shelfOptions(lib: Lib, selected: string | null, withNone = true): string {
   const items: Array<[string, string]> = withNone ? [['', t('common.no_shelf')]] : [];
   for (const room of lib.rooms) {
     for (const bc of lib.bookcases.filter((c) => c.room_id === room.id)) {
@@ -109,7 +109,6 @@ export function shelfOptions(lib: Lib, idx: Index, selected: string | null, with
       }
     }
   }
-  void idx;
   return options(items, selected);
 }
 

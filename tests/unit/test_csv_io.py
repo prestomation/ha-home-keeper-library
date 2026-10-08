@@ -148,6 +148,9 @@ def test_parse_library_round_trip() -> None:
 # ── Import ───────────────────────────────────────────────────────────────────
 
 
+BOOK_HEX = "0123456789abcdef0123456789abcdef"
+
+
 def _library() -> dict:
     state = m.empty_state()
     state["rooms"]["r"] = {"id": "r", "name": "Den", "order": 0}
@@ -295,7 +298,10 @@ def test_import_row_error_and_empty_person() -> None:
 
 def test_import_library_rows_use_ids_and_locations() -> None:
     state = _library()
-    copy = m.build_copy({"book_id": "persuasion", "shelf_id": "s"}, now=NOW)
+    book = state["books"].pop("persuasion")
+    book["id"] = BOOK_HEX
+    state["books"][BOOK_HEX] = book
+    copy = m.build_copy({"book_id": BOOK_HEX, "shelf_id": "s"}, now=NOW)
     state["copies"][copy["id"]] = copy
     text = cio.export(state, None, "library")
     new, summary, _, _ = cio.apply_import(
@@ -313,7 +319,7 @@ def test_import_library_rows_use_ids_and_locations() -> None:
         now=NOW,
     )
     assert summary["new"] == 1 and summary["copies"] == 1
-    assert new["books"]["persuasion"]["title"] == "Persuasion"
+    assert new["books"][BOOK_HEX]["title"] == "Persuasion"
     assert new["copies"][copy["id"]]["shelf_id"] == "s"
     _, again, _, _ = cio.apply_import(
         new,
@@ -325,6 +331,64 @@ def test_import_library_rows_use_ids_and_locations() -> None:
         now=NOW,
     )
     assert again["copies"] == 0 and again["existing"] == 1
+
+
+def test_import_library_ids_that_are_not_record_ids_are_dropped() -> None:
+    header = "book_id,copy_id,title,format\n"
+    rows = cio.parse(
+        header
+        + "../../evil,x,Escape,paperback\n"
+        + f"{BOOK_HEX},{BOOK_HEX.upper()},Upper,paperback\n"
+        + f"{BOOK_HEX}0,{BOOK_HEX},Long,paperback\n"
+        + f"{BOOK_HEX},{BOOK_HEX},Good,paperback\n",
+        "library",
+    )
+    assert [(r["book_id"], r["copy"]["id"]) for r in rows] == [
+        (None, None),
+        (BOOK_HEX, None),
+        (None, BOOK_HEX),
+        (BOOK_HEX, BOOK_HEX),
+    ]
+
+
+def test_import_row_with_a_bad_copy_adds_no_book() -> None:
+    rows = cio.parse("title,format,condition\nPersuasion,paperback,mint\n", "library")
+    new, summary, results, lookup = cio.apply_import(
+        m.empty_state(),
+        rows,
+        person_id="p",
+        shelf_id=None,
+        import_notes=True,
+        replace_reading=False,
+        now=NOW,
+    )
+    assert results[0]["action"] == "error"
+    assert results[0]["error"] == "invalid_choice"
+    assert summary["errors"] == 1 and summary["new"] == 0
+    assert new["books"] == {} and new["copies"] == {} and lookup == []
+
+
+def test_import_sets_the_reading_of_a_book_once() -> None:
+    state = _library()
+    for _ in range(2):
+        copy = m.build_copy({"book_id": "persuasion"}, now=NOW)
+        state["copies"][copy["id"]] = copy
+    state["reading"]["p"] = {
+        "persuasion": m.empty_reading(now=NOW) | {"status": "read"}
+    }
+    text = cio.export(state, "p", "library")
+    for replace, read, kept in ((False, 1, 0), (True, 1, 0)):
+        _, summary, _, _ = cio.apply_import(
+            m.empty_state(),
+            cio.parse(text, "library"),
+            person_id="p",
+            shelf_id=None,
+            import_notes=True,
+            replace_reading=replace,
+            now=NOW,
+        )
+        assert summary["rows"] == 2
+        assert (summary["read"], summary["reading_kept"]) == (read, kept)
 
 
 # ── Export ───────────────────────────────────────────────────────────────────

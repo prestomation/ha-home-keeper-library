@@ -21,7 +21,7 @@ import { renderLoans, renderSettings, renderWishlist } from './tab-lists';
 import { cameraBlocked, isBorrowedMode, renderScan, routeShelf } from './tab-scan';
 import { renderShelves } from './tab-shelves';
 import type { ImportState, ScanEntry, UiState, ViewCtx } from './tab-types';
-import type { Book, HomeAssistant, Lib, RawState, ReadingStatus, ScanResult, TabHost } from './types';
+import type { Book, HomeAssistant, ImportSummary, Lib, RawState, ReadingStatus, ScanResult, TabHost } from './types';
 import {
   buildIndex,
   buildPath,
@@ -74,7 +74,6 @@ function freshUi(): UiState {
     scan: {
       method: 'camera',
       roomId: null,
-      shelfId: null,
       results: [],
       manualOpen: false,
       markRead: false,
@@ -114,6 +113,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   private _subscribing = false;
   private _refreshing: Promise<void> | null = null;
   private _again = false;
+  private _dryRunSeq = 0;
   private _ui: UiState = freshUi();
   private _dialog: DialogState | null = null;
   private _scanner: Scanner | null = null;
@@ -226,6 +226,11 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     this._subscribing = true;
     try {
       this._unsub = await this._api.subscribe(() => void this._refresh());
+      // The tab can leave the page while the subscription starts.
+      if (!this.isConnected) {
+        void this._unsub();
+        this._unsub = undefined;
+      }
     } catch (err) {
       this._error = errorText(err);
     } finally {
@@ -273,16 +278,18 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     }
   }
 
-  /** Run a command, show a toast, then fetch the state. Returns the reply or undefined. */
-  private async _run<T = unknown>(command: string, fields: Fields, okText = ''): Promise<T | undefined> {
+  /** Run a command, show a toast, then fetch the state. Returns true if the command worked. */
+  private async _run(command: string, fields: Fields, okText = ''): Promise<boolean> {
     try {
-      const res = await this._api!.call<T>(command, fields);
+      await this._api!.call(command, fields);
       if (okText) this._toast(okText);
       void this._refresh();
-      return res;
+      return true;
     } catch (err) {
       this._toast(errorText(err));
-      return undefined;
+      // Show the stored values again, not the change that failed.
+      this._render();
+      return false;
     }
   }
 
@@ -380,6 +387,30 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     this._dlg.innerHTML = renderDialog(ctx, this._dialog, areas);
     const first = this._dlg.querySelector<HTMLElement>('input:not([type=hidden]):not([type=checkbox]), select, textarea');
     (first ?? this._dlg.querySelector<HTMLElement>('[data-k="d-submit"]'))?.focus();
+  }
+
+  /** Show the busy state and the error of the open dialog. The form keeps what the user typed. */
+  private _showDialogStatus(): void {
+    const state = this._dialog;
+    const form = this._dlg.querySelector<HTMLFormElement>('form[data-form="dialog"]');
+    if (!state || !form) {
+      this._renderDialog();
+      return;
+    }
+    const submit = form.querySelector<HTMLButtonElement>('[data-k="d-submit"]');
+    if (submit) submit.disabled = state.busy;
+    let error = [...form.children].find((c): c is HTMLElement => c.classList.contains('hkl-error'));
+    if (!state.error) {
+      error?.remove();
+      return;
+    }
+    if (!error) {
+      error = document.createElement('div');
+      error.className = 'hkl-error';
+      error.setAttribute('role', 'alert');
+      form.querySelector('.hkl-dlg-actions')?.before(error);
+    }
+    error.textContent = state.error;
   }
 
   private _openDialog(dialog: Dialog): void {
@@ -689,14 +720,14 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     return this._ui.readingPerson ?? this._lib?.me.person_id ?? null;
   }
 
-  private async _setReading(fields: Fields, bookId?: string, personId?: string | null): Promise<void> {
+  private async _setReading(fields: Fields, bookId?: string, personId?: string | null): Promise<boolean> {
     const id = bookId ?? this._route.id;
     const pid = personId ?? this._readingPerson();
     if (!id || !pid) {
       this._toast(t('common.no_person'));
-      return;
+      return false;
     }
-    await this._run('set_reading', { book_id: id, person_id: pid, ...fields });
+    return this._run('set_reading', { book_id: id, person_id: pid, ...fields });
   }
 
   private async _setStatus(book: Book, status: ReadingStatus): Promise<void> {
@@ -715,9 +746,12 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     const book = this._book();
     if (!book) return;
     const text = (form.elements.namedItem('text') as HTMLTextAreaElement).value;
-    this._ui.editNotes = false;
-    if (this._ui.notesTab === 'shared') await this._run('update_book', { book_id: book.id, shared_notes: text });
-    else await this._setReading({ private_notes: text });
+    const saved =
+      this._ui.notesTab === 'shared'
+        ? await this._run('update_book', { book_id: book.id, shared_notes: text })
+        : await this._setReading({ private_notes: text });
+    // If the save fails, the editor stays open with the text.
+    if (saved) this._ui.editNotes = false;
     this._render();
   }
 
@@ -760,7 +794,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     const d = state.dialog;
     state.busy = true;
     state.error = '';
-    this._renderDialog();
+    this._showDialogStatus();
     try {
       const api = this._api!;
       let after: string | undefined;
@@ -922,13 +956,14 @@ export class HomeKeeperLibraryTab extends HTMLElement {
           after = d.after;
           break;
       }
-      this._closeDialog();
+      // The user can close this dialog and open a new one during the call.
+      if (this._dialog === state) this._closeDialog();
       void this._refresh();
       if (after) this._go(after, d.kind === 'confirm');
     } catch (err) {
       state.busy = false;
       state.error = errorText(err);
-      this._renderDialog();
+      if (this._dialog === state) this._showDialogStatus();
     }
   }
 
@@ -969,15 +1004,22 @@ export class HomeKeeperLibraryTab extends HTMLElement {
 
   private async _dryRun(): Promise<void> {
     const s = this._ui.import;
+    // A change of the source, the person or the shelf starts a new preview.
+    // Only the reply of the latest preview is used.
+    const run = ++this._dryRunSeq;
     s.busy = true;
     s.error = '';
     this._render();
+    let summary: ImportSummary | null = null;
+    let error = '';
     try {
-      s.summary = await this._api!.importCsv(this._importFields(true));
+      summary = await this._api!.importCsv(this._importFields(true));
     } catch (err) {
-      s.summary = null;
-      s.error = errorText(err);
+      error = errorText(err);
     }
+    if (run !== this._dryRunSeq || this._ui.import !== s) return;
+    s.summary = summary;
+    s.error = error;
     s.busy = false;
     this._render();
   }
@@ -1033,7 +1075,11 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     this._scanner = scanner;
     this._ui.scan.cameraError = '';
     void scanner.start().then((res) => {
-      if (this._scanner !== scanner) return;
+      // The user left the camera step while the camera started.
+      if (this._scanner !== scanner) {
+        scanner.stop();
+        return;
+      }
       if (res !== 'ok') {
         this._ui.scan.cameraError = res;
         this._ui.scan.manualOpen = true;
@@ -1128,13 +1174,15 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         s.roomId = el.dataset.id ?? null;
         this._render();
         return;
-      case 'scan-start':
-        if (this._ctx() && cameraBlocked(this._ctx()!)) return;
+      case 'scan-start': {
+        const ctx = this._ctx();
+        if (ctx && cameraBlocked(ctx)) return;
         s.results = [];
         s.manualOpen = s.method === 'manual';
         this._gate = makeCodeGate(3000);
         this._go(this._scanPath({ ...q, step: 'camera' }));
         return;
+      }
       case 'scan-manual':
         s.manualOpen = !s.manualOpen;
         this._render();

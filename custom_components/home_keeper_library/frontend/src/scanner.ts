@@ -61,10 +61,6 @@ export class Scanner {
     this.video.autoplay = true;
   }
 
-  get running(): boolean {
-    return !this.stopped;
-  }
-
   async start(): Promise<StartResult> {
     if (!this.stopped) return 'ok';
     const media = navigator.mediaDevices;

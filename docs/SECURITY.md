@@ -89,6 +89,7 @@ projection:
 | Loan | `party` |
 | Reading row of another person | The whole row if that person has `share_reading: false`, else `private_notes` |
 | Settings of another person | `wishlist_todo` |
+| Wishlist entry of another person | `todo_entity`, `todo_uid` |
 
 The book records, the shared notes and the covers are open to every user. Only an admin
 can download the diagnostics. The download redacts the loan
