@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/websocket_api.py
   - custom_components/home_keeper_library/events.py
 related: [people-privilege, store-models, entities, architecture]
-source_hash: ec222cebbd74
+source_hash: 5c91d0e7850f
 ---
 
 # Services, websocket commands, events and the API surface

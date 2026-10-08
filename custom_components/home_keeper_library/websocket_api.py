@@ -160,6 +160,7 @@ def ws_subscribe(
             )
         )
 
+    # A store listener that async_setup_entry adds sends the signal.
     connection.subscriptions[msg["id"]] = async_dispatcher_connect(
         hass, SIGNAL_STORE_CHANGED, _changed
     )
