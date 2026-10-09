@@ -4,38 +4,38 @@
 
 | Name                                                            |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
 |---------------------------------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| custom\_components/home\_keeper\_library/\_\_init\_\_.py        |       78 |        0 |        6 |        1 |     99% | 120-\>125 |
+| custom\_components/home\_keeper\_library/\_\_init\_\_.py        |       81 |        0 |        6 |        1 |     99% | 127-\>132 |
 | custom\_components/home\_keeper\_library/api\_surface.py        |       91 |        0 |        0 |        0 |    100% |           |
-| custom\_components/home\_keeper\_library/backend\_i18n.py       |       56 |        6 |       12 |        2 |     88% |55, 58-59, 62, 90-91 |
+| custom\_components/home\_keeper\_library/backend\_i18n.py       |       51 |        1 |        8 |        1 |     97% |        76 |
 | custom\_components/home\_keeper\_library/book\_lookup.py        |      105 |       10 |       26 |        6 |     88% |55, 60, 88, 91-\>exit, 112, 131, 138-139, 142-143, 156 |
 | custom\_components/home\_keeper\_library/card.py                |       78 |       20 |       28 |        7 |     71% |59, 61, 73-75, 77-78, 82, 95, 108, 115-126, 130, 150-151 |
 | custom\_components/home\_keeper\_library/card\_resource.py      |       29 |        0 |        2 |        0 |    100% |           |
 | custom\_components/home\_keeper\_library/config\_flow.py        |       43 |        0 |       10 |        0 |    100% |           |
 | custom\_components/home\_keeper\_library/const.py               |       81 |        0 |        0 |        0 |    100% |           |
-| custom\_components/home\_keeper\_library/coordinator.py         |       44 |        0 |        6 |        1 |     98% |   86-\>84 |
-| custom\_components/home\_keeper\_library/covers.py              |      182 |       17 |       54 |       10 |     89% |86, 96, 102, 104, 131, 146-148, 160-\>exit, 174, 184-185, 187-188, 209, 264, 273, 321 |
-| custom\_components/home\_keeper\_library/csv\_io.py             |      405 |        2 |      136 |        1 |     99% |  307, 489 |
+| custom\_components/home\_keeper\_library/coordinator.py         |       44 |        0 |        6 |        1 |     98% |   84-\>82 |
+| custom\_components/home\_keeper\_library/covers.py              |      187 |       15 |       56 |       10 |     90% |86, 96, 106, 139, 154-156, 168-\>exit, 189, 193, 204-205, 231, 286, 295, 343 |
+| custom\_components/home\_keeper\_library/csv\_io.py             |      415 |        2 |      140 |        1 |     99% |  296, 491 |
 | custom\_components/home\_keeper\_library/diagnostics.py         |       10 |        0 |        0 |        0 |    100% |           |
 | custom\_components/home\_keeper\_library/entity.py              |       50 |        1 |        8 |        1 |     97% |        62 |
 | custom\_components/home\_keeper\_library/events.py              |       38 |        0 |        0 |        0 |    100% |           |
-| custom\_components/home\_keeper\_library/frontend\_assets.py    |       19 |        0 |        2 |        0 |    100% |           |
-| custom\_components/home\_keeper\_library/home\_keeper.py        |      134 |        7 |       34 |        2 |     95% |139, 152-153, 251, 269-271 |
-| custom\_components/home\_keeper\_library/isbn.py                |       51 |        0 |       16 |        0 |    100% |           |
-| custom\_components/home\_keeper\_library/loan\_sync.py          |      130 |       15 |       50 |       13 |     84% |78-\>exit, 96, 111, 120-122, 127-\>130, 139, 146, 150, 167-\>147, 180, 184-185, 197, 204, 211, 214 |
+| custom\_components/home\_keeper\_library/frontend\_assets.py    |       17 |        0 |        2 |        0 |    100% |           |
+| custom\_components/home\_keeper\_library/home\_keeper.py        |      135 |        5 |       34 |        2 |     96% |143, 255, 273-275 |
+| custom\_components/home\_keeper\_library/isbn.py                |       54 |        0 |       16 |        0 |    100% |           |
+| custom\_components/home\_keeper\_library/loan\_sync.py          |      131 |       15 |       50 |       13 |     85% |79-\>exit, 97, 112, 121-123, 128-\>131, 140, 147, 151, 168-\>148, 181, 185-186, 198, 205, 212, 215 |
 | custom\_components/home\_keeper\_library/loan\_tasks.py         |      104 |        0 |       36 |        0 |    100% |           |
-| custom\_components/home\_keeper\_library/models.py              |      578 |        1 |      340 |        2 |     99% |621, 657-\>662 |
+| custom\_components/home\_keeper\_library/models.py              |      576 |        0 |      340 |        0 |    100% |           |
 | custom\_components/home\_keeper\_library/openlibrary.py         |      134 |        1 |       64 |        3 |     98% |130, 133-\>128, 141-\>140 |
 | custom\_components/home\_keeper\_library/openlibrary\_client.py |      105 |        4 |       34 |        5 |     94% |125-126, 145-\>148, 151-\>149, 155, 164 |
 | custom\_components/home\_keeper\_library/people.py              |       36 |        3 |       10 |        3 |     87% |40, 56, 63 |
-| custom\_components/home\_keeper\_library/projections.py         |      161 |        1 |       64 |        1 |     99% |       314 |
-| custom\_components/home\_keeper\_library/sensor.py              |       74 |        0 |        0 |        0 |    100% |           |
-| custom\_components/home\_keeper\_library/services.py            |      407 |       13 |      108 |       10 |     96% |365-\>378, 371-372, 386-387, 391-\>390, 397, 460-461, 496-\>498, 528, 611-\>613, 617-618, 621, 649, 695 |
-| custom\_components/home\_keeper\_library/store.py               |      498 |       38 |      148 |       26 |     89% |80, 117-\>exit, 130-131, 155-156, 218, 242-\>244, 248, 275-\>277, 279, 294, 384, 396-\>398, 406-410, 448-\>exit, 476, 556-560, 604, 649-\>663, 725, 733, 735-\>737, 790, 792-\>795, 796-799, 801, 831, 850-\>848, 856-\>853, 869-877 |
-| custom\_components/home\_keeper\_library/todo.py                |       74 |       10 |       14 |        3 |     85% |58, 119, 139-140, 146, 151-152, 161, 164-165 |
-| custom\_components/home\_keeper\_library/websocket\_api.py      |       81 |        6 |       14 |        2 |     92% |101-102, 118-119, 146-147 |
+| custom\_components/home\_keeper\_library/projections.py         |      163 |        1 |       64 |        1 |     99% |       319 |
+| custom\_components/home\_keeper\_library/sensor.py              |       75 |        0 |        0 |        0 |    100% |           |
+| custom\_components/home\_keeper\_library/services.py            |      407 |       13 |      106 |        9 |     96% |366-\>379, 372-373, 387-388, 392-\>391, 398, 461-462, 497-\>499, 529, 616-617, 620, 648, 694 |
+| custom\_components/home\_keeper\_library/store.py               |      497 |       31 |      146 |       26 |     91% |80, 117-\>exit, 133-134, 217, 241-\>243, 247, 274-\>276, 278, 293, 383, 395-\>397, 407-\>412, 449-\>exit, 477, 557-561, 605, 650-\>664, 728, 736, 738-\>740, 793, 795-\>801, 802-805, 807, 837, 856-\>854, 862-\>859, 875-883 |
+| custom\_components/home\_keeper\_library/todo.py                |       73 |        9 |       14 |        3 |     86% |112, 132-133, 139, 144-145, 154, 157-158 |
+| custom\_components/home\_keeper\_library/websocket\_api.py      |       79 |        6 |       12 |        2 |     91% |101-108, 124-125, 152-153 |
 | custom\_components/home\_keeper\_library/wishlist.py            |      117 |        0 |       44 |        0 |    100% |           |
-| custom\_components/home\_keeper\_library/wishlist\_sync.py      |      104 |        9 |       28 |        4 |     90% |70-71, 72-\>exit, 92-\>exit, 98, 108-110, 128-130 |
-| **TOTAL**                                                       | **4097** |  **164** | **1294** |  **103** | **95%** |           |
+| custom\_components/home\_keeper\_library/wishlist\_sync.py      |      105 |        9 |       28 |        4 |     90% |71-72, 73-\>exit, 93-\>exit, 99, 109-111, 129-131 |
+| **TOTAL**                                                       | **4111** |  **146** | **1290** |   **99** | **95%** |           |
 
 
 ## Setup coverage badge
