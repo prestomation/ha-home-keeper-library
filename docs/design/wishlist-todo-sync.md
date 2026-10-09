@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/wishlist.py
   - custom_components/home_keeper_library/wishlist_sync.py
 related: [store-models, entities, events-api]
-source_hash: a0c544ba23be
+source_hash: 485c719f8fc0
 ---
 
 # Wishlist and to-do sync

@@ -4,7 +4,7 @@ summary: How the library checks Home Keeper, registers its tab and its companion
 implements:
   - custom_components/home_keeper_library/home_keeper.py
 related: [architecture, loans-home-keeper, frontend-tab-card]
-source_hash: 4b6ddf69e66f
+source_hash: 9674b95139a5
 ---
 
 # Home Keeper dependency

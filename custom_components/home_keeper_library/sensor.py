@@ -35,6 +35,7 @@ from .projections import (
     owned_book_count,
     reading_now,
 )
+from .store import today
 
 
 async def async_setup_entry(
@@ -105,7 +106,7 @@ class LoansOverdueSensor(LibraryEntity, SensorEntity):
 
     @property
     def native_value(self) -> int:
-        return loans_overdue_count(self.state_doc, dt_util.now().date().isoformat())
+        return loans_overdue_count(self.state_doc, today())
 
 
 class BooksReadThisYearSensor(PersonEntity, SensorEntity):

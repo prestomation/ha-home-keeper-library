@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/store.py
   - custom_components/home_keeper_library/models.py
 related: [architecture, events-api, people-privilege, csv-import-export]
-source_hash: 944bea4aca70
+source_hash: 16ba6e196bba
 ---
 
 # Store and models
@@ -60,7 +60,8 @@ gives each book a whole `lookup_tries` count of 0 or more.
 - A bad value raises `models.LibraryError` with a key and placeholders. The key is in
   `strings.json` `exceptions`.
 - An ISBN goes through `isbn.normalize`. The book stores both forms when 1 converts to the
-  other ([scan-and-isbn](scan-and-isbn.md)).
+  other ([scan-and-isbn](scan-and-isbn.md)). In `models.update_book`, a new ISBN-13 also
+  sets the ISBN-10, and an empty ISBN-13 clears it.
 - `models.fill_from_draft` writes only the empty `models.DRAFT_FIELDS` of a book, so an
   edit by a user stays when Open Library fills the book.
 - `models.title_key` folds a title and its first author for a match with no ISBN.
@@ -68,13 +69,17 @@ gives each book a whole `lookup_tries` count of 0 or more.
 ### The write path
 
 Each method ends in `_commit`: save, add 1 to `revision`, fire the events, call each
-listener. A listener that fails is logged and the others still run. The listeners are the
-coordinator, the `subscribe` websocket command, the wishlist sync and the loan sync.
+listener. A listener that fails is logged and the others still run. The listeners are:
+
+- the coordinator;
+- the sender of `const.SIGNAL_STORE_CHANGED`, for the `subscribe` websocket command;
+- the wishlist sync and the loan sync.
 
 ### Rules
 
 - **Duplicates.** `add_book` returns the stored book with `existing: true` when the
-  ISBN-13 matches. A second copy is a separate call.
+  ISBN-13 matches. A second copy is a separate call. If an Open Library draft gives an
+  ISBN-13 that another book has, `LibraryStore.fill_book` keeps the ISBNs of the book.
 - **Locations.** A room with bookcases, a bookcase with shelves and a shelf with copies
   fail to delete with a localized error, unless `force: true`. With `force`, each child
   is removed and each copy moves to no shelf.

@@ -22,6 +22,7 @@ import logging
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
+import voluptuous as vol
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 
@@ -94,7 +95,7 @@ class LoanSync:
         """Run a reconcile pass soon."""
         if self._pending is not None and not self._pending.done():
             return
-        self._pending = self._coordinator.entry.async_create_background_task(
+        self._pending = self._coordinator.config_entry.async_create_background_task(
             self._hass, self.async_reconcile(), "home_keeper_library loan sync"
         )
 
@@ -117,7 +118,7 @@ class LoanSync:
                 blocking=True,
                 return_response=response,
             )
-        except (HomeAssistantError, ValueError) as err:
+        except (HomeAssistantError, ValueError, vol.Invalid) as err:
             _LOGGER.debug("home_keeper.%s failed: %s", service, err)
             return None
 
@@ -158,7 +159,7 @@ class LoanSync:
                     party=loan.get("party", ""),
                 ),
                 completion_prompt=resolve_string(lang, "loan_task.completion_prompt"),
-                config_entry_id=self._coordinator.entry.entry_id,
+                config_entry_id=self._coordinator.config_entry.entry_id,
             )
             result = await self._hk("add_task", payload, response=True)
             task_id = (

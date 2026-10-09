@@ -248,6 +248,9 @@ def test_integer() -> None:
     assert _err(m.integer, True, "f", low=0, high=5).key == "invalid_field"
     assert _err(m.integer, 2.5, "f", low=0, high=5).key == "invalid_field"
     assert _err(m.integer, "x", "f", low=0, high=5).key == "invalid_field"
+    assert m.integer("-0", "f", low=0, high=5) == 0
+    for bad in ("--5", "²", "4-", "-"):
+        assert _err(m.integer, bad, "f", low=0, high=5).key == "invalid_field"
     err = _err(m.integer, None, "f", low=0, high=5, nullable=False)
     assert err.key == "field_required"
 
@@ -419,6 +422,23 @@ def test_update_book() -> None:
     assert updated["updated_at"] == "t1" and updated["id"] == book["id"]
     updated, changed = m.update_book(book, {"isbn": "0441478123"}, now="t1")
     assert sorted(changed) == ["isbn10", "isbn13"]
+    # A new ISBN-13 sets the ISBN-10 from it. An empty one clears both.
+    other, changed = m.update_book(updated, {"isbn13": "9780306406157"}, now="t2")
+    assert (other["isbn13"], other["isbn10"]) == ("9780306406157", "0306406152")
+    assert sorted(changed) == ["isbn10", "isbn13"]
+    other, changed = m.update_book(updated, {"isbn13": "0306406152"}, now="t2")
+    assert (other["isbn13"], other["isbn10"]) == ("9780306406157", "0306406152")
+    other, _ = m.update_book(updated, {"isbn13": "9791032305690"}, now="t2")
+    assert (other["isbn13"], other["isbn10"]) == ("9791032305690", None)
+    other, _ = m.update_book(updated, {"isbn13": None}, now="t2")
+    assert (other["isbn13"], other["isbn10"]) == (None, None)
+    other, _ = m.update_book(
+        updated, {"isbn13": "9780306406157", "isbn10": "0441478123"}, now="t2"
+    )
+    assert (other["isbn13"], other["isbn10"]) == ("9780306406157", "0441478123")
+    assert _err(m.update_book, updated, {"isbn13": "123"}, now="t2").key == (
+        "invalid_isbn"
+    )
 
 
 def test_fill_from_draft_keeps_user_edits() -> None:
@@ -711,6 +731,3 @@ def test_derived_reads() -> None:
     assert m.find_book_by_isbn(state, "9780441478125")["id"] == "b"
     assert m.find_book_by_isbn(state, None, "080442957X")["id"] == "c"
     assert m.find_book_by_isbn(state, "9780000000002", "0000000000") is None
-    assert m.date_year("2026-01-01") == 2026
-    assert m.date_year("x") is None
-    assert m.date_year(None) is None

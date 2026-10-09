@@ -138,6 +138,31 @@ def test_non_admin_projection_never_leaks() -> None:
     assert "wishlist_todo" not in alice and "wishlist_todo" in bob
     assert reply["me"]["is_admin"] is False
     assert state["copies"]["c1"]["price"] == 10, "the projection must copy"
+
+
+def test_wishlist_todo_ids_of_another_person_are_hidden() -> None:
+    state = _state()
+    entry = m.build_wishlist("alice", buy=True, now=NOW)
+    entry |= {"todo_entity": "todo.alice", "todo_uid": "u1"}
+    state["books"]["emma"]["wishlist"] = entry
+    emma = state["books"]["emma"]
+    for viewer, is_admin, hidden in (
+        ("bob", False, True),
+        (None, False, True),
+        ("alice", False, False),
+        ("bob", True, False),
+    ):
+        out = pr.project_book(state, emma, viewer=viewer, is_admin=is_admin)
+        assert out["wishlist"]["person_id"] == "alice" and out["wishlist"]["buy"]
+        assert ("todo_entity" in out["wishlist"]) is not hidden
+        assert ("todo_uid" in out["wishlist"]) is not hidden
+    assert emma["wishlist"]["todo_entity"] == "todo.alice", "the projection must copy"
+    assert (
+        pr.project_book(state, state["books"]["dune"], viewer="bob", is_admin=False)[
+            "wishlist"
+        ]
+        is None
+    )
     assert state["reading"]["alice"]["dune"]["private_notes"] == "secret"
 
 

@@ -65,6 +65,23 @@ async def test_companion_registration(hass, setup_entry) -> None:
     assert after == before + 1
 
 
+async def test_companion_registration_survives_a_schema_error(
+    hass, setup_entry
+) -> None:
+    import voluptuous as vol
+
+    from custom_components.home_keeper_library import home_keeper
+
+    async def _handler(_call) -> None:
+        raise AssertionError("the schema refuses the data first")
+
+    # A Home Keeper whose service schema does not know a field of the library.
+    hass.services.async_register(
+        "home_keeper", "register_companion", _handler, schema=vol.Schema({})
+    )
+    await home_keeper.async_register_companion(hass, setup_entry)
+
+
 def _issues(hass) -> set[str]:
     registry = ir.async_get(hass)
     return {

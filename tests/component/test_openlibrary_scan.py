@@ -292,10 +292,53 @@ async def test_cover_upload_and_custom_cover(
     with pytest.raises(ServiceValidationError) as info:
         await call("set_cover", {"book_id": book["id"], "kind": "openlibrary"})
     assert info.value.translation_key == "no_openlibrary_cover"
+    reply = await call("get_book", {"book_id": book["id"]})
+    assert reply["book"]["cover"]["kind"] == "custom", "a failed call keeps the cover"
+    assert (await client.get(url)).status == HTTPStatus.OK
     reply = await call("set_cover", {"book_id": book["id"], "kind": "none"})
     assert reply["book"]["cover_url"] is None
     assert (await client.get(url)).status == HTTPStatus.NOT_FOUND
     assert (await client.get("/api/home_keeper_library/cover/nope")).status == 404
+
+
+async def test_custom_cover_wins_over_a_late_download(hass, setup_entry, call) -> None:
+    from custom_components.home_keeper_library import covers
+
+    coordinator = setup_entry.runtime_data
+    store = coordinator.store
+    book = (await call("add_book", {"title": "Dune", "lookup": False}))["book"]
+    store.state["books"][book["id"]]["openlibrary"] = {"cover_id": 1}
+    custom = covers.new_cover_name(book["id"])
+
+    async def _cover_during_upload(_cover_id: int) -> bytes:
+        await store.set_cover(book["id"], "custom", custom)
+        return _jpeg((10, 15))
+
+    coordinator.client.async_cover = _cover_during_upload
+    assert not await covers.async_store_openlibrary_cover(hass, coordinator, book["id"])
+    assert store.book(book["id"])["cover"] == {"kind": "custom", "file": custom}
+    files = await hass.async_add_executor_job(
+        lambda: list(covers.covers_dir(hass).glob(f"{book['id']}-*"))
+    )
+    assert files == [], "the downloaded file is deleted"
+    assert await covers.async_store_openlibrary_cover(
+        hass, coordinator, book["id"], replace_custom=True
+    )
+    assert store.book(book["id"])["cover"]["kind"] == "openlibrary"
+
+
+def test_reencode_leaves_no_temp_file(tmp_path, monkeypatch) -> None:
+    from custom_components.home_keeper_library import covers
+
+    def _fail(_image, path, *_args, **_kwargs):
+        Path(path).write_bytes(b"part")
+        raise OSError("disk full")
+
+    data = _jpeg((10, 15))
+    monkeypatch.setattr(Image.Image, "save", _fail)
+    with pytest.raises(covers.CoverError):
+        covers.reencode(data, tmp_path / "x.jpg")
+    assert list(tmp_path.iterdir()) == []
 
 
 async def test_cover_upload_rules(

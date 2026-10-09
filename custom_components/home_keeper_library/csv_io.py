@@ -26,6 +26,7 @@ from typing import Any
 
 from . import isbn as isbn_mod
 from .models import (
+    COPY_FIELDS,
     FORMATS,
     STATUSES,
     LibraryError,
@@ -33,11 +34,11 @@ from .models import (
     build_copy,
     build_wishlist,
     clone,
+    copy_field,
     empty_reading,
     find_shelf_by_path,
     format_from_binding,
     location_path,
-    new_id,
     title_key,
 )
 
@@ -143,24 +144,12 @@ _GOODREADS_SHELVES = {
     "did-not-finish": "dnf",
 }
 _STATUS_TO_SHELF = {v: k for k, v in _GOODREADS_SHELVES.items()}
-_STORYGRAPH_STATUS = {
-    "read": "read",
-    "currently-reading": "reading",
-    "to-read": "want",
-    "did-not-finish": "dnf",
-}
+_STORYGRAPH_STATUS = _GOODREADS_SHELVES
 _BINDINGS = {
     "hardcover": "Hardcover",
     "paperback": "Paperback",
     "ebook": "Kindle Edition",
     "audiobook": "Audible Audio",
-    "other": "",
-}
-_SG_FORMATS = {
-    "hardcover": "hardcover",
-    "paperback": "paperback",
-    "ebook": "digital",
-    "audiobook": "audio",
     "other": "",
 }
 
@@ -316,7 +305,8 @@ def parse_goodreads(text: str) -> list[dict[str, Any]]:
     for index, raw in enumerate(_rows(text, "Title"), start=1):
         row = empty_row(index)
         row["title"] = _cell(raw, "Title")
-        authors = [_cell(raw, "Author")] if _cell(raw, "Author") else []
+        first = _cell(raw, "Author")
+        authors = [first] if first else []
         authors += [
             a for a in _split(_cell(raw, "Additional Authors")) if a not in authors
         ]
@@ -379,8 +369,20 @@ def parse_storygraph(text: str) -> list[dict[str, Any]]:
     return rows
 
 
+_RECORD_ID_RE = re.compile(r"[0-9a-f]{32}")
+
+
 def _bool_cell(value: str) -> bool:
     return value.strip().casefold() in ("true", "yes", "1")
+
+
+def _record_id(value: str) -> str | None:
+    """*value* if it has the form of a record id (:func:`models.new_id`), else None.
+
+    A cover file name starts with the book id, so an id from a file must not
+    hold a path.
+    """
+    return value if _RECORD_ID_RE.fullmatch(value) else None
 
 
 def parse_library(text: str) -> list[dict[str, Any]]:
@@ -388,7 +390,7 @@ def parse_library(text: str) -> list[dict[str, Any]]:
     rows = []
     for index, raw in enumerate(_rows(text, "title"), start=1):
         row = empty_row(index)
-        row["book_id"] = _cell(raw, "book_id") or None
+        row["book_id"] = _record_id(_cell(raw, "book_id"))
         for field in ("title", "subtitle", "publisher", "published", "description"):
             row[field] = _cell(raw, field)
         row["shared_notes"] = _cell(raw, "shared_notes")
@@ -407,7 +409,7 @@ def parse_library(text: str) -> list[dict[str, Any]]:
             }
         fmt = _cell(raw, "format")
         if fmt in FORMATS:
-            copy: dict[str, Any] = {"id": _cell(raw, "copy_id") or None}
+            copy: dict[str, Any] = {"id": _record_id(_cell(raw, "copy_id"))}
             copy["format"] = fmt
             copy["condition"] = _cell(raw, "condition") or None
             copy["acquired"] = _date(_cell(raw, "acquired"))
@@ -462,7 +464,7 @@ class _Index:
     """The match keys of the books: ISBN-13, ISBN-10, then title and author."""
 
     def __init__(self, books: dict[str, dict[str, Any]]) -> None:
-        self.by_id: dict[str, str] = {}
+        self.by_id: set[str] = set()
         self.isbn13: dict[str, str] = {}
         self.isbn10: dict[str, str] = {}
         self.title: dict[str, str] = {}
@@ -470,7 +472,7 @@ class _Index:
             self.add(book)
 
     def add(self, book: dict[str, Any]) -> None:
-        self.by_id[book["id"]] = book["id"]
+        self.by_id.add(book["id"])
         if book["isbn13"]:
             self.isbn13.setdefault(book["isbn13"], book["id"])
         if book["isbn10"]:
@@ -491,25 +493,29 @@ class _Index:
         return found, ACTION_TITLE_MATCH if found else ACTION_NEW
 
 
+# The book fields of an import row.
+_ROW_BOOK_FIELDS = (
+    "title",
+    "subtitle",
+    "authors",
+    "isbn13",
+    "isbn10",
+    "publisher",
+    "published",
+    "pages",
+    "language",
+    "subjects",
+    "series",
+    "description",
+    "tags",
+    "shared_notes",
+)
+
+
 def _new_book(row: dict[str, Any], now: str) -> dict[str, Any]:
     data = {
         field: row[field]
-        for field in (
-            "title",
-            "subtitle",
-            "authors",
-            "isbn13",
-            "isbn10",
-            "publisher",
-            "published",
-            "pages",
-            "language",
-            "subjects",
-            "series",
-            "description",
-            "tags",
-            "shared_notes",
-        )
+        for field in _ROW_BOOK_FIELDS
         if row.get(field) not in (None, "", [])
     }
     data["needs_details"] = bool(row.get("needs_details", True))
@@ -580,6 +586,7 @@ def apply_import(
     reading = new["reading"].setdefault(person_id, {})
     copy_ids = set(new["copies"])
     owned_books = {c.get("book_id") for c in new["copies"].values()}
+    reading_done: set[str] = set()
     counts = dict.fromkeys(COUNT_KEYS, 0)
     counts["rows"] = len(rows)
     counts["reading_kept"] = 0
@@ -595,6 +602,11 @@ def apply_import(
             "action": ACTION_NEW,
         }
         try:
+            # Check the copy first, so a row with a bad copy changes no record.
+            copy_data = row.get("copy") or {}
+            for field in COPY_FIELDS:
+                if copy_data.get(field) is not None:
+                    copy_field(field, copy_data[field])
             book_id, action = index.match(row)
             if book_id is None:
                 book = _new_book(row, now)
@@ -616,7 +628,10 @@ def apply_import(
             result["book_id"] = book_id
             if _import_copy(new, row, book_id, shelf_id, copy_ids, owned_books, now):
                 counts["copies"] += 1
-            if row["status"]:
+            # A library file has 1 row for each copy. The first row of a book
+            # sets its reading status.
+            if row["status"] and book_id not in reading_done:
+                reading_done.add(book_id)
                 if book_id in reading and not replace_reading:
                     counts["reading_kept"] += 1
                 else:
@@ -720,23 +735,7 @@ def rows_from_state(
     )
     for book in books:
         base = empty_row(len(rows) + 1)
-        for field in (
-            "title",
-            "subtitle",
-            "authors",
-            "isbn13",
-            "isbn10",
-            "publisher",
-            "published",
-            "pages",
-            "language",
-            "subjects",
-            "series",
-            "description",
-            "tags",
-            "shared_notes",
-            "needs_details",
-        ):
+        for field in (*_ROW_BOOK_FIELDS, "needs_details"):
             base[field] = clone(book[field])
         base["book_id"] = book["id"]
         row_reading = reading.get(book["id"])
@@ -900,7 +899,6 @@ __all__ = [
     "export",
     "export_filename",
     "isbn_cell",
-    "new_id",
     "parse",
     "parse_goodreads",
     "parse_library",

@@ -16,6 +16,7 @@ from collections.abc import Callable
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
+import voluptuous as vol
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.event import (
@@ -82,7 +83,7 @@ class WishlistSync:
         """Run a pass soon. A pass that waits already covers this call."""
         if self._pending is not None and not self._pending.done():
             return
-        self._pending = self._coordinator.entry.async_create_background_task(
+        self._pending = self._coordinator.config_entry.async_create_background_task(
             self._hass, self.async_run(), "home_keeper_library wishlist sync"
         )
 
@@ -105,7 +106,7 @@ class WishlistSync:
                 blocking=True,
                 return_response=True,
             )
-        except (HomeAssistantError, ValueError) as err:
+        except (HomeAssistantError, ValueError, vol.Invalid) as err:
             _LOGGER.debug("Cannot read the list %s: %s", entity_id, err)
             return None
         block = (response or {}).get(entity_id)
@@ -125,7 +126,7 @@ class WishlistSync:
                 target={"entity_id": entity_id},
                 blocking=True,
             )
-        except (HomeAssistantError, ValueError) as err:
+        except (HomeAssistantError, ValueError, vol.Invalid) as err:
             _LOGGER.debug("todo.%s on %s failed: %s", service, entity_id, err)
             return False
         return True

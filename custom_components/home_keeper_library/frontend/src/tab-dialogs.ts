@@ -49,7 +49,7 @@ const check = (name: string, label: string, on: boolean, hint = '') =>
 function copyFields(ctx: ViewCtx, copy: Copy | null): string {
   const conditions: Array<[string, string]> = [['', t('common.none')], ...['new', 'fine', 'good', 'fair', 'poor'].map((c): [string, string] => [c, t(`condition.${c}`)])];
   return `<div class="hkl-fields">
-    ${field(t('copy.shelf'), `<select name="shelf_id" data-k="d-shelf">${shelfOptions(ctx.lib, ctx.idx, copy?.shelf_id ?? null)}</select>`)}
+    ${field(t('copy.shelf'), `<select name="shelf_id" data-k="d-shelf">${shelfOptions(ctx.lib, copy?.shelf_id ?? null)}</select>`)}
     ${field(t('copy.format'), `<select name="format" data-k="d-format">${formatOptions(copy?.format ?? 'paperback')}</select>`)}
     ${field(t('copy.condition'), `<select name="condition" data-k="d-condition">${options(conditions, copy?.condition ?? '')}</select>`)}
     ${field(t('copy.acquired'), text('acquired', copy?.acquired, 'type="date"'))}
@@ -73,7 +73,7 @@ function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): { title:
           ${check('lookup', t('dialog.lookup'), true)}
           ${check('own', t('dialog.own_copy'), true)}
           <div class="hkl-fields">
-            ${field(t('copy.shelf'), `<select name="shelf_id" data-k="d-shelf">${shelfOptions(ctx.lib, ctx.idx, null)}</select>`)}
+            ${field(t('copy.shelf'), `<select name="shelf_id" data-k="d-shelf">${shelfOptions(ctx.lib, null)}</select>`)}
             ${field(t('copy.format'), `<select name="format" data-k="d-format">${formatOptions('paperback')}</select>`)}
           </div>`,
       };
@@ -110,7 +110,7 @@ function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): { title:
       return {
         title: t('dialog.move'),
         submit: t('action.move'),
-        html: `<p class="hkl-muted">${escapeHTML(book?.title ?? '')}</p>${field(t('copy.shelf'), `<select name="shelf_id" data-k="d-shelf">${shelfOptions(ctx.lib, ctx.idx, copy?.shelf_id ?? null)}</select>`, 'wide')}`,
+        html: `<p class="hkl-muted">${escapeHTML(book?.title ?? '')}</p>${field(t('copy.shelf'), `<select name="shelf_id" data-k="d-shelf">${shelfOptions(ctx.lib, copy?.shelf_id ?? null)}</select>`, 'wide')}`,
       };
     }
     case 'set-shelf': {
@@ -121,7 +121,7 @@ function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): { title:
       return {
         title: t('dialog.set_shelf'),
         submit: t('action.move'),
-        html: `${field(t('copy.shelf'), `<select name="shelf_id" data-k="d-shelf">${shelfOptions(ctx.lib, ctx.idx, ctx.lib.shelves[0]?.id ?? null, false)}</select>`, 'wide')}<div class="hkl-checklist">${rows}</div>`,
+        html: `${field(t('copy.shelf'), `<select name="shelf_id" data-k="d-shelf">${shelfOptions(ctx.lib, ctx.lib.shelves[0]?.id ?? null, false)}</select>`, 'wide')}<div class="hkl-checklist">${rows}</div>`,
       };
     }
     case 'lend': {
@@ -175,7 +175,7 @@ function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): { title:
         title: t('dialog.got_it'),
         submit: t('action.save'),
         html: `<p><b>${escapeHTML(b?.title ?? '')}</b></p><div class="hkl-fields">
-          ${field(t('copy.shelf'), `<select name="shelf_id" data-k="d-shelf">${shelfOptions(ctx.lib, ctx.idx, null)}</select>`)}
+          ${field(t('copy.shelf'), `<select name="shelf_id" data-k="d-shelf">${shelfOptions(ctx.lib, null)}</select>`)}
           ${field(t('copy.format'), `<select name="format" data-k="d-format">${formatOptions('paperback')}</select>`)}
         </div>`,
       };

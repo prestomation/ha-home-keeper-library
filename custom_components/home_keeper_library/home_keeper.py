@@ -28,6 +28,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+import voluptuous as vol
 from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
     ConfigEntry,
@@ -50,6 +51,9 @@ from .const import (
     HOME_KEEPER_MIN_VERSION,
     HOME_KEEPER_REASONS,
     ICON,
+    ISSUE_HOME_KEEPER_MISSING,
+    ISSUE_HOME_KEEPER_NOT_SET_UP,
+    ISSUE_HOME_KEEPER_TOO_OLD,
     NAME,
     STATIC_URL,
     TAB_ELEMENT,
@@ -80,9 +84,9 @@ def content_hash(path: Path) -> str:
 
 def placeholders(reason: str) -> dict[str, str]:
     """The message placeholders of a reason."""
-    if reason == "home_keeper_missing":
+    if reason == ISSUE_HOME_KEEPER_MISSING:
         return {"url": HOME_KEEPER_INSTALL_URL}
-    if reason == "home_keeper_too_old":
+    if reason == ISSUE_HOME_KEEPER_TOO_OLD:
         return {"version": HOME_KEEPER_MIN_VERSION}
     return {}
 
@@ -102,13 +106,13 @@ async def async_check(hass: HomeAssistant) -> str | None:
     try:
         await async_get_integration(hass, HOME_KEEPER_DOMAIN)
     except IntegrationNotFound:
-        return "home_keeper_missing"
+        return ISSUE_HOME_KEEPER_MISSING
     if not hass.config_entries.async_loaded_entries(HOME_KEEPER_DOMAIN):
-        return "home_keeper_not_set_up"
+        return ISSUE_HOME_KEEPER_NOT_SET_UP
     # The version check is off, so a Home Keeper beta works. IDEAS.md has the
     # item to bring it back.
     if await async_panel_tabs(hass) is None:
-        return "home_keeper_too_old"
+        return ISSUE_HOME_KEEPER_TOO_OLD
     return None
 
 
@@ -149,7 +153,7 @@ async def async_register_companion(hass: HomeAssistant, entry: ConfigEntry) -> N
         await hass.services.async_call(
             HOME_KEEPER_DOMAIN, "register_companion", data, blocking=True
         )
-    except (HomeAssistantError, ValueError) as err:
+    except (HomeAssistantError, ValueError, vol.Invalid) as err:
         _LOGGER.debug("Cannot register with Home Keeper: %s", err)
 
 
@@ -164,7 +168,7 @@ class HomeKeeperLink:
         self._coordinator = coordinator
         self._unregister_tab: Callable[[], None] | None = None
         self._unsubs: list[Callable[[], None]] = []
-        self.reason: str | None = "home_keeper_not_set_up"
+        self.reason: str | None = ISSUE_HOME_KEEPER_NOT_SET_UP
         # A state change of an entry sends several signals. The lock runs the
         # checks 1 at a time, so a stale check never wins.
         self._lock = asyncio.Lock()

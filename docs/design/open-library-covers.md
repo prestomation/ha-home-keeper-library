@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/book_lookup.py
   - custom_components/home_keeper_library/covers.py
 related: [scan-and-isbn, csv-import-export, store-models, people-privilege]
-source_hash: 2720a77c3d34
+source_hash: c24b08b4eec4
 ---
 
 # Open Library and covers
@@ -83,7 +83,9 @@ file. The token changes with each new cover. `cover_url` is
 from its cache.
 
 - **Open Library.** `covers.async_store_openlibrary_cover` downloads the large image of
-  the cover id once. A book with a custom cover keeps it.
+  the cover id once. A book with a custom cover keeps it, also if the user sets the
+  custom cover during the download. `set_cover` with `kind: openlibrary` keeps the custom
+  cover until the new file is stored.
 - **Upload.** `CoverUploadView` takes a multipart POST with 1 file from an admin user. It
   reads at most 10 MB, reads the type from the first bytes, and accepts JPEG, PNG and
   WebP. `covers.reencode` writes a new JPEG in an executor job, with a limit on the pixel

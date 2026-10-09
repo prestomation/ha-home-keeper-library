@@ -83,6 +83,21 @@ async function scanSession(page: Page): Promise<void> {
   await expect(tab.locator('.hkl-result')).toHaveCount(3);
 }
 
+/** Open the Lend dialog of a book with a copy to lend, type a note, and submit with no borrower. */
+async function openLendError(page: Page): Promise<void> {
+  const state = await adminState();
+  const lent = new Set(state.loans.filter((l: any) => !l.returned).map((l: any) => l.copy_id));
+  const copy = state.copies.find((c: any) => !lent.has(c.id) && c.format !== 'ebook' && c.format !== 'audiobook');
+  if (!copy) throw new Error('no copy to lend in the seed');
+  const tab = await openTab(page, `/books/${copy.book_id}`);
+  await coversLoaded(page);
+  await tab.locator('[data-k="lend"]').click();
+  const dialog = tab.locator('.hkl-dialog');
+  await dialog.locator('[name="note"]').fill('Back by the trip');
+  await dialog.locator('[data-k="d-submit"]').click();
+  await expect(dialog.locator('.hkl-error')).toBeVisible();
+}
+
 test.describe.configure({ mode: 'serial' });
 
 test('capture the Library screenshots', async ({ page, browser }) => {
@@ -105,8 +120,12 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await coversLoaded(page);
   await shot(page, 'book-detail-desktop');
 
-  // Rooms and shelves.
+  // The Lend dialog after an error: the error line shows and the typed text stays.
   await page.setViewportSize(DESKTOP_SHOT);
+  await openLendError(page);
+  await shot(page, 'dialog-error-desktop');
+
+  // Rooms and shelves.
   await openTab(page, '/shelves');
   await shot(page, 'shelves-desktop');
 
@@ -149,6 +168,9 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await openTab(page, `/books/${left.id}`);
   await coversLoaded(page);
   await shot(page, 'book-detail-mobile');
+
+  await openLendError(page);
+  await shot(page, 'dialog-error-mobile');
 
   await openTab(page, '/shelves');
   await shot(page, 'shelves-mobile');

@@ -25,7 +25,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/styles.ts
   - custom_components/home_keeper_library/frontend/src/global.d.ts
 related: [home-keeper-dependency, scan-and-isbn, csv-import-export, people-privilege]
-source_hash: 84531f8b017a
+source_hash: 8d53aa9c49ae
 ---
 
 # Tab and card
@@ -74,13 +74,13 @@ the setup path. The removal of the entry deletes the resource, and an unload kee
 
 ### State
 
-`api.ts` wraps the websocket commands. The tab and the card call `get_state`, then
-`subscribe`, and read `get_state` again after each `changed` message.
-`utils.normalizeState` turns the reply into arrays in display order, and
-`utils.buildIndex` makes the lookups of a render. A cover upload posts the file with
-`fetchWithAuth` and calls `set_cover` with the returned `file_id`. A CSV file above
-`MAX_WS_IMPORT_BYTES` (3 MB) goes to the `import_csv` service over REST, because Home
-Assistant closes a websocket that gets a message of 4 MB or more.
+`api.ts` wraps the websocket commands. The tab and the card call `get_state`, then `subscribe`, and
+read `get_state` again after each `changed` message. If the element leaves the page before
+`subscribe` replies, it ends the subscription. `utils.normalizeState` turns the reply into arrays in
+display order, and `utils.buildIndex` makes the lookups of a render. A cover upload posts the file
+with `fetchWithAuth` and calls `set_cover` with the returned `file_id`. A CSV file above
+`MAX_WS_IMPORT_BYTES` (3 MB) goes to the `import_csv` service over REST, because Home Assistant
+closes a websocket that gets a message of 4 MB or more.
 
 ### The tab
 
@@ -101,13 +101,13 @@ are `;key=value` parameters on the last segment, as in `/books;q=le%20guin;statu
 | `/wishlist`, `/settings` | Wishlist, people settings | `tab-lists.ts` |
 | `/scan`, `/import` | Scan flow, import | `tab-scan.ts`, `tab-import.ts` |
 
-The book filters are `q`, `status`, `room`, `shelf`, `reader`, `subject`, `owned`, `sort`
-and `view`. `utils.filterBooks` and `utils.sortBooks` apply them. Each view is a free
-function over `ViewCtx` (`tab-types.ts`) that returns 1 HTML string. `tab.ts` renders it
-with `dom.renderKeepFocus`, which keeps the focus, the caret and the typed text of the
-focused field. For each event type, 1 delegated listener reads the `data-act`, `data-chg`,
-`data-input` and `data-form` attributes. The dialogs of `tab-dialogs.ts` are a separate
-layer, so a data push does not clear a form.
+The book filters are `q`, `status`, `room`, `shelf`, `reader`, `subject`, `owned`, `sort` and
+`view`. `utils.filterBooks` and `utils.sortBooks` apply them. Each view is a free function over
+`ViewCtx` (`tab-types.ts`) that returns 1 HTML string. `tab.ts` renders it with
+`dom.renderKeepFocus`, which keeps the focus, the caret and the typed text of the focused field. For
+each event type, 1 delegated listener reads the `data-act`, `data-chg`, `data-input` and `data-form`
+attributes. The dialogs of `tab-dialogs.ts` are a separate layer, so a data push does not clear a
+form. A dialog error keeps the typed input. A failed command renders the stored values again.
 
 ### The card
 

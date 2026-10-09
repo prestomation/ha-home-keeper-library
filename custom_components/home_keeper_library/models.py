@@ -334,7 +334,7 @@ def integer(
         raise LibraryError("invalid_field", field=field)
     if isinstance(value, float) and value.is_integer():
         value = int(value)
-    if isinstance(value, str) and value.strip().lstrip("-").isdigit():
+    if isinstance(value, str) and re.fullmatch(r"-?[0-9]+", value.strip()):
         value = int(value.strip())
     if not isinstance(value, int):
         raise LibraryError("invalid_field", field=field)
@@ -616,9 +616,13 @@ def update_book(
     patch = {field: data[field] for field in BOOK_FIELDS if field in data}
     if data.get("isbn") not in (None, ""):
         patch["isbn13"], patch["isbn10"] = _isbn(data["isbn"])
-    elif "isbn13" in patch and patch["isbn13"] in (None, "") and "isbn10" not in patch:
-        # Clearing the ISBN-13 clears the ISBN-10 too: they name 1 edition.
-        patch["isbn10"] = None
+    elif "isbn13" in patch and "isbn10" not in patch:
+        # The ISBN-13 and the ISBN-10 name 1 edition. A new ISBN-13 sets the
+        # ISBN-10 from it, and an empty ISBN-13 clears the ISBN-10.
+        if patch["isbn13"] in (None, ""):
+            patch["isbn10"] = None
+        else:
+            patch["isbn13"], patch["isbn10"] = _isbn(patch["isbn13"])
     for field, raw in patch.items():
         value = book_field(field, raw)
         if value != updated.get(field):
@@ -1074,13 +1078,6 @@ def find_book_by_isbn(
         for book in state["books"].values():
             if book.get("isbn10") == isbn10:
                 return book
-    return None
-
-
-def date_year(value: Any) -> int | None:
-    """The year of a ``YYYY-MM-DD`` string."""
-    if isinstance(value, str) and len(value) >= 4 and value[:4].isdigit():
-        return int(value[:4])
     return None
 
 

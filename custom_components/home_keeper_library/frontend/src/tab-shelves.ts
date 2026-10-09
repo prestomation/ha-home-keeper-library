@@ -1,7 +1,7 @@
 // The Rooms and shelves view: the rooms list and a drawing of each bookcase.
 
 import { formatMoney, t, tn } from './i18n';
-import { button, navBar } from './markup';
+import { button, href, navBar } from './markup';
 import { navCounts } from './tab-books';
 import type { ViewCtx } from './tab-types';
 import type { Book, Bookcase, Shelf } from './types';
@@ -25,7 +25,7 @@ function shelfRow(ctx: ViewCtx, shelf: Shelf): string {
   const drawn = spines(books)
     .map(
       (s) =>
-        `<a class="hkl-spine" href="/home-keeper/library/books/${escapeHTML(encodeURIComponent(s.id))}" data-act="nav" data-path="/books/${escapeHTML(encodeURIComponent(s.id))}" style="width:${s.w}px;height:${s.h}px;background:${s.color}" title="${escapeHTML(s.title)}" aria-label="${escapeHTML(s.title)}"></a>`,
+        `<a class="hkl-spine" href="${escapeHTML(href(`/books/${encodeURIComponent(s.id)}`))}" data-act="nav" data-path="/books/${escapeHTML(encodeURIComponent(s.id))}" style="width:${s.w}px;height:${s.h}px;background:${s.color}" title="${escapeHTML(s.title)}" aria-label="${escapeHTML(s.title)}"></a>`,
     )
     .join('');
   const id = escapeHTML(shelf.id);
@@ -64,7 +64,6 @@ function bookcaseCard(ctx: ViewCtx, bc: Bookcase): string {
 export function renderShelves(ctx: ViewCtx): string {
   const rooms = ctx.lib.rooms;
   const room = rooms.find((r) => r.id === ctx.route.id) ?? rooms[0];
-  const actions = '';
   const list = rooms
     .map((r) => {
       const on = r.id === room?.id;
@@ -82,7 +81,7 @@ export function renderShelves(ctx: ViewCtx): string {
     ? `<div class="hkl-banner"><span>${escapeHTML(tn('shelves.no_shelf_count', loose.length))}</span><span class="hkl-spacer"></span>${button(escapeHTML(t('action.set_shelf')), 'set-shelf', 'tonal', 'data-k="set-shelf"')}</div>`
     : '';
   if (!room) {
-    return `${navBar(ctx.route, navCounts(ctx), actions)}<div class="hkl-places">${aside}<section class="hkl-room"><div class="hkl-empty">${escapeHTML(t('shelves.no_rooms'))}</div>${banner}</section></div>`;
+    return `${navBar(ctx.route, navCounts(ctx))}<div class="hkl-places">${aside}<section class="hkl-room"><div class="hkl-empty">${escapeHTML(t('shelves.no_rooms'))}</div>${banner}</section></div>`;
   }
   const cases = ctx.lib.bookcases.filter((c) => c.room_id === room.id);
   const value = roomValue(ctx.lib, ctx.idx, room.id);
@@ -94,7 +93,7 @@ export function renderShelves(ctx: ViewCtx): string {
     area ? t('shelves.area', { area }) : '',
   ].filter(Boolean).join(' · ');
   const rid = escapeHTML(room.id);
-  return `${navBar(ctx.route, navCounts(ctx), actions)}
+  return `${navBar(ctx.route, navCounts(ctx))}
   <div class="hkl-places">
     ${aside}
     <section class="hkl-room">

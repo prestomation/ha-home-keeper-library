@@ -124,6 +124,9 @@ class LibraryStore:
         """Tell the listeners about a change outside the document, such as the
         currency option. The revision goes up."""
         self.revision += 1
+        self._notify_listeners()
+
+    def _notify_listeners(self) -> None:
         for listener in list(self._listeners):
             try:
                 listener()
@@ -149,11 +152,7 @@ class LibraryStore:
         self.revision += 1
         for name, data in fired:
             self.hass.bus.async_fire(name, data)
-        for listener in list(self._listeners):
-            try:
-                listener()
-            except Exception:
-                _LOGGER.exception("A library store listener failed")
+        self._notify_listeners()
 
     # ── Lookups ──────────────────────────────────────────────────────────────
 
@@ -293,7 +292,7 @@ class LibraryStore:
             if copy.get("shelf_id") != shelf_id:
                 continue
             copy["shelf_id"] = None
-            book = self.state["books"].get(copy["book_id"], {"id": copy["book_id"]})
+            book = self._book_or_stub(copy["book_id"])
             fired.append(
                 (
                     EVENT_COPY_MOVED,
@@ -391,7 +390,7 @@ class LibraryStore:
     ) -> dict[str, Any]:
         """Change the fields of a book."""
         updated, changed = models.update_book(self.book(book_id), data, now=now())
-        if changed and "isbn13" in changed and updated["isbn13"]:
+        if "isbn13" in changed and updated["isbn13"]:
             other = models.find_book_by_isbn(self.state, updated["isbn13"])
             if other is not None and other["id"] != book_id:
                 raise LibraryError("duplicate_isbn", isbn=updated["isbn13"])
@@ -401,12 +400,14 @@ class LibraryStore:
         self, book_id: str, draft: dict[str, Any], *, origin: str | None = None
     ) -> dict[str, Any]:
         """Fill the empty fields of a book from an Open Library draft."""
-        updated, changed = models.fill_from_draft(self.book(book_id), draft, now=now())
+        book = self.book(book_id)
+        updated, changed = models.fill_from_draft(book, draft, now=now())
         if "isbn13" in changed:
             other = models.find_book_by_isbn(self.state, updated["isbn13"])
             if other is not None and other["id"] != book_id:
-                updated["isbn13"] = None
-                updated["isbn10"] = None
+                # Keep the ISBNs of the book. Only the ISBN-13 was empty.
+                updated["isbn13"] = book.get("isbn13")
+                updated["isbn10"] = book.get("isbn10")
                 changed = [f for f in changed if f not in ("isbn13", "isbn10")]
         return await self._replace_book(updated, changed, origin)
 
@@ -686,7 +687,7 @@ class LibraryStore:
             return updated
         self.state["loans"][loan_id] = updated
         payload = events.loan_updated_event_data(
-            self._loan_book(updated), updated, changed, origin
+            self._book_or_stub(updated["book_id"]), updated, changed, origin
         )
         await self._commit([(EVENT_LOAN_UPDATED, payload)])
         return dict(updated)
@@ -697,13 +698,15 @@ class LibraryStore:
         """Delete a loan. The loan sync deletes its Home Keeper task."""
         loan = self.loan(loan_id)
         del self.state["loans"][loan_id]
-        payload = events.loan_event_data(self._loan_book(loan), loan, origin)
+        payload = events.loan_event_data(
+            self._book_or_stub(loan["book_id"]), loan, origin
+        )
         await self._commit([(EVENT_LOAN_REMOVED, payload)])
         return loan
 
-    def _loan_book(self, loan: dict[str, Any]) -> dict[str, Any]:
-        """The book of a loan, for an event payload."""
-        return self.state["books"].get(loan["book_id"]) or {"id": loan["book_id"]}
+    def _book_or_stub(self, book_id: str) -> dict[str, Any]:
+        """The book, or a record with only its id, for an event payload."""
+        return self.state["books"].get(book_id) or {"id": book_id}
 
     async def set_lookup_tries(self, book_id: str, tries: int) -> None:
         """Record the count of Open Library lookups of a book that gave no details.
@@ -744,7 +747,7 @@ class LibraryStore:
             if not models.is_overdue(loan, today_) or loan.get("overdue_fired"):
                 continue
             loan["overdue_fired"] = True
-            book = self.state["books"].get(loan["book_id"]) or {"id": loan["book_id"]}
+            book = self._book_or_stub(loan["book_id"])
             fired.append((EVENT_LOAN_OVERDUE, events.loan_event_data(book, loan, None)))
             ids.append(loan["id"])
         if fired:
@@ -789,8 +792,11 @@ class LibraryStore:
         if not entry:
             raise LibraryError("not_on_wishlist")
         changed = []
-        if "buy" in data and models.boolean(data["buy"], "buy") != entry["buy"]:
-            entry["buy"] = data["buy"]
+        if (
+            "buy" in data
+            and (buy := models.boolean(data["buy"], "buy")) != entry["buy"]
+        ):
+            entry["buy"] = buy
             changed.append("buy")
         if "person_id" in data and data["person_id"] != entry["person_id"]:
             entry["person_id"] = models.text(

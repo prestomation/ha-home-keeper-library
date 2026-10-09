@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/loan_tasks.py
   - custom_components/home_keeper_library/loan_sync.py
 related: [store-models, home-keeper-dependency, events-api]
-source_hash: 0884d41fbfac
+source_hash: 2fc17ff1c066
 ---
 
 # Loans and Home Keeper tasks
@@ -60,6 +60,8 @@ and returns a `LoanTaskPlan`:
 - a bound task that is gone gets a `forgets` step, and the loan gets a new task on the
   next pass;
 - a completed task of an open loan gets a `returns` step.
+
+The planner ignores a task with no id, because it cannot bind, change or delete it.
 
 `loan_tasks.add_task_payload` builds the fields of the Home Keeper service `add_task`:
 the name, the type `one-off`, the due date, `source: {"home_keeper_library": {"loan_id": id}}`, and

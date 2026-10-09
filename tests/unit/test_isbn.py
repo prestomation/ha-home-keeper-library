@@ -17,6 +17,17 @@ def test_clean_keeps_digits_and_x() -> None:
     assert isbn.clean(["978"]) == ""
 
 
+def test_only_ascii_digits_count() -> None:
+    # "²" and "٣" pass str.isdigit, but they are not ISBN digits.
+    assert isbn.clean("97803064061²7") == "978030640617"
+    assert isbn.clean("٣") == ""
+    assert isbn.try_normalize("97803064061²7") == (None, None)
+    assert not isbn.is_valid_isbn13("97803064061²7"[:12] + "7")
+    assert not isbn.is_valid_isbn13("٣" * 13)
+    assert not isbn.is_valid_isbn10("٣" * 9 + "X")
+    assert not isbn.is_isbn_barcode("97803064061²7")
+
+
 def test_check_digits() -> None:
     assert isbn.isbn13_check_digit("978044147812") == "5"
     assert isbn.isbn13_check_digit("979103230569") == "0"

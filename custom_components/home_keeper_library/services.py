@@ -32,6 +32,7 @@ from homeassistant.helpers import config_validation as cv
 from . import csv_io, models, people, projections
 from .api_surface import SERVICES, ServiceSpec
 from .backend_i18n import resolve_exception
+from .config_flow import clean_currency, merge_flow_input
 from .const import (
     CONF_CURRENCY,
     DOMAIN,
@@ -45,7 +46,7 @@ from .isbn import IsbnError
 from .isbn import normalize as normalize_isbn
 from .models import LibraryError
 from .openlibrary_client import OpenLibraryError
-from .store import now, today
+from .store import LibraryStore, now, today
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,7 +60,7 @@ class Ctx:
     actor: people.Actor
 
     @property
-    def store(self) -> Any:
+    def store(self) -> LibraryStore:
         """The store."""
         return self.coordinator.store
 
@@ -607,12 +608,10 @@ async def _set_cover(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
         )
     elif kind == "openlibrary":
         ctx.store.book(book_id)
-        current = ctx.store.state["books"][book_id]
-        if (current.get("cover") or {}).get("kind") == "custom":
-            await ctx.store.set_cover(book_id, "none", None)
         try:
+            # A custom cover stays until the Open Library cover replaces it.
             found = await async_store_openlibrary_cover(
-                ctx.hass, ctx.coordinator, book_id
+                ctx.hass, ctx.coordinator, book_id, replace_custom=True
             )
         except OpenLibraryError as err:
             raise LibraryError("lookup_unavailable") from err
@@ -732,12 +731,12 @@ async def _set_person_settings(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]
 
 
 async def _set_settings(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
-    currency = str(data["currency"]).strip().upper()
-    if len(currency) != 3 or not currency.isalpha():
+    currency = clean_currency(data["currency"])
+    if currency is None:
         raise LibraryError("invalid_currency", currency=data["currency"])
-    entry = ctx.coordinator.entry
+    entry = ctx.coordinator.config_entry
     ctx.hass.config_entries.async_update_entry(
-        entry, options={**entry.options, CONF_CURRENCY: currency}
+        entry, options=merge_flow_input(entry, {CONF_CURRENCY: currency})
     )
     # The store fires settings_updated, and the tab and the card read the
     # currency from get_state again.
@@ -981,14 +980,19 @@ def _service_handler(
         except Unauthorized as err:
             raise Unauthorized(context=call.context) from err
         except LibraryError as err:
-            raise ServiceValidationError(
-                translation_domain=DOMAIN,
-                translation_key=err.key,
-                translation_placeholders=err.placeholders,
-            ) from err
+            raise service_error(err) from err
         return result if call.return_response else None
 
     return handle
+
+
+def service_error(err: LibraryError) -> ServiceValidationError:
+    """The Home Assistant error for a library error."""
+    return ServiceValidationError(
+        translation_domain=DOMAIN,
+        translation_key=err.key,
+        translation_placeholders=err.placeholders,
+    )
 
 
 def async_register_services(hass: HomeAssistant) -> None:

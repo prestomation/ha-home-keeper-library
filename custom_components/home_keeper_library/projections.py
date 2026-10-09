@@ -25,6 +25,8 @@ PRIVATE_COPY_FIELDS = ("price", "value", "acquired_from")
 PRIVATE_LOAN_FIELDS = ("party",)
 PRIVATE_READING_FIELDS = ("private_notes",)
 PRIVATE_PERSON_FIELDS = ("wishlist_todo",)
+# The to-do item of a wishlist entry names the ``wishlist_todo`` of its person.
+PRIVATE_WISHLIST_FIELDS = ("todo_entity", "todo_uid")
 
 
 def cover_url(book: dict[str, Any]) -> str | None:
@@ -104,6 +106,11 @@ def project_book(
     out["reading"] = visible_reading(
         state, book["id"], viewer=viewer, is_admin=is_admin
     )
+    wishlist = book.get("wishlist")
+    if wishlist and not is_admin and wishlist.get("person_id") != viewer:
+        out["wishlist"] = {
+            k: v for k, v in wishlist.items() if k not in PRIVATE_WISHLIST_FIELDS
+        }
     return out
 
 
@@ -167,9 +174,7 @@ def project_state(
     revision: int,
 ) -> dict[str, Any]:
     """The reply of ``home_keeper_library/get_state`` for the viewer."""
-    counts: dict[str, int] = {}
-    for copy in state["copies"].values():
-        counts[copy["book_id"]] = counts.get(copy["book_id"], 0) + 1
+    counts = {book_id: len(rows) for book_id, rows in copies_by_book(state).items()}
     books = [
         project_book(
             state,
