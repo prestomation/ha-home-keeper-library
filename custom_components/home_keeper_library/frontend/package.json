@@ -17,7 +17,7 @@
     "@zxing/library": "^0.23.0",
     "rollup": "^4.63.6",
     "tslib": "^2.8.1",
-    "typescript": "^5.6.0",
+    "typescript": "^5.9.3",
     "vitest": "^5.0.3"
   }
 }
