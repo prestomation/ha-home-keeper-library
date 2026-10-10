@@ -20,6 +20,12 @@ updates:
     schedule:
       interval: weekly
     labels: ["dependencies"]
+    ignore:
+      # TypeScript 7 has no JavaScript API, and @rollup/plugin-typescript 12.3.0 needs
+      # it, so the build stops. Remove this rule when the plugin supports TypeScript 7,
+      # or when the build uses a different transpiler.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   # Root vitest deps.
   - package-ecosystem: npm

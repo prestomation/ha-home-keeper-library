@@ -101,6 +101,9 @@ bash ci/test-mutation-frontend.sh          # Stryker, changed line ranges only
 - `typings/voluptuous/*.pyi` makes mypy read `voluptuous` as probatio, the way HA 2026.9
   and later alias it. Without the stubs, mypy fails against HA 2026.10. Delete them when
   the code imports probatio directly.
+- **Keep the frontend `typescript` on version 5.** TypeScript 7 has no JavaScript API,
+  and `@rollup/plugin-typescript` 12.3.0 needs it, so the build stops. Dependabot holds
+  the major back. Before a move, `npm run build` in the frontend must pass.
 - User-facing exceptions are localized ([architecture.md](architecture.md#localized-text)).
 - Python is linted and formatted with ruff. Run `ruff check .` and
   `ruff format --check .`.
