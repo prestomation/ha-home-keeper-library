@@ -62,6 +62,16 @@ def test_add_book_form_uses_isbn10_and_skips_empty_values() -> None:
     assert "id_name" not in c.add_book_form({"title": "T"}, ["isbn"], "__new__")
 
 
+def test_add_book_form_sends_no_empty_title_or_date() -> None:
+    book = {"title": None, "authors": ["A"], "published": None, "publisher": None}
+    form = c.add_book_form(book, list(c.SEND_FIELDS), "__new__")
+    assert form == {
+        "book_title": "",
+        "authors--0--author--key": "__new__",
+        "author_names--0": "A",
+    }
+
+
 @pytest.mark.parametrize(
     ("search", "key"),
     [
@@ -129,6 +139,8 @@ def test_parse_add_reply(status, location, result) -> None:
         ('"/people/alex_reads,2026,abc"', "alex_reads"),
         ('"/people/alex_reads\\0542026\\054abc"', "alex_reads"),
         ("/people/alex_reads\\0542026", "alex_reads"),
+        ('"/people/alex_reads"', None),
+        ('/people/alex"reads,2026', 'alex"reads'),
         ("%2Fpeople%2Falex_reads%2C2026%2Cabc", "alex_reads"),
         ("/people/,2026", None),
         ("/people/alex_reads", None),

@@ -474,10 +474,8 @@ export function notOnOpenLibrary(book: Book): boolean {
 
 /** The edition key `OL…M` in a key or an openlibrary.org URL, or null. */
 export function editionKey(text: string | null | undefined): string | null {
-  const value = String(text ?? '').trim();
-  if (/^OL\d+M$/.test(value)) return value;
-  const path = value.includes('://') ? value.replace(/^[a-z]+:\/\/[^/]+/i, '') : value;
-  const m = path.match(/(?:^|\/books\/)(OL\d+M)(?:[/?#.]|$)/);
+  // Stryker disable next-line StringLiteral: an empty text and any other text with no key both give null.
+  const m = String(text ?? '').trim().match(/(?:^|\/books\/)(OL\d+M)(?:[/?#.]|$)/);
   return m ? m[1] : null;
 }
 

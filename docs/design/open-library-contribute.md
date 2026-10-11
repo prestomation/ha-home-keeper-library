@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/openlibrary_contribute.py
   - custom_components/home_keeper_library/openlibrary_account.py
 related: [open-library-covers, people-privilege, events-api, frontend-tab-card]
-source_hash: fc91e529f3ea
+source_hash: c8d5067a3fbe
 ---
 
 # Send books to Open Library

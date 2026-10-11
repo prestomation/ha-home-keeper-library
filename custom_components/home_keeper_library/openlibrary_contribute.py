@@ -103,8 +103,9 @@ def parse_add_reply(status: int, location: str | None) -> tuple[str, str | None]
     match = _EDITION_RE.match(parts.path)
     if not match:
         return "ambiguous", None
-    mode = (parse_qs(parts.query).get("mode") or [""])[0]
-    return ("added" if mode in _ADDED_MODES else "existing"), match.group(1)
+    modes = parse_qs(parts.query).get("mode", [])
+    added = any(mode in _ADDED_MODES for mode in modes)
+    return ("added" if added else "existing"), match.group(1)
 
 
 def session_username(cookie: str | None) -> str | None:
@@ -116,7 +117,7 @@ def session_username(cookie: str | None) -> str | None:
     if not cookie:
         return None
     value = re.sub(r"\\([0-7]{3})", lambda m: chr(int(m.group(1), 8)), cookie.strip())
-    value = unquote(value.strip('"'))
+    value = unquote(value.removeprefix('"'))
     match = re.match(r"^/people/([^,/]+),", value)
     return match.group(1) if match else None
 
@@ -128,5 +129,5 @@ def edition_key(text: Any) -> str | None:
     value = text.strip()
     if _EDITION_KEY_RE.match(value):
         return value
-    match = _INPUT_RE.search(urlsplit(value).path if "://" in value else value)
+    match = _INPUT_RE.search(value)
     return match.group(1) if match else None

@@ -421,7 +421,9 @@ describe('Open Library helpers', () => {
 
   it.each([
     ['OL5M', 'OL5M'],
+    ['OL12345M', 'OL12345M'],
     [' OL5M ', 'OL5M'],
+    ['/books/OL12345M/x', 'OL12345M'],
     ['/books/OL5M', 'OL5M'],
     ['https://openlibrary.org/books/OL5M/Ferns_of_the_Rain_City', 'OL5M'],
     ['https://openlibrary.org/books/OL5M.json', 'OL5M'],
@@ -437,6 +439,11 @@ describe('Open Library helpers', () => {
     [undefined, null],
   ])('reads the edition key of %s', (text, key) => {
     expect(u.editionKey(text)).toBe(key);
+  });
+
+  it('shows the Not on Open Library filter to admins only', () => {
+    expect(u.ADMIN_STATUS_FILTERS).toEqual(['not_on_ol']);
+    expect(u.STATUS_FILTERS).toContain('not_on_ol');
   });
 
   it('builds the edition page and the edit page', () => {
