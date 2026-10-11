@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/store.py
   - custom_components/home_keeper_library/models.py
 related: [architecture, events-api, people-privilege, csv-import-export]
-source_hash: 16ba6e196bba
+source_hash: 397bf2cb9a8c
 ---
 
 # Store and models
@@ -41,7 +41,7 @@ only code that changes the document.
 | `rooms` | `{id: room}` | `name`, `area_id`, `order` |
 | `bookcases` | `{id: bookcase}` | `room_id`, `name`, `note`, `order` |
 | `shelves` | `{id: shelf}` | `bookcase_id`, `name`, `order` |
-| `books` | `{id: book}` | `models.BOOK_FIELDS`, `cover`, `wishlist`, `lookup_tries`, time stamps |
+| `books` | `{id: book}` | `models.BOOK_FIELDS`, `cover`, `wishlist`, `lookup_tries`, `openlibrary_status`, time stamps |
 | `copies` | `{id: copy}` | `book_id` and `models.COPY_FIELDS` |
 | `reading` | `{person_id: {book_id: row}}` | `models.READING_FIELDS` and `updated_at` |
 | `loans` | `{id: loan}` | `direction`, `book_id`, `copy_id`, `party`, dates, `hk_task_id` |
@@ -50,7 +50,8 @@ only code that changes the document.
 
 `models.normalize_state` runs on every load and in the storage migration hook. It gives
 each section its type, so a section that a later version adds needs no migration. It also
-gives each book a whole `lookup_tries` count of 0 or more.
+gives each book a whole `lookup_tries` count of 0 or more, and an `openlibrary_status`
+(`models.stored_openlibrary_status`).
 
 ### Model functions
 
@@ -97,6 +98,8 @@ listener. A listener that fails is logged and the others still run. The listener
   document and fires only `import_completed` ([csv-import-export](csv-import-export.md#steps)).
 - **Bookkeeping.** `set_lookup_tries` and `set_loan_task` save a field that only a queue
   or a sync reads, and fire no event.
+- **Open Library status.** `set_openlibrary_status` sets `missing`, `skipped` or None,
+  and fires `book_updated` ([open-library-contribute](open-library-contribute.md)).
 - **Currency.** The currency is an option of the config entry, not a field of the
   document. `async_settings_updated` fires `settings_updated` and tells the listeners,
   so the clients read it again.

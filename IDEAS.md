@@ -30,6 +30,11 @@ Nothing here is committed scope. When an item ships, remove it. The design docs 
   with a CSV or PDF download for an insurance claim. Admin-only.
 - **Phone walkthrough tour.** A second walkthrough capture at phone width: scan a shelf
   with **Enter ISBN**, read the summary, set a status in the card.
+- **More details in a send to Open Library.** The send posts only the 5 fields of the
+  "Add a book" form. The edit form of Open Library takes the subtitle, the pages and the
+  language, but it replaces the whole record and can ask for a captcha.
+- **Event for a send to Open Library.** A `home_keeper_library_book_contributed` event
+  with the edition key, if an integrator needs more than `book_updated`.
 
 ### Shelf photo
 

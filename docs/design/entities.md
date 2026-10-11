@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/sensor.py
   - custom_components/home_keeper_library/todo.py
 related: [store-models, people-privilege, events-api]
-source_hash: bc558fbdc9f3
+source_hash: 8981f1bd85ab
 ---
 
 # Coordinator and entities
@@ -41,8 +41,8 @@ person wants to read.
 `async_set_updated_data`. The coordinator also holds the parts of the loaded entry that
 the services, the websocket commands and the views use: the store, the Open Library
 client, the lookup queue, the 2 syncs, the Home Keeper link and the currency option.
-`async_check_settings` fires `settings_updated` for a new currency
-([events-api](events-api.md#events)).
+`openlibrary_account` gives the Open Library account with no keys. `async_check_settings`
+fires `settings_updated` for a new currency or account ([events-api](events-api.md#events)).
 `coordinator.find_coordinator` returns it for a call, or None while no entry is loaded.
 
 ### Device and people

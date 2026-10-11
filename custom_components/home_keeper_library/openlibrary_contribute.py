@@ -110,12 +110,13 @@ def parse_add_reply(status: int, location: str | None) -> tuple[str, str | None]
 def session_username(cookie: str | None) -> str | None:
     """The user name in the ``session`` cookie of Open Library.
 
-    The cookie value is ``/people/<username>,<time>,<hash>``, sometimes quoted
-    and URL-encoded.
+    The cookie value is ``/people/<username>,<time>,<hash>``. It can be quoted,
+    with each comma as the octal escape ``\\054``, or URL-encoded.
     """
     if not cookie:
         return None
-    value = unquote(cookie.strip().strip('"'))
+    value = re.sub(r"\\([0-7]{3})", lambda m: chr(int(m.group(1), 8)), cookie.strip())
+    value = unquote(value.strip('"'))
     match = re.match(r"^/people/([^,/]+),", value)
     return match.group(1) if match else None
 

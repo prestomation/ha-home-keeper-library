@@ -41,6 +41,21 @@ actions:
     response_variable: detail
 ```
 
+An admin-only service can also send a book to Open Library, after an admin connects an
+Open Library account ([Send books to Open Library](../library/open-library.md)).
+
+```yaml
+actions:
+  - action: home_keeper_library.send_to_openlibrary
+    data:
+      book_id: "5f0c1b2a9d8e4f7a8b6c5d4e3f2a1b0c"
+      fields: [publisher, published, isbn]
+    response_variable: sent
+```
+
+The response has `result` (`added` or `existing`) and `edition_key`. With `existing`,
+check the edition and link it with `link_openlibrary`.
+
 ## Events
 
 The library fires an event for each change, such as

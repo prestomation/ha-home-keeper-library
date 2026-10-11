@@ -127,6 +127,8 @@ def test_parse_add_reply(status, location, result) -> None:
     [
         ("/people/alex_reads,2026-10-11T00:00:00,abc", "alex_reads"),
         ('"/people/alex_reads,2026,abc"', "alex_reads"),
+        ('"/people/alex_reads\\0542026\\054abc"', "alex_reads"),
+        ("/people/alex_reads\\0542026", "alex_reads"),
         ("%2Fpeople%2Falex_reads%2C2026%2Cabc", "alex_reads"),
         ("/people/,2026", None),
         ("/people/alex_reads", None),

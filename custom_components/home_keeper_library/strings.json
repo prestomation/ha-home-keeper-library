@@ -456,7 +456,7 @@
         },
         "fields": {
           "name": "Fields",
-          "description": "The optional fields to send: publisher, published and isbn. The title and the first author always go."
+          "description": "Add publisher, published or isbn to send those details too. The title and the first author always go."
         },
         "include_cover": {
           "name": "Send cover",

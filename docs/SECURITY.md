@@ -45,12 +45,31 @@ no user, as Home Assistant does. An automation makes that kind of call.
 | `lend_book`, `borrow_book`, `return_loan`, `update_loan`, `delete_loan` | Admin |
 | `add_to_wishlist`, `update_wishlist`, `remove_from_wishlist`, `got_wishlist_book` | Admin |
 | `set_settings`, `import_csv`, `export_csv` | Admin |
+| `send_to_openlibrary`, `link_openlibrary`, `skip_openlibrary`, `disconnect_openlibrary` | Admin |
 | `set_reading` | Open, for the caller's own person. An admin can name any person. |
 | `set_person_settings` | Open, for the caller's own person, with no `wishlist_todo`. An admin can set each field of any person. |
 | `list_books`, `get_book`, `list_locations`, `list_loans`, `list_people` | Open, projected |
 
 `wishlist_todo` is admin-only because it sends book titles to a to-do list. Import and
 export are admin-only because they read or write the whole library.
+`send_to_openlibrary` is admin-only because it sends book details to a public website
+as the household account.
+
+## Open Library account
+
+An admin can connect an Open Library account to send books
+([open-library-contribute](design/open-library-contribute.md)).
+
+- The 2 Archive.org S3 keys come in only through the `openlibrary` step of the options
+  flow. Home Assistant lets only an admin run an options flow. The keys are not a
+  service field, so no `call_service` event or recorder row holds them.
+- The keys stay in the config entry data. No reply, event or diagnostics file shows
+  them. `get_state` gives an admin only `openlibrary_account`: if an account is
+  connected, and its user name. A non-admin user gets no `openlibrary_account`.
+- The library signs in for each send and keeps the session cookie only for that send.
+- A send goes only to the Open Library base URL, with the same limit of 1 request a
+  second as the lookups. It sends the title, the first author and the fields that the
+  admin selects. It never sends notes, prices, values, loans, shelves or reading status.
 
 ## Websocket commands
 
@@ -93,7 +112,8 @@ projection:
 
 The book records, the shared notes and the covers are open to every user. Only an admin
 can download the diagnostics. The download redacts the loan
-parties, the notes and `acquired_from`.
+parties, the notes and `acquired_from`. It has no Open Library key, only a mark that
+shows if an account is connected.
 
 ## Entities
 

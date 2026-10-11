@@ -130,6 +130,9 @@ in the rules files below. Read the file for your topic before you change code or
 - **Every integrator surface is declared in `api_surface.py`.**
 - **An options flow returns `config_flow.merge_flow_input(...)`**, never `user_input`
   ([architecture.md](.amazonq/rules/architecture.md#options)).
+- **A credential comes in only through a flow step** and stays in the entry data. Never a
+  service field, an event, a reply or diagnostics
+  ([architecture.md](.amazonq/rules/architecture.md#how-to-decide)).
 - **Every user-facing exception has a `translation_key`.**
 - Escape all user content with `escapeHTML`. Navigate the tab only with `host.navigate`.
 - All datetimes are timezone-aware. Pure code takes the time from its caller.

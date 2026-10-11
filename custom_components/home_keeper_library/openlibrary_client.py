@@ -17,6 +17,7 @@ import asyncio
 import logging
 import time
 from collections.abc import Mapping
+from http.cookies import SimpleCookie
 from typing import Any, TypedDict
 from urllib.parse import urlencode, urlsplit
 
@@ -40,6 +41,7 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 _MAX_AUTHORS = 3
 _MAX_COVER_BYTES = 10 * 1024 * 1024
+_COOKIE: SimpleCookie = SimpleCookie()
 
 
 class OpenLibraryUrls(TypedDict, total=False):
@@ -143,10 +145,10 @@ class OpenLibraryClient:
                     return {
                         "status": response.status,
                         "location": response.headers.get("Location"),
-                        # The value as the server sent it, quotes included, so
-                        # it goes back unchanged in the Cookie header.
+                        # The value in the quoted form of a Cookie header, as
+                        # the server sent it.
                         "cookies": {
-                            name: morsel.coded_value
+                            name: _COOKIE.value_encode(morsel.value)[1]
                             for name, morsel in response.cookies.items()
                         },
                     }

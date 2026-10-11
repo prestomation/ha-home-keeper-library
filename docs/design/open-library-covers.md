@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/book_lookup.py
   - custom_components/home_keeper_library/covers.py
 related: [scan-and-isbn, csv-import-export, store-models, people-privilege]
-source_hash: c24b08b4eec4
+source_hash: 075bee010779
 ---
 
 # Open Library and covers
@@ -46,6 +46,9 @@ wrong type is ignored.
 seconds and the User-Agent `const.USER_AGENT` with the repository URL. An async limiter
 spaces the requests to each host by 1 second. An ISBN or a search that finds no book is a
 miss for 24 hours, in memory. A network error raises `OpenLibraryError`. It is not a miss.
+`async_lookup_edition` reads an edition by its key, and `forget_miss` clears the miss of
+an ISBN. `async_post` is the write path of a send
+([open-library-contribute](open-library-contribute.md)).
 
 The base URLs are `const.OPENLIBRARY_URL` and `const.OPENLIBRARY_COVERS_URL`. The
 environment variables `HOME_KEEPER_LIBRARY_OPENLIBRARY_URL` and
@@ -61,7 +64,7 @@ and first author. A draft fills the book with `LibraryStore.fill_book` and the o
 `home_keeper_library`, and then the cover downloads. After a network error the queue
 tries again after 1 minute, then after 5 minutes: `const.LOOKUP_MAX_TRIES` (3) tries in
 all. A book that Open Library does not have keeps `needs_details: true` for the user to
-fill.
+fill, and `async_mark_missing` gives it `openlibrary_status: missing`.
 
 The book field `lookup_tries` counts the lookups that gave no details, so the limit holds
 across a restart. A network error adds 1. A book that Open Library does not have gets the
