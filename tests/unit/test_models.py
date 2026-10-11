@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 from datetime import date
 
 import ex.models as m
@@ -564,6 +565,8 @@ def test_fill_from_draft_clears_the_catalog_status() -> None:
     ],
 )
 def test_normalize_catalogs(book, catalogs, status) -> None:
+    # The function changes its argument, so work on a copy of the shared case.
+    book = copy.deepcopy(book)
     m.normalize_catalogs(book)
     assert book.get("catalogs") == catalogs
     assert book.get("catalog_status") == status
