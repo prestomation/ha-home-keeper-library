@@ -312,6 +312,7 @@
   "scan.borrowed_count.other": "{n} libri in prestito aggiunti",
   "scan.camera_denied": "Nessun accesso alla fotocamera. Consenti la fotocamera nel browser o inserisci l’ISBN.",
   "scan.camera_insecure": "La fotocamera richiede HTTPS. Apri Home Assistant con un indirizzo HTTPS o inserisci l’ISBN.",
+  "scan.camera_paused": "La fotocamera si è fermata. Tocca per avviarla di nuovo.",
   "scan.camera_unsupported": "Questo browser non legge i codici a barre. Inserisci l’ISBN.",
   "scan.enter_isbn": "Inserisci ISBN",
   "scan.frame_hint": "Metti il codice a barre nel riquadro",

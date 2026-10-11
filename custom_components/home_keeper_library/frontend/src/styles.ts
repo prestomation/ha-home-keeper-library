@@ -241,6 +241,8 @@ button { font: inherit; color: inherit; }
 .hkl-cam-hint { position: absolute; left: 0; right: 0; bottom: 12px; text-align: center; color: #fff; font-weight: 500; text-shadow: 0 1px 2px #000; }
 .hkl-iconbtn.torch { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,.45); color: #fff; }
 .hkl-iconbtn.torch.on { background: #fff; color: #111; }
+.hkl-cam-restart { position: absolute; inset: 0; z-index: 2; display: flex; align-items: center; justify-content: center; padding: 24px; border: 0; background: rgba(0,0,0,.8); color: #fff; font: inherit; font-weight: 500; font-size: 1.05rem; text-align: center; cursor: pointer; }
+.hkl-cam-debug { margin: 0; padding: 8px 12px; background: var(--hkl-chip); color: var(--hkl-text); font-family: monospace; font-size: 11px; line-height: 1.4; white-space: pre-wrap; word-break: break-all; }
 .hkl-cam-msg { margin: 16px; padding: 12px 14px; border-radius: 10px; background: var(--hkl-warn-soft); color: var(--hkl-warn-ink); }
 .hkl-tray { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px 16px; }
 .hkl-tray-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-weight: 500; }

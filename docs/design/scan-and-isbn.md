@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/zxing-decoder.ts
   - custom_components/home_keeper_library/frontend/src/tab-scan.ts
 related: [open-library-covers, store-models, frontend-tab-card, loans-home-keeper]
-source_hash: 337d8e22ce2a
+source_hash: 50750adb3472
 ---
 
 # Scan and ISBN
@@ -61,6 +61,15 @@ chunk. The decoder imports only the UPC and EAN readers.
   changes, and that moves the tab out of the page and back in. So the tab stops the
   camera only when it is still out of the page after the redraw, and it starts the
   camera again when it comes back.
+- A browser can pause a video that leaves the page. The Home Assistant app for Android,
+  with **Autoplay videos** off, then refuses a `play()` that no tap started. So a render
+  of the tab keeps the video slot in the page (`dom.replaceKeeping`).
+- The picture is stopped when the video is paused, the track ended, or the video time
+  does not move for `FROZEN_MS` (frozen). If it stays stopped for `STALL_MS`, a button
+  shows on the picture. A tap plays the video, or opens a new camera if the track ended
+  or the picture is frozen.
+- `;debug=1` on the scan route shows the camera state under the picture: the tab element,
+  the video, the track, the last `play()` error and a log of the last camera events.
 
 ### Scan flow
 

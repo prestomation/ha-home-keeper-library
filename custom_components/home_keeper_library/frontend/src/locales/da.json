@@ -299,6 +299,7 @@
   "scan.borrowed_count.other": "{n} lånte bøger tilføjet",
   "scan.camera_denied": "Ingen adgang til kameraet. Tillad kameraet i browseren, eller indtast ISBN.",
   "scan.camera_insecure": "Kameraet kræver HTTPS. Åbn Home Assistant med en HTTPS-adresse, eller indtast ISBN.",
+  "scan.camera_paused": "Kameraet stoppede. Tryk for at starte det igen.",
   "scan.camera_unsupported": "Denne browser kan ikke læse stregkoder. Indtast ISBN.",
   "scan.enter_isbn": "Indtast ISBN",
   "scan.frame_hint": "Hold stregkoden inden for rammen",

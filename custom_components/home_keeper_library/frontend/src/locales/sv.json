@@ -299,6 +299,7 @@
   "scan.borrowed_count.other": "{n} lånade böcker tillagda",
   "scan.camera_denied": "Ingen åtkomst till kameran. Tillåt kameran i webbläsaren eller ange ISBN.",
   "scan.camera_insecure": "Kameran kräver HTTPS. Öppna Home Assistant med en HTTPS-adress eller ange ISBN.",
+  "scan.camera_paused": "Kameran stoppades. Tryck för att starta den igen.",
   "scan.camera_unsupported": "Den här webbläsaren kan inte läsa streckkoder. Ange ISBN.",
   "scan.enter_isbn": "Ange ISBN",
   "scan.frame_hint": "Håll streckkoden inom ramen",

@@ -1,6 +1,6 @@
 import { library } from '../ha-ws';
-import type { Page } from '@playwright/test';
-import { adminState, bookByTitle, expect, openTab, test } from './helpers';
+import type { Locator, Page } from '@playwright/test';
+import { adminState, bookByTitle, expect, fakeCamera, openTab, test } from './helpers';
 
 /**
  * The Scan flow with Enter ISBN, against the Open Library fixture server
@@ -75,50 +75,16 @@ test.describe('Scan', { tag: '@responsive' }, () => {
   });
 });
 
-/**
- * A fake camera (a canvas stream) and a fake `BarcodeDetector`. The detector
- * reads `window.__hklCode` 1 time and then reads nothing. `window.__hklStream`
- * is the last stream that the page got.
- */
-async function fakeCamera(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    const w = window as unknown as Record<string, unknown>;
-    w.__hklGum = 0;
-    w.__hklCode = '';
-    const canvas = document.createElement('canvas');
-    canvas.width = 320;
-    canvas.height = 240;
-    const g = canvas.getContext('2d')!;
-    let n = 0;
-    setInterval(() => {
-      g.fillStyle = `hsl(${(n += 7) % 360} 60% 50%)`;
-      g.fillRect(0, 0, 320, 240);
-    }, 50);
-    Object.defineProperty(navigator, 'mediaDevices', {
-      configurable: true,
-      value: {
-        getUserMedia: async () => {
-          w.__hklGum = (w.__hklGum as number) + 1;
-          w.__hklStream = canvas.captureStream(20);
-          return w.__hklStream;
-        },
-      },
-    });
-    w.BarcodeDetector = class {
-      static async getSupportedFormats(): Promise<string[]> {
-        return ['ean_13'];
-      }
-      async detect(): Promise<Array<{ rawValue: string }>> {
-        const code = w.__hklCode as string;
-        w.__hklCode = '';
-        return code ? [{ rawValue: code }] : [];
-      }
-    };
-  });
-}
-
 function pageVar<T>(page: Page, name: string): Promise<T> {
   return page.evaluate((key) => (window as unknown as Record<string, T>)[key], name);
+}
+
+/** True when the video is in the page, plays, and has a live camera track. */
+function playing(video: Locator): Promise<boolean> {
+  return video.evaluate((v: HTMLVideoElement) => {
+    const tracks = (v.srcObject as MediaStream | null)?.getVideoTracks() ?? [];
+    return v.isConnected && !v.paused && tracks.length > 0 && tracks.every((tr) => tr.readyState === 'live');
+  });
 }
 
 test.describe('Scan camera', { tag: '@responsive' }, () => {
@@ -131,18 +97,20 @@ test.describe('Scan camera', { tag: '@responsive' }, () => {
     const tab = await openTab(page, `/scan;shelf=${shelf}`);
     await tab.locator('[data-k="scan-start"]').click();
     const video = tab.locator('[data-slot="video"] video');
-    const playing = () =>
-      video.evaluate((v: HTMLVideoElement) => {
-        const tracks = (v.srcObject as MediaStream | null)?.getVideoTracks() ?? [];
-        return v.isConnected && !v.paused && tracks.length > 0 && tracks.every((tr) => tr.readyState === 'live');
-      });
-    await expect.poll(playing).toBe(true);
+    await expect.poll(() => playing(video)).toBe(true);
+    // Count the pauses. A video that leaves the page pauses, and a phone app can refuse to play it again.
+    await video.evaluate((v: HTMLVideoElement) => {
+      const w = window as unknown as Record<string, number>;
+      w.__hklPauses = 0;
+      v.addEventListener('pause', () => w.__hklPauses++);
+    });
 
     // The scan changes the library, and Home Keeper redraws its panel.
     await page.evaluate((isbn) => ((window as unknown as Record<string, unknown>).__hklCode = isbn), NEW_ISBN);
     const row = tab.locator('.hkl-result').filter({ hasText: NEW_TITLE });
     await expect(row.locator('.hkl-pill.ok')).toHaveText('Added', { timeout: 30_000 });
-    await expect.poll(playing).toBe(true);
+    await expect.poll(() => playing(video)).toBe(true);
+    expect(await pageVar<number>(page, '__hklPauses')).toBe(0);
     const t0 = await video.evaluate((v: HTMLVideoElement) => v.currentTime);
     await expect.poll(() => video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(t0);
     expect(await pageVar<number>(page, '__hklGum')).toBe(1);
@@ -152,6 +120,59 @@ test.describe('Scan camera', { tag: '@responsive' }, () => {
     await expect
       .poll(() => page.evaluate(() => (window as unknown as { __hklStream: MediaStream }).__hklStream.getVideoTracks()[0].readyState))
       .toBe('ended');
+  });
+});
+
+test.describe('Scan camera recovery', { tag: '@responsive' }, () => {
+  test('a refused play() shows the restart button, and a tap starts the picture again', async ({ page }) => {
+    await fakeCamera(page);
+    const tab = await openTab(page, '/scan');
+    await tab.locator('[data-k="scan-start"]').click();
+    const video = tab.locator('[data-slot="video"] video');
+    await expect.poll(() => playing(video)).toBe(true);
+    await video.evaluate((v: HTMLVideoElement) => v.setAttribute('data-first', ''));
+
+    await page.evaluate(() => ((window as unknown as Record<string, unknown>).__hklRefusePlay = true));
+    await video.evaluate((v: HTMLVideoElement) => v.pause());
+    const restart = tab.locator('[data-k="cam-restart"]');
+    await expect(restart).toHaveText('The camera stopped. Tap to start it again.');
+
+    await page.evaluate(() => ((window as unknown as Record<string, unknown>).__hklRefusePlay = false));
+    await restart.click();
+    await expect(restart).toHaveCount(0);
+    await expect.poll(() => playing(video)).toBe(true);
+    await expect(video).toHaveAttribute('data-first', '');
+    expect(await pageVar<number>(page, '__hklGum')).toBe(1);
+  });
+
+  test('a tap opens a new camera when the camera track ended', async ({ page }) => {
+    await fakeCamera(page);
+    const tab = await openTab(page, '/scan');
+    await tab.locator('[data-k="scan-start"]').click();
+    const video = tab.locator('[data-slot="video"] video');
+    await expect.poll(() => playing(video)).toBe(true);
+    await page.evaluate(() => {
+      const track = (window as unknown as { __hklStream: MediaStream }).__hklStream.getVideoTracks()[0];
+      track.stop();
+      track.dispatchEvent(new Event('ended'));
+    });
+    await tab.locator('[data-k="cam-restart"]').click();
+    await expect(tab.locator('[data-k="cam-restart"]')).toHaveCount(0);
+    await expect.poll(() => playing(video)).toBe(true);
+    expect(await pageVar<number>(page, '__hklGum')).toBe(2);
+  });
+
+  test('the debug view shows the camera state and log', async ({ page }) => {
+    await fakeCamera(page);
+    const tab = await openTab(page, '/scan;debug=1');
+    await tab.locator('[data-k="scan-start"]').click();
+    await expect(page).toHaveURL(/step=camera;debug=1/);
+    const debug = tab.locator('[data-k="cam-debug"]');
+    await expect(debug).toContainText('video: paused=false');
+    await expect(debug).toContainText('track: live');
+    await expect(debug).toContainText('detector: native');
+    await expect(debug).toContainText('getUserMedia ok');
+    await expect(debug).toContainText(/tab \d+ of \d+: in page=true/);
   });
 });
 

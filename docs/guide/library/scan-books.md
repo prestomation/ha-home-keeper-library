@@ -73,3 +73,22 @@ works only away from home, set the internal URL in the app to an HTTPS address t
 
 If the browser asks for the camera, allow it. If the browser cannot read barcodes, the
 library loads a barcode reader of its own the first time.
+
+## When the camera stops
+
+If the camera picture stops during a scan, the camera shows **The camera stopped. Tap to
+start it again.** Tap the picture to continue the scan. The results that you scanned stay.
+
+![The camera picture with the button that starts it again](../../images/scan-camera-stopped-mobile.png)
+
+In the Home Assistant app for Android, the camera can stop after each scan. To prevent
+this, open **Settings** > **Companion app** in the app and turn on **Autoplay videos**.
+
+If the camera stops again and again, open the camera debug view and send a screenshot of
+it with your bug report. Add `;debug=1` to the end of the scan address:
+`/home-keeper/library/scan;debug=1`. The Home Assistant app has no address bar, so put
+this address in a link on a dashboard. A Markdown card can show the link:
+`[Scan debug](/home-keeper/library/scan;debug=1)`. The debug view shows the camera state
+and the last camera events under the picture.
+
+![The camera debug view under the camera picture](../../images/scan-camera-debug-mobile.png)
