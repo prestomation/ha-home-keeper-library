@@ -253,7 +253,7 @@ const VIEW_QUERY: Record<View, string[]> = {
   shelves: [],
   loans: ['tab'],
   wishlist: [],
-  scan: ['shelf', 'mode', 'step'],
+  scan: ['shelf', 'mode', 'step', 'debug'],
   import: [],
   settings: [],
 };

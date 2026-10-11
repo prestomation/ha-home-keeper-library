@@ -362,6 +362,7 @@
   "scan.borrowed_count.other": "{n} libros prestados añadidos",
   "scan.camera_denied": "Sin acceso a la cámara. Permite la cámara en el navegador o escribe el ISBN.",
   "scan.camera_insecure": "La cámara necesita HTTPS. Abre Home Assistant con una dirección HTTPS o escribe el ISBN.",
+  "scan.camera_paused": "La cámara se detuvo. Toca para iniciarla de nuevo.",
   "scan.camera_unsupported": "Este navegador no lee códigos de barras. Escribe el ISBN.",
   "scan.enter_isbn": "Escribir ISBN",
   "scan.frame_hint": "Pon el código de barras en el marco",

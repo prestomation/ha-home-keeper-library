@@ -12,7 +12,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { resolve } from 'node:path';
 import { library } from './ha-ws';
-import { adminState, bookByTitle, libraryTab, noServiceWorker, openCard, openTab } from './tests/helpers';
+import { adminState, bookByTitle, fakeCamera, libraryTab, noServiceWorker, openCard, openTab } from './tests/helpers';
 import { PHONE } from './viewports';
 
 const SHOT_DIR = resolve(__dirname, process.env.SHOT_DIR || '../../docs/images');
@@ -252,6 +252,25 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await expect(httpTab.locator('[data-k="m-https"]')).toBeVisible();
   await shot(httpPage, 'scan-https-mobile');
   await http.close();
+
+  // The camera (a fake camera) with a stopped picture, and the camera debug view.
+  const cam = await browser.newContext({ storageState: './.auth/state.json', viewport: PHONE });
+  await noServiceWorker(cam);
+  const camPage = await cam.newPage();
+  await fakeCamera(camPage);
+  let camTab = await openTab(camPage, '/scan');
+  await camTab.locator('[data-k="scan-start"]').click();
+  await expect(camTab.locator('[data-slot="video"] video')).toBeVisible();
+  await camPage.evaluate(() => ((window as unknown as Record<string, unknown>).__hklRefusePlay = true));
+  await camTab.locator('[data-slot="video"] video').evaluate((v: HTMLVideoElement) => v.pause());
+  await expect(camTab.locator('[data-k="cam-restart"]')).toBeVisible();
+  await shot(camPage, 'scan-camera-stopped-mobile');
+  await camPage.evaluate(() => ((window as unknown as Record<string, unknown>).__hklRefusePlay = false));
+  camTab = await openTab(camPage, '/scan;debug=1');
+  await camTab.locator('[data-k="scan-start"]').click();
+  await expect(camTab.locator('[data-k="cam-debug"]')).toContainText('video: paused=false');
+  await shot(camPage, 'scan-camera-debug-mobile');
+  await cam.close();
 
   // The card on a phone, as Sam (a user who is not an admin).
   const sam = await browser.newContext({ storageState: './.auth/sam.json', viewport: { width: PHONE.width, height: 1250 } });

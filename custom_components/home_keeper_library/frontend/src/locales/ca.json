@@ -362,6 +362,7 @@
   "scan.borrowed_count.other": "{n} llibres manllevats afegits",
   "scan.camera_denied": "Sense accés a la càmera. Permet la càmera al navegador o escriu l’ISBN.",
   "scan.camera_insecure": "La càmera necessita HTTPS. Obre Home Assistant amb una adreça HTTPS o escriu l’ISBN.",
+  "scan.camera_paused": "La càmera s’ha aturat. Toca per tornar-la a iniciar.",
   "scan.camera_unsupported": "Aquest navegador no llegeix codis de barres. Escriu l’ISBN.",
   "scan.enter_isbn": "Escriu l’ISBN",
   "scan.frame_hint": "Posa el codi de barres dins del marc",

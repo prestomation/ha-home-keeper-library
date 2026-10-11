@@ -375,6 +375,7 @@
   "scan.borrowed_count.other": "Dodano {n} wypożyczonej książki",
   "scan.camera_denied": "Brak dostępu do aparatu. Zezwól na aparat w przeglądarce lub wpisz ISBN.",
   "scan.camera_insecure": "Aparat wymaga HTTPS. Otwórz Home Assistant przez adres HTTPS lub wpisz ISBN.",
+  "scan.camera_paused": "Aparat się zatrzymał. Stuknij, aby uruchomić go ponownie.",
   "scan.camera_unsupported": "Ta przeglądarka nie odczytuje kodów kreskowych. Wpisz ISBN.",
   "scan.enter_isbn": "Wpisz ISBN",
   "scan.frame_hint": "Umieść kod kreskowy w ramce",

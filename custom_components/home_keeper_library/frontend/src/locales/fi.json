@@ -349,6 +349,7 @@
   "scan.borrowed_count.other": "{n} lainattua kirjaa lisätty",
   "scan.camera_denied": "Ei pääsyä kameraan. Salli kamera selaimessa tai kirjoita ISBN.",
   "scan.camera_insecure": "Kamera vaatii HTTPS:n. Avaa Home Assistant HTTPS-osoitteella tai kirjoita ISBN.",
+  "scan.camera_paused": "Kamera pysähtyi. Käynnistä se uudelleen napauttamalla.",
   "scan.camera_unsupported": "Tämä selain ei lue viivakoodeja. Kirjoita ISBN.",
   "scan.enter_isbn": "Kirjoita ISBN",
   "scan.frame_hint": "Pidä viivakoodi kehyksen sisällä",

@@ -20,6 +20,8 @@ export interface ScanSession {
   manualOpen: boolean;
   markRead: boolean;
   cameraError: '' | 'insecure' | 'denied' | 'unsupported';
+  /** True when the camera runs but its picture stopped. A tap starts it again. */
+  stalled: boolean;
   torch: boolean | null;
   party: string;
   personId: string | null;

@@ -24,7 +24,7 @@ is the single source of truth (see `RELEASE.md`).
 ### Fixed
 
 - **Black camera after scan.** The camera picture stays on after each scan, so you can
-  scan the next book at once.
+  scan the next book at once. If the picture stops, tap it to start the camera again.
 - **Camera after Back.** If you leave the scan step while the camera starts, the camera
   stops.
 - **Changed ISBN.** When you change the ISBN of a book, its ISBN-10 changes too.

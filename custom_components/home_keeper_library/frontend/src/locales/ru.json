@@ -375,6 +375,7 @@
   "scan.borrowed_count.other": "Добавлено {n} взятой книги",
   "scan.camera_denied": "Нет доступа к камере. Разрешите камеру в браузере или введите ISBN.",
   "scan.camera_insecure": "Камере нужен HTTPS. Откройте Home Assistant по адресу HTTPS или введите ISBN.",
+  "scan.camera_paused": "Камера остановилась. Коснитесь, чтобы запустить её снова.",
   "scan.camera_unsupported": "Этот браузер не читает штрихкоды. Введите ISBN.",
   "scan.enter_isbn": "Ввести ISBN",
   "scan.frame_hint": "Поместите штрихкод в рамку",

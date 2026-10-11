@@ -616,6 +616,160 @@ describe('scan', () => {
   });
 });
 
+describe('scan camera', () => {
+  let cam;
+
+  /** A fake camera, a fake `BarcodeDetector` and a video `play()` that the test controls. */
+  beforeEach(() => {
+    Object.defineProperty(window, 'isSecureContext', { value: true, configurable: true });
+    cam = { gum: 0, refuse: false, frozen: false, paused: new WeakMap(), tracks: [] };
+    const track = () => {
+      const t = new EventTarget();
+      Object.assign(t, { readyState: 'live', muted: false, enabled: true, stop: () => (t.readyState = 'ended'), getCapabilities: () => ({}) });
+      cam.tracks.push(t);
+      return t;
+    };
+    Object.defineProperty(navigator, 'mediaDevices', {
+      configurable: true,
+      value: {
+        getUserMedia: async () => {
+          cam.gum++;
+          const t = track();
+          return { getVideoTracks: () => [t], getTracks: () => [t] };
+        },
+      },
+    });
+    window.BarcodeDetector = class {
+      static async getSupportedFormats() {
+        return ['ean_13'];
+      }
+      async detect() {
+        return [];
+      }
+    };
+    vi.spyOn(HTMLMediaElement.prototype, 'paused', 'get').mockImplementation(function () {
+      return cam.paused.get(this) ?? true;
+    });
+    // The video has a frame, and its time moves, unless the test freezes the picture.
+    vi.spyOn(HTMLMediaElement.prototype, 'readyState', 'get').mockReturnValue(4);
+    vi.spyOn(HTMLMediaElement.prototype, 'currentTime', 'get').mockImplementation(() => (cam.frozen ? 1 : performance.now() / 1000));
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockImplementation(function () {
+      if (cam.refuse) return Promise.reject(new DOMException('no gesture', 'NotAllowedError'));
+      cam.paused.set(this, false);
+      this.dispatchEvent(new Event('playing'));
+      return Promise.resolve();
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete window.BarcodeDetector;
+  });
+
+  const video = () => $('[data-slot="video"] video');
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  /** The browser pauses the video, as Home Keeper or the system can do. */
+  function pause(v) {
+    cam.paused.set(v, true);
+    v.dispatchEvent(new Event('pause'));
+  }
+
+  it('keeps the video in the page when a scan renders the view', async () => {
+    const state = fixture();
+    const dune = state.books.find((b) => b.title === 'Dune');
+    const fake = await mount(`/scan;shelf=${state.shelves[0].id};step=camera`, {
+      replies: { scan_isbn: { result: 'added', book: dune, copy: null, existing_copies: [] } },
+    });
+    const v = video();
+    const slot = v.parentNode;
+    expect(v.paused).toBe(false);
+    $('[data-k="scan-manual"]').click();
+    $('[data-k="isbn-input"]').value = dune.isbn13;
+    $('[data-k="isbn-add"]').click();
+    fake.push();
+    await flush();
+    expect(text()).toContain('Added to this shelf: 1');
+    // The slot and its video never left the page, so the browser did not pause the video.
+    expect($('[data-slot="video"]')).toBe(slot);
+    expect(video()).toBe(v);
+    expect(cam.gum).toBe(1);
+  });
+
+  it('shows the restart button when the browser refuses play(), and a tap plays again', async () => {
+    const state = fixture();
+    await mount(`/scan;shelf=${state.shelves[0].id};step=camera`);
+    const v = video();
+    cam.refuse = true;
+    pause(v);
+    await wait(900);
+    expect($('[data-k="cam-restart"]').textContent).toBe('The camera stopped. Tap to start it again.');
+    cam.refuse = false;
+    $('[data-k="cam-restart"]').click();
+    await wait(900);
+    expect($('[data-k="cam-restart"]')).toBeNull();
+    expect(video()).toBe(v);
+    expect(v.paused).toBe(false);
+    expect(cam.gum).toBe(1);
+  });
+
+  it('does not show the restart button for a short pause', async () => {
+    const state = fixture();
+    await mount(`/scan;shelf=${state.shelves[0].id};step=camera`);
+    const v = video();
+    pause(v);
+    await v.play();
+    await wait(900);
+    expect($('[data-k="cam-restart"]')).toBeNull();
+  });
+
+  it('starts a new camera on a tap when the camera track ended', async () => {
+    const state = fixture();
+    await mount(`/scan;shelf=${state.shelves[0].id};step=camera`);
+    const first = video();
+    cam.tracks[0].readyState = 'ended';
+    cam.tracks[0].dispatchEvent(new Event('ended'));
+    await wait(900);
+    $('[data-k="cam-restart"]').click();
+    await flush();
+    expect(cam.gum).toBe(2);
+    expect(video()).not.toBe(first);
+    expect($('[data-k="cam-restart"]')).toBeNull();
+  });
+
+  it('starts a new camera on a tap when the picture is frozen', async () => {
+    const state = fixture();
+    await mount(`/scan;shelf=${state.shelves[0].id};step=camera`);
+    const first = video();
+    cam.frozen = true;
+    await wait(1400);
+    expect($('[data-k="cam-restart"]')).toBeNull();
+    await wait(1400);
+    expect($('[data-k="cam-restart"]')).not.toBeNull();
+    expect(first.paused).toBe(false);
+    cam.frozen = false;
+    $('[data-k="cam-restart"]').click();
+    await flush();
+    expect(cam.gum).toBe(2);
+    expect(video()).not.toBe(first);
+    expect($('[data-k="cam-restart"]')).toBeNull();
+  });
+
+  it('shows the camera state and log in the debug view only with ;debug=1', async () => {
+    const state = fixture();
+    await mount(`/scan;shelf=${state.shelves[0].id};step=camera`);
+    expect($('[data-k="cam-debug"]')).toBeNull();
+    el.route = { path: `/scan;shelf=${state.shelves[0].id};step=camera;debug=1` };
+    await flush();
+    const dbg = $('[data-k="cam-debug"]').textContent;
+    expect(dbg).toMatch(/^tab \d+ of \d+: in page=true/);
+    expect(dbg).toContain('video: paused=false frozen=false');
+    expect(dbg).toContain('track: live muted=false');
+    expect(dbg).toContain('detector: native');
+    expect(dbg).toContain('getUserMedia ok');
+  });
+});
+
 describe('import', () => {
   function pick(name, content) {
     const input = $('[data-k="im-file"]');
