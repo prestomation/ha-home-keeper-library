@@ -736,3 +736,21 @@ def test_report_shape() -> None:
     fallback = iex.report(plan, dry_run=False, messages={})
     assert fallback["problems"][0]["message"] == "import_format_too_new"
     assert fallback["dry_run"] is False
+
+
+def test_export_orders_locations_by_order_then_name() -> None:
+    state = m.empty_state()
+    for key, name, order in (("r3", "b", 1), ("r1", "Zed", 0), ("r2", "alpha", 1)):
+        state["rooms"][key] = {"id": key, "name": name, "area_id": None, "order": order}
+    state["rooms"]["r4"] = {"id": "r4", "name": "Alpha", "area_id": None, "order": 1}
+    data, _ = _export(state)
+    assert [r["id"] for r in data["rooms"]] == ["r1", "r2", "r4", "r3"]
+    assert data["rooms"][0]["area_name"] is None
+
+
+def test_export_skips_no_cover_without_a_file() -> None:
+    state = _state()
+    state["books"][DUNE]["cover"] = {"kind": "openlibrary", "file": None}
+    _, skipped = _export(state)
+    assert skipped == {"covers": 0}
+    assert iex.covers_to_copy(state) == []

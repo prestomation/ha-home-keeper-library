@@ -114,9 +114,6 @@ EXCLUDED_KEYS: dict[str, tuple[tuple[str, str], ...]] = {
     ),
 }
 
-#: The keys that the export adds next to an id: the name of the record.
-NAME_KEYS = ("area_name", "person_name", "wishlist_todo_name")
-
 #: The root of ``files_dir``, below the config directory.
 FILES_ROOT = (".storage", "home_keeper_import_export")
 #: The directory of the cover files in ``files_dir``.
