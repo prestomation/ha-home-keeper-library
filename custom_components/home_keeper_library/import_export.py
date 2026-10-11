@@ -900,6 +900,25 @@ def _loan(data: dict[str, Any], record: dict[str, Any], today: str) -> dict[str,
     return loan
 
 
+def unwrap_document(document: Any) -> Any:
+    """The ``data`` of *document*.
+
+    Home Keeper sends the whole section that ``export_data`` returned:
+    ``{format, version, data, skipped}``. A user can also send only ``data``. For the
+    whole section, the outer ``format`` goes into the data, so the format check sees it.
+    """
+    if (
+        isinstance(document, dict)
+        and isinstance(document.get("data"), dict)
+        and "books" not in document
+    ):
+        data = dict(document["data"])
+        if "format" in document:
+            data["format"] = document["format"]
+        return data
+    return document
+
+
 def plan_import(
     state: dict[str, Any],
     document: Any,
@@ -916,7 +935,7 @@ def plan_import(
     """
     return _Planner(
         state,
-        document,
+        unwrap_document(document),
         persons=persons,
         areas=areas,
         todo_entities=todo_entities,
@@ -954,4 +973,5 @@ __all__ = [
     "is_cover_path",
     "plan_import",
     "report",
+    "unwrap_document",
 ]

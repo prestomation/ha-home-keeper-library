@@ -4,7 +4,7 @@ summary: How the library joins the combined export and import of Home Keeper, wh
 implements:
   - custom_components/home_keeper_library/import_export.py
 related: [csv-import-export, home-keeper-dependency, store-models, events-api]
-source_hash: 1f8023a3d36a
+source_hash: c1adcfbe536a
 ---
 
 # Home Keeper export and import
@@ -57,7 +57,9 @@ is `{format, version, data, skipped}`, and `data` goes through
 ### Import
 
 `import_export.plan_import` plans on a snapshot in an executor job, section by section
-in the order of `SECTIONS`:
+in the order of `SECTIONS`. Home Keeper sends the whole section `{format, version, data,
+skipped}`. `unwrap_document` takes its `data` and keeps the outer `format`. A document
+that is only `data` also imports.
 
 1. Refuse a `format` above `import_export.FORMAT`.
 2. Match a room by id, then by name. Match a bookcase or a shelf by id, then by name in

@@ -569,6 +569,32 @@ def test_higher_format_is_refused() -> None:
     assert plan.state["books"] == {}
 
 
+def test_whole_section_imports_like_its_data() -> None:
+    data, skipped = _export(_state())
+    section = {"format": 1, "version": "0.3.0b1", "data": data, "skipped": skipped}
+    by_data = _plan(m.empty_state(), data)
+    by_section = _plan(m.empty_state(), section)
+    assert by_section.ok
+    assert by_section.counts == by_data.counts
+    assert by_section.state == by_data.state
+    assert by_section.state["books"] != {}
+
+
+def test_whole_section_with_higher_format_is_refused() -> None:
+    data, _ = _export(_state())
+    plan = _plan(m.empty_state(), {"format": 2, "data": data})
+    assert _problems(plan) == [("error", "format", "import_format_too_new")]
+    assert plan.state["books"] == {}
+
+
+def test_unwrap_keeps_a_data_document() -> None:
+    doc = {"format": 1, "books": [], "data": {"books": [{"title": "X"}]}}
+    assert iex.unwrap_document(doc) is doc
+    assert iex.unwrap_document(["x"]) == ["x"]
+    assert iex.unwrap_document({"data": "x"}) == {"data": "x"}
+    assert iex.unwrap_document({"data": {"books": []}}) == {"books": []}
+
+
 @pytest.mark.parametrize("fmt", [0, "1", True, None])
 def test_bad_format_is_refused(fmt: object) -> None:
     plan = _plan(m.empty_state(), {"format": fmt})
