@@ -289,6 +289,7 @@ describe('parseRoute and buildPath', () => {
     expect(u.parseRoute('/loans?tab=out').query).toEqual({});
     expect(u.parseRoute('/scan?shelf=s1&mode=borrowed&step=camera').query).toEqual({ shelf: 's1', mode: 'borrowed', step: 'camera' });
     expect(u.parseRoute('/scan?step=setup&mode=shelf').query).toEqual({});
+    expect(u.parseRoute('/scan;step=camera;debug=1').query).toEqual({ step: 'camera', debug: '1' });
     expect(u.parseRoute('/books/x?q=a').query).toEqual({});
   });
 
@@ -323,7 +324,7 @@ describe('parseRoute and buildPath', () => {
   });
 
   it('round-trips', () => {
-    for (const p of ['/books;q=a%20b;status=read;room=r;shelf=s;reader=p;subject=x;owned=all;sort=title;view=rows', '/books/b1', '/shelves/r', '/loans;tab=in', '/wishlist', '/scan;shelf=s;mode=borrowed;step=summary', '/import', '/settings']) {
+    for (const p of ['/books;q=a%20b;status=read;room=r;shelf=s;reader=p;subject=x;owned=all;sort=title;view=rows', '/books/b1', '/shelves/r', '/loans;tab=in', '/wishlist', '/scan;shelf=s;mode=borrowed;step=summary;debug=1', '/import', '/settings']) {
       expect(u.buildPath(u.parseRoute(p))).toBe(p);
     }
   });

@@ -299,6 +299,7 @@
   "scan.borrowed_count.other": "{n} geliehene Bücher hinzugefügt",
   "scan.camera_denied": "Kein Zugriff auf die Kamera. Die Kamera im Browser erlauben oder die ISBN eingeben.",
   "scan.camera_insecure": "Die Kamera braucht HTTPS. Home Assistant über eine HTTPS-Adresse öffnen oder die ISBN eingeben.",
+  "scan.camera_paused": "Die Kamera wurde angehalten. Tippen, um sie wieder zu starten.",
   "scan.camera_unsupported": "Dieser Browser kann keine Barcodes lesen. Die ISBN eingeben.",
   "scan.enter_isbn": "ISBN eingeben",
   "scan.frame_hint": "Den Barcode in den Rahmen halten",

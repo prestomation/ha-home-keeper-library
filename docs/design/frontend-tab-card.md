@@ -25,7 +25,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/styles.ts
   - custom_components/home_keeper_library/frontend/src/global.d.ts
 related: [home-keeper-dependency, scan-and-isbn, csv-import-export, people-privilege]
-source_hash: 8d53aa9c49ae
+source_hash: b15cb1a2d6a2
 ---
 
 # Tab and card
@@ -104,10 +104,10 @@ are `;key=value` parameters on the last segment, as in `/books;q=le%20guin;statu
 The book filters are `q`, `status`, `room`, `shelf`, `reader`, `subject`, `owned`, `sort` and
 `view`. `utils.filterBooks` and `utils.sortBooks` apply them. Each view is a free function over
 `ViewCtx` (`tab-types.ts`) that returns 1 HTML string. `tab.ts` renders it with
-`dom.renderKeepFocus`, which keeps the focus, the caret and the typed text of the focused field. For
-each event type, 1 delegated listener reads the `data-act`, `data-chg`, `data-input` and `data-form`
-attributes. The dialogs of `tab-dialogs.ts` are a separate layer, so a data push does not clear a
-form. A dialog error keeps the typed input. A failed command renders the stored values again.
+`dom.renderKeepFocus`. It keeps the focus, the caret, the typed text and the camera video in the
+page. For each event type, 1 delegated listener reads the `data-act`, `data-chg`, `data-input` and
+`data-form` attributes. The dialogs of `tab-dialogs.ts` are a separate layer, so a data push does
+not clear a form. A dialog error keeps the typed input. A failed command renders the stored values.
 
 ### The card
 

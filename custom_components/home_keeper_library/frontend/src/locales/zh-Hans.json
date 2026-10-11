@@ -299,6 +299,7 @@
   "scan.borrowed_count.other": "已添加 {n} 本借入的书",
   "scan.camera_denied": "无法使用摄像头。请在浏览器中允许摄像头，或输入 ISBN。",
   "scan.camera_insecure": "摄像头需要 HTTPS。请用 HTTPS 地址打开 Home Assistant，或输入 ISBN。",
+  "scan.camera_paused": "摄像头已停止。点按即可重新启动。",
   "scan.camera_unsupported": "此浏览器无法读取条形码。请输入 ISBN。",
   "scan.enter_isbn": "输入 ISBN",
   "scan.frame_hint": "将条形码放入框内",

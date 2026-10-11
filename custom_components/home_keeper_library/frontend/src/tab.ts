@@ -12,7 +12,7 @@ import { renderKeepFocus } from './dom';
 import { setLanguage, t, tn } from './i18n';
 import { ensureMarkdown, wireMarkdown } from './markdown';
 import { wireCovers } from './markup';
-import { Scanner } from './scanner';
+import { camLogLines, logCam, Scanner } from './scanner';
 import { STYLES } from './styles';
 import { booksPath, renderBook, renderBooks } from './tab-books';
 import { renderDialog, type Dialog, type DialogState } from './tab-dialogs';
@@ -47,6 +47,10 @@ import {
 import { PANEL_VERSION } from 'panel-version';
 
 const PAGE = 240;
+/** How long the camera picture can stop before the tab shows the restart button. */
+const STALL_MS = 800;
+/** Tab elements made on this page. The debug view shows if Home Keeper makes a new one. */
+let tabCount = 0;
 
 function freshImport(personId: string | null): ImportState {
   return {
@@ -78,6 +82,7 @@ function freshUi(): UiState {
       manualOpen: false,
       markRead: false,
       cameraError: '',
+      stalled: false,
       torch: null,
       party: '',
       personId: null,
@@ -118,6 +123,11 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   private _dialog: DialogState | null = null;
   private _scanner: Scanner | null = null;
   private _stopTimer: ReturnType<typeof setTimeout> | undefined;
+  private _stallTimer: ReturnType<typeof setTimeout> | undefined;
+  private _debugTimer: ReturnType<typeof setInterval> | undefined;
+  private readonly _tabId = ++tabCount;
+  private _connects = 0;
+  private _renders = 0;
   private _gate = makeCodeGate(3000);
   private _scanKey = 0;
   private _booksPath = '/books';
@@ -138,6 +148,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     this._root.addEventListener('input', (ev) => this._onInput(ev));
     this._root.addEventListener('submit', (ev) => this._onSubmit(ev as SubmitEvent));
     this._root.addEventListener('keydown', (ev) => this._onKey(ev as KeyboardEvent));
+    logCam(`tab ${this._tabId} made`);
   }
 
   // ── Host properties ────────────────────────────────────────────────────────
@@ -174,6 +185,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     const prev = this._route;
     const search = route.path.includes('?') ? '' : (globalThis.location?.search ?? '');
     this._route = parseRoute(route.path, search);
+    if (prev.view === 'scan' || this._route.view === 'scan') logCam(`tab ${this._tabId} route ${route.path}`);
     if (this._route.view === 'books') this._booksPath = buildPath(this._route);
     if (prev.view !== this._route.view || prev.id !== this._route.id) {
       this._ui.editNotes = false;
@@ -193,9 +205,11 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     if (this._hass && !this._unsub && !this._subscribing) void this._subscribe();
     // Home Keeper redraws its panel when the data changes. The redraw moves this
     // tab out of the page and back in. Keep the camera, or start it again.
+    this._connects++;
+    if (this._scanner) logCam(`tab ${this._tabId} connected`);
     clearTimeout(this._stopTimer);
     this._stopTimer = undefined;
-    this._scanner?.resume();
+    void this._scanner?.resume();
     this._syncScanner();
   }
 
@@ -204,10 +218,14 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     this._unsub = undefined;
     this._search.cancel();
     // Stop the camera only if the tab does not come back at once.
+    if (this._scanner) logCam(`tab ${this._tabId} disconnected`);
     clearTimeout(this._stopTimer);
     this._stopTimer = setTimeout(() => {
       this._stopTimer = undefined;
-      if (!this.isConnected) this._stopScanner();
+      if (this.isConnected) return;
+      this._stopScanner();
+      clearInterval(this._debugTimer);
+      this._debugTimer = undefined;
     }, 0);
   }
 
@@ -365,14 +383,36 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     const err = this._error ? `<div class="hkl-error" role="alert">${escapeHTML(this._error)}</div>` : '';
     const admin = ctx.lib.me.is_admin ? '' : `<div class="hkl-banner warn">${escapeHTML(t('common.admin_only'))}</div>`;
     this._main.dataset.view = this._route.view;
-    renderKeepFocus(this._root, this._main, `${admin}${err}${this._viewHtml(ctx)}${this._route.view === 'scan' ? '' : foot}`);
+    this._renders++;
+    // The video stays in the page across a render. A browser can pause a video that leaves the page.
+    renderKeepFocus(this._root, this._main, `${admin}${err}${this._viewHtml(ctx)}${this._route.view === 'scan' ? '' : foot}`, '[data-slot="video"]');
     wireMarkdown(this._main);
     wireCovers(this._main, this._api, () => this._render());
     const slot = this._main.querySelector('[data-slot="video"]');
-    if (slot && this._scanner) {
-      slot.appendChild(this._scanner.video);
-      this._scanner.resume();
+    if (slot && !this._scanner) slot.replaceChildren();
+    if (slot && this._scanner && this._scanner.video.parentNode !== slot) {
+      slot.replaceChildren(this._scanner.video);
+      void this._scanner.resume();
     }
+    this._paintDebug();
+  }
+
+  /** Write the camera state into the debug view (`;debug=1`) of the scan. */
+  private _paintDebug(): void {
+    const pre = this._main.querySelector('[data-k="cam-debug"]');
+    if (!pre) {
+      clearInterval(this._debugTimer);
+      this._debugTimer = undefined;
+      return;
+    }
+    this._debugTimer ??= setInterval(() => this._paintDebug(), 500);
+    pre.textContent = [
+      `tab ${this._tabId} of ${tabCount}: in page=${this.isConnected} connects=${this._connects} renders=${this._renders}`,
+      ...(this._scanner?.debugLines() ?? ['camera: off']),
+      `user agent: ${navigator.userAgent}`,
+      'log:',
+      ...camLogLines(),
+    ].join('\n');
   }
 
   private _renderDialog(): void {
@@ -1071,9 +1111,10 @@ export class HomeKeeperLibraryTab extends HTMLElement {
       return;
     }
     if (this._scanner) return;
-    const scanner = new Scanner((code) => this._onCode(code));
+    const scanner: Scanner = new Scanner((code) => this._onCode(code), undefined, () => this._onCameraState(scanner));
     this._scanner = scanner;
     this._ui.scan.cameraError = '';
+    this._ui.scan.stalled = false;
     void scanner.start().then((res) => {
       // The user left the camera step while the camera started.
       if (this._scanner !== scanner) {
@@ -1094,6 +1135,37 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   private _stopScanner(): void {
     this._scanner?.stop();
     this._scanner = null;
+    clearTimeout(this._stallTimer);
+    this._ui.scan.stalled = false;
+  }
+
+  /**
+   * The picture of *scanner* stopped or started. A short stop is normal, for
+   * example when Home Keeper moves the tab. If the picture is still stopped
+   * after the wait, show the button that starts it again.
+   */
+  private _onCameraState(scanner: Scanner): void {
+    clearTimeout(this._stallTimer);
+    this._stallTimer = setTimeout(() => {
+      if (this._scanner !== scanner) return;
+      const stalled = scanner.stalled();
+      if (stalled === this._ui.scan.stalled) return;
+      this._ui.scan.stalled = stalled;
+      this._render();
+    }, STALL_MS);
+  }
+
+  /** The user tapped the stopped picture. Play it again, or else (track ended, frozen picture) start a new camera. */
+  private async _restartCamera(): Promise<void> {
+    const scanner = this._scanner;
+    if (scanner && !scanner.ended() && !scanner.isFrozen() && (await scanner.resume())) {
+      this._onCameraState(scanner);
+      return;
+    }
+    logCam(`tab ${this._tabId} new camera`);
+    this._stopScanner();
+    this._syncScanner();
+    this._render();
   }
 
   private _onCode(code: string): void {
@@ -1194,6 +1266,9 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         if (entry) await this._scanDuplicate(entry, choice);
         return;
       }
+      case 'scan-camera':
+        await this._restartCamera();
+        return;
       case 'scan-torch':
         if (this._scanner && s.torch !== null) {
           s.torch = !s.torch;

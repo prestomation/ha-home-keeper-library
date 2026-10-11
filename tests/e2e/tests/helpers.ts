@@ -111,3 +111,51 @@ export function trackErrors(page: Page): string[] {
   });
   return errors;
 }
+
+/**
+ * A fake camera (a canvas stream) and a fake `BarcodeDetector`. The detector
+ * reads `window.__hklCode` 1 time and then reads nothing. `window.__hklStream`
+ * is the last stream that the page got. If `window.__hklRefusePlay` is true, a
+ * video `play()` is refused, as a browser does when no tap started it.
+ */
+export async function fakeCamera(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const w = window as unknown as Record<string, unknown>;
+    w.__hklGum = 0;
+    w.__hklCode = '';
+    const canvas = document.createElement('canvas');
+    canvas.width = 320;
+    canvas.height = 240;
+    const g = canvas.getContext('2d')!;
+    let n = 0;
+    setInterval(() => {
+      g.fillStyle = `hsl(${(n += 7) % 360} 60% 50%)`;
+      g.fillRect(0, 0, 320, 240);
+    }, 50);
+    Object.defineProperty(navigator, 'mediaDevices', {
+      configurable: true,
+      value: {
+        getUserMedia: async () => {
+          w.__hklGum = (w.__hklGum as number) + 1;
+          w.__hklStream = canvas.captureStream(20);
+          return w.__hklStream;
+        },
+      },
+    });
+    const play = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function (this: HTMLMediaElement) {
+      if (w.__hklRefusePlay) return Promise.reject(new DOMException('play() needs a tap', 'NotAllowedError'));
+      return play.call(this);
+    };
+    w.BarcodeDetector = class {
+      static async getSupportedFormats(): Promise<string[]> {
+        return ['ean_13'];
+      }
+      async detect(): Promise<Array<{ rawValue: string }>> {
+        const code = w.__hklCode as string;
+        w.__hklCode = '';
+        return code ? [{ rawValue: code }] : [];
+      }
+    };
+  });
+}

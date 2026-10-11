@@ -126,8 +126,13 @@ function cameraStep(ctx: ViewCtx): string {
   const msg = s.method === 'camera' && s.cameraError
     ? `<div class="hkl-cam-msg" role="alert">${escapeHTML(t(`scan.camera_${s.cameraError}`))}</div>`
     : '';
+  const stalled = s.stalled
+    ? `<button class="hkl-cam-restart" data-act="scan-camera" data-k="cam-restart">${escapeHTML(t('scan.camera_paused'))}</button>`
+    : '';
+  // The debug view (`;debug=1`) shows the camera state. The tab writes its text.
+  const debug = ctx.route.query.debug === '1' ? '<pre class="hkl-cam-debug" data-k="cam-debug"></pre>' : '';
   const cam = camera
-    ? `<div class="hkl-cam"><div class="hkl-cam-video" data-slot="video"></div><div class="hkl-frame" aria-hidden="true"></div>${s.torch !== null ? `<button class="hkl-iconbtn torch${s.torch ? ' on' : ''}" data-act="scan-torch" data-k="torch" aria-pressed="${s.torch}" aria-label="${escapeHTML(t('scan.torch'))}">${ICONS.torch}</button>` : ''}<span class="hkl-cam-hint">${escapeHTML(t('scan.frame_hint'))}</span></div>`
+    ? `<div class="hkl-cam"><div class="hkl-cam-video" data-slot="video"></div><div class="hkl-frame" aria-hidden="true"></div>${stalled}${s.torch !== null ? `<button class="hkl-iconbtn torch${s.torch ? ' on' : ''}" data-act="scan-torch" data-k="torch" aria-pressed="${s.torch}" aria-label="${escapeHTML(t('scan.torch'))}">${ICONS.torch}</button>` : ''}<span class="hkl-cam-hint">${escapeHTML(t('scan.frame_hint'))}</span></div>`
     : '';
   const added = s.results.filter((r) => r.res?.result === 'added' || r.res?.result === 'moved' || (isBorrowedMode(ctx) && r.res)).length;
   const manual = s.manualOpen || !camera
@@ -139,7 +144,7 @@ function cameraStep(ctx: ViewCtx): string {
   const counter = isBorrowedMode(ctx) ? tn('scan.borrowed_count', added) : t('scan.added_count', { n: added });
   return `<div class="hkl-scan cam">
     ${head(where, 'scan-setup')}
-    ${cam}${msg}
+    ${cam}${msg}${debug}
     <div class="hkl-tray">
       <div class="hkl-tray-head"><span>${escapeHTML(counter)}</span>${camera ? button(escapeHTML(t('scan.enter_isbn')), 'scan-manual', 'outline', 'data-k="scan-manual"') : ''}</div>
       ${manual}
