@@ -103,6 +103,9 @@ export function normalizeState(raw: Partial<RawState>): Lib {
     people: normalizePeople(raw.people),
     me: { person_id: raw.me?.person_id ?? null, name: raw.me?.name ?? null, is_admin: raw.me?.is_admin === true },
     currency: raw.currency || 'USD',
+    openlibrary: raw.openlibrary_account
+      ? { connected: raw.openlibrary_account.connected === true, username: raw.openlibrary_account.username ?? null }
+      : null,
   };
 }
 
@@ -351,8 +354,10 @@ export function withQuery(
 
 // ── Book filters ─────────────────────────────────────────────────────────────
 
-export type StatusFilter = 'all' | 'unread' | 'reading' | 'read' | 'needs';
-export const STATUS_FILTERS: StatusFilter[] = ['all', 'unread', 'reading', 'read', 'needs'];
+export type StatusFilter = 'all' | 'unread' | 'reading' | 'read' | 'needs' | 'not_on_ol';
+export const STATUS_FILTERS: StatusFilter[] = ['all', 'unread', 'reading', 'read', 'needs', 'not_on_ol'];
+/** The status filters that only an admin sees. */
+export const ADMIN_STATUS_FILTERS: StatusFilter[] = ['not_on_ol'];
 export type SortKey = 'author' | 'title' | 'added' | 'published' | 'rating';
 export const SORT_KEYS: SortKey[] = ['author', 'title', 'added', 'published', 'rating'];
 
@@ -455,9 +460,30 @@ function matchesStatus(book: Book, status: StatusFilter, me: string | null): boo
       return mine === 'read';
     case 'needs':
       return book.needs_details;
+    case 'not_on_ol':
+      return notOnOpenLibrary(book);
     default:
       return true;
   }
+}
+
+/** True if Open Library does not have *book* and no admin skipped it. */
+export function notOnOpenLibrary(book: Book): boolean {
+  return !book.openlibrary && book.openlibrary_status === 'missing';
+}
+
+/** The edition key `OL…M` in a key or an openlibrary.org URL, or null. */
+export function editionKey(text: string | null | undefined): string | null {
+  const value = String(text ?? '').trim();
+  if (/^OL\d+M$/.test(value)) return value;
+  const path = value.includes('://') ? value.replace(/^[a-z]+:\/\/[^/]+/i, '') : value;
+  const m = path.match(/(?:^|\/books\/)(OL\d+M)(?:[/?#.]|$)/);
+  return m ? m[1] : null;
+}
+
+/** The page of an edition on Open Library. */
+export function openLibraryUrl(editionKey: string, edit = false): string {
+  return `https://openlibrary.org/books/${encodeURIComponent(editionKey)}${edit ? '/edit' : ''}`;
 }
 
 /** True if *book* passes every filter except the status filter. */
@@ -478,7 +504,7 @@ export function filterBooks(books: Book[], f: BookFilters, ctx: FilterContext): 
 
 /** The count for each status chip, with the other filters applied. */
 export function statusCounts(books: Book[], f: BookFilters, ctx: FilterContext): Record<StatusFilter, number> {
-  const counts: Record<StatusFilter, number> = { all: 0, unread: 0, reading: 0, read: 0, needs: 0 };
+  const counts: Record<StatusFilter, number> = { all: 0, unread: 0, reading: 0, read: 0, needs: 0, not_on_ol: 0 };
   for (const book of books) {
     if (!matchesBase(book, f, ctx)) continue;
     for (const s of STATUS_FILTERS) if (matchesStatus(book, s, ctx.me)) counts[s] += 1;

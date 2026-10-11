@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "Opzioni della biblioteca",
+        "menu_options": {
+          "currency": "Valuta",
+          "openlibrary": "Account Open Library"
+        }
+      },
+      "currency": {
+        "title": "Valuta",
         "data": {
           "currency": "Valuta"
         },
         "data_description": {
           "currency": "Un codice di 3 lettere, per esempio EUR o USD."
         }
+      },
+      "openlibrary": {
+        "title": "Account Open Library",
+        "description": "Incolla la chiave di accesso e la chiave segreta dalla pagina delle chiavi S3 del tuo account Archive.org. La biblioteca le usa solo quando invii un libro a Open Library.",
+        "data": {
+          "access_key": "Chiave di accesso",
+          "secret_key": "Chiave segreta"
+        }
       }
     },
     "error": {
-      "invalid_currency": "Inserisci un codice valuta di 3 lettere."
+      "invalid_currency": "Inserisci un codice valuta di 3 lettere.",
+      "invalid_auth": "Open Library non ha accettato queste chiavi.",
+      "cannot_connect": "Open Library non è disponibile. Riprova più tardi."
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library non è caricata. Riprova dopo l'avvio."
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "L'ID del libro."
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "Invia a Open Library",
+      "description": "Aggiunge un libro che Open Library non ha, con l'account Open Library collegato, poi collega il libro.",
+      "fields": {
+        "book_id": {
+          "name": "Libro",
+          "description": "L'ID del libro."
+        },
+        "fields": {
+          "name": "Campi",
+          "description": "I campi facoltativi da inviare: publisher, published e isbn. Il titolo e il primo autore vengono sempre inviati."
+        },
+        "include_cover": {
+          "name": "Invia la copertina",
+          "description": "Invia anche la copertina personalizzata del libro."
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "Collega a Open Library",
+      "description": "Collega un libro a un'edizione di Open Library e ne compila i campi vuoti.",
+      "fields": {
+        "book_id": {
+          "name": "Libro",
+          "description": "L'ID del libro."
+        },
+        "edition": {
+          "name": "Edizione",
+          "description": "Una chiave di edizione, come OL123M, o l'URL della pagina dell'edizione."
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "Salta Open Library",
+      "description": "Rimuove un libro dall'elenco dei libri che non sono su Open Library, o lo rimette.",
+      "fields": {
+        "book_id": {
+          "name": "Libro",
+          "description": "L'ID del libro."
+        },
+        "skip": {
+          "name": "Salta",
+          "description": "Disattiva per rimettere il libro nell'elenco."
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "Disconnetti Open Library",
+      "description": "Rimuove le chiavi dell'account Open Library."
     },
     "scan_isbn": {
       "name": "Scansiona ISBN",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "Solo {person} o un utente amministratore può modificare questo elenco di cose da fare."
+    },
+    "openlibrary_not_connected": {
+      "message": "Collega prima un account Open Library nelle impostazioni della biblioteca."
+    },
+    "openlibrary_already_linked": {
+      "message": "Questo libro è già collegato a Open Library."
+    },
+    "openlibrary_needs_author": {
+      "message": "Aggiungi un autore al libro prima di inviarlo."
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library ha trovato più di 1 opera che può essere questo libro. Aggiungi il libro sul sito di Open Library."
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library non ha accettato le chiavi dell'account. Collega di nuovo l'account."
+    },
+    "openlibrary_not_found": {
+      "message": "Open Library non ha l'edizione {edition}."
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} non è una chiave o un URL di edizione di Open Library."
     }
   }
 }

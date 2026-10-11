@@ -30,21 +30,25 @@ from homeassistant.exceptions import ServiceValidationError, Unauthorized
 from homeassistant.helpers import config_validation as cv
 
 from . import csv_io, models, people, projections
+from . import openlibrary_contribute as contribute
 from .api_surface import SERVICES, ServiceSpec
 from .backend_i18n import resolve_exception
 from .config_flow import clean_currency, merge_flow_input
 from .const import (
     CONF_CURRENCY,
+    CONF_OPENLIBRARY_USERNAME,
     DOMAIN,
-    LOOKUP_MAX_TRIES,
     MAX_CSV_BYTES,
     MAX_IMPORT_ROW_RESULTS,
+    OPENLIBRARY_SECRET_KEYS,
+    ORIGIN,
 )
 from .coordinator import LibraryCoordinator, find_coordinator
-from .covers import async_store_openlibrary_cover, async_use_upload
+from .covers import async_store_openlibrary_cover, async_use_upload, cover_path
 from .isbn import IsbnError
 from .isbn import normalize as normalize_isbn
 from .models import LibraryError
+from .openlibrary_account import OpenLibraryAuthError, OpenLibraryWriter, account_keys
 from .openlibrary_client import OpenLibraryError
 from .store import LibraryStore, now, today
 
@@ -187,6 +191,22 @@ SERVICE_FIELDS: dict[str, dict[Any, Any]] = {
     "update_book": {vol.Required("book_id"): cv.string, **_BOOK_FIELDS},
     "delete_book": {vol.Required("book_id"): cv.string},
     "refresh_book": {vol.Required("book_id"): cv.string},
+    "send_to_openlibrary": {
+        vol.Required("book_id"): cv.string,
+        vol.Optional("fields"): vol.All(
+            cv.ensure_list, [vol.In(contribute.OPTIONAL_SEND_FIELDS)]
+        ),
+        vol.Optional("include_cover", default=False): cv.boolean,
+    },
+    "link_openlibrary": {
+        vol.Required("book_id"): cv.string,
+        vol.Required("edition"): cv.string,
+    },
+    "skip_openlibrary": {
+        vol.Required("book_id"): cv.string,
+        vol.Optional("skip", default=True): cv.boolean,
+    },
+    "disconnect_openlibrary": {},
     "scan_isbn": {
         vol.Required("isbn"): cv.string,
         vol.Optional("shelf_id"): _OPT_STR,
@@ -373,7 +393,7 @@ async def _add_book(
                 _LOGGER.debug("No cover for %s", book["id"])
         elif status == "not_found":
             # Open Library does not have the book, so no restart asks again.
-            await ctx.store.set_lookup_tries(book["id"], LOOKUP_MAX_TRIES)
+            await ctx.coordinator.lookup.async_mark_missing(book["id"])
         elif book.get("needs_details"):
             ctx.coordinator.lookup.async_enqueue(book["id"])
     return ctx.store.book(book["id"]), existing, status
@@ -497,6 +517,116 @@ async def _refresh_book(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     if draft is not None:
         await ctx.coordinator.lookup.async_apply(book["id"], draft)
     return {"book": ctx.book_reply(ctx.store.book(book["id"])), "found": bool(draft)}
+
+
+# ── Send to Open Library ─────────────────────────────────────────────────────
+
+
+async def _link_edition(ctx: Ctx, book_id: str, edition_key: str) -> None:
+    """Link a book to an Open Library edition and fill its empty fields."""
+    client = ctx.coordinator.client
+    client.forget_miss(ctx.store.book(book_id).get("isbn13"))
+    try:
+        draft = await client.async_lookup_edition(edition_key)
+    except OpenLibraryError as err:
+        raise LibraryError("lookup_unavailable") from err
+    if draft is None:
+        raise LibraryError("openlibrary_not_found", edition=edition_key)
+    await ctx.coordinator.lookup.async_apply(book_id, draft)
+
+
+async def _link_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+    book = ctx.store.book(data["book_id"])
+    edition_key = contribute.edition_key(data["edition"])
+    if edition_key is None:
+        raise LibraryError("invalid_openlibrary_edition", edition=str(data["edition"]))
+    await _link_edition(ctx, book["id"], edition_key)
+    return {"book": ctx.book_reply(ctx.store.book(book["id"]))}
+
+
+async def _skip_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+    status = "skipped" if data.get("skip", True) else "missing"
+    book = await ctx.store.set_openlibrary_status(data["book_id"], status)
+    return {"book": ctx.book_reply(book)}
+
+
+async def _cover_bytes(ctx: Ctx, book: dict[str, Any]) -> bytes | None:
+    """The bytes of the custom cover of a book, or None."""
+    cover = book.get("cover") or {}
+    if cover.get("kind") != "custom" or not cover.get("file"):
+        return None
+    path = cover_path(ctx.hass, str(cover["file"]))
+    if path is None:
+        return None
+
+    def _read() -> bytes | None:
+        return path.read_bytes() if path.is_file() else None
+
+    return await ctx.hass.async_add_executor_job(_read)
+
+
+async def _send_to_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+    """Add a book to Open Library with the connected account, then link it.
+
+    If Open Library already has the ISBN, or finds the edition when it reads the
+    form, the reply is ``existing`` and the book stays unlinked: the admin
+    checks the edition and links it.
+    """
+    book = ctx.store.book(data["book_id"])
+    keys = account_keys(ctx.coordinator.config_entry.data)
+    if keys is None:
+        raise LibraryError("openlibrary_not_connected")
+    if (book.get("openlibrary") or {}).get("edition_key"):
+        raise LibraryError("openlibrary_already_linked")
+    if not book.get("authors"):
+        raise LibraryError("openlibrary_needs_author")
+    fields = contribute.send_fields(data.get("fields"))
+    client = ctx.coordinator.client
+    writer = OpenLibraryWriter(client)
+    reply: dict[str, Any] = {"result": "existing", "edition_key": None}
+    reply["cover"] = "skipped"
+    try:
+        if "isbn" in fields and book.get("isbn13"):
+            client.forget_miss(book["isbn13"])
+            found = await client.async_lookup_isbn(book["isbn13"])
+            if found and (found.get("openlibrary") or {}).get("edition_key"):
+                reply["edition_key"] = found["openlibrary"]["edition_key"]
+                reply["book"] = ctx.book_reply(book)
+                return reply
+        cookie, _ = await writer.async_login(*keys)
+        author_key = await writer.async_author_key(str(book["authors"][0]))
+        form = contribute.add_book_form(book, fields, author_key)
+        result, edition_key = await writer.async_add_book(cookie, form)
+        if result == "ambiguous" or edition_key is None:
+            raise LibraryError("openlibrary_ambiguous")
+        reply["result"], reply["edition_key"] = result, edition_key
+        if result == "added":
+            if data.get("include_cover") and (image := await _cover_bytes(ctx, book)):
+                sent = await writer.async_add_cover(cookie, edition_key, image)
+                reply["cover"] = "sent" if sent else "failed"
+            try:
+                await _link_edition(ctx, book["id"], edition_key)
+            except LibraryError:
+                # Open Library has the new edition, but cannot show it yet.
+                # Keep the key, so the book is linked anyway.
+                link = {"openlibrary": {"edition_key": edition_key}}
+                await ctx.store.fill_book(book["id"], link, origin=ORIGIN)
+    except OpenLibraryAuthError as err:
+        raise LibraryError("openlibrary_login_failed") from err
+    except OpenLibraryError as err:
+        raise LibraryError("lookup_unavailable") from err
+    reply["book"] = ctx.book_reply(ctx.store.book(book["id"]))
+    return reply
+
+
+async def _disconnect_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+    entry = ctx.coordinator.config_entry
+    drop = (*OPENLIBRARY_SECRET_KEYS, CONF_OPENLIBRARY_USERNAME)
+    ctx.hass.config_entries.async_update_entry(
+        entry, data={k: v for k, v in entry.data.items() if k not in drop}
+    )
+    ctx.coordinator.async_check_settings()
+    return {"openlibrary_account": ctx.coordinator.openlibrary_account}
 
 
 def _copies_with_location(ctx: Ctx, book_id: str) -> list[dict[str, Any]]:
@@ -911,6 +1041,10 @@ SERVICE_HANDLERS: dict[str, Handler] = {
     "update_book": _update_book,
     "delete_book": _delete_book,
     "refresh_book": _refresh_book,
+    "send_to_openlibrary": _send_to_openlibrary,
+    "link_openlibrary": _link_openlibrary,
+    "skip_openlibrary": _skip_openlibrary,
+    "disconnect_openlibrary": _disconnect_openlibrary,
     "scan_isbn": _scan_isbn,
     "add_copy": _add_copy,
     "update_copy": _update_copy,

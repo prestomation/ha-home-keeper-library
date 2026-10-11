@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "藏书选项",
+        "menu_options": {
+          "currency": "货币",
+          "openlibrary": "Open Library 账户"
+        }
+      },
+      "currency": {
+        "title": "货币",
         "data": {
           "currency": "货币"
         },
         "data_description": {
           "currency": "3 个字母的代码，例如 EUR 或 USD。"
         }
+      },
+      "openlibrary": {
+        "title": "Open Library 账户",
+        "description": "粘贴 Archive.org 账户 S3 密钥页面上的访问密钥和私密密钥。只有在您将图书发送到 Open Library 时，藏书才会使用它们。",
+        "data": {
+          "access_key": "访问密钥",
+          "secret_key": "私密密钥"
+        }
       }
     },
     "error": {
-      "invalid_currency": "请输入 3 个字母的货币代码。"
+      "invalid_currency": "请输入 3 个字母的货币代码。",
+      "invalid_auth": "Open Library 未接受这些密钥。",
+      "cannot_connect": "Open Library 不可用。请稍后重试。"
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library 尚未加载。请在其启动后重试。"
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "图书的 ID。"
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "发送到 Open Library",
+      "description": "使用已连接的 Open Library 账户添加 Open Library 没有的图书，然后关联该图书。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "fields": {
+          "name": "字段",
+          "description": "要发送的可选字段：publisher、published 和 isbn。书名和第一作者总会发送。"
+        },
+        "include_cover": {
+          "name": "发送封面",
+          "description": "同时发送图书的自定义封面。"
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "关联到 Open Library",
+      "description": "将图书关联到 Open Library 的某个版本，并填写其空字段。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "edition": {
+          "name": "版本",
+          "description": "版本键（例如 OL123M）或版本页面的 URL。"
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "跳过 Open Library",
+      "description": "将图书从不在 Open Library 上的图书列表中移除，或放回列表。",
+      "fields": {
+        "book_id": {
+          "name": "图书",
+          "description": "图书的 ID。"
+        },
+        "skip": {
+          "name": "跳过",
+          "description": "关闭后图书会回到列表中。"
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "断开 Open Library",
+      "description": "移除 Open Library 账户的密钥。"
     },
     "scan_isbn": {
       "name": "扫描 ISBN",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "只有 {person} 或管理员用户才能更改此待办事项列表。"
+    },
+    "openlibrary_not_connected": {
+      "message": "请先在藏书设置中连接 Open Library 账户。"
+    },
+    "openlibrary_already_linked": {
+      "message": "这本书已关联到 Open Library。"
+    },
+    "openlibrary_needs_author": {
+      "message": "发送前请为图书添加作者。"
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library 找到了不止 1 部可能是这本书的作品。请在 Open Library 网站上添加这本书。"
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library 未接受账户密钥。请重新连接账户。"
+    },
+    "openlibrary_not_found": {
+      "message": "Open Library 没有版本 {edition}。"
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} 不是 Open Library 的版本键或 URL。"
     }
   }
 }

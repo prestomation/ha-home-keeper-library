@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "Kirjaston asetukset",
+        "menu_options": {
+          "currency": "Valuutta",
+          "openlibrary": "Open Library -tili"
+        }
+      },
+      "currency": {
+        "title": "Valuutta",
         "data": {
           "currency": "Valuutta"
         },
         "data_description": {
           "currency": "3 kirjaimen koodi, esimerkiksi EUR tai USD."
         }
+      },
+      "openlibrary": {
+        "title": "Open Library -tili",
+        "description": "Liitä käyttöavain ja salainen avain Archive.org-tilisi S3-avainten sivulta. Kirjasto käyttää niitä vain, kun lähetät kirjan Open Libraryyn.",
+        "data": {
+          "access_key": "Käyttöavain",
+          "secret_key": "Salainen avain"
+        }
       }
     },
     "error": {
-      "invalid_currency": "Anna 3 kirjaimen valuuttakoodi."
+      "invalid_currency": "Anna 3 kirjaimen valuuttakoodi.",
+      "invalid_auth": "Open Library ei hyväksynyt näitä avaimia.",
+      "cannot_connect": "Open Library ei ole käytettävissä. Yritä myöhemmin uudelleen."
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library ei ole ladattu. Yritä uudelleen, kun se on käynnistynyt."
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "Kirjan ID."
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "Lähetä Open Libraryyn",
+      "description": "Lisää kirja, jota Open Libraryssä ei ole, yhdistetyllä Open Library -tilillä ja linkitä sitten kirja.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "fields": {
+          "name": "Kentät",
+          "description": "Lähetettävät valinnaiset kentät: publisher, published ja isbn. Nimi ja ensimmäinen tekijä lähetetään aina."
+        },
+        "include_cover": {
+          "name": "Lähetä kansikuva",
+          "description": "Lähetä myös kirjan oma kansikuva."
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "Linkitä Open Libraryyn",
+      "description": "Linkitä kirja Open Libraryn painokseen ja täytä sen tyhjät kentät.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "edition": {
+          "name": "Painos",
+          "description": "Painoksen avain, kuten OL123M, tai painoksen sivun URL-osoite."
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "Ohita Open Library",
+      "description": "Poista kirja niiden kirjojen luettelosta, joita ei ole Open Libraryssä, tai palauta se.",
+      "fields": {
+        "book_id": {
+          "name": "Kirja",
+          "description": "Kirjan ID."
+        },
+        "skip": {
+          "name": "Ohita",
+          "description": "Poista käytöstä, niin kirja palaa luetteloon."
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "Katkaise Open Library -yhteys",
+      "description": "Poista Open Library -tilin avaimet."
     },
     "scan_isbn": {
       "name": "Skannaa ISBN",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "Vain {person} tai ylläpitäjä voi muuttaa tätä tehtävälistaa."
+    },
+    "openlibrary_not_connected": {
+      "message": "Yhdistä ensin Open Library -tili kirjaston asetuksissa."
+    },
+    "openlibrary_already_linked": {
+      "message": "Tämä kirja on jo linkitetty Open Libraryyn."
+    },
+    "openlibrary_needs_author": {
+      "message": "Lisää kirjalle tekijä ennen kuin lähetät sen."
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library löysi useamman kuin 1 teoksen, joka voi olla tämä kirja. Lisää kirja Open Libraryn verkkosivustolla."
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library ei hyväksynyt tilin avaimia. Yhdistä tili uudelleen."
+    },
+    "openlibrary_not_found": {
+      "message": "Open Libraryssä ei ole painosta {edition}."
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} ei ole Open Libraryn painoksen avain tai URL-osoite."
     }
   }
 }

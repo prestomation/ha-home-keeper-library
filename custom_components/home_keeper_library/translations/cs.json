@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "Možnosti knihovny",
+        "menu_options": {
+          "currency": "Měna",
+          "openlibrary": "Účet Open Library"
+        }
+      },
+      "currency": {
+        "title": "Měna",
         "data": {
           "currency": "Měna"
         },
         "data_description": {
           "currency": "Kód ze 3 písmen, například EUR nebo USD."
         }
+      },
+      "openlibrary": {
+        "title": "Účet Open Library",
+        "description": "Vložte přístupový klíč a tajný klíč ze stránky klíčů S3 vašeho účtu Archive.org. Knihovna je použije jen tehdy, když odešlete knihu do Open Library.",
+        "data": {
+          "access_key": "Přístupový klíč",
+          "secret_key": "Tajný klíč"
+        }
       }
     },
     "error": {
-      "invalid_currency": "Zadejte kód měny ze 3 písmen."
+      "invalid_currency": "Zadejte kód měny ze 3 písmen.",
+      "invalid_auth": "Open Library tyto klíče nepřijala.",
+      "cannot_connect": "Open Library není dostupná. Zkuste to později."
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library není načtena. Zkuste to znovu po jejím spuštění."
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "ID knihy."
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "Odeslat do Open Library",
+      "description": "Přidá knihu, kterou Open Library nemá, pomocí připojeného účtu Open Library a poté knihu propojí.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "fields": {
+          "name": "Pole",
+          "description": "Volitelná pole k odeslání: publisher, published a isbn. Název a první autor se odesílají vždy."
+        },
+        "include_cover": {
+          "name": "Odeslat obálku",
+          "description": "Odešle také vlastní obálku knihy."
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "Propojit s Open Library",
+      "description": "Propojí knihu s vydáním v Open Library a vyplní její prázdná pole.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "edition": {
+          "name": "Vydání",
+          "description": "Klíč vydání, například OL123M, nebo adresa URL stránky vydání."
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "Přeskočit Open Library",
+      "description": "Odebere knihu ze seznamu knih, které nejsou v Open Library, nebo ji tam vrátí.",
+      "fields": {
+        "book_id": {
+          "name": "Kniha",
+          "description": "ID knihy."
+        },
+        "skip": {
+          "name": "Přeskočit",
+          "description": "Vypnutím vrátíte knihu do seznamu."
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "Odpojit Open Library",
+      "description": "Odebere klíče účtu Open Library."
     },
     "scan_isbn": {
       "name": "Naskenovat ISBN",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "Tento seznam úkolů může změnit jen {person} nebo správce."
+    },
+    "openlibrary_not_connected": {
+      "message": "Nejprve připojte účet Open Library v nastavení knihovny."
+    },
+    "openlibrary_already_linked": {
+      "message": "Tato kniha je již propojena s Open Library."
+    },
+    "openlibrary_needs_author": {
+      "message": "Před odesláním přidejte ke knize autora."
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library našla více než 1 dílo, které může být touto knihou. Přidejte knihu na webu Open Library."
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library nepřijala klíče účtu. Připojte účet znovu."
+    },
+    "openlibrary_not_found": {
+      "message": "Open Library nemá vydání {edition}."
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} není klíč ani adresa URL vydání v Open Library."
     }
   }
 }

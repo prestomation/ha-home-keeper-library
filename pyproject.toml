@@ -69,6 +69,7 @@ only_mutate = [
     "custom_components/home_keeper_library/events.py",
     "custom_components/home_keeper_library/projections.py",
     "custom_components/home_keeper_library/openlibrary.py",
+    "custom_components/home_keeper_library/openlibrary_contribute.py",
     "custom_components/home_keeper_library/csv_io.py",
     "custom_components/home_keeper_library/wishlist.py",
     "custom_components/home_keeper_library/loan_tasks.py",

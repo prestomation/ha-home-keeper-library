@@ -21,7 +21,7 @@ import { renderLoans, renderSettings, renderWishlist } from './tab-lists';
 import { cameraBlocked, isBorrowedMode, renderScan, routeShelf } from './tab-scan';
 import { renderShelves } from './tab-shelves';
 import type { ImportState, ScanEntry, UiState, ViewCtx } from './tab-types';
-import type { Book, HomeAssistant, ImportSummary, Lib, RawState, ReadingStatus, ScanResult, TabHost } from './types';
+import type { Book, HomeAssistant, ImportSummary, Lib, RawState, ReadingStatus, ScanResult, SendResult, TabHost } from './types';
 import {
   buildIndex,
   buildPath,
@@ -88,6 +88,9 @@ function freshUi(): UiState {
     todoEntities: [],
     exportFormat: 'goodreads',
     exportPerson: '',
+    olBusy: false,
+    olError: '',
+    olAccess: '',
   };
 }
 
@@ -528,6 +531,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     if (kind === 'dialog') void this._submitDialog(form);
     if (kind === 'notes') void this._saveNotes(form);
     if (kind === 'currency') void this._saveCurrency(form);
+    if (kind === 'ol-connect') void this._connectOpenLibrary(form);
     if (kind === 'isbn') {
       const input = form.elements.namedItem('isbn') as HTMLInputElement;
       const isbn = normalizeIsbn(input.value);
@@ -629,6 +633,15 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         if (book) {
           this._openDialog({ kind: 'confirm', title: t('dialog.delete_book'), text: t('dialog.delete_book_text', { title: book.title }), label: t('action.delete'), command: 'delete_book', fields: { book_id: book.id }, after: this._booksPath });
         }
+        return;
+      case 'ol-disconnect':
+        this._openDialog({ kind: 'confirm', title: t('ol.disconnect_title'), text: t('ol.disconnect_text'), label: t('ol.disconnect'), command: 'disconnect_openlibrary', fields: {} });
+        return;
+      case 'send-ol':
+        this._openDialog({ kind: 'send-ol', bookId: id || book?.id || '', phase: 'review' });
+        return;
+      case 'skip-ol':
+        await this._run('skip_openlibrary', { book_id: id }, t('ol.skipped'));
         return;
       case 'refresh-book':
         if (book) await this._run('refresh_book', { book_id: book.id }, t('book.refreshed'));
@@ -755,6 +768,40 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     this._render();
   }
 
+  private async _connectOpenLibrary(form: HTMLFormElement): Promise<void> {
+    if (this._ui.olBusy) return;
+    const value = (name: string) => ((form.elements.namedItem(name) as HTMLInputElement | null)?.value ?? '').trim();
+    const access = value('access_key');
+    const secret = value('secret_key');
+    if (!access || !secret) {
+      this._ui.olAccess = access;
+      this._ui.olError = t('ol.need_keys');
+      this._render();
+      return;
+    }
+    this._ui.olBusy = true;
+    this._ui.olError = '';
+    this._ui.olAccess = access;
+    this._render();
+    let code: string | null;
+    try {
+      code = await this._api!.connectOpenLibrary(access, secret);
+    } catch (err) {
+      code = 'unknown';
+      console.warn('Open Library connect failed', err);
+    }
+    this._ui.olBusy = false;
+    if (code === null) {
+      this._ui.olAccess = '';
+      this._toast(t('ol.connected_toast'));
+      await this._refresh();
+    } else {
+      this._ui.olError =
+        code === 'invalid_auth' ? t('ol.error_invalid_auth') : code === 'cannot_connect' ? t('ol.error_cannot_connect') : t('ol.error_unknown');
+      this._render();
+    }
+  }
+
   private async _saveCurrency(form: HTMLFormElement): Promise<void> {
     const input = form.elements.namedItem('currency') as HTMLInputElement;
     const currency = input.value.trim().toUpperCase();
@@ -811,6 +858,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
           const bookId = replyId(res, 'book');
           const existing = Boolean(res?.existing ?? (res?.book as Record<string, unknown> | undefined)?.existing);
           if (existing) this._toast(t('dialog.existing'));
+          else if (res?.lookup === 'not_found') this._toast(t('ol.added_not_found'));
           else if (bookId && on('own')) await api.call('add_copy', { book_id: bookId, shelf_id: str('shelf_id') || null, format: str('format') });
           if (bookId) after = `/books/${encodeURIComponent(bookId)}`;
           break;
@@ -955,6 +1003,22 @@ export class HomeKeeperLibraryTab extends HTMLElement {
           await api.call(d.command, d.fields);
           after = d.after;
           break;
+        case 'send-ol':
+          if (d.phase === 'existing') {
+            await api.call('link_openlibrary', { book_id: d.bookId, edition: d.editionKey });
+            this._toast(t('ol.linked'));
+          }
+          break;
+      }
+      if (d.kind === 'send-ol' && d.phase === 'review') {
+        // The dialog stays open and shows the reply of Open Library.
+        if (this._dialog === state) {
+          state.busy = false;
+          state.dialog = await this._sendToOpenLibrary(d.bookId, on);
+          this._renderDialog();
+        }
+        void this._refresh();
+        return;
       }
       // The user can close this dialog and open a new one during the call.
       if (this._dialog === state) this._closeDialog();
@@ -963,8 +1027,27 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     } catch (err) {
       state.busy = false;
       state.error = errorText(err);
+      this._dlg.querySelector<HTMLElement>('[data-k="d-sending"]')?.setAttribute('hidden', '');
       if (this._dialog === state) this._showDialogStatus();
     }
+  }
+
+  /** Send a book to Open Library. Return the dialog that shows the reply. */
+  private async _sendToOpenLibrary(bookId: string, on: (name: string) => boolean): Promise<Dialog> {
+    this._dlg.querySelector<HTMLElement>('[data-k="d-sending"]')?.removeAttribute('hidden');
+    const fields = ['publisher', 'published', 'isbn'].filter((name) => on(`send_${name}`));
+    const res = await this._api!.call<SendResult>('send_to_openlibrary', {
+      book_id: bookId,
+      fields,
+      include_cover: on('include_cover'),
+    });
+    return {
+      kind: 'send-ol',
+      bookId,
+      phase: res.result === 'added' ? 'added' : 'existing',
+      editionKey: res.edition_key,
+      coverFailed: res.cover === 'failed',
+    };
   }
 
   // ── Import and export ──────────────────────────────────────────────────────

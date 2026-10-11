@@ -49,7 +49,13 @@ async def test_options_flow_merges(hass, setup_entry) -> None:
         setup_entry, options={"currency": "EUR", "other": 1}
     )
     result = await hass.config_entries.options.async_init(setup_entry.entry_id)
+    assert result["type"] is FlowResultType.MENU
+    assert result["menu_options"] == ["currency", "openlibrary"]
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], {"next_step_id": "currency"}
+    )
     assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "currency"
     result = await hass.config_entries.options.async_configure(
         result["flow_id"], {"currency": "x"}
     )

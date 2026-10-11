@@ -110,6 +110,35 @@ def test_admin_reads_everything() -> None:
     assert list(reply["people"]) == ["alice", "bob", "carol"]
     carol = reply["people"]["carol"]
     assert carol["share_reading"] is False and "wishlist_todo" in carol
+    assert reply["openlibrary_account"] == {"connected": False, "username": None}
+
+
+@pytest.mark.parametrize(
+    ("account", "expected"),
+    [
+        (
+            {"connected": True, "username": "alex_reads"},
+            {"connected": True, "username": "alex_reads"},
+        ),
+        (
+            {"connected": False, "username": "alex_reads"},
+            {"connected": False, "username": None},
+        ),
+        ({"connected": True}, {"connected": True, "username": None}),
+    ],
+)
+def test_openlibrary_account_is_for_admins_only(account, expected) -> None:
+    common = {
+        "persons": PERSONS,
+        "currency": "EUR",
+        "tab": True,
+        "revision": 1,
+        "openlibrary_account": account,
+    }
+    admin = pr.project_state(_state(), viewer="alice", is_admin=True, **common)
+    assert admin["openlibrary_account"] == expected
+    user = pr.project_state(_state(), viewer="bob", is_admin=False, **common)
+    assert "openlibrary_account" not in user
 
 
 def test_non_admin_projection_never_leaks() -> None:

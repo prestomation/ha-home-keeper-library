@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "Bibliotheksoptionen",
+        "menu_options": {
+          "currency": "Währung",
+          "openlibrary": "Open-Library-Konto"
+        }
+      },
+      "currency": {
+        "title": "Währung",
         "data": {
           "currency": "Währung"
         },
         "data_description": {
           "currency": "Ein Code aus 3 Buchstaben, zum Beispiel EUR oder USD."
         }
+      },
+      "openlibrary": {
+        "title": "Open-Library-Konto",
+        "description": "Fügen Sie den Zugriffsschlüssel und den geheimen Schlüssel von der S3-Schlüsselseite Ihres Archive.org-Kontos ein. Die Bibliothek verwendet sie nur, wenn Sie ein Buch an Open Library senden.",
+        "data": {
+          "access_key": "Zugriffsschlüssel",
+          "secret_key": "Geheimer Schlüssel"
+        }
       }
     },
     "error": {
-      "invalid_currency": "Geben Sie einen Währungscode aus 3 Buchstaben ein."
+      "invalid_currency": "Geben Sie einen Währungscode aus 3 Buchstaben ein.",
+      "invalid_auth": "Open Library hat diese Schlüssel nicht akzeptiert.",
+      "cannot_connect": "Open Library ist nicht erreichbar. Versuchen Sie es später erneut."
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library ist nicht geladen. Versuchen Sie es nach dem Start erneut."
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "Die ID des Buchs."
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "An Open Library senden",
+      "description": "Ein Buch, das Open Library nicht hat, mit dem verbundenen Open-Library-Konto hinzufügen und dann das Buch verknüpfen.",
+      "fields": {
+        "book_id": {
+          "name": "Buch",
+          "description": "Die ID des Buchs."
+        },
+        "fields": {
+          "name": "Felder",
+          "description": "Die optionalen Felder zum Senden: publisher, published und isbn. Der Titel und der erste Autor werden immer gesendet."
+        },
+        "include_cover": {
+          "name": "Cover senden",
+          "description": "Auch das eigene Cover des Buchs senden."
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "Mit Open Library verknüpfen",
+      "description": "Ein Buch mit einer Open-Library-Ausgabe verknüpfen und seine leeren Felder füllen.",
+      "fields": {
+        "book_id": {
+          "name": "Buch",
+          "description": "Die ID des Buchs."
+        },
+        "edition": {
+          "name": "Ausgabe",
+          "description": "Ein Ausgabeschlüssel wie OL123M oder die URL der Ausgabeseite."
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "Open Library überspringen",
+      "description": "Ein Buch aus der Liste der Bücher entfernen, die nicht in Open Library sind, oder es zurücksetzen.",
+      "fields": {
+        "book_id": {
+          "name": "Buch",
+          "description": "Die ID des Buchs."
+        },
+        "skip": {
+          "name": "Überspringen",
+          "description": "Ausschalten, um das Buch wieder in die Liste aufzunehmen."
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "Open Library trennen",
+      "description": "Die Schlüssel des Open-Library-Kontos entfernen."
     },
     "scan_isbn": {
       "name": "ISBN scannen",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "Nur {person} oder ein Admin-Benutzer kann diese To-do-Liste ändern."
+    },
+    "openlibrary_not_connected": {
+      "message": "Verbinden Sie zuerst ein Open-Library-Konto in den Bibliothekseinstellungen."
+    },
+    "openlibrary_already_linked": {
+      "message": "Dieses Buch ist bereits mit Open Library verknüpft."
+    },
+    "openlibrary_needs_author": {
+      "message": "Fügen Sie dem Buch einen Autor hinzu, bevor Sie es senden."
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library hat mehr als 1 Werk gefunden, das dieses Buch sein kann. Fügen Sie das Buch auf der Website von Open Library hinzu."
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library hat die Kontoschlüssel nicht akzeptiert. Verbinden Sie das Konto erneut."
+    },
+    "openlibrary_not_found": {
+      "message": "Open Library hat keine Ausgabe {edition}."
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} ist kein Ausgabeschlüssel und keine URL von Open Library."
     }
   }
 }

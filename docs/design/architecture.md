@@ -48,8 +48,8 @@ updates their own reading status through a card, native entities and services.
 
 | Layer | Modules | Rule |
 |---|---|---|
-| Pure core | `const.py`, `isbn.py`, `models.py`, `events.py`, `projections.py`, `openlibrary.py`, `csv_io.py`, `wishlist.py`, `loan_tasks.py`, `card_resource.py`, `backend_i18n.py`, `api_surface.py` | No `homeassistant` import. Time comes in as an argument. |
-| Boundary | `store.py`, `coordinator.py`, `people.py`, `openlibrary_client.py` | Talks to Home Assistant storage, the bus, the person registry and HTTP. |
+| Pure core | `const.py`, `isbn.py`, `models.py`, `events.py`, `projections.py`, `openlibrary.py`, `openlibrary_contribute.py`, `csv_io.py`, `wishlist.py`, `loan_tasks.py`, `card_resource.py`, `backend_i18n.py`, `api_surface.py` | No `homeassistant` import. Time comes in as an argument. |
+| Boundary | `store.py`, `coordinator.py`, `people.py`, `openlibrary_client.py`, `openlibrary_account.py` | Talks to Home Assistant storage, the bus, the person registry and HTTP. |
 | Glue | `__init__.py`, `services.py`, `websocket_api.py`, `covers.py`, `book_lookup.py`, `home_keeper.py`, `loan_sync.py`, `wishlist_sync.py`, `frontend_assets.py`, `card.py`, `config_flow.py`, `diagnostics.py` | Registers surfaces and runs the syncs. |
 | Platforms | `sensor.py`, `todo.py`, with `entity.py` | `const.PLATFORMS` lists them. |
 

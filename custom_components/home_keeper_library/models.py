@@ -27,6 +27,7 @@ from datetime import date
 from typing import Any
 
 from . import isbn as isbn_mod
+from .const import LOOKUP_MAX_TRIES
 
 STATE_SECTIONS = (
     "rooms",
@@ -169,6 +170,7 @@ def normalize_state(raw: Any) -> dict[str, Any]:
     for book in state["books"].values():
         if isinstance(book, dict):
             book["lookup_tries"] = lookup_tries(book.get("lookup_tries"))
+            book["openlibrary_status"] = stored_openlibrary_status(book)
     orphans = raw.get("todo_orphans")
     if isinstance(orphans, list):
         state["todo_orphans"] = [
@@ -179,6 +181,38 @@ def normalize_state(raw: Any) -> dict[str, Any]:
             and isinstance(entry.get("uid"), str)
         ]
     return state
+
+
+# The values of the book field ``openlibrary_status``. ``missing``: a lookup found
+# no book on Open Library. ``skipped``: an admin does not want to send the book.
+OPENLIBRARY_STATUSES = ("missing", "skipped")
+
+
+def stored_openlibrary_status(book: dict[str, Any]) -> str | None:
+    """The ``openlibrary_status`` of a stored book, with a value for an old book.
+
+    A book from before the field had no status. If its lookups gave no details
+    and it has no Open Library data, it is ``missing``.
+    """
+    if book.get("openlibrary"):
+        return None
+    value = book.get("openlibrary_status")
+    if value in OPENLIBRARY_STATUSES:
+        return str(value)
+    if (
+        "openlibrary_status" not in book
+        and book.get("needs_details")
+        and lookup_tries(book.get("lookup_tries")) >= LOOKUP_MAX_TRIES
+    ):
+        return "missing"
+    return None
+
+
+def openlibrary_status(value: Any) -> str | None:
+    """A caller-set ``openlibrary_status``: None or 1 of ``OPENLIBRARY_STATUSES``."""
+    if value is None:
+        return None
+    return choice(value, "openlibrary_status", OPENLIBRARY_STATUSES)
 
 
 def lookup_tries(value: Any) -> int:
@@ -589,6 +623,7 @@ def build_book(data: dict[str, Any], *, now: str) -> dict[str, Any]:
         "cover": {"kind": "none", "file": None},
         "needs_details": False,
         "lookup_tries": 0,
+        "openlibrary_status": None,
         "created_at": now,
         "updated_at": now,
         "wishlist": None,
@@ -643,7 +678,8 @@ def fill_from_draft(
     """Fill the empty fields of *book* from an Open Library *draft*.
 
     A field that has a value is a user edit and stays. The ``openlibrary`` keys
-    are always taken from the draft, and ``needs_details`` turns off.
+    are always taken from the draft, and ``needs_details`` turns off. A book with
+    Open Library data has no ``openlibrary_status``.
     """
     updated = dict(book)
     changed: list[str] = []
@@ -663,6 +699,9 @@ def fill_from_draft(
         if value != updated.get("openlibrary"):
             updated["openlibrary"] = value
             changed.append("openlibrary")
+    if updated.get("openlibrary") and updated.get("openlibrary_status"):
+        updated["openlibrary_status"] = None
+        changed.append("openlibrary_status")
     if updated.get("needs_details"):
         updated["needs_details"] = False
         changed.append("needs_details")

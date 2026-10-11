@@ -5,8 +5,8 @@
 import { t } from './i18n';
 import { formatOptions, ICONS, options, personOptions, shelfOptions } from './markup';
 import type { ViewCtx } from './tab-types';
-import type { Copy } from './types';
-import { escapeHTML, locationLabel } from './utils';
+import type { Book, Copy } from './types';
+import { escapeHTML, locationLabel, openLibraryUrl } from './utils';
 
 export type Dialog =
   | { kind: 'add-book' }
@@ -21,6 +21,14 @@ export type Dialog =
   | { kind: 'room'; roomId: string | null }
   | { kind: 'bookcase'; roomId: string; bookcaseId: string | null }
   | { kind: 'shelf'; bookcaseId: string; shelfId: string | null }
+  | {
+      kind: 'send-ol';
+      bookId: string;
+      /** `review` before the send. `added` and `existing` show the reply of Open Library. */
+      phase: 'review' | 'added' | 'existing';
+      editionKey?: string;
+      coverFailed?: boolean;
+    }
   | {
       kind: 'confirm';
       title: string;
@@ -46,6 +54,64 @@ const text = (name: string, value: unknown = '', attrs = '') =>
 const check = (name: string, label: string, on: boolean, hint = '') =>
   `<label class="hkl-check"><input type="checkbox" name="${name}" data-k="d-${name}"${on ? ' checked' : ''} /><span>${escapeHTML(label)}${hint ? `<span class="hkl-muted small block">${escapeHTML(hint)}</span>` : ''}</span></label>`;
 
+/** The optional fields of a send, with the value that goes to Open Library. */
+export function sendRows(book: Book): Array<[string, string, string]> {
+  return [
+    ['publisher', t('book.publisher'), book.publisher],
+    ['published', t('book.published'), book.published],
+    ['isbn', 'ISBN', book.isbn13 || book.isbn10 || ''],
+  ];
+}
+
+const olLink = (key: string, label: string, edit = false, k = '') =>
+  `<a class="hkl-btn text" href="${escapeHTML(openLibraryUrl(key, edit))}" target="_blank" rel="noreferrer noopener" data-k="${k}">${escapeHTML(label)}</a>`;
+
+function sendBody(ctx: ViewCtx, d: Extract<Dialog, { kind: 'send-ol' }>): { title: string; html: string; submit: string; noCancel?: boolean } {
+  const book = ctx.lib.books.find((b) => b.id === d.bookId);
+  const key = d.editionKey ?? '';
+  if (d.phase === 'added') {
+    return {
+      title: t('ol.added_title'),
+      submit: t('action.done'),
+      noCancel: true,
+      html: `<div class="hkl-note ok" role="status" data-k="d-ol-added">${escapeHTML(t('ol.added_text', { key }))}</div>
+        ${d.coverFailed ? `<div class="hkl-note warn" data-k="d-ol-cover-failed">${escapeHTML(t('ol.cover_failed'))}</div>` : ''}
+        <p class="hkl-muted">${escapeHTML(t('ol.more_details_hint'))}</p>
+        <div class="hkl-actions">${olLink(key, t('ol.view'), false, 'd-ol-view')}${olLink(key, t('ol.more_details'), true, 'd-ol-edit')}</div>`,
+    };
+  }
+  if (d.phase === 'existing') {
+    return {
+      title: t('ol.existing_title'),
+      submit: t('ol.link_to', { key }),
+      html: `<div class="hkl-note warn" role="status" data-k="d-ol-existing">${escapeHTML(t('ol.existing_text', { key }))}</div>
+        <p class="hkl-muted">${escapeHTML(t('ol.existing_hint'))}</p>
+        <div class="hkl-actions">${olLink(key, t('ol.compare'), false, 'd-ol-compare')}</div>`,
+    };
+  }
+  const user = ctx.lib.openlibrary?.username ?? '';
+  const fixed = book
+    ? [
+        [t('book.title'), book.title],
+        [t('ol.author'), book.authors[0] ?? ''],
+      ].map(([label, value]) => `<label class="hkl-check"><input type="checkbox" checked disabled /><span>${escapeHTML(label)}<small>${escapeHTML(value)}</small></span></label>`).join('')
+    : '';
+  const optional = book
+    ? sendRows(book).map(([name, label, value]) => `<label class="hkl-check"><input type="checkbox" name="send_${name}" data-k="d-send-${name}"${value ? ' checked' : ' disabled'} /><span>${escapeHTML(label)}<small>${escapeHTML(value || t('ol.empty'))}</small></span></label>`).join('')
+    : '';
+  const coverRow = book?.cover?.kind === 'custom'
+    ? `<label class="hkl-check"><input type="checkbox" name="include_cover" data-k="d-send-cover" /><span>${escapeHTML(t('ol.cover'))}<small>${escapeHTML(t('ol.cover_hint'))}</small></span></label>`
+    : '';
+  return {
+    title: t('ol.send_title'),
+    submit: t('ol.send_button'),
+    html: `<p class="hkl-muted">${escapeHTML(user ? t('ol.public_as', { user }) : t('ol.public'))}</p>
+      <div class="hkl-sendlist">${fixed}${optional}${coverRow}</div>
+      <span class="hkl-muted small">${escapeHTML(t('ol.never_sent'))}</span>
+      <div class="hkl-sendrow" data-k="d-sending" role="status" hidden><span class="hkl-spin"></span>${escapeHTML(t('ol.sending'))}</div>`,
+  };
+}
+
 function copyFields(ctx: ViewCtx, copy: Copy | null): string {
   const conditions: Array<[string, string]> = [['', t('common.none')], ...['new', 'fine', 'good', 'fair', 'poor'].map((c): [string, string] => [c, t(`condition.${c}`)])];
   return `<div class="hkl-fields">
@@ -62,8 +128,10 @@ function copyFields(ctx: ViewCtx, copy: Copy | null): string {
   ${field(t('copy.note'), text('note', copy?.note), 'wide')}`;
 }
 
-function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): { title: string; html: string; submit: string; danger?: boolean } {
+function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): { title: string; html: string; submit: string; danger?: boolean; noCancel?: boolean } {
   switch (d.kind) {
+    case 'send-ol':
+      return sendBody(ctx, d);
     case 'add-book':
       return {
         title: t('dialog.add_book'),
@@ -215,14 +283,14 @@ function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): { title:
 
 /** The dialog layer markup. */
 export function renderDialog(ctx: ViewCtx, state: DialogState, areas: Array<[string, string]>): string {
-  const { title, html, submit, danger } = body(ctx, state.dialog, areas);
+  const { title, html, submit, danger, noCancel } = body(ctx, state.dialog, areas);
   return `<div class="hkl-scrim" data-act="dialog-scrim">
     <form class="hkl-dialog" data-form="dialog" role="dialog" aria-modal="true" aria-labelledby="hkl-dlg-title" novalidate>
       <div class="hkl-dlg-head"><h2 id="hkl-dlg-title">${escapeHTML(title)}</h2><button type="button" class="hkl-iconbtn" data-act="dialog-close" data-k="d-x" aria-label="${escapeHTML(t('action.close'))}">${ICONS.close}</button></div>
       <div class="hkl-dlg-body">${html}</div>
       ${state.error ? `<div class="hkl-error" role="alert">${escapeHTML(state.error)}</div>` : ''}
       <div class="hkl-dlg-actions">
-        <button type="button" class="hkl-btn text" data-act="dialog-close" data-k="d-cancel">${escapeHTML(t('action.cancel'))}</button>
+        ${noCancel ? '' : `<button type="button" class="hkl-btn text" data-act="dialog-close" data-k="d-cancel">${escapeHTML(t('action.cancel'))}</button>`}
         <button type="submit" class="hkl-btn ${danger ? 'danger-primary' : 'primary'}" data-k="d-submit"${state.busy ? ' disabled' : ''}>${escapeHTML(submit)}</button>
       </div>
     </form>
