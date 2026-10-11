@@ -193,7 +193,7 @@ async def test_send_adds_and_links_the_book(
         "id_name": "isbn_13",
         "id_value": ISBN,
     }
-    assert add[3]["Cookie"] == f"session={SESSION}"
+    assert add[3]["Cookie"] == f'session="{SESSION}"'
     assert add[3]["User-Agent"].startswith("HomeKeeperLibrary/")
     assert not _calls(aioclient_mock, "post", "/books/OL5M/add-cover")
 
@@ -315,7 +315,7 @@ async def test_send_with_the_cover(
     )
     assert reply["cover"] == result
     (upload,) = _calls(aioclient_mock, "post", "/books/OL5M/add-cover")
-    assert upload[3]["Cookie"] == f"session={SESSION}"
+    assert upload[3]["Cookie"] == f'session="{SESSION}"'
     assert reply["book"]["cover"]["kind"] == "custom"
 
 

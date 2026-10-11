@@ -98,6 +98,37 @@ async function openLendError(page: Page): Promise<void> {
   await expect(dialog.locator('.hkl-error')).toBeVisible();
 }
 
+/** The Open Library account card in Settings, scrolled into view. */
+async function openLibraryCard(page: Page): Promise<Locator> {
+  const tab = await openTab(page, '/settings');
+  const card = tab.locator('[data-k="ol-card"]');
+  await card.scrollIntoViewIfNeeded();
+  return card;
+}
+
+/** Connect the fixture account of tests/e2e/seed/openlibrary/server.py. */
+async function connectOpenLibrary(page: Page): Promise<void> {
+  const card = await openLibraryCard(page);
+  if (await card.locator('[data-k="ol-connected"]').count()) return;
+  await card.locator('[data-k="ol-access"]').fill('E2E-ACCESS');
+  await card.locator('[data-k="ol-secret"]').fill('E2E-SECRET');
+  await card.locator('[data-k="ol-connect-save"]').click();
+  await expect(card.locator('[data-k="ol-connected"]')).toBeVisible();
+}
+
+/** Open the send dialog of a book that Open Library does not have. Shoot the banner first. */
+async function openSendDialog(page: Page, bannerShot: string): Promise<void> {
+  const rice = await bookByTitle('Every Grain of Rice');
+  const tab = await openTab(page, `/books/${rice.id}`);
+  await coversLoaded(page);
+  const banner = tab.locator('[data-k="ol-banner"]');
+  await expect(banner).toBeVisible();
+  await banner.scrollIntoViewIfNeeded();
+  await shot(page, bannerShot);
+  await tab.locator('[data-k="ol-banner-send"]').click();
+  await expect(tab.locator('.hkl-dialog [data-k="d-send-isbn"]')).toBeChecked();
+}
+
 test.describe.configure({ mode: 'serial' });
 
 test('capture the Library screenshots', async ({ page, browser }) => {
@@ -153,6 +184,19 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await expect(tab.locator('[data-k="currency"]')).toHaveValue('EUR');
   await shot(page, 'settings-desktop');
 
+  // Open Library: the account card, the list of books that it does not have,
+  // and the send dialog of 1 of them.
+  await library('disconnect_openlibrary');
+  await openLibraryCard(page);
+  await shot(page, 'settings-openlibrary-desktop');
+  tab = await openTab(page, '/books;status=not_on_ol');
+  await expect(tab.locator('.hkl-olrow')).toHaveCount(4);
+  await coversLoaded(page);
+  await shot(page, 'openlibrary-list-desktop');
+  await connectOpenLibrary(page);
+  await openSendDialog(page, 'openlibrary-banner-desktop');
+  await shot(page, 'openlibrary-send-desktop');
+
   // The card on a dashboard, as Alex. The window is tall enough for the whole card.
   await page.setViewportSize({ width: 1280, height: 1500 });
   const card = await openCard(page);
@@ -174,6 +218,16 @@ test('capture the Library screenshots', async ({ page, browser }) => {
 
   await openTab(page, '/shelves');
   await shot(page, 'shelves-mobile');
+
+  await openSendDialog(page, 'openlibrary-banner-mobile');
+  await shot(page, 'openlibrary-send-mobile');
+  tab = await openTab(page, '/books;status=not_on_ol');
+  await expect(tab.locator('.hkl-olrow')).toHaveCount(4);
+  await coversLoaded(page);
+  await shot(page, 'openlibrary-list-mobile');
+  await library('disconnect_openlibrary');
+  await openLibraryCard(page);
+  await shot(page, 'settings-openlibrary-mobile');
 
   tab = await openTab(page, '/loans');
   await expect(tab.locator('a.hkl-task').first()).toBeVisible({ timeout: 30_000 });

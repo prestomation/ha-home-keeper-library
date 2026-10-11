@@ -143,8 +143,10 @@ class OpenLibraryClient:
                     return {
                         "status": response.status,
                         "location": response.headers.get("Location"),
+                        # The value as the server sent it, quotes included, so
+                        # it goes back unchanged in the Cookie header.
                         "cookies": {
-                            name: morsel.value
+                            name: morsel.coded_value
                             for name, morsel in response.cookies.items()
                         },
                     }

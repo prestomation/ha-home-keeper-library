@@ -217,6 +217,8 @@ BOOKS: dict[str, tuple[Any, ...]] = {
                   [], None),
 }
 NEEDS_DETAILS = {"untitled", "isbn_only"}
+# Books that the lookup did not find on Open Library: the "Not on Open Library" list.
+NOT_ON_OPENLIBRARY = {"grain_rice", "steering", "untitled", "isbn_only"}
 SHARED_NOTES = {
     "left_hand": "Book club pick, **Oct 2026**. Sam has the map of Gethen bookmarked on page 6.",
     "food_lab": "The *pancake* recipe is on page 102.\n\n- Sticky notes from Jo\n- Do not lend",
@@ -442,6 +444,9 @@ def build_store(models: types.ModuleType) -> dict[str, Any]:
         book["id"] = seed_id("book", key)
         book["updated_at"] = created
         book["needs_details"] = key in NEEDS_DETAILS
+        if key in NOT_ON_OPENLIBRARY:
+            book["openlibrary_status"] = "missing"
+            book["lookup_tries"] = 3  # const.LOOKUP_MAX_TRIES
         if cov:
             book["cover"] = {
                 "kind": "custom" if cov == "custom" else "openlibrary",

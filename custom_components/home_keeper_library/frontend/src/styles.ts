@@ -165,6 +165,9 @@ button { font: inherit; color: inherit; }
 .hkl-note.ok { background: var(--hkl-ok-soft); color: var(--hkl-ok-ink); }
 .hkl-note.warn { background: var(--hkl-warn-soft); color: var(--hkl-warn-ink); }
 .hkl-sendrow { display: flex; align-items: center; gap: 10px; }
+.hkl-sendrow[hidden] { display: none; }
+.hkl-ol-form { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.hkl-ol-form .hkl-fields { align-self: stretch; }
 .hkl-spin { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--hkl-tonal); border-top-color: var(--hkl-primary); animation: hkl-spin 1s linear infinite; flex: 0 0 auto; }
 @keyframes hkl-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .hkl-spin { animation: none; } }

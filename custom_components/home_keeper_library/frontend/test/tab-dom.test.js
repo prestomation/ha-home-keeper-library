@@ -792,8 +792,12 @@ describe('Open Library', () => {
     const { state, id } = olState();
     const fake = await mount('/books?status=not_on_ol', { state });
     expect($('[data-k="st-not_on_ol"]').textContent).toContain('Not on Open Library');
-    expect($('[data-k="ol-list-hint"]').textContent).toContain('(1)');
-    expect($$('.hkl-olrow')).toHaveLength(1);
+    expect($('[data-k="ol-list-hint"]').textContent).toContain('(4)');
+    expect($$('.hkl-olrow').map((r) => r.querySelector('.hkl-row-title').textContent)).toEqual(['Every Grain of Rice', 'Steering the Craft', '9780980123468', 'Untitled paperback']);
+    // A book with no author asks for one and has no Send button.
+    const untitled = $$('.hkl-olrow')[3];
+    expect(untitled.querySelector('.hkl-row-hint').textContent).toBe('Add an author before you send');
+    expect(untitled.querySelector('[data-act="send-ol"]')).toBeNull();
     $(`[data-k="ol-skip-${id}"]`).click();
     await flush();
     expect(fake.calls('skip_openlibrary')[0]).toMatchObject({ book_id: id });
@@ -802,7 +806,9 @@ describe('Open Library', () => {
   });
 
   it('hides the chip with no book in it, and from a non-admin user', async () => {
-    await mount('/books');
+    const none = fixture();
+    for (const b of Object.values(none.books)) b.openlibrary_status = null;
+    await mount('/books', { state: none });
     expect($('[data-k="st-not_on_ol"]')).toBeNull();
     el.remove();
     const { state } = olState();

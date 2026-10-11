@@ -124,10 +124,12 @@ function openLibraryCard(ctx: ViewCtx): string {
   const busy = ctx.ui.olBusy;
   return `<section class="hkl-card" data-k="ol-card">${title}
     <p class="hkl-muted small">${escapeHTML(t('ol.connect_hint'))} <a href="${S3_KEYS_URL}" target="_blank" rel="noreferrer noopener" data-k="ol-s3-link">${escapeHTML(t('ol.s3_link'))}</a></p>
-    <form data-form="ol-connect" class="hkl-fields" autocomplete="off">
-      <label class="hkl-field">${escapeHTML(t('ol.access_key'))}<input name="access_key" class="hkl-input" spellcheck="false" autocapitalize="off" data-k="ol-access" value="${escapeHTML(ctx.ui.olAccess)}" /></label>
-      <label class="hkl-field">${escapeHTML(t('ol.secret_key'))}<input name="secret_key" type="password" class="hkl-input" autocomplete="new-password" data-k="ol-secret" /></label>
-      <div class="hkl-field wide"><button class="hkl-btn tonal" type="submit" data-k="ol-connect-save"${busy ? ' disabled' : ''}>${escapeHTML(busy ? t('ol.connecting') : t('ol.connect'))}</button></div>
+    <form data-form="ol-connect" class="hkl-ol-form" autocomplete="off">
+      <div class="hkl-fields">
+        <label class="hkl-field">${escapeHTML(t('ol.access_key'))}<input name="access_key" class="hkl-input" spellcheck="false" autocapitalize="off" data-k="ol-access" value="${escapeHTML(ctx.ui.olAccess)}" /></label>
+        <label class="hkl-field">${escapeHTML(t('ol.secret_key'))}<input name="secret_key" type="password" class="hkl-input" autocomplete="new-password" data-k="ol-secret" /></label>
+      </div>
+      <button class="hkl-btn tonal" type="submit" data-k="ol-connect-save"${busy ? ' disabled' : ''}>${escapeHTML(busy ? t('ol.connecting') : t('ol.connect'))}</button>
     </form>
     ${ctx.ui.olError ? `<div class="hkl-error" role="alert" data-k="ol-error">${escapeHTML(ctx.ui.olError)}</div>` : ''}
     <p class="hkl-muted small">${escapeHTML(t('ol.account_hint'))}</p>
