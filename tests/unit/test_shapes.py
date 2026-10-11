@@ -242,6 +242,19 @@ def test_catalogs_block() -> None:
     }
     cover = m.book_field("catalogs", {"openlibrary": {"cover_id": "12"}})
     assert cover["openlibrary"]["cover_id"] == 12
+
+    def record(**fields):
+        return m.book_field("catalogs", {"openlibrary": fields})["openlibrary"]
+
+    assert record(cover_id=1)["cover_id"] == 1
+    assert record(cover_id=2**53)["cover_id"] == 2**53
+    assert record(edition_key="E" * 50)["edition_key"] == "E" * 50
+    assert record(work_key="W" * 50)["work_key"] == "W" * 50
+    bad = ({"cover_id": 2**53 + 1}, {"edition_key": "E" * 51}, {"work_key": []})
+    for fields in bad:
+        err = _raises(m.book_field, "catalogs", {"openlibrary": fields})
+        assert err.placeholders["field"] == "catalogs"
+    assert _raises(m.book_field, "catalogs", {"openlibrary": {"work_key": "W" * 51}})
     assert m.book_field("series", {"name": "D", "number": 2.5}) == {
         "name": "D",
         "number": "2.5",
