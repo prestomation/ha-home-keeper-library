@@ -66,11 +66,15 @@ export interface Book {
   description: string;
   tags: string[];
   shared_notes: string;
-  openlibrary: { edition_key: string | null; work_key: string | null; cover_id: number | null } | null;
+  /** The record of the book in each catalog, by catalog name. */
+  catalogs: { openlibrary?: OpenLibraryRecord };
   cover: { kind: 'openlibrary' | 'custom' | 'none'; file: string | null };
   needs_details: boolean;
-  /** `missing`: Open Library does not have the book. `skipped`: an admin hid it from that list. */
-  openlibrary_status?: 'missing' | 'skipped' | null;
+  /**
+   * The send status of the book for each catalog. `missing`: the catalog does not have
+   * the book. `skipped`: an admin hid it from that list.
+   */
+  catalog_status?: { openlibrary?: 'missing' | 'skipped' };
   created_at: string;
   updated_at: string;
   wishlist: Wishlist | null;
@@ -157,7 +161,14 @@ export interface RawState {
   currency: string;
   home_keeper: { tab: boolean };
   /** Admins only. */
-  openlibrary_account?: OpenLibraryAccount;
+  catalog_accounts?: { openlibrary?: OpenLibraryAccount };
+}
+
+/** The record of a book in Open Library. */
+export interface OpenLibraryRecord {
+  edition_key: string | null;
+  work_key: string | null;
+  cover_id: number | null;
 }
 
 /** The Open Library account of the household. The keys never reach the browser. */
@@ -166,10 +177,11 @@ export interface OpenLibraryAccount {
   username: string | null;
 }
 
-/** The reply of `send_to_openlibrary`. */
+/** The reply of `send_to_catalog`. */
 export interface SendResult {
   result: 'added' | 'existing';
-  edition_key: string;
+  /** The edition key in Open Library. */
+  record: string;
   cover: 'sent' | 'failed' | 'skipped';
   book: Book;
 }

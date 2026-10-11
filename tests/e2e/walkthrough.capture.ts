@@ -41,7 +41,7 @@ async function cleanUp(): Promise<void> {
   for (const loan of state.loans.filter((l: { book_id: string; party: string }) => l.book_id === lent.id && l.party === PARTY)) {
     await library('delete_loan', { loan_id: loan.id });
   }
-  await library('disconnect_openlibrary');
+  await library('disconnect_catalog');
 }
 
 test('record the Library walkthrough', async ({ browser }) => {

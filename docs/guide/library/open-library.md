@@ -100,6 +100,6 @@ The banner, the list, the dialog and the account card work at phone width.
 
 ## Automations
 
-The services `send_to_openlibrary`, `link_openlibrary`, `skip_openlibrary` and
-`disconnect_openlibrary` do the same steps. They are admin-only. See
+The services `send_to_catalog`, `link_catalog`, `skip_catalog` and
+`disconnect_catalog` do the same steps. They are admin-only. See
 [Services and events](../automation/services.md).

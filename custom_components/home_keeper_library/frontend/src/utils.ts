@@ -10,6 +10,7 @@ import type {
   Copy,
   Lib,
   Loan,
+  OpenLibraryRecord,
   Person,
   RawPerson,
   RawState,
@@ -103,8 +104,11 @@ export function normalizeState(raw: Partial<RawState>): Lib {
     people: normalizePeople(raw.people),
     me: { person_id: raw.me?.person_id ?? null, name: raw.me?.name ?? null, is_admin: raw.me?.is_admin === true },
     currency: raw.currency || 'USD',
-    openlibrary: raw.openlibrary_account
-      ? { connected: raw.openlibrary_account.connected === true, username: raw.openlibrary_account.username ?? null }
+    openlibrary: raw.catalog_accounts?.openlibrary
+      ? {
+          connected: raw.catalog_accounts.openlibrary.connected === true,
+          username: raw.catalog_accounts.openlibrary.username ?? null,
+        }
       : null,
   };
 }
@@ -467,9 +471,19 @@ function matchesStatus(book: Book, status: StatusFilter, me: string | null): boo
   }
 }
 
+/** The record of *book* in Open Library, or null. */
+export function olRecord(book: Book): OpenLibraryRecord | null {
+  return book.catalogs?.openlibrary ?? null;
+}
+
+/** The Open Library send status of *book*: `missing`, `skipped` or null. */
+export function olStatus(book: Book): 'missing' | 'skipped' | null {
+  return book.catalog_status?.openlibrary ?? null;
+}
+
 /** True if Open Library does not have *book* and no admin skipped it. */
 export function notOnOpenLibrary(book: Book): boolean {
-  return !book.openlibrary && book.openlibrary_status === 'missing';
+  return !olRecord(book) && olStatus(book) === 'missing';
 }
 
 /** The edition key `OL…M` in a key or an openlibrary.org URL, or null. */

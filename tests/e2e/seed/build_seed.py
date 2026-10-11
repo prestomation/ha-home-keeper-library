@@ -445,7 +445,7 @@ def build_store(models: types.ModuleType) -> dict[str, Any]:
         book["updated_at"] = created
         book["needs_details"] = key in NEEDS_DETAILS
         if key in NOT_ON_OPENLIBRARY:
-            book["openlibrary_status"] = "missing"
+            book["catalog_status"] = {"openlibrary": "missing"}
             book["lookup_tries"] = 3  # const.LOOKUP_MAX_TRIES
         if cov:
             book["cover"] = {
@@ -454,10 +454,12 @@ def build_store(models: types.ModuleType) -> dict[str, Any]:
             }
         if key in OL_COVER_IDS:
             work = int(seed_id("work", key)[:6], 16)
-            book["openlibrary"] = {
-                "edition_key": f"OL{work}M",
-                "work_key": f"/works/OL{work}W",
-                "cover_id": OL_COVER_IDS[key],
+            book["catalogs"] = {
+                "openlibrary": {
+                    "edition_key": f"OL{work}M",
+                    "work_key": f"/works/OL{work}W",
+                    "cover_id": OL_COVER_IDS[key],
+                }
             }
         state["books"][book["id"]] = book
     copy_ids: dict[str, list[str]] = {}

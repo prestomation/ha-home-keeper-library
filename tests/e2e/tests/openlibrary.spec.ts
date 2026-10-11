@@ -40,15 +40,15 @@ test.describe('Open Library list', { tag: '@responsive' }, () => {
   });
 
   test('only an admin gets the account state', async () => {
-    expect(await userState()).not.toHaveProperty('openlibrary_account');
-    expect((await adminState()).openlibrary_account).toEqual({ connected: false, username: null });
+    expect(await userState()).not.toHaveProperty('catalog_accounts');
+    expect((await adminState()).catalog_accounts).toEqual({ openlibrary: { connected: false, username: null } });
   });
 });
 
 test.describe.serial('Open Library send', () => {
   test.afterAll(async () => {
     await removeNewBook();
-    await library('disconnect_openlibrary');
+    await library('disconnect_catalog');
   });
 
   test('connects an account with the S3 keys', async ({ page }) => {
@@ -62,7 +62,7 @@ test.describe.serial('Open Library send', () => {
     await card.locator('[data-k="ol-secret"]').fill(SECRET);
     await card.locator('[data-k="ol-connect-save"]').click();
     await expect(card.locator('[data-k="ol-connected"]')).toHaveText('Connected as e2e_reader');
-    expect((await adminState()).openlibrary_account).toEqual({ connected: true, username: 'e2e_reader' });
+    expect((await adminState()).catalog_accounts).toEqual({ openlibrary: { connected: true, username: 'e2e_reader' } });
   });
 
   test('sends a new book and links the new edition', async ({ page }) => {
@@ -75,7 +75,7 @@ test.describe.serial('Open Library send', () => {
       isbn: NEW_ISBN,
     });
     const id = added.book.id;
-    await expect.poll(async () => (await bookByTitle(NEW_TITLE)).openlibrary_status).toBe('missing');
+    await expect.poll(async () => (await bookByTitle(NEW_TITLE)).catalog_status).toEqual({ openlibrary: 'missing' });
     const tab = await openTab(page, `/books/${id}`);
     await expect(tab.locator('[data-k="ol-banner"]')).toContainText('Open Library does not have this book');
     await tab.locator('[data-k="ol-banner-send"]').click();
@@ -89,8 +89,8 @@ test.describe.serial('Open Library send', () => {
     await expect(dialog).toHaveCount(0);
     await expect(tab.locator('[data-k="ol-banner"]')).toHaveCount(0);
     const linked = await bookByTitle(NEW_TITLE);
-    expect(linked.openlibrary.edition_key).toBe('OL9000001M');
-    expect(linked.openlibrary_status).toBeNull();
+    expect(linked.catalogs.openlibrary.edition_key).toBe('OL9000001M');
+    expect(linked.catalog_status).toEqual({});
     // The library keeps what the user typed. Open Library fills only the empty fields.
     expect(linked.publisher).toBe('Fixture Press');
   });
@@ -101,8 +101,8 @@ test.describe.serial('Open Library send', () => {
     await tab.locator('[data-k="ol-not-now"]').click();
     await expect(tab.locator('[data-k="ol-banner"]')).toHaveCount(0);
     await expect(tab.locator('[data-k="ol-send-later"]')).toBeVisible();
-    expect((await bookByTitle(MISSING[0])).openlibrary_status).toBe('skipped');
-    await library('skip_openlibrary', { book_id: book.id, skip: false });
+    expect((await bookByTitle(MISSING[0])).catalog_status).toEqual({ openlibrary: 'skipped' });
+    await library('skip_catalog', { book_id: book.id, skip: false });
     await expect(tab.locator('[data-k="ol-banner"]')).toBeVisible();
   });
 });

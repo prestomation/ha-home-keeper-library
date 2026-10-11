@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Envia a Open Library",
       "description": "Afegeix un llibre que Open Library no té, amb el compte d'Open Library connectat, i després enllaça el llibre.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Enllaça amb Open Library",
       "description": "Enllaça un llibre amb una edició d'Open Library i omple els camps buits.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Llibre",
           "description": "L'ID del llibre."
         },
-        "edition": {
+        "record": {
           "name": "Edició",
           "description": "Una clau d'edició, com OL123M, o l'URL de la pàgina de l'edició."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Omet Open Library",
       "description": "Treu un llibre de la llista de llibres que no són a Open Library, o torna'l a posar.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Desconnecta Open Library",
       "description": "Elimina les claus del compte d'Open Library."
     },

@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Naar Open Library sturen",
       "description": "Voeg een boek dat Open Library niet heeft toe met het gekoppelde Open Library-account en koppel daarna het boek.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Koppelen aan Open Library",
       "description": "Koppel een boek aan een editie in Open Library en vul de lege velden.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Boek",
           "description": "De ID van het boek."
         },
-        "edition": {
+        "record": {
           "name": "Editie",
           "description": "Een editiesleutel, zoals OL123M, of de URL van de editiepagina."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Open Library overslaan",
       "description": "Haal een boek van de lijst met boeken die niet op Open Library staan, of zet het terug.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Open Library ontkoppelen",
       "description": "Verwijder de sleutels van het Open Library-account."
     },

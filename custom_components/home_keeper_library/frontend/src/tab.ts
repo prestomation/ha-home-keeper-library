@@ -675,13 +675,13 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         }
         return;
       case 'ol-disconnect':
-        this._openDialog({ kind: 'confirm', title: t('ol.disconnect_title'), text: t('ol.disconnect_text'), label: t('ol.disconnect'), command: 'disconnect_openlibrary', fields: {} });
+        this._openDialog({ kind: 'confirm', title: t('ol.disconnect_title'), text: t('ol.disconnect_text'), label: t('ol.disconnect'), command: 'disconnect_catalog', fields: {} });
         return;
       case 'send-ol':
         this._openDialog({ kind: 'send-ol', bookId: id || book?.id || '', phase: 'review' });
         return;
       case 'skip-ol':
-        await this._run('skip_openlibrary', { book_id: id }, t('ol.skipped'));
+        await this._run('skip_catalog', { book_id: id }, t('ol.skipped'));
         return;
       case 'refresh-book':
         if (book) await this._run('refresh_book', { book_id: book.id }, t('book.refreshed'));
@@ -1045,7 +1045,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
           break;
         case 'send-ol':
           if (d.phase === 'existing') {
-            await api.call('link_openlibrary', { book_id: d.bookId, edition: d.editionKey });
+            await api.call('link_catalog', { book_id: d.bookId, record: d.editionKey });
             this._toast(t('ol.linked'));
           }
           break;
@@ -1076,7 +1076,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   private async _sendToOpenLibrary(bookId: string, on: (name: string) => boolean): Promise<Dialog> {
     this._dlg.querySelector<HTMLElement>('[data-k="d-sending"]')?.removeAttribute('hidden');
     const fields = ['publisher', 'published', 'isbn'].filter((name) => on(`send_${name}`));
-    const res = await this._api!.call<SendResult>('send_to_openlibrary', {
+    const res = await this._api!.call<SendResult>('send_to_catalog', {
       book_id: bookId,
       fields,
       include_cover: on('include_cover'),
@@ -1085,7 +1085,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
       kind: 'send-ol',
       bookId,
       phase: res.result === 'added' ? 'added' : 'existing',
-      editionKey: res.edition_key,
+      editionKey: res.record,
       coverFailed: res.cover === 'failed',
     };
   }

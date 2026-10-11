@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import Any
 
 from .const import COVER_URL_PREFIX
-from .models import is_open, is_overdue, location_path, person_settings
+from .models import CATALOGS, is_open, is_overdue, location_path, person_settings
 
 PRIVATE_COPY_FIELDS = ("price", "value", "acquired_from")
 PRIVATE_LOAN_FIELDS = ("party",)
@@ -172,12 +172,12 @@ def project_state(
     currency: str,
     tab: bool,
     revision: int,
-    openlibrary_account: dict[str, Any] | None = None,
+    catalog_accounts: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """The reply of ``home_keeper_library/get_state`` for the viewer.
 
-    Only an admin gets ``openlibrary_account``: if an account is connected, and
-    its user name. The keys of the account are never in the reply.
+    Only an admin gets ``catalog_accounts``: for each catalog, if an account is
+    connected, and its user name. The keys of an account are never in the reply.
     """
     counts = {book_id: len(rows) for book_id, rows in copies_by_book(state).items()}
     books = [
@@ -214,11 +214,15 @@ def project_state(
         "home_keeper": {"tab": tab},
     }
     if is_admin:
-        account = openlibrary_account or {}
-        reply["openlibrary_account"] = {
-            "connected": bool(account.get("connected")),
-            "username": account.get("username") if account.get("connected") else None,
-        }
+        accounts = catalog_accounts or {}
+        reply["catalog_accounts"] = {}
+        for name in CATALOGS:
+            account = accounts.get(name) or {}
+            connected = bool(account.get("connected"))
+            reply["catalog_accounts"][name] = {
+                "connected": connected,
+                "username": account.get("username") if connected else None,
+            }
     return reply
 
 

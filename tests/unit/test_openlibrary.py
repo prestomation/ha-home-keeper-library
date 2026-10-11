@@ -38,10 +38,12 @@ def test_parse_edition_with_work_and_author() -> None:
             "A groundbreaking work of science fiction about an envoy on the planet "
             "Gethen."
         ),
-        "openlibrary": {
-            "edition_key": "OL7254097M",
-            "work_key": "OL59863W",
-            "cover_id": 8231856,
+        "catalogs": {
+            "openlibrary": {
+                "edition_key": "OL7254097M",
+                "work_key": "OL59863W",
+                "cover_id": 8231856,
+            },
         },
     }
 
@@ -55,7 +57,7 @@ def test_parse_minimal_edition() -> None:
     assert draft["isbn13"] == "9780000000002"
     assert draft["isbn10"] == "0000000000"
     assert draft["pages"] is None and draft["language"] is None
-    assert draft["openlibrary"] == {
+    assert draft["catalogs"]["openlibrary"] == {
         "edition_key": "OL1M",
         "work_key": None,
         "cover_id": None,
@@ -67,13 +69,13 @@ def test_edition_falls_back_to_the_work() -> None:
     draft = ol.parse_edition({"works": [{"key": "/works/OL59863W"}]}, work, [])
     assert draft["title"] == "The Left Hand of Darkness"
     assert draft["subjects"] == ["Science fiction", "Androgyny", "Fiction"]
-    assert draft["openlibrary"]["cover_id"] == 8231856
+    assert draft["catalogs"]["openlibrary"]["cover_id"] == 8231856
     assert ol.author_keys({}, work) == ["OL26320A"]
     assert ol.author_keys({}, None) == []
     assert ol.author_keys({"authors": [{"key": "/works/OL1W"}, "x"]}, None) == []
     draft = ol.parse_edition({"key": "/works/OL5W"}, {"key": "/works/OL9W"})
-    assert draft["openlibrary"]["work_key"] == "OL9W"
-    assert draft["openlibrary"]["edition_key"] is None
+    assert draft["catalogs"]["openlibrary"]["work_key"] == "OL9W"
+    assert draft["catalogs"]["openlibrary"]["edition_key"] is None
 
 
 def test_parser_ignores_wrong_types() -> None:
@@ -90,7 +92,7 @@ def test_parser_ignores_wrong_types() -> None:
         }
     )
     assert draft["title"] == "" and draft["pages"] is None
-    assert draft["openlibrary"]["cover_id"] is None
+    assert draft["catalogs"]["openlibrary"]["cover_id"] is None
     assert draft["publisher"] == "" and draft["subjects"] == ["A"]
     assert draft["isbn13"] is None and draft["description"] == ""
     assert draft["language"] is None
@@ -142,12 +144,13 @@ def test_parse_search() -> None:
     assert dune["isbn13"] == "9780340960196" and dune["isbn10"] == "0340960191"
     assert dune["published"] == "1965" and dune["pages"] == 612
     assert dune["language"] == "en" and dune["publisher"] == "Chilton Books"
-    assert dune["openlibrary"] == {
+    assert dune["catalogs"]["openlibrary"] == {
         "edition_key": "OL26242482M",
         "work_key": "OL893415W",
         "cover_id": 11481354,
     }
-    assert drafts[1]["isbn13"] is None and drafts[1]["openlibrary"]["cover_id"] is None
+    assert drafts[1]["isbn13"] is None
+    assert drafts[1]["catalogs"]["openlibrary"]["cover_id"] is None
     assert ol.parse_search(_load("search_empty.json")) == []
     assert ol.parse_search({"docs": "x"}) == []
     assert ol.parse_search(None) == []

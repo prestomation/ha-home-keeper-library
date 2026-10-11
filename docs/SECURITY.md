@@ -45,14 +45,14 @@ no user, as Home Assistant does. An automation makes that kind of call.
 | `lend_book`, `borrow_book`, `return_loan`, `update_loan`, `delete_loan` | Admin |
 | `add_to_wishlist`, `update_wishlist`, `remove_from_wishlist`, `got_wishlist_book` | Admin |
 | `set_settings`, `import_csv`, `export_csv` | Admin |
-| `send_to_openlibrary`, `link_openlibrary`, `skip_openlibrary`, `disconnect_openlibrary` | Admin |
+| `send_to_catalog`, `link_catalog`, `skip_catalog`, `disconnect_catalog` | Admin |
 | `set_reading` | Open, for the caller's own person. An admin can name any person. |
 | `set_person_settings` | Open, for the caller's own person, with no `wishlist_todo`. An admin can set each field of any person. |
 | `list_books`, `get_book`, `list_locations`, `list_loans`, `list_people` | Open, projected |
 
 `wishlist_todo` is admin-only because it sends book titles to a to-do list. Import and
 export are admin-only because they read or write the whole library.
-`send_to_openlibrary` is admin-only because it sends book details to a public website
+`send_to_catalog` is admin-only because it sends book details to a public website
 as the household account.
 
 ## Open Library account
@@ -64,8 +64,8 @@ An admin can connect an Open Library account to send books
   flow. Home Assistant lets only an admin run an options flow. The keys are not a
   service field, so no `call_service` event or recorder row holds them.
 - The keys stay in the config entry data. No reply, event or diagnostics file shows
-  them. `get_state` gives an admin only `openlibrary_account`: if an account is
-  connected, and its user name. A non-admin user gets no `openlibrary_account`.
+  them. `get_state` gives an admin only `catalog_accounts`: for each catalog, if an
+  account is connected, and its user name. A non-admin user gets no `catalog_accounts`.
 - The library signs in for each send and keeps the session cookie only for that send.
 - A send goes only to the Open Library base URL, with the same limit of 1 request a
   second as the lookups. It sends the title, the first author and the fields that the

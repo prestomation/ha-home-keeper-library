@@ -132,7 +132,7 @@ async def test_connect_keeps_the_keys_in_the_entry_data(
         "username": "alex_reads",
     }
     assert [e.data for e in updated] == [
-        {"changed_fields": ["openlibrary_account"], "currency": "EUR", "origin": None}
+        {"changed_fields": ["catalog_accounts"], "currency": "EUR", "origin": None}
     ]
     for value in ("ACCESS1", "SECRET1"):
         assert value not in str([e.data for e in updated])
@@ -158,8 +158,10 @@ async def test_disconnect_and_diagnostics(hass, setup_entry, call) -> None:
     assert diag["openlibrary_connected"] is True
     for value in ("ACCESS1", "SECRET1"):
         assert value not in str(diag)
-    reply = await call("disconnect_openlibrary")
-    assert reply == {"openlibrary_account": {"connected": False, "username": None}}
+    reply = await call("disconnect_catalog")
+    assert reply == {
+        "catalog_accounts": {"openlibrary": {"connected": False, "username": None}}
+    }
     assert dict(setup_entry.data) == {}
 
 
@@ -171,21 +173,19 @@ async def test_send_adds_and_links_the_book(
 ) -> None:
     _connect(setup_entry, hass)
     book = await _book(call)
-    await setup_entry.runtime_data.store.set_openlibrary_status(book["id"], "missing")
+    await setup_entry.runtime_data.store.set_catalog_status(book["id"], "missing")
     _mock_added(aioclient_mock)
     reply = await call(
-        "send_to_openlibrary",
+        "send_to_catalog",
         {"book_id": book["id"], "fields": ["publisher", "published", "isbn"]},
     )
-    assert reply["result"] == "added" and reply["edition_key"] == "OL5M"
+    assert reply["result"] == "added" and reply["record"] == "OL5M"
     assert reply["cover"] == "skipped"
     linked = reply["book"]
-    assert linked["openlibrary"] == {
-        "edition_key": "OL5M",
-        "work_key": "OL9W",
-        "cover_id": None,
+    assert linked["catalogs"] == {
+        "openlibrary": {"edition_key": "OL5M", "work_key": "OL9W", "cover_id": None}
     }
-    assert linked["openlibrary_status"] is None
+    assert linked["catalog_status"] == {}
     (add,) = _calls(aioclient_mock, "post", "/books/add")
     assert add[2] == {
         "book_title": "Ferns of the Rain City",
@@ -213,7 +213,7 @@ async def test_send_without_the_optional_fields_uses_the_known_author(
     await setup_entry.runtime_data.lookup.async_join()
     before = len(_calls(aioclient_mock, "get", "/isbn/"))
     _mock_added(aioclient_mock)
-    reply = await call("send_to_openlibrary", {"book_id": book["id"]})
+    reply = await call("send_to_catalog", {"book_id": book["id"]})
     assert reply["result"] == "added"
     assert len(_calls(aioclient_mock, "get", "/isbn/")) == before
     (add,) = _calls(aioclient_mock, "post", "/books/add")
@@ -233,11 +233,9 @@ async def test_send_stops_when_open_library_has_the_isbn(
     aioclient_mock.clear_requests()
     aioclient_mock.get(f"{OL}/isbn/{ISBN}.json", json=EDITION)
     aioclient_mock.get(f"{OL}/works/OL9W.json", json=WORK)
-    reply = await call(
-        "send_to_openlibrary", {"book_id": book["id"], "fields": ["isbn"]}
-    )
-    assert reply["result"] == "existing" and reply["edition_key"] == "OL5M"
-    assert reply["book"]["openlibrary"] is None
+    reply = await call("send_to_catalog", {"book_id": book["id"], "fields": ["isbn"]})
+    assert reply["result"] == "existing" and reply["record"] == "OL5M"
+    assert reply["book"]["catalogs"] == {}
     assert not _calls(aioclient_mock, "post", "/account/login")
 
 
@@ -253,9 +251,9 @@ async def test_send_reads_a_found_edition_as_existing(
         status=303,
         headers={"Location": "/books/OL6M/x/edit?mode=found"},
     )
-    reply = await call("send_to_openlibrary", {"book_id": book["id"]})
-    assert reply["result"] == "existing" and reply["edition_key"] == "OL6M"
-    assert reply["book"]["openlibrary"] is None
+    reply = await call("send_to_catalog", {"book_id": book["id"]})
+    assert reply["result"] == "existing" and reply["record"] == "OL6M"
+    assert reply["book"]["catalogs"] == {}
 
 
 @pytest.mark.parametrize(
@@ -275,7 +273,7 @@ async def test_send_errors(hass, setup_entry, call, aioclient_mock, setup, key) 
         _connect(setup_entry, hass)
     book = await _book(call, authors=[] if setup == "no_author" else ["Mara Ellison"])
     if setup == "linked":
-        link = {"openlibrary": {"edition_key": "OL1M"}}
+        link = {"catalogs": {"openlibrary": {"edition_key": "OL1M"}}}
         await setup_entry.runtime_data.store.fill_book(book["id"], link)
     _mock_login(aioclient_mock, 401 if setup == "refused" else 200)
     aioclient_mock.get(f"{OL}/search/authors.json", json={"docs": []})
@@ -288,7 +286,7 @@ async def test_send_errors(hass, setup_entry, call, aioclient_mock, setup, key) 
             text="<html>",
         )
     with pytest.raises(ServiceValidationError) as info:
-        await call("send_to_openlibrary", {"book_id": book["id"]})
+        await call("send_to_catalog", {"book_id": book["id"]})
     assert _error_key(info) == key
 
 
@@ -314,7 +312,7 @@ async def test_send_with_the_cover(
     aioclient_mock.post(f"{OL}/books/OL5M/add-cover", status=200, text="<html>")
     aioclient_mock.get(f"{COVERS}/b/id/77-L.jpg?default=false", status=404)
     reply = await call(
-        "send_to_openlibrary", {"book_id": book["id"], "include_cover": True}
+        "send_to_catalog", {"book_id": book["id"], "include_cover": True}
     )
     assert reply["cover"] == result
     (upload,) = _calls(aioclient_mock, "post", "/books/OL5M/add-cover")
@@ -335,60 +333,60 @@ async def test_send_links_the_key_when_the_new_edition_cannot_be_read(
         headers={"Location": "/books/OL5M/x/edit?mode=add-book"},
     )
     aioclient_mock.get(f"{OL}/books/OL5M.json", status=404)
-    reply = await call("send_to_openlibrary", {"book_id": book["id"]})
+    reply = await call("send_to_catalog", {"book_id": book["id"]})
     assert reply["result"] == "added"
-    assert reply["book"]["openlibrary"]["edition_key"] == "OL5M"
+    assert reply["book"]["catalogs"]["openlibrary"]["edition_key"] == "OL5M"
 
 
 # ── Link and skip ────────────────────────────────────────────────────────────
 
 
-async def test_link_openlibrary(hass, setup_entry, call, aioclient_mock) -> None:
+async def test_link_catalog(hass, setup_entry, call, aioclient_mock) -> None:
     book = await _book(call, publisher="", published="")
-    await setup_entry.runtime_data.store.set_openlibrary_status(book["id"], "missing")
+    await setup_entry.runtime_data.store.set_catalog_status(book["id"], "missing")
     aioclient_mock.get(f"{OL}/books/OL5M.json", json=EDITION)
     aioclient_mock.get(f"{OL}/works/OL9W.json", json=WORK)
     reply = await call(
-        "link_openlibrary",
-        {"book_id": book["id"], "edition": "https://openlibrary.org/books/OL5M/Ferns"},
+        "link_catalog",
+        {"book_id": book["id"], "record": "https://openlibrary.org/books/OL5M/Ferns"},
     )
     linked = reply["book"]
-    assert linked["openlibrary"]["edition_key"] == "OL5M"
+    assert linked["catalogs"]["openlibrary"]["edition_key"] == "OL5M"
     assert linked["publisher"] == "Cascade Leaf Press"
-    assert linked["openlibrary_status"] is None
+    assert linked["catalog_status"] == {}
 
 
 async def test_link_errors(hass, setup_entry, call, aioclient_mock) -> None:
     book = await _book(call)
     with pytest.raises(ServiceValidationError) as info:
-        await call("link_openlibrary", {"book_id": book["id"], "edition": "OL5W"})
+        await call("link_catalog", {"book_id": book["id"], "record": "OL5W"})
     assert _error_key(info) == "invalid_openlibrary_edition"
     aioclient_mock.get(f"{OL}/books/OL5M.json", status=404)
     with pytest.raises(ServiceValidationError) as info:
-        await call("link_openlibrary", {"book_id": book["id"], "edition": "OL5M"})
+        await call("link_catalog", {"book_id": book["id"], "record": "OL5M"})
     assert _error_key(info) == "openlibrary_not_found"
     aioclient_mock.clear_requests()
     aioclient_mock.get(f"{OL}/books/OL5M.json", status=500)
     with pytest.raises(ServiceValidationError) as info:
-        await call("link_openlibrary", {"book_id": book["id"], "edition": "OL5M"})
+        await call("link_catalog", {"book_id": book["id"], "record": "OL5M"})
     assert _error_key(info) == "lookup_unavailable"
 
 
-async def test_skip_openlibrary(hass, setup_entry, call) -> None:
+async def test_skip_catalog(hass, setup_entry, call) -> None:
     book = await _book(call)
     await setup_entry.runtime_data.lookup.async_join()
     updated = async_capture_events(hass, "home_keeper_library_book_updated")
-    reply = await call("skip_openlibrary", {"book_id": book["id"]})
-    assert reply["book"]["openlibrary_status"] == "skipped"
-    reply = await call("skip_openlibrary", {"book_id": book["id"], "skip": False})
-    assert reply["book"]["openlibrary_status"] == "missing"
-    await call("skip_openlibrary", {"book_id": book["id"], "skip": False})
+    reply = await call("skip_catalog", {"book_id": book["id"]})
+    assert reply["book"]["catalog_status"] == {"openlibrary": "skipped"}
+    reply = await call("skip_catalog", {"book_id": book["id"], "skip": False})
+    assert reply["book"]["catalog_status"] == {"openlibrary": "missing"}
+    await call("skip_catalog", {"book_id": book["id"], "skip": False})
     await hass.async_block_till_done()
     assert [e.data["changed_fields"] for e in updated] == [
-        ["openlibrary_status"],
-        ["openlibrary_status"],
+        ["catalog_status"],
+        ["catalog_status"],
     ]
-    link = {"openlibrary": {"edition_key": "OL1M"}}
+    link = {"catalogs": {"openlibrary": {"edition_key": "OL1M"}}}
     await setup_entry.runtime_data.store.fill_book(book["id"], link)
-    reply = await call("skip_openlibrary", {"book_id": book["id"]})
-    assert reply["book"]["openlibrary_status"] is None
+    reply = await call("skip_catalog", {"book_id": book["id"]})
+    assert reply["book"]["catalog_status"] == {}

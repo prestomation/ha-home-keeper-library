@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Отправить в Open Library",
       "description": "Добавляет книгу, которой нет в Open Library, через подключённую учётную запись Open Library, затем связывает книгу.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Связать с Open Library",
       "description": "Связывает книгу с изданием в Open Library и заполняет её пустые поля.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Книга",
           "description": "ID книги."
         },
-        "edition": {
+        "record": {
           "name": "Издание",
           "description": "Ключ издания, например OL123M, или URL-адрес страницы издания."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Пропустить Open Library",
       "description": "Убирает книгу из списка книг, которых нет в Open Library, или возвращает её.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Отключить Open Library",
       "description": "Удаляет ключи учётной записи Open Library."
     },

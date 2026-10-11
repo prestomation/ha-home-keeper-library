@@ -45,6 +45,7 @@ from .const import (
     DOMAIN,
     SNIFF_BYTES,
 )
+from .models import catalog_record
 
 if TYPE_CHECKING:
     from .coordinator import LibraryCoordinator
@@ -192,7 +193,7 @@ async def async_store_openlibrary_cover(
     if keeps_its_cover():
         return False
     book = coordinator.store.state["books"][book_id]
-    cover_id = (book.get("openlibrary") or {}).get("cover_id")
+    cover_id = catalog_record(book).get("cover_id")
     if not cover_id:
         return False
     data = await coordinator.client.async_cover(int(cover_id))

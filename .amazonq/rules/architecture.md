@@ -92,7 +92,7 @@ result in the plan's Security section ([pr-workflow.md](pr-workflow.md)).
   the config entry data. It is never a service field, an event value, a reply value or a
   diagnostics value. A service field puts it in `call_service` events and the recorder.
 - **A write to an outside catalog is admin-only and is for 1 record.** It starts only
-  when an admin selects it, as `send_to_openlibrary` does.
+  when an admin selects it, as `send_to_catalog` does.
 - **If no rule fits, ask the maintainer.** Write the answer in the plan, then add the rule
   here.
 

@@ -86,7 +86,7 @@ BOOK_FIELDS = (
     "description",
     "tags",
     "shared_notes",
-    "openlibrary",
+    "catalogs",
     "needs_details",
 )
 # The fields that ``fill_from_draft`` can write. A user edit of a field is kept.
@@ -170,7 +170,7 @@ def normalize_state(raw: Any) -> dict[str, Any]:
     for book in state["books"].values():
         if isinstance(book, dict):
             book["lookup_tries"] = lookup_tries(book.get("lookup_tries"))
-            book["openlibrary_status"] = stored_openlibrary_status(book)
+            normalize_catalogs(book)
     orphans = raw.get("todo_orphans")
     if isinstance(orphans, list):
         state["todo_orphans"] = [
@@ -183,36 +183,74 @@ def normalize_state(raw: Any) -> dict[str, Any]:
     return state
 
 
-# The values of the book field ``openlibrary_status``. ``missing``: a lookup found
-# no book on Open Library. ``skipped``: an admin does not want to send the book.
-OPENLIBRARY_STATUSES = ("missing", "skipped")
+# The catalogs of books that the library reads and sends books to. A book keeps
+# its record in each catalog in ``catalogs``, and its send status in
+# ``catalog_status``. Both are objects with the catalog name as the key.
+OPENLIBRARY = "openlibrary"
+CATALOGS = (OPENLIBRARY,)
+# The values of a ``catalog_status`` entry. ``missing``: a lookup found no book in
+# the catalog. ``skipped``: an admin does not want to send the book.
+CATALOG_STATUSES = ("missing", "skipped")
 
 
-def stored_openlibrary_status(book: dict[str, Any]) -> str | None:
-    """The ``openlibrary_status`` of a stored book, with a value for an old book.
+def catalog_record(book: dict[str, Any], catalog: str = OPENLIBRARY) -> dict[str, Any]:
+    """The record of *book* in *catalog*, or an empty dict."""
+    records = book.get("catalogs")
+    record = records.get(catalog) if isinstance(records, dict) else None
+    return record if isinstance(record, dict) else {}
 
-    A book from before the field had no status. If its lookups gave no details
-    and it has no Open Library data, it is ``missing``.
+
+def catalog_status(book: dict[str, Any], catalog: str = OPENLIBRARY) -> str | None:
+    """The send status of *book* for *catalog*: None, missing or skipped."""
+    statuses = book.get("catalog_status")
+    value = statuses.get(catalog) if isinstance(statuses, dict) else None
+    return str(value) if value in CATALOG_STATUSES else None
+
+
+def normalize_catalogs(book: dict[str, Any]) -> None:
+    """Set ``catalogs`` and ``catalog_status`` of a stored book, in place.
+
+    Version 0.3.0b1 and older kept the Open Library data in the keys
+    ``openlibrary`` and ``openlibrary_status``. This moves them. A book from
+    before the status had no status: if its lookups gave no details and it has
+    no Open Library data, it is ``missing``. A book with a record in a catalog
+    has no status for that catalog.
     """
-    if book.get("openlibrary"):
-        return None
-    value = book.get("openlibrary_status")
-    if value in OPENLIBRARY_STATUSES:
-        return str(value)
+    had_status = "openlibrary_status" in book or "catalog_status" in book
+    old_record = book.pop("openlibrary", None)
+    old_status = book.pop("openlibrary_status", None)
+    records = book.get("catalogs")
+    records = dict(records) if isinstance(records, dict) else {}
+    if old_record:
+        records.setdefault(OPENLIBRARY, old_record)
+    statuses = book.get("catalog_status")
+    statuses = dict(statuses) if isinstance(statuses, dict) else {}
+    if old_status is not None:
+        statuses.setdefault(OPENLIBRARY, old_status)
+    book["catalogs"] = {
+        name: records[name]
+        for name in CATALOGS
+        if isinstance(records.get(name), dict) and records[name]
+    }
+    book["catalog_status"] = {
+        name: statuses[name]
+        for name in CATALOGS
+        if name not in book["catalogs"] and statuses.get(name) in CATALOG_STATUSES
+    }
     if (
-        "openlibrary_status" not in book
+        not had_status
+        and OPENLIBRARY not in book["catalogs"]
         and book.get("needs_details")
         and lookup_tries(book.get("lookup_tries")) >= LOOKUP_MAX_TRIES
     ):
-        return "missing"
-    return None
+        book["catalog_status"][OPENLIBRARY] = "missing"
 
 
-def openlibrary_status(value: Any) -> str | None:
-    """A caller-set ``openlibrary_status``: None or 1 of ``OPENLIBRARY_STATUSES``."""
+def catalog_status_value(value: Any) -> str | None:
+    """A caller-set catalog status: None or 1 of ``CATALOG_STATUSES``."""
     if value is None:
         return None
-    return choice(value, "openlibrary_status", OPENLIBRARY_STATUSES)
+    return choice(value, "catalog_status", CATALOG_STATUSES)
 
 
 def lookup_tries(value: Any) -> int:
@@ -547,16 +585,26 @@ def _openlibrary(value: Any) -> dict[str, Any] | None:
     if value is None:
         return None
     if not isinstance(value, dict):
-        raise LibraryError("invalid_field", field="openlibrary")
+        raise LibraryError("invalid_field", field="catalogs")
     cover_id = value.get("cover_id")
     if cover_id is not None:
-        cover_id = integer(cover_id, "openlibrary", low=1, high=2**53)
+        cover_id = integer(cover_id, "catalogs", low=1, high=2**53)
     out = {
-        "edition_key": optional_text(value.get("edition_key"), "openlibrary", 50),
-        "work_key": optional_text(value.get("work_key"), "openlibrary", 50),
+        "edition_key": optional_text(value.get("edition_key"), "catalogs", 50),
+        "work_key": optional_text(value.get("work_key"), "catalogs", 50),
         "cover_id": cover_id,
     }
     return out if any(v is not None for v in out.values()) else None
+
+
+def _catalogs(value: Any) -> dict[str, Any]:
+    """The checked ``catalogs`` object. A record with no value is dropped."""
+    if value is None:
+        return {}
+    if not isinstance(value, dict) or any(name not in CATALOGS for name in value):
+        raise LibraryError("invalid_field", field="catalogs")
+    records = {name: _openlibrary(record) for name, record in value.items()}
+    return {name: record for name, record in records.items() if record is not None}
 
 
 def book_field(field: str, value: Any) -> Any:
@@ -583,8 +631,8 @@ def book_field(field: str, value: Any) -> Any:
         return optional_text(value, field, 20)
     if field == "series":
         return _series(value)
-    if field == "openlibrary":
-        return _openlibrary(value)
+    if field == "catalogs":
+        return _catalogs(value)
     if field == "needs_details":
         return boolean(value, field)
     raise LibraryError("invalid_field", field=field)
@@ -619,11 +667,11 @@ def build_book(data: dict[str, Any], *, now: str) -> dict[str, Any]:
         "description": "",
         "tags": [],
         "shared_notes": "",
-        "openlibrary": None,
+        "catalogs": {},
         "cover": {"kind": "none", "file": None},
         "needs_details": False,
         "lookup_tries": 0,
-        "openlibrary_status": None,
+        "catalog_status": {},
         "created_at": now,
         "updated_at": now,
         "wishlist": None,
@@ -677,9 +725,10 @@ def fill_from_draft(
 ) -> tuple[dict[str, Any], list[str]]:
     """Fill the empty fields of *book* from an Open Library *draft*.
 
-    A field that has a value is a user edit and stays. The ``openlibrary`` keys
-    are always taken from the draft, and ``needs_details`` turns off. A book with
-    Open Library data has no ``openlibrary_status``.
+    A field that has a value is a user edit and stays. The records in the
+    ``catalogs`` of the draft always replace the records of those catalogs, and
+    ``needs_details`` turns off. A book with a record in a catalog has no
+    ``catalog_status`` for that catalog.
     """
     updated = dict(book)
     changed: list[str] = []
@@ -694,14 +743,17 @@ def fill_from_draft(
             continue
         updated[field] = value
         changed.append(field)
-    if draft.get("openlibrary"):
-        value = _openlibrary(draft["openlibrary"])
-        if value != updated.get("openlibrary"):
-            updated["openlibrary"] = value
-            changed.append("openlibrary")
-    if updated.get("openlibrary") and updated.get("openlibrary_status"):
-        updated["openlibrary_status"] = None
-        changed.append("openlibrary_status")
+    records = updated.get("catalogs") or {}
+    drafted = _catalogs(draft.get("catalogs"))
+    if drafted and {**records, **drafted} != records:
+        records = {**records, **drafted}
+        updated["catalogs"] = records
+        changed.append("catalogs")
+    statuses = updated.get("catalog_status") or {}
+    kept = {name: value for name, value in statuses.items() if name not in records}
+    if kept != statuses:
+        updated["catalog_status"] = kept
+        changed.append("catalog_status")
     if updated.get("needs_details"):
         updated["needs_details"] = False
         changed.append("needs_details")
@@ -1053,7 +1105,7 @@ def books_to_look_up(state: dict[str, Any], max_tries: int) -> list[str]:
         for book in state["books"].values()
         if book.get("needs_details")
         and (book.get("isbn13") or book.get("isbn10"))
-        and not book.get("openlibrary")
+        and not catalog_record(book)
         and lookup_tries(book.get("lookup_tries")) < max_tries
     ]
     books.sort(key=lambda b: (str(b.get("created_at", "")), b["id"]))

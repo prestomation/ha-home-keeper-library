@@ -27,6 +27,8 @@ import {
   hasFilters,
   locationLabel,
   notOnOpenLibrary,
+  olRecord,
+  olStatus,
   progress,
   readFilters,
   readingOf,
@@ -351,7 +353,7 @@ export function renderBook(ctx: ViewCtx, book: Book | undefined): string {
     book.pages ? tn('book.pages', book.pages) : '',
     book.isbn13 ? `ISBN ${book.isbn13}` : book.isbn10 ? `ISBN ${book.isbn10}` : '',
   ].filter(Boolean).map((x) => escapeHTML(x));
-  const olKey = book.openlibrary?.edition_key || book.openlibrary?.work_key;
+  const olKey = olRecord(book)?.edition_key || olRecord(book)?.work_key;
   if (olKey) {
     meta.push(`<a href="https://openlibrary.org/${olKey.startsWith('/') ? '' : 'books/'}${escapeHTML(olKey.replace(/^\//, ''))}" target="_blank" rel="noreferrer noopener">Open Library</a>`);
   }
@@ -373,9 +375,9 @@ export function renderBook(ctx: ViewCtx, book: Book | undefined): string {
   const missingOl = admin && notOnOpenLibrary(book)
     ? `<div class="hkl-banner ol" data-k="ol-banner"><span class="hkl-banner-text"><strong>${escapeHTML(t('ol.banner_title'))}</strong><span>${escapeHTML(t('ol.banner_text'))}</span></span><span class="hkl-banner-acts">${sendButton('primary', 'ol-banner-send')}${button(escapeHTML(t('ol.not_now')), 'skip-ol', 'text', `data-id="${id}" data-k="ol-not-now"`)}</span></div>`
     : '';
-  const sendLater = admin && !book.openlibrary && book.openlibrary_status === 'skipped' ? sendButton('text', 'ol-send-later') : '';
+  const sendLater = admin && !olRecord(book) && olStatus(book) === 'skipped' ? sendButton('text', 'ol-send-later') : '';
   const badge = book.cover?.kind === 'custom' ? `<span class="hkl-cover-badge">${escapeHTML(t('book.custom_cover'))}</span>` : '';
-  const useOl = book.openlibrary?.cover_id && book.cover?.kind !== 'openlibrary'
+  const useOl = olRecord(book)?.cover_id && book.cover?.kind !== 'openlibrary'
     ? button(escapeHTML(t('action.use_ol_cover')), 'use-ol-cover', 'text', 'data-k="use-ol"')
     : '';
   const actions = [

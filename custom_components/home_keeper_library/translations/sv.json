@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Skicka till Open Library",
       "description": "Lägg till en bok som Open Library inte har, med det anslutna Open Library-kontot, och länka sedan boken.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Länka till Open Library",
       "description": "Länka en bok till en utgåva i Open Library och fyll i dess tomma fält.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Bok",
           "description": "Bokens ID."
         },
-        "edition": {
+        "record": {
           "name": "Utgåva",
           "description": "En utgåvenyckel, till exempel OL123M, eller URL:en till utgåvans sida."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Hoppa över Open Library",
       "description": "Ta bort en bok från listan över böcker som inte finns på Open Library, eller lägg tillbaka den.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Koppla från Open Library",
       "description": "Ta bort nycklarna för Open Library-kontot."
     },

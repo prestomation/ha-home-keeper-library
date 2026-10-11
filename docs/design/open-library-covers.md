@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/book_lookup.py
   - custom_components/home_keeper_library/covers.py
 related: [scan-and-isbn, csv-import-export, store-models, people-privilege]
-source_hash: 075bee010779
+source_hash: 6887cba0eea8
 ---
 
 # Open Library and covers
@@ -37,10 +37,10 @@ an import saved with no details. Covers are JPEG files next to the storage docum
 ### Parser and client
 
 `openlibrary.parse_edition` turns the edition document of `/isbn/{isbn}.json`, its work
-and its authors into a draft: the fields of `models.DRAFT_FIELDS` and an `openlibrary`
-block with the edition key, the work key and the cover id. `openlibrary.parse_search`
-and `openlibrary.best_match` read `/search.json` for a book with no ISBN. A value of the
-wrong type is ignored.
+and its authors into a draft: the fields of `models.DRAFT_FIELDS` and a `catalogs` block
+with the `openlibrary` record: the edition key, the work key and the cover id.
+`openlibrary.parse_search` and `openlibrary.best_match` read `/search.json` for a book with
+no ISBN. A value of the wrong type is ignored.
 
 `OpenLibraryClient` uses the shared aiohttp session of Home Assistant, a timeout of 10
 seconds and the User-Agent `const.USER_AGENT` with the repository URL. An async limiter
@@ -64,13 +64,13 @@ and first author. A draft fills the book with `LibraryStore.fill_book` and the o
 `home_keeper_library`, and then the cover downloads. After a network error the queue
 tries again after 1 minute, then after 5 minutes: `const.LOOKUP_MAX_TRIES` (3) tries in
 all. A book that Open Library does not have keeps `needs_details: true` for the user to
-fill, and `async_mark_missing` gives it `openlibrary_status: missing`.
+fill, and `async_mark_missing` gives it the `catalog_status` `openlibrary: missing`.
 
 The book field `lookup_tries` counts the lookups that gave no details, so the limit holds
 across a restart. A network error adds 1. A book that Open Library does not have gets the
 full count at once, from the queue and from `add_book`. The queue is in memory, so setup
 queues again each book that `models.books_to_look_up` names: a book that needs details,
-has an ISBN, has no `openlibrary` block and has fewer tries than the limit, oldest first.
+has an ISBN, has no Open Library record and has fewer tries than the limit, oldest first.
 `lookup_tries` is bookkeeping of the queue. It fires no event, is not a column of the CSV
 export, and is 0 for a new or imported book.
 
@@ -114,6 +114,7 @@ from its cache.
 
 - The cover URL path `/api/home_keeper_library/cover/{book_id}` and the upload path
   `/api/home_keeper_library/upload`.
-- The `openlibrary` block of a book: `edition_key`, `work_key`, `cover_id`.
+- The `catalogs` block of a book, keyed by catalog name. The `openlibrary` record has
+  `edition_key`, `work_key` and `cover_id`. The `lookup_isbn` draft has the same block.
 - The book field `lookup_tries` and the covers directory `home_keeper_library_covers`.
 - The cover `kind` values and the file name format.

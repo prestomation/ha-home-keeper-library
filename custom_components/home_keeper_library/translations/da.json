@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Send til Open Library",
       "description": "Tilføj en bog, som Open Library ikke har, med den tilknyttede Open Library-konto, og forbind derefter bogen.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Forbind med Open Library",
       "description": "Forbind en bog med en udgave i Open Library, og udfyld dens tomme felter.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Bog",
           "description": "Bogens ID."
         },
-        "edition": {
+        "record": {
           "name": "Udgave",
           "description": "En udgavenøgle, såsom OL123M, eller URL'en til udgavens side."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Spring Open Library over",
       "description": "Fjern en bog fra listen over bøger, der ikke er på Open Library, eller sæt den tilbage.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Afbryd Open Library",
       "description": "Fjern nøglerne til Open Library-kontoen."
     },

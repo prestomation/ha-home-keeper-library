@@ -45,8 +45,8 @@ def test_normalize_state_fills_and_filters() -> None:
     }
     state = m.normalize_state(raw)
     assert state["books"] == {
-        "b": {"id": "b", "lookup_tries": 0, "openlibrary_status": None},
-        "t": {"id": "t", "lookup_tries": 2, "openlibrary_status": None},
+        "b": {"id": "b", "lookup_tries": 0, "catalogs": {}, "catalog_status": {}},
+        "t": {"id": "t", "lookup_tries": 2, "catalogs": {}, "catalog_status": {}},
         "x": "not a book",
     }
     assert state["rooms"] == {}
@@ -62,15 +62,20 @@ def test_lookup_tries(value, tries) -> None:
     assert m.lookup_tries(value) == tries
 
 
+OL = {"edition_key": "OL1M", "work_key": None, "cover_id": None}
+MISSING = {"openlibrary": "missing"}
+SKIPPED = {"openlibrary": "skipped"}
+
+
 def test_books_to_look_up() -> None:
     state = m.empty_state()
-    base = {"needs_details": True, "isbn13": "9780441478125", "openlibrary": None}
+    base = {"needs_details": True, "isbn13": "9780441478125", "catalogs": {}}
     state["books"] = {
         "b_late": {**base, "id": "b_late", "created_at": "2", "lookup_tries": 2},
         "c_early": {**base, "id": "c_early", "created_at": "1"},
         "a_ten": {**base, "id": "a_ten", "isbn13": None, "isbn10": "0441478123"},
         "done": {**base, "id": "done", "lookup_tries": 3},
-        "known": {**base, "id": "known", "openlibrary": {"work_key": "W"}},
+        "known": {**base, "id": "known", "catalogs": {"openlibrary": OL}},
         "noisbn": {**base, "id": "noisbn", "isbn13": None},
         "full": {**base, "id": "full", "needs_details": False},
     }
@@ -395,14 +400,17 @@ def test_book_fields() -> None:
     assert _err(m.book_field, "series", {"name": "D", "number": [1]}).key == (
         "invalid_field"
     )
-    assert m.book_field("openlibrary", None) is None
-    assert m.book_field("openlibrary", {}) is None
-    assert m.book_field("openlibrary", {"work_key": "OL1W", "cover_id": 5}) == {
-        "edition_key": None,
-        "work_key": "OL1W",
-        "cover_id": 5,
+    assert m.book_field("catalogs", None) == {}
+    assert m.book_field("catalogs", {}) == {}
+    assert m.book_field("catalogs", {"openlibrary": {}}) == {}
+    assert m.book_field("catalogs", {"openlibrary": None}) == {}
+    record = {"work_key": "OL1W", "cover_id": 5}
+    assert m.book_field("catalogs", {"openlibrary": record}) == {
+        "openlibrary": {"edition_key": None, "work_key": "OL1W", "cover_id": 5}
     }
-    assert _err(m.book_field, "openlibrary", "x").key == "invalid_field"
+    for bad in ("x", ["openlibrary"], {"other": record}, {"openlibrary": "x"}):
+        err = _err(m.book_field, "catalogs", bad)
+        assert (err.key, err.placeholders) == ("invalid_field", {"field": "catalogs"})
     assert m.book_field("needs_details", True) is True
     assert m.book_field("tags", ["a", "a"]) == ["a"]
     assert _err(m.book_field, "nope", 1).key == "invalid_field"
@@ -451,77 +459,158 @@ def test_fill_from_draft_keeps_user_edits() -> None:
         "subjects": [],
         "language": "en",
         "isbn13": "bad",
-        "openlibrary": {"work_key": "OL1W"},
+        "catalogs": {"openlibrary": {"work_key": "OL1W"}},
     }
     filled, changed = m.fill_from_draft(book, draft, now="t1")
     assert filled["title"] == "Mine" and filled["pages"] == 5
     assert filled["authors"] == ["A"] and filled["language"] == "en"
     assert filled["isbn13"] is None
-    assert filled["openlibrary"]["work_key"] == "OL1W"
+    assert filled["catalogs"] == {
+        "openlibrary": {"edition_key": None, "work_key": "OL1W", "cover_id": None}
+    }
     assert filled["needs_details"] is False
-    assert changed == ["authors", "language", "openlibrary", "needs_details"]
+    assert changed == ["authors", "language", "catalogs", "needs_details"]
     assert filled["updated_at"] == "t1"
     again, changed = m.fill_from_draft(filled, draft, now="t2")
     assert changed == [] and again["updated_at"] == "t1"
 
 
-def test_fill_from_draft_clears_the_openlibrary_status() -> None:
+def test_fill_from_draft_clears_the_catalog_status() -> None:
     book = m.build_book({"title": "Mine"}, now="t0")
-    book["openlibrary_status"] = "missing"
+    book["catalog_status"] = {"openlibrary": "missing"}
     filled, changed = m.fill_from_draft(book, {"authors": ["A"]}, now="t1")
-    assert filled["openlibrary_status"] == "missing"
+    assert filled["catalog_status"] == {"openlibrary": "missing"}
     assert changed == ["authors"]
-    draft = {"openlibrary": {"edition_key": "OL5M"}}
+    draft = {"catalogs": {"openlibrary": {"edition_key": "OL5M"}}}
     filled, changed = m.fill_from_draft(book, draft, now="t1")
-    assert filled["openlibrary_status"] is None
-    assert changed == ["openlibrary", "openlibrary_status"]
+    assert filled["catalog_status"] == {}
+    assert filled["catalogs"]["openlibrary"]["edition_key"] == "OL5M"
+    assert changed == ["catalogs", "catalog_status"]
     _, changed = m.fill_from_draft(filled, draft, now="t2")
     assert changed == []
+    # A record from a new draft replaces the old record.
+    draft = {"catalogs": {"openlibrary": {"edition_key": "OL6M"}}}
+    again, changed = m.fill_from_draft(filled, draft, now="t3")
+    assert again["catalogs"]["openlibrary"]["edition_key"] == "OL6M"
+    assert changed == ["catalogs"]
+    # A book with no catalog keys at all gets none from a draft with no record.
+    bare = {"id": "x", "title": "T"}
+    same, changed = m.fill_from_draft(bare, {"catalogs": {}}, now="t4")
+    assert changed == [] and "catalogs" not in same
 
 
 @pytest.mark.parametrize(
-    ("book", "status"),
+    ("book", "catalogs", "status"),
     [
-        ({"openlibrary_status": "missing"}, "missing"),
-        ({"openlibrary_status": "skipped"}, "skipped"),
-        ({"openlibrary_status": "other"}, None),
-        ({"openlibrary_status": None, "needs_details": True, "lookup_tries": 3}, None),
+        # Version 0.3.0b1: the status is in openlibrary_status.
+        ({"openlibrary_status": "missing"}, {}, {"openlibrary": "missing"}),
+        ({"openlibrary_status": "skipped"}, {}, {"openlibrary": "skipped"}),
+        ({"openlibrary_status": "other"}, {}, {}),
         (
-            {"openlibrary_status": "skipped", "openlibrary": {"edition_key": "OL1M"}},
-            None,
+            {"openlibrary_status": None, "needs_details": True, "lookup_tries": 3},
+            {},
+            {},
         ),
-        ({"needs_details": True, "lookup_tries": 3}, "missing"),
-        ({"needs_details": True, "lookup_tries": 4}, "missing"),
-        ({"needs_details": True, "lookup_tries": 2}, None),
-        ({"needs_details": False, "lookup_tries": 3}, None),
         (
-            {
-                "needs_details": True,
-                "lookup_tries": 3,
-                "openlibrary": {"work_key": "W"},
-            },
-            None,
+            {"openlibrary_status": "skipped", "openlibrary": OL},
+            {"openlibrary": OL},
+            {},
         ),
-        ({}, None),
+        # Version 0.2.0: no status, and the record is in openlibrary.
+        ({"openlibrary": OL}, {"openlibrary": OL}, {}),
+        ({"openlibrary": None}, {}, {}),
+        ({"needs_details": True, "lookup_tries": 3}, {}, {"openlibrary": "missing"}),
+        ({"needs_details": True, "lookup_tries": 4}, {}, {"openlibrary": "missing"}),
+        ({"needs_details": True, "lookup_tries": 2}, {}, {}),
+        ({"needs_details": False, "lookup_tries": 3}, {}, {}),
+        (
+            {"needs_details": True, "lookup_tries": 3, "openlibrary": OL},
+            {"openlibrary": OL},
+            {},
+        ),
+        ({}, {}, {}),
+        # The current shape stays as it is.
+        ({"catalogs": {"openlibrary": OL}}, {"openlibrary": OL}, {}),
+        ({"catalog_status": SKIPPED}, {}, SKIPPED),
+        (
+            {"catalog_status": {}, "needs_details": True, "lookup_tries": 3},
+            {},
+            {},
+        ),
+        # A bad or unknown value is dropped.
+        (
+            {"catalogs": {"other": OL, "openlibrary": "x"}, "catalog_status": []},
+            {},
+            {},
+        ),
+        ({"catalogs": [], "catalog_status": {"openlibrary": "sent"}}, {}, {}),
+        ({"catalogs": {"openlibrary": {}}}, {}, {}),
+        (
+            {"catalogs": {"openlibrary": OL}, "catalog_status": MISSING},
+            {"openlibrary": OL},
+            {},
+        ),
+        # A record or a status in the current shape wins over an old key.
+        (
+            {"openlibrary": {"work_key": "W"}, "catalogs": {"openlibrary": OL}},
+            {"openlibrary": OL},
+            {},
+        ),
+        (
+            {"openlibrary_status": "missing", "catalog_status": SKIPPED},
+            {},
+            SKIPPED,
+        ),
     ],
 )
-def test_stored_openlibrary_status(book, status) -> None:
-    assert m.stored_openlibrary_status(book) == status
+def test_normalize_catalogs(book, catalogs, status) -> None:
+    m.normalize_catalogs(book)
+    assert book.get("catalogs") == catalogs
+    assert book.get("catalog_status") == status
+    assert "openlibrary" not in book and "openlibrary_status" not in book
+    # A second load changes nothing.
+    again = dict(book)
+    m.normalize_catalogs(again)
+    assert again == book
 
 
-def test_normalize_state_sets_the_openlibrary_status() -> None:
-    raw = {"books": {"old": {"id": "old", "needs_details": True, "lookup_tries": 3}}}
-    assert m.normalize_state(raw)["books"]["old"]["openlibrary_status"] == "missing"
+def test_normalize_state_moves_the_openlibrary_keys() -> None:
+    raw = {
+        "books": {
+            "old": {"id": "old", "needs_details": True, "lookup_tries": 3},
+            "linked": {"id": "linked", "openlibrary": OL, "openlibrary_status": None},
+        }
+    }
+    books = m.normalize_state(raw)["books"]
+    assert books["old"]["catalog_status"] == {"openlibrary": "missing"}
+    assert books["linked"] == {
+        "id": "linked",
+        "lookup_tries": 0,
+        "catalogs": {"openlibrary": OL},
+        "catalog_status": {},
+    }
 
 
-def test_openlibrary_status_validator() -> None:
-    assert m.openlibrary_status(None) is None
-    assert m.openlibrary_status("missing") == "missing"
-    assert m.openlibrary_status("skipped") == "skipped"
-    err = _err(m.openlibrary_status, "sent")
+def test_catalog_record_and_status() -> None:
+    book = {"catalogs": {"openlibrary": OL}, "catalog_status": SKIPPED}
+    assert m.catalog_record(book) == OL
+    assert m.catalog_record(book, "other") == {}
+    assert m.catalog_status(book) == "skipped"
+    assert m.catalog_status(book, "other") is None
+    for bad in ({}, {"catalogs": [], "catalog_status": []}):
+        assert m.catalog_record(bad) == {} and m.catalog_status(bad) is None
+    assert m.catalog_record({"catalogs": {"openlibrary": "x"}}) == {}
+    assert m.catalog_status({"catalog_status": {"openlibrary": "sent"}}) is None
+
+
+def test_catalog_status_validator() -> None:
+    assert m.catalog_status_value(None) is None
+    assert m.catalog_status_value("missing") == "missing"
+    assert m.catalog_status_value("skipped") == "skipped"
+    err = _err(m.catalog_status_value, "sent")
     assert err.key == "invalid_choice"
     assert err.placeholders == {
-        "field": "openlibrary_status",
+        "field": "catalog_status",
         "options": "missing, skipped",
     }
 

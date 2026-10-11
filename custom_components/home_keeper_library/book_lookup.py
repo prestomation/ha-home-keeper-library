@@ -5,7 +5,7 @@ scan whose lookup failed, or a book from a CSV import. The worker reads Open
 Library for the book (by ISBN, else by title and author), fills the empty fields
 and downloads the cover. A network failure tries again later, at most 3 times,
 with a longer wait each time. A book that Open Library does not have keeps
-``needs_details: true`` and gets ``openlibrary_status: missing``. The user adds
+``needs_details: true`` and gets the ``catalog_status`` ``missing``. The user adds
 the details, and an admin can send the book to Open Library.
 
 The queue is in memory, so setup queues again each book that still needs a
@@ -27,7 +27,7 @@ from homeassistant.helpers.event import async_call_later
 
 from .const import LOOKUP_BACKOFF_S, LOOKUP_MAX_TRIES, ORIGIN
 from .covers import async_store_openlibrary_cover
-from .models import LibraryError, books_to_look_up
+from .models import LibraryError, books_to_look_up, catalog_status
 from .openlibrary_client import OpenLibraryError
 
 if TYPE_CHECKING:
@@ -127,8 +127,8 @@ class BookLookup:
         """Record that Open Library does not have a book."""
         store = self._coordinator.store
         await store.set_lookup_tries(book_id, LOOKUP_MAX_TRIES)
-        if store.state["books"].get(book_id, {}).get("openlibrary_status") is None:
-            await store.set_openlibrary_status(book_id, "missing", origin=ORIGIN)
+        if catalog_status(store.state["books"].get(book_id, {})) is None:
+            await store.set_catalog_status(book_id, "missing", origin=ORIGIN)
 
     async def async_find(self, book: dict[str, Any]) -> dict[str, Any] | None:
         """The Open Library draft of a book, by ISBN, else by title and author."""

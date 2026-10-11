@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Wyślij do Open Library",
       "description": "Dodaje książkę, której nie ma w Open Library, za pomocą połączonego konta Open Library, a następnie łączy książkę.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Połącz z Open Library",
       "description": "Łączy książkę z wydaniem w Open Library i wypełnia jej puste pola.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Książka",
           "description": "ID książki."
         },
-        "edition": {
+        "record": {
           "name": "Wydanie",
           "description": "Klucz wydania, na przykład OL123M, lub adres URL strony wydania."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Pomiń Open Library",
       "description": "Usuwa książkę z listy książek, których nie ma w Open Library, lub ją przywraca.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Odłącz Open Library",
       "description": "Usuwa klucze konta Open Library."
     },

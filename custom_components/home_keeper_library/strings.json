@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Send to Open Library",
       "description": "Add a book that Open Library does not have, with the connected Open Library account, then link the book.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Link to Open Library",
       "description": "Link a book to an Open Library edition and fill its empty fields.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Book",
           "description": "The ID of the book."
         },
-        "edition": {
+        "record": {
           "name": "Edition",
           "description": "An edition key, such as OL123M, or the URL of the edition page."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Skip Open Library",
       "description": "Remove a book from the list of books that are not on Open Library, or put it back.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Disconnect Open Library",
       "description": "Remove the keys of the Open Library account."
     },

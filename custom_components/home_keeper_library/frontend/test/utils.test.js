@@ -18,7 +18,7 @@ const book = (id, extra = {}) => ({
   description: '',
   tags: [],
   shared_notes: '',
-  openlibrary: null,
+  catalogs: {},
   cover: { kind: 'none', file: null },
   needs_details: false,
   created_at: '2026-01-01T00:00:00+00:00',
@@ -411,12 +411,23 @@ describe('reading helpers and search', () => {
 
 describe('Open Library helpers', () => {
   it('lists a book that Open Library does not have and no admin skipped', () => {
-    expect(u.notOnOpenLibrary(book('a', { openlibrary_status: 'missing' }))).toBe(true);
-    expect(u.notOnOpenLibrary(book('a', { openlibrary_status: 'skipped' }))).toBe(false);
-    expect(u.notOnOpenLibrary(book('a', { openlibrary_status: null }))).toBe(false);
+    const missing = { catalog_status: { openlibrary: 'missing' } };
+    expect(u.notOnOpenLibrary(book('a', missing))).toBe(true);
+    expect(u.notOnOpenLibrary(book('a', { catalog_status: { openlibrary: 'skipped' } }))).toBe(false);
+    expect(u.notOnOpenLibrary(book('a', { catalog_status: {} }))).toBe(false);
     expect(u.notOnOpenLibrary(book('a'))).toBe(false);
     const linked = { edition_key: 'OL1M', work_key: null, cover_id: null };
-    expect(u.notOnOpenLibrary(book('a', { openlibrary_status: 'missing', openlibrary: linked }))).toBe(false);
+    expect(u.notOnOpenLibrary(book('a', { ...missing, catalogs: { openlibrary: linked } }))).toBe(false);
+  });
+
+  it('reads the Open Library record and status of a book', () => {
+    const linked = { edition_key: 'OL1M', work_key: null, cover_id: null };
+    expect(u.olRecord(book('a', { catalogs: { openlibrary: linked } }))).toEqual(linked);
+    expect(u.olRecord(book('a'))).toBeNull();
+    expect(u.olRecord(book('a', { catalogs: undefined }))).toBeNull();
+    expect(u.olStatus(book('a', { catalog_status: { openlibrary: 'skipped' } }))).toBe('skipped');
+    expect(u.olStatus(book('a', { catalog_status: {} }))).toBeNull();
+    expect(u.olStatus(book('a'))).toBeNull();
   });
 
   it.each([
@@ -454,8 +465,10 @@ describe('Open Library helpers', () => {
 
   it('reads the account of get_state', () => {
     expect(u.normalizeState({}).openlibrary).toBeNull();
-    expect(u.normalizeState({ openlibrary_account: { connected: true, username: 'alex' } }).openlibrary).toEqual({ connected: true, username: 'alex' });
-    expect(u.normalizeState({ openlibrary_account: { connected: 'yes' } }).openlibrary).toEqual({ connected: false, username: null });
+    expect(u.normalizeState({ catalog_accounts: {} }).openlibrary).toBeNull();
+    const account = (value) => u.normalizeState({ catalog_accounts: { openlibrary: value } }).openlibrary;
+    expect(account({ connected: true, username: 'alex' })).toEqual({ connected: true, username: 'alex' });
+    expect(account({ connected: 'yes' })).toEqual({ connected: false, username: null });
   });
 });
 
@@ -466,9 +479,9 @@ describe('filterBooks, statusCounts and sortBooks', () => {
     l = lib({
       books: {
         a: book('a', { title: 'Alpha', authors: ['Zed Last'], subjects: ['SF'], reading: { me: row('read', { rating: 3 }), p2: row('read') }, created_at: '2026-01-03', published: '1999' }),
-        b: book('b', { title: 'Beta', authors: ['Amy Bee'], reading: { me: row('reading') }, needs_details: true, openlibrary_status: 'missing', created_at: '2026-01-02', published: 'May 1970' }),
+        b: book('b', { title: 'Beta', authors: ['Amy Bee'], reading: { me: row('reading') }, needs_details: true, catalog_status: { openlibrary: 'missing' }, created_at: '2026-01-02', published: 'May 1970' }),
         c: book('c', { title: 'Gamma', authors: ['Amy Bee'], owned: false, reading: { me: row('want', { rating: 5 }) }, created_at: '2026-01-01' }),
-        d: book('d', { title: 'Delta', authors: [], subjects: ['SF', 'Art'], openlibrary_status: 'skipped', created_at: '2026-01-04', published: '2001' }),
+        d: book('d', { title: 'Delta', authors: [], subjects: ['SF', 'Art'], catalog_status: { openlibrary: 'skipped' }, created_at: '2026-01-04', published: '2001' }),
       },
       copies: { k1: copy('k1', 'a', 's1'), k2: copy('k2', 'b', 's3'), k3: copy('k3', 'd', null) },
     });

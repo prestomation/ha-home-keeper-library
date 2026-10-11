@@ -411,22 +411,34 @@ class LibraryStore:
                 changed = [f for f in changed if f not in ("isbn13", "isbn10")]
         return await self._replace_book(updated, changed, origin)
 
-    async def set_openlibrary_status(
-        self, book_id: str, status: str | None, *, origin: str | None = None
+    async def set_catalog_status(
+        self,
+        book_id: str,
+        status: str | None,
+        *,
+        catalog: str = models.OPENLIBRARY,
+        origin: str | None = None,
     ) -> dict[str, Any]:
-        """Set the ``openlibrary_status`` of a book: None, missing or skipped.
+        """Set the ``catalog_status`` of a book for 1 catalog: None, missing or skipped.
 
-        A book with Open Library data keeps no status. A change fires
+        A book with a record in the catalog keeps no status. A change fires
         ``book_updated``, because the "Not on Open Library" list shows it.
         """
         book = self.book(book_id)
-        value = models.openlibrary_status(status)
-        if book.get("openlibrary"):
+        value = models.catalog_status_value(status)
+        if models.catalog_record(book, catalog):
             value = None
-        if book.get("openlibrary_status") == value:
+        if models.catalog_status(book, catalog) == value:
             return book
-        updated = {**book, "openlibrary_status": value, "updated_at": now()}
-        return await self._replace_book(updated, ["openlibrary_status"], origin)
+        statuses = {
+            name: kept
+            for name, kept in (book.get("catalog_status") or {}).items()
+            if name != catalog
+        }
+        if value is not None:
+            statuses[catalog] = value
+        updated = {**book, "catalog_status": statuses, "updated_at": now()}
+        return await self._replace_book(updated, ["catalog_status"], origin)
 
     async def _replace_book(
         self, updated: dict[str, Any], changed: list[str], origin: str | None

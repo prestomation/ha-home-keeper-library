@@ -44,9 +44,11 @@ async def test_get_state_shape_and_projection(hass, setup_entry, call, ws) -> No
         "me",
         "currency",
         "home_keeper",
-        "openlibrary_account",
+        "catalog_accounts",
     }
-    assert result["openlibrary_account"] == {"connected": False, "username": None}
+    assert result["catalog_accounts"] == {
+        "openlibrary": {"connected": False, "username": None}
+    }
     assert result["me"] == {"person_id": ALICE, "name": "Alice", "is_admin": True}
     assert result["currency"] == "EUR" and result["home_keeper"] == {"tab": True}
     assert result["copies"][0]["price"] == 9 and result["loans"][0]["party"] == "Zed"
@@ -58,7 +60,7 @@ async def test_get_state_shape_and_projection(hass, setup_entry, call, ws) -> No
     assert result["me"]["person_id"] == BOB and result["me"]["is_admin"] is False
     assert "price" not in result["copies"][0] and "party" not in result["loans"][0]
     assert "private_notes" not in result["books"][0]["reading"][CAROL]
-    assert "openlibrary_account" not in result
+    assert "catalog_accounts" not in result
 
 
 async def test_subscribe_pushes_changes(hass, setup_entry, call, ws) -> None:

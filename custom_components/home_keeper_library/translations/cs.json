@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Odeslat do Open Library",
       "description": "Přidá knihu, kterou Open Library nemá, pomocí připojeného účtu Open Library a poté knihu propojí.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Propojit s Open Library",
       "description": "Propojí knihu s vydáním v Open Library a vyplní její prázdná pole.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Kniha",
           "description": "ID knihy."
         },
-        "edition": {
+        "record": {
           "name": "Vydání",
           "description": "Klíč vydání, například OL123M, nebo adresa URL stránky vydání."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Přeskočit Open Library",
       "description": "Odebere knihu ze seznamu knih, které nejsou v Open Library, nebo ji tam vrátí.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Odpojit Open Library",
       "description": "Odebere klíče účtu Open Library."
     },
