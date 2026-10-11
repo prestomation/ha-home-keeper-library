@@ -834,6 +834,25 @@ export_csv:
             - goodreads
             - library
 
+export_data:
+  fields:
+    files_dir:
+      selector:
+        text:
+
+import_data:
+  fields:
+    document:
+      required: true
+      selector:
+        object:
+    dry_run:
+      selector:
+        boolean:
+    files_dir:
+      selector:
+        text:
+
 list_books:
   fields:
     query:

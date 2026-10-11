@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "货币",
           "openlibrary": "Open Library 账户"
+        },
+        "data": {
+          "currency": "货币"
+        },
+        "data_description": {
+          "currency": "3 个字母的代码，例如 EUR 或 USD。"
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "列出人员",
       "description": "返回人员及其藏书设置。"
+    },
+    "export_data": {
+      "name": "导出数据",
+      "description": "导出 Home Keeper 导出中的书库部分。",
+      "fields": {
+        "files_dir": {
+          "name": "文件目录",
+          "description": "包中存放封面文件的目录。它必须位于 .storage/home_keeper_import_export 之下。"
+        }
+      }
+    },
+    "import_data": {
+      "name": "导入数据",
+      "description": "导入 Home Keeper 导出中的书库部分。匹配的记录会更新，不会删除任何记录。",
+      "fields": {
+        "document": {
+          "name": "书库部分",
+          "description": "导出中书库部分的数据。"
+        },
+        "dry_run": {
+          "name": "试运行",
+          "description": "只报告导入会做的更改。"
+        },
+        "files_dir": {
+          "name": "文件目录",
+          "description": "包中存放封面文件的目录。它必须位于 .storage/home_keeper_import_export 之下。"
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} 不是 Open Library 的版本键或 URL。"
+    },
+    "files_dir_invalid": {
+      "message": "文件目录必须位于 .storage/home_keeper_import_export 之下。"
+    },
+    "import_format_too_new": {
+      "message": "文档的格式为 {format}。此版本读取格式 {max} 或更低。"
+    },
+    "import_not_a_list": {
+      "message": "{field} 必须是列表。"
+    },
+    "import_not_an_object": {
+      "message": "{field} 必须是对象。"
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} 不在文档中，也不在书库中。"
+    },
+    "import_person_not_found": {
+      "message": "没有与 {name} 匹配的人员。"
+    },
+    "import_area_not_found": {
+      "message": "没有与 {name} 匹配的区域。"
+    },
+    "import_todo_not_found": {
+      "message": "没有与 {name} 匹配的待办事项列表。"
+    },
+    "import_cover_unreadable": {
+      "message": "封面文件 {file} 不是有效的图片。"
     }
   }
 }

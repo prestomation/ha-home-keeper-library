@@ -45,6 +45,7 @@ from .backend_i18n import all_strings, resolve_string
 from .const import (
     DOCS_URL,
     DOMAIN,
+    HOME_KEEPER_CAPABILITY_IMPORT_EXPORT,
     HOME_KEEPER_DOMAIN,
     HOME_KEEPER_EVENT_REGISTER_COMPANIONS,
     HOME_KEEPER_INSTALL_URL,
@@ -148,6 +149,9 @@ async def async_register_companion(hass: HomeAssistant, entry: ConfigEntry) -> N
         "description": resolve_string(hass.config.language, "companion.description"),
         "config_entry_id": entry.entry_id,
         "docs_url": DOCS_URL,
+        # The library joins the Home Keeper export and import with the
+        # export_data and import_data services.
+        "capabilities": [HOME_KEEPER_CAPABILITY_IMPORT_EXPORT],
     }
     try:
         await hass.services.async_call(

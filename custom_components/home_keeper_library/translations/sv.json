@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Valuta",
           "openlibrary": "Open Library-konto"
+        },
+        "data": {
+          "currency": "Valuta"
+        },
+        "data_description": {
+          "currency": "En kod med 3 bokstäver, till exempel EUR eller USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Lista personer",
       "description": "Returnera personerna och deras biblioteksinställningar."
+    },
+    "export_data": {
+      "name": "Exportera data",
+      "description": "Exportera biblioteksdelen av Home Keeper-exporten.",
+      "fields": {
+        "files_dir": {
+          "name": "Filkatalog",
+          "description": "Katalogen i ett paket för omslagsfilerna. Den måste ligga under .storage/home_keeper_import_export."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Importera data",
+      "description": "Importera biblioteksdelen av en Home Keeper-export. Poster som matchar uppdateras, och ingen post tas bort.",
+      "fields": {
+        "document": {
+          "name": "Biblioteksdel",
+          "description": "Data i biblioteksdelen av exporten."
+        },
+        "dry_run": {
+          "name": "Testkörning",
+          "description": "Rapportera bara importens ändringar."
+        },
+        "files_dir": {
+          "name": "Filkatalog",
+          "description": "Katalogen i ett paket för omslagsfilerna. Den måste ligga under .storage/home_keeper_import_export."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} är inte en utgåvenyckel eller URL från Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "Filkatalogen måste ligga under .storage/home_keeper_import_export."
+    },
+    "import_format_too_new": {
+      "message": "Dokumentet har format {format}. Den här versionen läser format {max} eller lägre."
+    },
+    "import_not_a_list": {
+      "message": "{field} måste vara en lista."
+    },
+    "import_not_an_object": {
+      "message": "{field} måste vara ett objekt."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} finns inte i dokumentet eller i biblioteket."
+    },
+    "import_person_not_found": {
+      "message": "Ingen person matchar {name}."
+    },
+    "import_area_not_found": {
+      "message": "Inget område matchar {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Ingen att göra-lista matchar {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "Omslagsfilen {file} är inte en giltig bild."
     }
   }
 }

@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Devise",
           "openlibrary": "Compte Open Library"
+        },
+        "data": {
+          "currency": "Devise"
+        },
+        "data_description": {
+          "currency": "Un code de 3 lettres, par exemple EUR ou USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Lister les personnes",
       "description": "Renvoyer les personnes et leurs réglages de bibliothèque."
+    },
+    "export_data": {
+      "name": "Exporter les données",
+      "description": "Exporter la section de la bibliothèque de l'export de Home Keeper.",
+      "fields": {
+        "files_dir": {
+          "name": "Dossier des fichiers",
+          "description": "Le dossier d'un paquet pour les fichiers de couverture. Il doit être sous .storage/home_keeper_import_export."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Importer les données",
+      "description": "Importer la section de la bibliothèque d'un export de Home Keeper. Les enregistrements correspondants sont mis à jour et aucun enregistrement n'est supprimé.",
+      "fields": {
+        "document": {
+          "name": "Section de la bibliothèque",
+          "description": "Les données de la section de la bibliothèque de l'export."
+        },
+        "dry_run": {
+          "name": "Essai",
+          "description": "Signaler seulement les changements de l'import."
+        },
+        "files_dir": {
+          "name": "Dossier des fichiers",
+          "description": "Le dossier d'un paquet pour les fichiers de couverture. Il doit être sous .storage/home_keeper_import_export."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} n'est pas une clé ou une URL d'édition d'Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "Le dossier des fichiers doit être sous .storage/home_keeper_import_export."
+    },
+    "import_format_too_new": {
+      "message": "Le document a le format {format}. Cette version lit le format {max} ou inférieur."
+    },
+    "import_not_a_list": {
+      "message": "{field} doit être une liste."
+    },
+    "import_not_an_object": {
+      "message": "{field} doit être un objet."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} n'est ni dans le document ni dans la bibliothèque."
+    },
+    "import_person_not_found": {
+      "message": "Aucune personne ne correspond à {name}."
+    },
+    "import_area_not_found": {
+      "message": "Aucune pièce ne correspond à {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Aucune liste de tâches ne correspond à {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "Le fichier de couverture {file} n'est pas une image valide."
     }
   }
 }

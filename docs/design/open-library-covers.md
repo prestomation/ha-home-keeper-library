@@ -100,6 +100,8 @@ from its cache.
   path.
 - **Delete.** A new cover or a deleted book releases the old file, and the store deletes
   it in an executor job.
+- **Bundle.** A Home Keeper export copies the cover files into its bundle, and an import
+  writes each file again with `covers.reencode` ([import-export](import-export.md#files)).
 
 ## Trade-offs
 

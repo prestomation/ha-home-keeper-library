@@ -23,8 +23,10 @@ from __future__ import annotations
 
 import io
 import logging
+import os
 import re
 import secrets
+import shutil
 import time
 from http import HTTPStatus
 from pathlib import Path
@@ -237,6 +239,87 @@ async def async_use_upload(
     if not moved:
         raise LibraryError("upload_not_found", file_id=file_id)
     return await coordinator.store.set_cover(book_id, "custom", name)
+
+
+# ── Files of a Home Keeper export bundle ────────────────────────────────────
+
+
+def copy_covers_out(
+    hass_covers: Path, files_dir: Path, covers: list[tuple[str, str]]
+) -> dict[str, str]:
+    """Copy the cover files into ``files_dir``. Return ``{book_id: relative path}``.
+
+    *covers* is ``import_export.covers_to_copy``. A missing or bad file is left
+    out, and the export counts it as skipped. This call blocks: run it in an
+    executor job.
+    """
+    from .import_export import cover_export_path
+
+    out: dict[str, str] = {}
+    for book_id, file in covers:
+        if not _FILE_RE.match(file) or not _FILE_ID_RE.match(book_id):
+            continue
+        src = hass_covers / file
+        if not src.is_file():
+            continue
+        relative = cover_export_path(book_id)
+        dst = files_dir / relative
+        try:
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(src, dst)
+        except OSError as err:
+            _LOGGER.debug("Cannot copy the cover of %s: %s", book_id, err)
+            continue
+        out[book_id] = relative
+    return out
+
+
+def read_bundle_cover(files_dir: Path, relative: str) -> bytes | None:
+    """The bytes of a cover file in ``files_dir``, or None if it is not an image.
+
+    The real path of the file must be in ``files_dir``, so a symbolic link
+    cannot read another file. This call blocks: run it in an executor job.
+    """
+    root = os.path.realpath(files_dir)
+    path = os.path.realpath(os.path.join(root, relative))
+    if os.path.commonpath([root, path]) != root or not os.path.isfile(path):
+        return None
+    try:
+        if os.path.getsize(path) > COVER_MAX_BYTES:
+            return None
+        with open(path, "rb") as handle:
+            data = handle.read(COVER_MAX_BYTES + 1)
+    except OSError:
+        return None
+    if len(data) > COVER_MAX_BYTES or sniff_image(data[:SNIFF_BYTES]) is None:
+        return None
+    return data
+
+
+async def async_bundle_cover(
+    hass: HomeAssistant,
+    files_dir: Path,
+    book_id: str,
+    relative: str,
+    *,
+    write: bool,
+) -> str | None:
+    """Read and check a cover file of a bundle. Return its new file name, or None.
+
+    With *write*, Pillow writes a new JPEG in the cover directory, as for an
+    upload. The caller puts the name on the book.
+    """
+    data = await hass.async_add_executor_job(read_bundle_cover, files_dir, relative)
+    if data is None:
+        return None
+    name = new_cover_name(book_id)
+    if not write:
+        return name
+    try:
+        await hass.async_add_executor_job(reencode, data, covers_dir(hass) / name)
+    except CoverError:
+        return None
+    return name
 
 
 def _coordinator(hass: HomeAssistant) -> LibraryCoordinator | None:

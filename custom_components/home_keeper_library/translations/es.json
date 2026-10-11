@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Moneda",
           "openlibrary": "Cuenta de Open Library"
+        },
+        "data": {
+          "currency": "Moneda"
+        },
+        "data_description": {
+          "currency": "Un código de 3 letras, por ejemplo EUR o USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Listar personas",
       "description": "Devolver las personas y sus ajustes de biblioteca."
+    },
+    "export_data": {
+      "name": "Exportar datos",
+      "description": "Exportar la sección de la biblioteca de la exportación de Home Keeper.",
+      "fields": {
+        "files_dir": {
+          "name": "Directorio de archivos",
+          "description": "El directorio de un paquete para los archivos de portada. Debe estar dentro de .storage/home_keeper_import_export."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Importar datos",
+      "description": "Importar la sección de la biblioteca de una exportación de Home Keeper. Los registros que coinciden se actualizan y no se elimina ningún registro.",
+      "fields": {
+        "document": {
+          "name": "Sección de la biblioteca",
+          "description": "Los datos de la sección de la biblioteca de la exportación."
+        },
+        "dry_run": {
+          "name": "Prueba",
+          "description": "Solo informar de los cambios de la importación."
+        },
+        "files_dir": {
+          "name": "Directorio de archivos",
+          "description": "El directorio de un paquete para los archivos de portada. Debe estar dentro de .storage/home_keeper_import_export."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} no es una clave ni una URL de edición de Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "El directorio de archivos debe estar dentro de .storage/home_keeper_import_export."
+    },
+    "import_format_too_new": {
+      "message": "El documento tiene el formato {format}. Esta versión lee el formato {max} o inferior."
+    },
+    "import_not_a_list": {
+      "message": "{field} debe ser una lista."
+    },
+    "import_not_an_object": {
+      "message": "{field} debe ser un objeto."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} no está en el documento ni en la biblioteca."
+    },
+    "import_person_not_found": {
+      "message": "Ninguna persona coincide con {name}."
+    },
+    "import_area_not_found": {
+      "message": "Ningún área coincide con {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Ninguna lista de tareas coincide con {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "El archivo de portada {file} no es una imagen válida."
     }
   }
 }

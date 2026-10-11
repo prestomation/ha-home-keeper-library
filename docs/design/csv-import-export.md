@@ -30,7 +30,7 @@ runs as a dry run first, so the admin sees the counts before a write.
 - A sync with Goodreads or StoryGraph. The import reads a file once.
 - Open Library calls inside the import. New books that need details go to the lookup
   queue after the write.
-- A JSON export of the whole document ([IDEAS.md](../../IDEAS.md#json-backup)).
+- The whole document. The Home Keeper export holds it ([import-export](import-export.md)).
 
 ## Design
 

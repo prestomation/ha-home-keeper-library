@@ -74,6 +74,9 @@ each signed-in user, because covers are not private.
   `todo_uid`);
 - the reply of `get_state` has no `catalog_accounts`.
 
+`projections.project_export` drops the same fields from the section of a Home Keeper
+export for a non-admin viewer. `export_data` is admin-only, so an admin reads it full.
+
 The viewer's own rows are full. Each book also gets `owned`, `copy_count` and
 `cover_url`. The sensors and the card use the count functions at the end of the module.
 

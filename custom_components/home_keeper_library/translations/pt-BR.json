@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Moeda",
           "openlibrary": "Conta do Open Library"
+        },
+        "data": {
+          "currency": "Moeda"
+        },
+        "data_description": {
+          "currency": "Um código de 3 letras, por exemplo EUR ou USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Listar pessoas",
       "description": "Devolver as pessoas e suas configurações de biblioteca."
+    },
+    "export_data": {
+      "name": "Exportar dados",
+      "description": "Exportar a seção da biblioteca da exportação do Home Keeper.",
+      "fields": {
+        "files_dir": {
+          "name": "Diretório de arquivos",
+          "description": "O diretório de um pacote para os arquivos de capa. Ele deve estar dentro de .storage/home_keeper_import_export."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Importar dados",
+      "description": "Importar a seção da biblioteca de uma exportação do Home Keeper. Os registros que correspondem são atualizados e nenhum registro é excluído.",
+      "fields": {
+        "document": {
+          "name": "Seção da biblioteca",
+          "description": "Os dados da seção da biblioteca da exportação."
+        },
+        "dry_run": {
+          "name": "Teste",
+          "description": "Só informar as mudanças da importação."
+        },
+        "files_dir": {
+          "name": "Diretório de arquivos",
+          "description": "O diretório de um pacote para os arquivos de capa. Ele deve estar dentro de .storage/home_keeper_import_export."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} não é uma chave nem uma URL de edição do Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "O diretório de arquivos deve estar dentro de .storage/home_keeper_import_export."
+    },
+    "import_format_too_new": {
+      "message": "O documento tem o formato {format}. Esta versão lê o formato {max} ou inferior."
+    },
+    "import_not_a_list": {
+      "message": "{field} deve ser uma lista."
+    },
+    "import_not_an_object": {
+      "message": "{field} deve ser um objeto."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} não está no documento nem na biblioteca."
+    },
+    "import_person_not_found": {
+      "message": "Nenhuma pessoa corresponde a {name}."
+    },
+    "import_area_not_found": {
+      "message": "Nenhuma área corresponde a {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Nenhuma lista de tarefas corresponde a {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "O arquivo de capa {file} não é uma imagem válida."
     }
   }
 }

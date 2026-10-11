@@ -46,6 +46,7 @@ no user, as Home Assistant does. An automation makes that kind of call.
 | `add_to_wishlist`, `update_wishlist`, `remove_from_wishlist`, `got_wishlist_book` | Admin |
 | `set_settings`, `import_csv`, `export_csv` | Admin |
 | `send_to_catalog`, `link_catalog`, `skip_catalog`, `disconnect_catalog` | Admin |
+| `export_data`, `import_data` | Admin |
 | `set_reading` | Open, for the caller's own person. An admin can name any person. |
 | `set_person_settings` | Open, for the caller's own person, with no `wishlist_todo`. An admin can set each field of any person. |
 | `list_books`, `get_book`, `list_locations`, `list_loans`, `list_people` | Open, projected |

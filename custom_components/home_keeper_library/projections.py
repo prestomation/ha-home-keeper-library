@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import Any
 
 from .const import COVER_URL_PREFIX
-from .models import CATALOGS, is_open, is_overdue, location_path, person_settings
+from .models import CATALOGS, clone, is_open, is_overdue, location_path, person_settings
 
 PRIVATE_COPY_FIELDS = ("price", "value", "acquired_from")
 PRIVATE_LOAN_FIELDS = ("party",)
@@ -27,6 +27,31 @@ PRIVATE_READING_FIELDS = ("private_notes",)
 PRIVATE_PERSON_FIELDS = ("wishlist_todo",)
 # The to-do item of a wishlist entry names the ``wishlist_todo`` of its person.
 PRIVATE_WISHLIST_FIELDS = ("todo_entity", "todo_uid")
+
+
+def project_export(data: dict[str, Any], *, is_admin: bool) -> dict[str, Any]:
+    """The library section of an export as the viewer reads it.
+
+    ``export_data`` is admin-only, so an admin reads the full section. For a
+    non-admin viewer the private fields are gone, as in :func:`project_state`.
+    """
+    out = {key: clone(value) for key, value in data.items()}
+    if is_admin:
+        return out
+    for copy in out.get("copies", []):
+        for name in PRIVATE_COPY_FIELDS:
+            copy.pop(name, None)
+    for loan in out.get("loans", []):
+        for name in PRIVATE_LOAN_FIELDS:
+            loan.pop(name, None)
+    for entry in out.get("reading", []):
+        for row in entry.get("books", []):
+            for name in PRIVATE_READING_FIELDS:
+                row.pop(name, None)
+    for person in out.get("people", []):
+        for name in (*PRIVATE_PERSON_FIELDS, "wishlist_todo_name"):
+            person.pop(name, None)
+    return out
 
 
 def cover_url(book: dict[str, Any]) -> str | None:

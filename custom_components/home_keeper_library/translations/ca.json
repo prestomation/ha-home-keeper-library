@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Moneda",
           "openlibrary": "Compte d'Open Library"
+        },
+        "data": {
+          "currency": "Moneda"
+        },
+        "data_description": {
+          "currency": "Un codi de 3 lletres, per exemple EUR o USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Llista les persones",
       "description": "Retorna les persones i la seva configuració de biblioteca."
+    },
+    "export_data": {
+      "name": "Exporta les dades",
+      "description": "Exporta la secció de la biblioteca de l'exportació de Home Keeper.",
+      "fields": {
+        "files_dir": {
+          "name": "Directori de fitxers",
+          "description": "El directori d'un paquet per als fitxers de portada. Ha d'estar dins de .storage/home_keeper_import_export."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Importa les dades",
+      "description": "Importa la secció de la biblioteca d'una exportació de Home Keeper. Actualitza els registres que coincideixen i no elimina cap registre.",
+      "fields": {
+        "document": {
+          "name": "Secció de la biblioteca",
+          "description": "Les dades de la secció de la biblioteca de l'exportació."
+        },
+        "dry_run": {
+          "name": "Prova",
+          "description": "Només informa dels canvis de la importació."
+        },
+        "files_dir": {
+          "name": "Directori de fitxers",
+          "description": "El directori d'un paquet per als fitxers de portada. Ha d'estar dins de .storage/home_keeper_import_export."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} no és una clau ni un URL d'edició d'Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "El directori de fitxers ha d'estar dins de .storage/home_keeper_import_export."
+    },
+    "import_format_too_new": {
+      "message": "El document té el format {format}. Aquesta versió llegeix el format {max} o inferior."
+    },
+    "import_not_a_list": {
+      "message": "{field} ha de ser una llista."
+    },
+    "import_not_an_object": {
+      "message": "{field} ha de ser un objecte."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} no és al document ni a la biblioteca."
+    },
+    "import_person_not_found": {
+      "message": "Cap persona coincideix amb {name}."
+    },
+    "import_area_not_found": {
+      "message": "Cap àrea coincideix amb {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Cap llista de tasques coincideix amb {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "El fitxer de portada {file} no és una imatge vàlida."
     }
   }
 }

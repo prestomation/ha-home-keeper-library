@@ -98,6 +98,8 @@ listener. A listener that fails is logged and the others still run. The listener
   goes to `todo_orphans`, and `copy_added` fires before `wishlist_removed`.
 - **Import.** `commit_import` merges the result of a CSV import into the current
   document and fires only `import_completed` ([csv-import-export](csv-import-export.md#steps)).
+  `commit_data_import` does the same for a Home Keeper import and fires only
+  `data_imported` ([import-export](import-export.md)).
 - **Bookkeeping.** `set_lookup_tries` and `set_loan_task` save a field that only a queue
   or a sync reads, and fire no event.
 - **Catalog status.** `set_catalog_status` sets `missing`, `skipped` or None for 1

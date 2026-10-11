@@ -56,6 +56,7 @@ async def test_companion_registration(hass, setup_entry) -> None:
         "description": "Books, shelves, loans and reading status.",
         "config_entry_id": setup_entry.entry_id,
         "docs_url": "https://github.com/prestomation/ha-home-keeper-library",
+        "capabilities": ["import_export"],
     }
     calls = hass.data["home_keeper_fake"]["calls"]
     before = sum(1 for name, _ in calls if name == "register_companion")
