@@ -61,7 +61,7 @@ of the integration.
   keeps each detail that you changed.
 - **Send to Open Library**: add a book that Open Library does not have
   ([Send books to Open Library](open-library.md)). A banner at the top shows this
-  action until you send the book or select **Not now**.
+  action. Select **Not now** to hide the banner for this book.
 - **Delete**: delete the book with its copies, its reading status and its loans.
 
 ## Phone
