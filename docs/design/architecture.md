@@ -9,7 +9,7 @@ implements:
   - custom_components/home_keeper_library/backend_i18n.py
   - custom_components/home_keeper_library/manifest.json
 related: [store-models, people-privilege, events-api, home-keeper-dependency, frontend-tab-card]
-source_hash: bef471995077
+source_hash: 17c73d66033c
 ---
 
 # Architecture
@@ -39,8 +39,8 @@ updates their own reading status through a card, native entities and services.
 - A sidebar panel of its own. The admin UI is a tab in the Home Keeper panel
   ([home-keeper-dependency](home-keeper-dependency.md)).
 - More than 1 config entry. The manifest sets `single_config_entry`.
-- A book catalog service other than Open Library. A cloud account or a sync between
-  homes.
+- A book catalog service other than Open Library, or a sync between homes. The only
+  cloud account is the Open Library account that sends books.
 
 ## Design
 
@@ -48,8 +48,8 @@ updates their own reading status through a card, native entities and services.
 
 | Layer | Modules | Rule |
 |---|---|---|
-| Pure core | `const.py`, `isbn.py`, `models.py`, `events.py`, `projections.py`, `openlibrary.py`, `csv_io.py`, `wishlist.py`, `loan_tasks.py`, `card_resource.py`, `backend_i18n.py`, `api_surface.py` | No `homeassistant` import. Time comes in as an argument. |
-| Boundary | `store.py`, `coordinator.py`, `people.py`, `openlibrary_client.py` | Talks to Home Assistant storage, the bus, the person registry and HTTP. |
+| Pure core | `const.py`, `isbn.py`, `models.py`, `events.py`, `projections.py`, `openlibrary.py`, `openlibrary_contribute.py`, `csv_io.py`, `wishlist.py`, `loan_tasks.py`, `card_resource.py`, `backend_i18n.py`, `api_surface.py` | No `homeassistant` import. Time comes in as an argument. |
+| Boundary | `store.py`, `coordinator.py`, `people.py`, `openlibrary_client.py`, `openlibrary_account.py` | Talks to Home Assistant storage, the bus, the person registry and HTTP. |
 | Glue | `__init__.py`, `services.py`, `websocket_api.py`, `covers.py`, `book_lookup.py`, `home_keeper.py`, `loan_sync.py`, `wishlist_sync.py`, `frontend_assets.py`, `card.py`, `config_flow.py`, `diagnostics.py` | Registers surfaces and runs the syncs. |
 | Platforms | `sensor.py`, `todo.py`, with `entity.py` | `const.PLATFORMS` lists them. |
 
@@ -59,8 +59,7 @@ logic. `api_surface.py` declares each surface that an integrator sees
 
 ### Setup
 
-`async_setup` does nothing. The integration has no YAML configuration.
-`CONFIG_SCHEMA` is `cv.config_entry_only_config_schema`.
+`async_setup` does nothing. `CONFIG_SCHEMA` is `cv.config_entry_only_config_schema`.
 
 The manifest has `lovelace` in `after_dependencies`, because the card writes a Lovelace
 resource.
@@ -72,7 +71,7 @@ resource.
 2. Make `LibraryCoordinator` and give it the Open Library client, the lookup queue and
    the 2 syncs. Store it as `entry.runtime_data`. A store listener sends the dispatcher
    signal `const.SIGNAL_STORE_CHANGED` for the websocket subscriptions. An update listener
-   of the entry fires `settings_updated` when the options flow changes the currency.
+   of the entry fires `settings_updated` when the currency or the account changes.
 3. Register the static path, the card delivery, the websocket commands and the cover
    views ([frontend-tab-card](frontend-tab-card.md#delivery)).
 4. Forward `const.PLATFORMS` and register the services.
@@ -95,9 +94,9 @@ resource when the integration is removed.
 ### Config entry
 
 The config flow checks Home Keeper first and aborts with the reason if the check fails.
-Then it asks for the currency of the prices and values, with the currency of Home
-Assistant as the default. The options flow changes the currency and returns
-`config_flow.merge_flow_input`, so no stored key is lost.
+Then it asks for the currency, with the currency of Home Assistant as the default. The
+options flow is a menu. `currency` returns `config_flow.merge_flow_input`, so no stored
+key is lost. `openlibrary` keeps the keys of an Open Library account in the entry data.
 
 ### Localized text
 
@@ -112,7 +111,7 @@ is not an exception, such as the tab title and the loan task names, is in
 
 `diagnostics.async_get_config_entry_diagnostics` returns the options, the tab state, the
 revision, the counts and the library document. It redacts the names of loan parties, the
-notes and `acquired_from`.
+notes and `acquired_from`, and it has no Open Library key.
 
 ### Design doc index
 
@@ -122,6 +121,7 @@ notes and `acquired_from`.
 | [people-privilege](people-privilege.md) | The caller, the admin gate and the read projections |
 | [events-api](events-api.md) | Services, websocket commands, events and the API surface model |
 | [open-library-covers](open-library-covers.md) | Open Library, the lookup queue and the cover files |
+| [open-library-contribute](open-library-contribute.md) | The Open Library account and the send of a book |
 | [scan-and-isbn](scan-and-isbn.md) | ISBN rules, the camera scanner and the scan service |
 | [csv-import-export](csv-import-export.md) | Goodreads, StoryGraph and library CSV files |
 | [loans-home-keeper](loans-home-keeper.md) | Loans and their Home Keeper tasks |

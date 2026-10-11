@@ -53,7 +53,7 @@ async def test_client_lookup_and_miss_cache(hass, setup_entry, aioclient_mock) -
     assert draft["title"] == "The Left Hand of Darkness"
     assert draft["authors"] == ["Ursula K. Le Guin"]
     headers = aioclient_mock.mock_calls[0][3]
-    assert headers["User-Agent"].startswith("HomeKeeperLibrary/0.2.0 (+https://")
+    assert headers["User-Agent"].startswith("HomeKeeperLibrary/0.3.0b1 (+https://")
     aioclient_mock.get(f"{OL}/isbn/9780000000002.json", status=404)
     assert await client.async_lookup_isbn("9780000000002") is None
     calls = aioclient_mock.call_count
@@ -170,12 +170,15 @@ async def test_scan_not_found_and_unavailable(
     # The queue tried once, failed and waits on a timer for the next try.
     store = setup_entry.runtime_data.store
     assert store.state["books"][reply["book"]["id"]]["lookup_tries"] == 1
+    # A network failure is not a miss: the book is not "Not on Open Library".
+    assert store.state["books"][reply["book"]["id"]]["openlibrary_status"] is None
     assert len(lookup._timers) == 1
     # Open Library does not have the first book: the queue never tries it again.
     first = next(
         b for b in store.state["books"].values() if b["isbn13"] == "9780000000002"
     )
     assert first["lookup_tries"] == LOOKUP_MAX_TRIES
+    assert first["openlibrary_status"] == "missing"
 
 
 def _requests(aioclient_mock, isbn: str) -> int:

@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "Opcions de la biblioteca",
+        "menu_options": {
+          "currency": "Moneda",
+          "openlibrary": "Compte d'Open Library"
+        }
+      },
+      "currency": {
+        "title": "Moneda",
         "data": {
           "currency": "Moneda"
         },
         "data_description": {
           "currency": "Un codi de 3 lletres, per exemple EUR o USD."
         }
+      },
+      "openlibrary": {
+        "title": "Compte d'Open Library",
+        "description": "Enganxeu la clau d'accés i la clau secreta de la pàgina de claus S3 del vostre compte d'Archive.org. La biblioteca només les fa servir quan envieu un llibre a Open Library.",
+        "data": {
+          "access_key": "Clau d'accés",
+          "secret_key": "Clau secreta"
+        }
       }
     },
     "error": {
-      "invalid_currency": "Introdueix un codi de moneda de 3 lletres."
+      "invalid_currency": "Introdueix un codi de moneda de 3 lletres.",
+      "invalid_auth": "Open Library no ha acceptat aquestes claus.",
+      "cannot_connect": "Open Library no està disponible. Torna-ho a provar més tard."
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library no s'ha carregat. Torneu-ho a provar quan s'iniciï."
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "L'ID del llibre."
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "Envia a Open Library",
+      "description": "Afegeix un llibre que Open Library no té, amb el compte d'Open Library connectat, i després enllaça el llibre.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "fields": {
+          "name": "Camps",
+          "description": "Els camps opcionals que s'envien: publisher, published i isbn. El títol i el primer autor sempre s'envien."
+        },
+        "include_cover": {
+          "name": "Envia la coberta",
+          "description": "Envia també la coberta personalitzada del llibre."
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "Enllaça amb Open Library",
+      "description": "Enllaça un llibre amb una edició d'Open Library i omple els camps buits.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "edition": {
+          "name": "Edició",
+          "description": "Una clau d'edició, com OL123M, o l'URL de la pàgina de l'edició."
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "Omet Open Library",
+      "description": "Treu un llibre de la llista de llibres que no són a Open Library, o torna'l a posar.",
+      "fields": {
+        "book_id": {
+          "name": "Llibre",
+          "description": "L'ID del llibre."
+        },
+        "skip": {
+          "name": "Omet",
+          "description": "Desactiveu-ho per tornar a posar el llibre a la llista."
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "Desconnecta Open Library",
+      "description": "Elimina les claus del compte d'Open Library."
     },
     "scan_isbn": {
       "name": "Escaneja un ISBN",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "Només {person} o un usuari administrador pot canviar aquesta llista de tasques."
+    },
+    "openlibrary_not_connected": {
+      "message": "Primer connecteu un compte d'Open Library a la configuració de la biblioteca."
+    },
+    "openlibrary_already_linked": {
+      "message": "Aquest llibre ja està enllaçat amb Open Library."
+    },
+    "openlibrary_needs_author": {
+      "message": "Afegiu un autor al llibre abans d'enviar-lo."
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library ha trobat més d'1 obra que pot ser aquest llibre. Afegiu el llibre al lloc web d'Open Library."
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library no ha acceptat les claus del compte. Torneu a connectar el compte."
+    },
+    "openlibrary_not_found": {
+      "message": "Open Library no té l'edició {edition}."
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} no és una clau ni un URL d'edició d'Open Library."
     }
   }
 }

@@ -108,7 +108,35 @@ export function renderWishlist(ctx: ViewCtx): string {
   <p class="hkl-muted small">${escapeHTML(t('wishlist.scan_hint'))}</p>`;
 }
 
-/** The Settings view: people settings, currency and export. */
+/** The page of Archive.org that shows the S3 keys of the signed-in account. */
+export const S3_KEYS_URL = 'https://archive.org/account/s3.php';
+
+function openLibraryCard(ctx: ViewCtx): string {
+  const account = ctx.lib.openlibrary;
+  const title = `<h2>${escapeHTML(t('ol.account'))}</h2>`;
+  if (account?.connected) {
+    const who = account.username ? t('ol.connected_as', { user: account.username }) : t('ol.connected');
+    return `<section class="hkl-card" data-k="ol-card">${title}
+      <div class="hkl-inline-form"><span data-k="ol-connected">${escapeHTML(who)}</span><span class="hkl-spacer"></span>${button(escapeHTML(t('ol.disconnect')), 'ol-disconnect', 'outline', 'data-k="ol-disconnect"')}</div>
+      <p class="hkl-muted small">${escapeHTML(t('ol.account_hint'))}</p>
+    </section>`;
+  }
+  const busy = ctx.ui.olBusy;
+  return `<section class="hkl-card" data-k="ol-card">${title}
+    <p class="hkl-muted small">${escapeHTML(t('ol.connect_hint'))} <a href="${S3_KEYS_URL}" target="_blank" rel="noreferrer noopener" data-k="ol-s3-link">${escapeHTML(t('ol.s3_link'))}</a></p>
+    <form data-form="ol-connect" class="hkl-ol-form" autocomplete="off">
+      <div class="hkl-fields">
+        <label class="hkl-field">${escapeHTML(t('ol.access_key'))}<input name="access_key" class="hkl-input" spellcheck="false" autocapitalize="off" data-k="ol-access" value="${escapeHTML(ctx.ui.olAccess)}" /></label>
+        <label class="hkl-field">${escapeHTML(t('ol.secret_key'))}<input name="secret_key" type="password" class="hkl-input" autocomplete="new-password" data-k="ol-secret" /></label>
+      </div>
+      <button class="hkl-btn tonal" type="submit" data-k="ol-connect-save"${busy ? ' disabled' : ''}>${escapeHTML(busy ? t('ol.connecting') : t('ol.connect'))}</button>
+    </form>
+    ${ctx.ui.olError ? `<div class="hkl-error" role="alert" data-k="ol-error">${escapeHTML(ctx.ui.olError)}</div>` : ''}
+    <p class="hkl-muted small">${escapeHTML(t('ol.account_hint'))}</p>
+  </section>`;
+}
+
+/** The Settings view: people settings, currency, Open Library and export. */
 export function renderSettings(ctx: ViewCtx): string {
   const todo: Array<[string, string]> = [['', t('settings.no_list')], ...ctx.ui.todoEntities.map((e): [string, string] => [e.entity_id, e.name || e.entity_id])];
   const rows = ctx.lib.people
@@ -142,6 +170,7 @@ export function renderSettings(ctx: ViewCtx): string {
     </form>
     <p class="hkl-muted small">${escapeHTML(t('settings.currency_hint'))}</p>
   </section>
+  ${ctx.lib.me.is_admin ? openLibraryCard(ctx) : ''}
   <section class="hkl-card">
     <h2>${escapeHTML(t('settings.export'))}</h2>
     <div class="hkl-fields">

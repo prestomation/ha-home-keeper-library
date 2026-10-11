@@ -829,3 +829,220 @@ describe('import', () => {
     expect(host.showToast).toHaveBeenCalledWith('Import complete.');
   });
 });
+
+describe('Open Library', () => {
+  const RICE = 'Every Grain of Rice';
+
+  function olState({ connected = true, title = RICE, status = 'missing', extra = {} } = {}) {
+    const state = fixture();
+    const book = Object.values(state.books).find((b) => b.title === title);
+    Object.assign(book, { openlibrary: null, openlibrary_status: status, ...extra });
+    state.openlibrary_account = { connected, username: connected ? 'alex_reads' : null };
+    return { state, id: book.id };
+  }
+
+  it('shows the banner on a book that Open Library does not have, and Not now skips it', async () => {
+    const { state, id } = olState();
+    const fake = await mount(`/books/${id}`, { state });
+    expect($('[data-k="ol-banner"]').textContent).toContain('Open Library does not have this book');
+    $('[data-k="ol-not-now"]').click();
+    await flush();
+    expect(fake.calls('skip_openlibrary')).toEqual([{ type: 'home_keeper_library/skip_openlibrary', book_id: id }]);
+    expect(host.showToast).toHaveBeenCalledWith('The book is no longer in the Not on Open Library list.');
+  });
+
+  it('shows no banner to a non-admin user, on a linked book or on a skipped book', async () => {
+    const user = olState();
+    user.state.me.is_admin = false;
+    delete user.state.openlibrary_account;
+    await mount(`/books/${user.id}`, { state: user.state });
+    expect($('[data-k="ol-banner"]')).toBeNull();
+    el.remove();
+    const skipped = olState({ status: 'skipped' });
+    await mount(`/books/${skipped.id}`, { state: skipped.state });
+    expect($('[data-k="ol-banner"]')).toBeNull();
+    expect($('[data-k="ol-send-later"]').textContent).toBe('Send to Open Library');
+    el.remove();
+    const dune = fixture();
+    await mount(`/books/${bookId(dune, 'Dune')}`, { state: dune });
+    expect($('[data-k="ol-banner"]')).toBeNull();
+    expect($('[data-k="ol-send-later"]')).toBeNull();
+  });
+
+  it('links to Settings when no account is connected', async () => {
+    const { state, id } = olState({ connected: false });
+    await mount(`/books/${id}`, { state });
+    const go = $('[data-k="ol-banner-send"]');
+    expect(go.textContent).toBe('Connect Open Library');
+    go.click();
+    expect(host.navigate).toHaveBeenCalledWith('/settings', expect.anything());
+  });
+
+  it('sends the selected fields and shows the new edition', async () => {
+    const { state, id } = olState({ extra: { publisher: 'Bloomsbury', published: '2013', isbn13: '9781408802526', cover: { kind: 'custom', file: 'x.jpg' } } });
+    const reply = { result: 'added', edition_key: 'OL5M', cover: 'failed', book: {} };
+    const fake = await mount(`/books/${id}`, { state, replies: { send_to_openlibrary: reply } });
+    $('[data-k="ol-banner-send"]').click();
+    const dlg = el.shadowRoot.getElementById('dlg');
+    expect(dlg.textContent).toContain('You send as alex_reads.');
+    expect(dlg.querySelector('[data-k="d-send-publisher"]').checked).toBe(true);
+    expect(dlg.querySelector('[data-k="d-send-cover"]').checked).toBe(false);
+    dlg.querySelector('[data-k="d-send-published"]').checked = false;
+    dlg.querySelector('[data-k="d-send-cover"]').checked = true;
+    dlg.querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(fake.calls('send_to_openlibrary')).toEqual([
+      { type: 'home_keeper_library/send_to_openlibrary', book_id: id, fields: ['publisher', 'isbn'], include_cover: true },
+    ]);
+    expect(dlg.querySelector('[data-k="d-ol-added"]').textContent).toContain('OL5M');
+    expect(dlg.querySelector('[data-k="d-ol-cover-failed"]')).not.toBeNull();
+    expect(dlg.querySelector('[data-k="d-ol-edit"]').getAttribute('href')).toBe('https://openlibrary.org/books/OL5M/edit');
+    expect(dlg.querySelector('[data-k="d-cancel"]')).toBeNull();
+    dlg.querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(dlg.innerHTML).toBe('');
+  });
+
+  it('disables an empty field and hides the cover choice without a custom cover', async () => {
+    const { state, id } = olState({ extra: { publisher: '', isbn13: null, isbn10: null } });
+    await mount(`/books/${id}`, { state });
+    $('[data-k="ol-banner-send"]').click();
+    const dlg = el.shadowRoot.getElementById('dlg');
+    expect(dlg.querySelector('[data-k="d-send-publisher"]').disabled).toBe(true);
+    expect(dlg.querySelector('[data-k="d-send-isbn"]').disabled).toBe(true);
+    expect(dlg.querySelector('[data-k="d-send-cover"]')).toBeNull();
+  });
+
+  it('offers to link an edition that Open Library already has', async () => {
+    const { state, id } = olState();
+    const reply = { result: 'existing', edition_key: 'OL9M', cover: 'skipped', book: {} };
+    const fake = await mount(`/books/${id}`, { state, replies: { send_to_openlibrary: reply } });
+    $('[data-k="ol-banner-send"]').click();
+    const dlg = el.shadowRoot.getElementById('dlg');
+    dlg.querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(dlg.querySelector('[data-k="d-ol-existing"]').textContent).toContain('OL9M');
+    expect(dlg.querySelector('[data-k="d-submit"]').textContent).toBe('Link to OL9M');
+    dlg.querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(fake.calls('link_openlibrary')).toEqual([{ type: 'home_keeper_library/link_openlibrary', book_id: id, edition: 'OL9M' }]);
+    expect(host.showToast).toHaveBeenCalledWith('Book linked to Open Library.');
+    expect(dlg.innerHTML).toBe('');
+  });
+
+  it('shows a send error in the dialog and hides the busy line', async () => {
+    const { state, id } = olState();
+    await mount(`/books/${id}`, { state, replies: { send_to_openlibrary: () => Promise.reject({ message: 'Refused' }) } });
+    $('[data-k="ol-banner-send"]').click();
+    const dlg = el.shadowRoot.getElementById('dlg');
+    dlg.querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(dlg.querySelector('.hkl-error').textContent).toBe('Refused');
+    expect(dlg.querySelector('[data-k="d-sending"]').hidden).toBe(true);
+    expect(dlg.querySelector('[data-k="d-submit"]').disabled).toBe(false);
+  });
+
+  it('lists the books that are not on Open Library with an action on each row', async () => {
+    const { state, id } = olState();
+    const fake = await mount('/books?status=not_on_ol', { state });
+    expect($('[data-k="st-not_on_ol"]').textContent).toContain('Not on Open Library');
+    expect($('[data-k="ol-list-hint"]').textContent).toContain('(4)');
+    expect($$('.hkl-olrow').map((r) => r.querySelector('.hkl-row-title').textContent)).toEqual(['Every Grain of Rice', 'Steering the Craft', '9780980123468', 'Untitled paperback']);
+    // A book with no author asks for one and has no Send button.
+    const untitled = $$('.hkl-olrow')[3];
+    expect(untitled.querySelector('.hkl-row-hint').textContent).toBe('Add an author before you send');
+    expect(untitled.querySelector('[data-act="send-ol"]')).toBeNull();
+    $(`[data-k="ol-skip-${id}"]`).click();
+    await flush();
+    expect(fake.calls('skip_openlibrary')[0]).toMatchObject({ book_id: id });
+    $(`[data-k="ol-send-${id}"]`).click();
+    expect(el.shadowRoot.getElementById('dlg').textContent).toContain('Send to Open Library');
+  });
+
+  it('hides the chip with no book in it, and from a non-admin user', async () => {
+    const none = fixture();
+    for (const b of Object.values(none.books)) b.openlibrary_status = null;
+    await mount('/books', { state: none });
+    expect($('[data-k="st-not_on_ol"]')).toBeNull();
+    el.remove();
+    const { state } = olState();
+    state.me.is_admin = false;
+    await mount('/books?status=not_on_ol', { state });
+    expect($('[data-k="st-not_on_ol"]')).toBeNull();
+    expect($$('.hkl-olrow')).toHaveLength(0);
+  });
+
+  it('tells the user after a manual add that Open Library does not have the book', async () => {
+    const reply = { book: { id: 'new' }, existing: false, lookup: 'not_found' };
+    await mount('/books', { replies: { add_book: reply } });
+    $('[data-k="add-book"]').click();
+    const dlg = el.shadowRoot.getElementById('dlg');
+    dlg.querySelector('[name="query"]').value = '9780000000002';
+    dlg.querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(host.showToast).toHaveBeenCalledWith('Book added. Open Library does not have it.');
+  });
+});
+
+describe('settings Open Library', () => {
+  function flowApi(result) {
+    return vi.fn(async (method, path, body) => {
+      if (method === 'DELETE') return {};
+      if (path === 'config/config_entries/options/flow') return { flow_id: 'f1', type: 'menu' };
+      if (body?.next_step_id) return { flow_id: 'f1', type: 'form' };
+      return result;
+    });
+  }
+
+  it('connects an account through the options flow, never through a service', async () => {
+    const callApi = flowApi({ flow_id: 'f1', type: 'create_entry' });
+    const fake = await mount('/settings', { callApi, replies: { 'config_entries/get': [{ entry_id: 'e1' }] } });
+    $('[data-k="ol-access"]').value = ' ACC ';
+    $('[data-k="ol-secret"]').value = 'SEC';
+    $('[data-k="ol-connect-save"]').click();
+    await flush();
+    expect(callApi.mock.calls).toEqual([
+      ['POST', 'config/config_entries/options/flow', { handler: 'e1' }],
+      ['POST', 'config/config_entries/options/flow/f1', { next_step_id: 'openlibrary' }],
+      ['POST', 'config/config_entries/options/flow/f1', { access_key: 'ACC', secret_key: 'SEC' }],
+    ]);
+    expect(host.showToast).toHaveBeenCalledWith('Open Library account connected.');
+    const sent = JSON.stringify(fake.send.mock.calls);
+    expect(sent).not.toContain('SEC');
+  });
+
+  it('shows the flow error, keeps the access key and closes the flow', async () => {
+    const callApi = flowApi({ flow_id: 'f1', type: 'form', errors: { base: 'invalid_auth' } });
+    await mount('/settings', { callApi, replies: { 'config_entries/get': [{ entry_id: 'e1' }] } });
+    $('[data-k="ol-access"]').value = 'ACC';
+    $('[data-k="ol-secret"]').value = 'BAD';
+    $('[data-k="ol-connect-save"]').click();
+    await flush();
+    expect($('[data-k="ol-error"]').textContent).toBe('Open Library did not accept these keys.');
+    expect($('[data-k="ol-access"]').value).toBe('ACC');
+    expect($('[data-k="ol-secret"]').value).toBe('');
+    expect(callApi.mock.calls.at(-1)).toEqual(['DELETE', 'config/config_entries/options/flow/f1']);
+  });
+
+  it('asks for both keys before it starts the flow', async () => {
+    const callApi = flowApi({});
+    await mount('/settings', { callApi });
+    $('[data-k="ol-access"]').value = 'ACC';
+    $('[data-k="ol-connect-save"]').click();
+    await flush();
+    expect($('[data-k="ol-error"]').textContent).toBe('Enter the access key and the secret key.');
+    expect(callApi).not.toHaveBeenCalled();
+  });
+
+  it('shows the account and disconnects it after a confirm', async () => {
+    const state = fixture();
+    state.openlibrary_account = { connected: true, username: 'alex_reads' };
+    const fake = await mount('/settings', { state });
+    expect($('[data-k="ol-connected"]').textContent).toBe('Connected as alex_reads');
+    expect($('[data-k="ol-access"]')).toBeNull();
+    $('[data-k="ol-disconnect"]').click();
+    el.shadowRoot.getElementById('dlg').querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(fake.calls('disconnect_openlibrary')).toHaveLength(1);
+  });
+});

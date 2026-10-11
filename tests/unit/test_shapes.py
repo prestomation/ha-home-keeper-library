@@ -77,6 +77,7 @@ def test_build_book_shape() -> None:
         "cover": {"kind": "none", "file": None},
         "needs_details": False,
         "lookup_tries": 0,
+        "openlibrary_status": None,
         "created_at": NOW,
         "updated_at": NOW,
         "wishlist": None,

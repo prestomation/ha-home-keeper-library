@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "Opcje biblioteki",
+        "menu_options": {
+          "currency": "Waluta",
+          "openlibrary": "Konto Open Library"
+        }
+      },
+      "currency": {
+        "title": "Waluta",
         "data": {
           "currency": "Waluta"
         },
         "data_description": {
           "currency": "Kod z 3 liter, na przykład EUR lub USD."
         }
+      },
+      "openlibrary": {
+        "title": "Konto Open Library",
+        "description": "Wklej klucz dostępu i klucz tajny ze strony kluczy S3 swojego konta Archive.org. Biblioteka używa ich tylko wtedy, gdy wysyłasz książkę do Open Library.",
+        "data": {
+          "access_key": "Klucz dostępu",
+          "secret_key": "Klucz tajny"
+        }
       }
     },
     "error": {
-      "invalid_currency": "Wpisz kod waluty z 3 liter."
+      "invalid_currency": "Wpisz kod waluty z 3 liter.",
+      "invalid_auth": "Open Library nie zaakceptowała tych kluczy.",
+      "cannot_connect": "Open Library jest niedostępna. Spróbuj ponownie później."
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library nie jest załadowana. Spróbuj ponownie po jej uruchomieniu."
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "ID książki."
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "Wyślij do Open Library",
+      "description": "Dodaje książkę, której nie ma w Open Library, za pomocą połączonego konta Open Library, a następnie łączy książkę.",
+      "fields": {
+        "book_id": {
+          "name": "Książka",
+          "description": "ID książki."
+        },
+        "fields": {
+          "name": "Pola",
+          "description": "Opcjonalne pola do wysłania: publisher, published i isbn. Tytuł i pierwszy autor są wysyłane zawsze."
+        },
+        "include_cover": {
+          "name": "Wyślij okładkę",
+          "description": "Wyślij też własną okładkę książki."
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "Połącz z Open Library",
+      "description": "Łączy książkę z wydaniem w Open Library i wypełnia jej puste pola.",
+      "fields": {
+        "book_id": {
+          "name": "Książka",
+          "description": "ID książki."
+        },
+        "edition": {
+          "name": "Wydanie",
+          "description": "Klucz wydania, na przykład OL123M, lub adres URL strony wydania."
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "Pomiń Open Library",
+      "description": "Usuwa książkę z listy książek, których nie ma w Open Library, lub ją przywraca.",
+      "fields": {
+        "book_id": {
+          "name": "Książka",
+          "description": "ID książki."
+        },
+        "skip": {
+          "name": "Pomiń",
+          "description": "Wyłącz, aby przywrócić książkę na listę."
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "Odłącz Open Library",
+      "description": "Usuwa klucze konta Open Library."
     },
     "scan_isbn": {
       "name": "Skanuj ISBN",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "Tylko {person} lub administrator może zmienić tę listę zadań."
+    },
+    "openlibrary_not_connected": {
+      "message": "Najpierw połącz konto Open Library w ustawieniach biblioteki."
+    },
+    "openlibrary_already_linked": {
+      "message": "Ta książka jest już połączona z Open Library."
+    },
+    "openlibrary_needs_author": {
+      "message": "Dodaj autora do książki przed wysłaniem."
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library znalazła więcej niż 1 dzieło, które może być tą książką. Dodaj książkę w witrynie Open Library."
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library nie zaakceptowała kluczy konta. Połącz konto ponownie."
+    },
+    "openlibrary_not_found": {
+      "message": "Open Library nie ma wydania {edition}."
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} nie jest kluczem ani adresem URL wydania Open Library."
     }
   }
 }

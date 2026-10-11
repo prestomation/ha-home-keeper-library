@@ -2,7 +2,7 @@
 import { captureConfig } from './capture-config';
 
 export default captureConfig('walkthrough.capture.ts', {
-  // The tour is about 45 s of beats and actions. 180 s leaves room for a slow
+  // The tour is about 55 s of beats and actions. 180 s leaves room for a slow
   // runner. A tour that needs more is too long: drop a beat before this moves.
   timeout: 180_000,
   use: {

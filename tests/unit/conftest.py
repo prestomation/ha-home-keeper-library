@@ -44,6 +44,7 @@ _PURE_MODULES = (
     "events",
     "projections",
     "openlibrary",
+    "openlibrary_contribute",
     "csv_io",
     "wishlist",
     "loan_tasks",

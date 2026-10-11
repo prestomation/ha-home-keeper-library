@@ -45,8 +45,8 @@ def test_normalize_state_fills_and_filters() -> None:
     }
     state = m.normalize_state(raw)
     assert state["books"] == {
-        "b": {"id": "b", "lookup_tries": 0},
-        "t": {"id": "t", "lookup_tries": 2},
+        "b": {"id": "b", "lookup_tries": 0, "openlibrary_status": None},
+        "t": {"id": "t", "lookup_tries": 2, "openlibrary_status": None},
         "x": "not a book",
     }
     assert state["rooms"] == {}
@@ -463,6 +463,67 @@ def test_fill_from_draft_keeps_user_edits() -> None:
     assert filled["updated_at"] == "t1"
     again, changed = m.fill_from_draft(filled, draft, now="t2")
     assert changed == [] and again["updated_at"] == "t1"
+
+
+def test_fill_from_draft_clears_the_openlibrary_status() -> None:
+    book = m.build_book({"title": "Mine"}, now="t0")
+    book["openlibrary_status"] = "missing"
+    filled, changed = m.fill_from_draft(book, {"authors": ["A"]}, now="t1")
+    assert filled["openlibrary_status"] == "missing"
+    assert changed == ["authors"]
+    draft = {"openlibrary": {"edition_key": "OL5M"}}
+    filled, changed = m.fill_from_draft(book, draft, now="t1")
+    assert filled["openlibrary_status"] is None
+    assert changed == ["openlibrary", "openlibrary_status"]
+    _, changed = m.fill_from_draft(filled, draft, now="t2")
+    assert changed == []
+
+
+@pytest.mark.parametrize(
+    ("book", "status"),
+    [
+        ({"openlibrary_status": "missing"}, "missing"),
+        ({"openlibrary_status": "skipped"}, "skipped"),
+        ({"openlibrary_status": "other"}, None),
+        ({"openlibrary_status": None, "needs_details": True, "lookup_tries": 3}, None),
+        (
+            {"openlibrary_status": "skipped", "openlibrary": {"edition_key": "OL1M"}},
+            None,
+        ),
+        ({"needs_details": True, "lookup_tries": 3}, "missing"),
+        ({"needs_details": True, "lookup_tries": 4}, "missing"),
+        ({"needs_details": True, "lookup_tries": 2}, None),
+        ({"needs_details": False, "lookup_tries": 3}, None),
+        (
+            {
+                "needs_details": True,
+                "lookup_tries": 3,
+                "openlibrary": {"work_key": "W"},
+            },
+            None,
+        ),
+        ({}, None),
+    ],
+)
+def test_stored_openlibrary_status(book, status) -> None:
+    assert m.stored_openlibrary_status(book) == status
+
+
+def test_normalize_state_sets_the_openlibrary_status() -> None:
+    raw = {"books": {"old": {"id": "old", "needs_details": True, "lookup_tries": 3}}}
+    assert m.normalize_state(raw)["books"]["old"]["openlibrary_status"] == "missing"
+
+
+def test_openlibrary_status_validator() -> None:
+    assert m.openlibrary_status(None) is None
+    assert m.openlibrary_status("missing") == "missing"
+    assert m.openlibrary_status("skipped") == "skipped"
+    err = _err(m.openlibrary_status, "sent")
+    assert err.key == "invalid_choice"
+    assert err.placeholders == {
+        "field": "openlibrary_status",
+        "options": "missing, skipped",
+    }
 
 
 def test_book_summary_and_keys() -> None:

@@ -304,6 +304,51 @@ refresh_book:
       selector:
         text:
 
+send_to_openlibrary:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+    fields:
+      example: '["publisher", "published", "isbn"]'
+      selector:
+        select:
+          multiple: true
+          options:
+            - "publisher"
+            - "published"
+            - "isbn"
+    include_cover:
+      default: false
+      selector:
+        boolean:
+
+link_openlibrary:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+    edition:
+      required: true
+      example: "OL123M"
+      selector:
+        text:
+
+skip_openlibrary:
+  fields:
+    book_id:
+      required: true
+      selector:
+        text:
+    skip:
+      default: true
+      selector:
+        boolean:
+
+disconnect_openlibrary:
+
 scan_isbn:
   fields:
     isbn:

@@ -69,6 +69,8 @@ export interface Book {
   openlibrary: { edition_key: string | null; work_key: string | null; cover_id: number | null } | null;
   cover: { kind: 'openlibrary' | 'custom' | 'none'; file: string | null };
   needs_details: boolean;
+  /** `missing`: Open Library does not have the book. `skipped`: an admin hid it from that list. */
+  openlibrary_status?: 'missing' | 'skipped' | null;
   created_at: string;
   updated_at: string;
   wishlist: Wishlist | null;
@@ -154,6 +156,22 @@ export interface RawState {
   me: Me;
   currency: string;
   home_keeper: { tab: boolean };
+  /** Admins only. */
+  openlibrary_account?: OpenLibraryAccount;
+}
+
+/** The Open Library account of the household. The keys never reach the browser. */
+export interface OpenLibraryAccount {
+  connected: boolean;
+  username: string | null;
+}
+
+/** The reply of `send_to_openlibrary`. */
+export interface SendResult {
+  result: 'added' | 'existing';
+  edition_key: string;
+  cover: 'sent' | 'failed' | 'skipped';
+  book: Book;
 }
 
 /** The normalized library that every view reads. */
@@ -167,6 +185,7 @@ export interface Lib {
   people: Person[];
   me: Me;
   currency: string;
+  openlibrary: OpenLibraryAccount | null;
 }
 
 /** The subset of the `hass` object that the tab and the card use. */
@@ -190,7 +209,7 @@ export interface HomeAssistant {
     ): Promise<() => void | Promise<void>>;
   };
   fetchWithAuth?: (path: string, init?: RequestInit) => Promise<Response>;
-  callApi?: <T = unknown>(method: 'GET' | 'POST', path: string, parameters?: Record<string, unknown>) => Promise<T>;
+  callApi?: <T = unknown>(method: 'GET' | 'POST' | 'DELETE', path: string, parameters?: Record<string, unknown>) => Promise<T>;
 }
 
 /** Host API v1 that the Home Keeper panel gives to the tab. */

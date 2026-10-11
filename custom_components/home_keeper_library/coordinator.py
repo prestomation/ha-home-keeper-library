@@ -15,7 +15,13 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .const import CONF_CURRENCY, DEFAULT_CURRENCY, DOMAIN
+from .const import (
+    CONF_CURRENCY,
+    CONF_OPENLIBRARY_USERNAME,
+    DEFAULT_CURRENCY,
+    DOMAIN,
+)
+from .openlibrary_account import account_keys
 from .store import LibraryStore
 
 if TYPE_CHECKING:
@@ -46,6 +52,7 @@ class LibraryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.home_keeper: HomeKeeperLink
         self.tab_registered = False
         self._currency_seen = self.currency
+        self._account_seen = self.openlibrary_account
 
     @property
     def currency(self) -> str:
@@ -54,18 +61,36 @@ class LibraryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         value = entry.options.get(CONF_CURRENCY) or entry.data.get(CONF_CURRENCY)
         return str(value or self.hass.config.currency or DEFAULT_CURRENCY)
 
+    @property
+    def openlibrary_account(self) -> dict[str, Any]:
+        """The Open Library account, with no keys: ``{connected, username}``."""
+        data = self.config_entry.data
+        connected = account_keys(data) is not None
+        username = data.get(CONF_OPENLIBRARY_USERNAME) if connected else None
+        return {
+            "connected": connected,
+            "username": username if isinstance(username, str) else None,
+        }
+
     @callback
     def async_check_settings(self) -> None:
-        """Fire ``settings_updated`` once when the currency option changed.
+        """Fire ``settings_updated`` once when the currency or the account changed.
 
-        The ``set_settings`` service and the update listener of the entry (the
-        options flow) both call this. The second call finds no change.
+        The ``set_settings`` service, the ``disconnect_openlibrary`` service and
+        the update listener of the entry (the options flow) call this. The second
+        call finds no change.
         """
+        changed: list[str] = []
         currency = self.currency
-        if currency == self._currency_seen:
-            return
-        self._currency_seen = currency
-        self.store.async_settings_updated([CONF_CURRENCY], currency)
+        if currency != self._currency_seen:
+            self._currency_seen = currency
+            changed.append(CONF_CURRENCY)
+        account = self.openlibrary_account
+        if account != self._account_seen:
+            self._account_seen = account
+            changed.append("openlibrary_account")
+        if changed:
+            self.store.async_settings_updated(changed, currency)
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Return the document. A local read never fails."""

@@ -6,7 +6,8 @@
  *
  * The tour: open the Library tab in Home Keeper, browse the grid, search, open a
  * book, set the reading status, scan a book by ISBN into a shelf, lend a book with
- * a Home Keeper task, see the loan, and open the card on a dashboard. `BEAT` pauses
+ * a Home Keeper task, see the loan, connect Open Library and send a book that it
+ * does not have, and open the card on a dashboard. `BEAT` pauses
  * let each step read in the video. The tour puts the seed back at the end.
  *
  * The recording needs its own context: `recordVideo` is set when a context is made.
@@ -23,6 +24,9 @@ const NEW_ISBN = '9780553418606';
 const LEND_TITLE = 'Station Eleven';
 const PARTY = 'Robin';
 const STATUS_TITLE = 'The Lathe of Heaven';
+// A book that the fixture Open Library does not have. The tour adds it and sends it.
+const OL_TITLE = 'Walkthrough Field Notes';
+const OL_ISBN = '9780000000996';
 
 async function beat(page: Page, n = 1): Promise<void> {
   await page.waitForTimeout(BEAT * n);
@@ -30,13 +34,14 @@ async function beat(page: Page, n = 1): Promise<void> {
 
 async function cleanUp(): Promise<void> {
   const state = await adminState();
-  for (const book of state.books.filter((b: { isbn13: string }) => b.isbn13 === NEW_ISBN)) {
+  for (const book of state.books.filter((b: { isbn13: string }) => b.isbn13 === NEW_ISBN || b.isbn13 === OL_ISBN)) {
     await library('delete_book', { book_id: book.id });
   }
   const lent = state.books.find((b: { title: string }) => b.title === LEND_TITLE);
   for (const loan of state.loans.filter((l: { book_id: string; party: string }) => l.book_id === lent.id && l.party === PARTY)) {
     await library('delete_loan', { loan_id: loan.id });
   }
+  await library('disconnect_openlibrary');
 }
 
 test('record the Library walkthrough', async ({ browser }) => {
@@ -130,7 +135,31 @@ test('record the Library walkthrough', async ({ browser }) => {
     await expect(page.locator('home-keeper-panel')).toContainText(`Get ${LEND_TITLE} back from ${PARTY}`, { timeout: 30_000 });
     await beat(page, 2);
 
-    // 7. The card on a dashboard.
+    // 7. Connect Open Library, then send a book that it does not have.
+    const olBook = await library<{ book: { id: string } }>('add_book', { title: OL_TITLE, authors: ['Ada Fixture'], publisher: 'Fixture Press', isbn: OL_ISBN });
+    await library('add_copy', { book_id: olBook.book.id });
+    await openTab(page, '/settings');
+    const olCard = tab.locator('[data-k="ol-card"]');
+    await olCard.scrollIntoViewIfNeeded();
+    await beat(page);
+    await olCard.locator('[data-k="ol-access"]').pressSequentially('E2E-ACCESS', { delay: 50 });
+    await olCard.locator('[data-k="ol-secret"]').fill('E2E-SECRET');
+    await olCard.locator('[data-k="ol-connect-save"]').click();
+    await expect(olCard.locator('[data-k="ol-connected"]')).toBeVisible();
+    await beat(page, 2);
+    await openTab(page, '/books;status=not_on_ol');
+    await expect(tab.locator('.hkl-olrow').filter({ hasText: OL_TITLE })).toBeVisible({ timeout: 30_000 });
+    await beat(page, 2);
+    await tab.locator('.hkl-olrow').filter({ hasText: OL_TITLE }).locator('[data-act="send-ol"]').click();
+    await beat(page, 2);
+    await dialog.locator('[data-k="d-submit"]').click();
+    await expect(dialog.locator('[data-k="d-ol-added"]')).toBeVisible();
+    await beat(page, 3);
+    await dialog.locator('[data-k="d-submit"]').click();
+    await expect(tab.locator('.hkl-olrow').filter({ hasText: OL_TITLE })).toHaveCount(0);
+    await beat(page);
+
+    // 8. The card on a dashboard.
     await openCard(page);
     await beat(page, 3);
   } finally {

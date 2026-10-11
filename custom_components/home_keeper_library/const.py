@@ -42,7 +42,7 @@ PLATFORMS = ["sensor", "todo"]
 
 # PANEL_VERSION is the same string as the manifest version. release.yml checks it,
 # and rollup.config.mjs reads it.
-PANEL_VERSION = "0.2.0"
+PANEL_VERSION = "0.3.0b1"
 
 # The built bundles are in frontend/dist/ and Home Assistant serves them here.
 STATIC_URL = "/home_keeper_library_static"
@@ -73,6 +73,13 @@ STORAGE_MINOR_VERSION = 1
 # The config entry option.
 CONF_CURRENCY = "currency"
 DEFAULT_CURRENCY = "EUR"
+# The Open Library account, in the config entry data. The options flow step
+# ``openlibrary`` sets the 2 Archive.org S3 keys. They are secrets: no reply, event
+# or diagnostics file shows them.
+CONF_OPENLIBRARY_ACCESS = "openlibrary_access"
+CONF_OPENLIBRARY_SECRET = "openlibrary_secret"
+CONF_OPENLIBRARY_USERNAME = "openlibrary_username"
+OPENLIBRARY_SECRET_KEYS = (CONF_OPENLIBRARY_ACCESS, CONF_OPENLIBRARY_SECRET)
 
 # The CSV import limits.
 MAX_CSV_BYTES = 5 * 1024 * 1024

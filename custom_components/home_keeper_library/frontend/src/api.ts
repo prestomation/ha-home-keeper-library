@@ -53,6 +53,33 @@ export class LibraryApi {
     });
   }
 
+  /**
+   * Connect an Open Library account. The keys go to the `openlibrary` step of the
+   * options flow, never to a service, so no event or log holds them. Return null,
+   * or the error code of the flow: `invalid_auth`, `cannot_connect` or `unknown`.
+   */
+  async connectOpenLibrary(access: string, secret: string): Promise<string | null> {
+    const callApi = this.hass.callApi;
+    if (!callApi) return 'unknown';
+    const entries = await this.hass.connection.sendMessagePromise<Array<{ entry_id: string }>>({
+      type: 'config_entries/get',
+      domain: DOMAIN,
+    });
+    const entryId = entries?.[0]?.entry_id;
+    if (!entryId) return 'unknown';
+    type Step = { flow_id: string; type: string; errors?: Record<string, string> | null };
+    const base = 'config/config_entries/options/flow';
+    const menu = await callApi<Step>('POST', base, { handler: entryId });
+    await callApi<Step>('POST', `${base}/${menu.flow_id}`, { next_step_id: 'openlibrary' });
+    const done = await callApi<Step>('POST', `${base}/${menu.flow_id}`, { access_key: access, secret_key: secret });
+    if (done.type === 'create_entry') return null;
+    if (done.type === 'form') {
+      // Close the open flow, so it does not wait in Home Assistant.
+      await callApi('DELETE', `${base}/${menu.flow_id}`).catch(() => undefined);
+    }
+    return done.errors?.base ?? 'unknown';
+  }
+
   getState(): Promise<RawState> {
     return this.call<RawState>('get_state');
   }

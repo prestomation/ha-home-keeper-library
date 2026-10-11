@@ -116,6 +116,8 @@
     "file": null
    },
    "needs_details": true,
+   "lookup_tries": 3,
+   "openlibrary_status": "missing",
    "created_at": "2026-03-21T10:00:00+00:00",
    "updated_at": "2026-03-21T10:00:00+00:00",
    "wishlist": null,
@@ -155,6 +157,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-03-13T10:00:00+00:00",
    "updated_at": "2026-03-13T10:00:00+00:00",
    "wishlist": null,
@@ -207,6 +211,8 @@
     "file": "e4b7df5e6eef4483b1751162204397b8-798c3698.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-03T10:00:00+00:00",
    "updated_at": "2026-01-03T10:00:00+00:00",
    "wishlist": null,
@@ -262,6 +268,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-15T10:00:00+00:00",
    "updated_at": "2026-01-15T10:00:00+00:00",
    "wishlist": null,
@@ -297,6 +305,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-15T10:00:00+00:00",
    "updated_at": "2026-02-15T10:00:00+00:00",
    "wishlist": null,
@@ -332,6 +342,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-21T10:00:00+00:00",
    "updated_at": "2026-02-21T10:00:00+00:00",
    "wishlist": null,
@@ -373,6 +385,8 @@
     "file": "eed5dacf0ada41059efc64fdefd6dfa9-543ed35b.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-03T10:00:00+00:00",
    "updated_at": "2026-02-03T10:00:00+00:00",
    "wishlist": null,
@@ -431,6 +445,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 3,
+   "openlibrary_status": "missing",
    "created_at": "2026-02-09T10:00:00+00:00",
    "updated_at": "2026-02-09T10:00:00+00:00",
    "wishlist": null,
@@ -477,6 +493,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-17T10:00:00+00:00",
    "updated_at": "2026-02-17T10:00:00+00:00",
    "wishlist": null,
@@ -528,6 +546,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-03-03T10:00:00+00:00",
    "updated_at": "2026-03-03T10:00:00+00:00",
    "wishlist": null,
@@ -577,6 +597,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-04-15T10:00:00+00:00",
    "updated_at": "2026-04-15T10:00:00+00:00",
    "wishlist": {
@@ -622,6 +644,8 @@
     "file": "af804c5b7f944aabb9462c114fab95d0-4a3dba00.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-07T10:00:00+00:00",
    "updated_at": "2026-02-07T10:00:00+00:00",
    "wishlist": null,
@@ -668,6 +692,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-04-13T10:00:00+00:00",
    "updated_at": "2026-04-13T10:00:00+00:00",
    "wishlist": {
@@ -709,6 +735,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-19T10:00:00+00:00",
    "updated_at": "2026-01-19T10:00:00+00:00",
    "wishlist": null,
@@ -749,6 +777,8 @@
     "file": "e50273c278814a57b97033997476c0df-84379fb2.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-21T10:00:00+00:00",
    "updated_at": "2026-01-21T10:00:00+00:00",
    "wishlist": null,
@@ -808,6 +838,8 @@
     "file": "d4c37434a7ea4a8e860517cd82ccc32b-fe79493e.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-23T10:00:00+00:00",
    "updated_at": "2026-01-23T10:00:00+00:00",
    "wishlist": null,
@@ -865,6 +897,8 @@
     "file": "2ff469fc40f54abfbb1a50274f264dae-fb97e18d.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-11T10:00:00+00:00",
    "updated_at": "2026-02-11T10:00:00+00:00",
    "wishlist": null,
@@ -899,6 +933,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-03-11T10:00:00+00:00",
    "updated_at": "2026-03-11T10:00:00+00:00",
    "wishlist": null,
@@ -944,6 +980,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-04-07T10:00:00+00:00",
    "updated_at": "2026-04-07T10:00:00+00:00",
    "wishlist": null,
@@ -989,6 +1027,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-04-05T10:00:00+00:00",
    "updated_at": "2026-04-05T10:00:00+00:00",
    "wishlist": null,
@@ -1034,6 +1074,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-03-15T10:00:00+00:00",
    "updated_at": "2026-03-15T10:00:00+00:00",
    "wishlist": null,
@@ -1068,6 +1110,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 3,
+   "openlibrary_status": "missing",
    "created_at": "2026-03-23T10:00:00+00:00",
    "updated_at": "2026-03-23T10:00:00+00:00",
    "wishlist": null,
@@ -1105,6 +1149,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-03-05T10:00:00+00:00",
    "updated_at": "2026-03-05T10:00:00+00:00",
    "wishlist": null,
@@ -1144,6 +1190,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-13T10:00:00+00:00",
    "updated_at": "2026-01-13T10:00:00+00:00",
    "wishlist": null,
@@ -1188,6 +1236,8 @@
     "file": "13be6b0e5c354e1981a89fe2766196e0-552257a9.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-05T10:00:00+00:00",
    "updated_at": "2026-01-05T10:00:00+00:00",
    "wishlist": null,
@@ -1236,6 +1286,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-11T10:00:00+00:00",
    "updated_at": "2026-01-11T10:00:00+00:00",
    "wishlist": null,
@@ -1280,6 +1332,8 @@
     "file": "8ffa744031884f64a2b39c35342641c1-d2033a57.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-01T10:00:00+00:00",
    "updated_at": "2026-02-01T10:00:00+00:00",
    "wishlist": null,
@@ -1328,6 +1382,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-13T10:00:00+00:00",
    "updated_at": "2026-02-13T10:00:00+00:00",
    "wishlist": null,
@@ -1368,6 +1424,8 @@
     "file": "fd086096a83f483ab7219f131e678534-f18df7a1.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-23T10:00:00+00:00",
    "updated_at": "2026-02-23T10:00:00+00:00",
    "wishlist": null,
@@ -1423,6 +1481,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-07T10:00:00+00:00",
    "updated_at": "2026-01-07T10:00:00+00:00",
    "wishlist": null,
@@ -1474,6 +1534,8 @@
     "file": "58247cad1ced46248fefe4d2b0db71b5-cff560bf.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-01T10:00:00+00:00",
    "updated_at": "2026-01-01T10:00:00+00:00",
    "wishlist": null,
@@ -1529,6 +1591,8 @@
     "file": "ae18ed68fc3445f484544a09c13ece47-a66afeef.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-04-01T10:00:00+00:00",
    "updated_at": "2026-04-01T10:00:00+00:00",
    "wishlist": null,
@@ -1577,6 +1641,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-05T10:00:00+00:00",
    "updated_at": "2026-02-05T10:00:00+00:00",
    "wishlist": null,
@@ -1614,6 +1680,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-04-11T10:00:00+00:00",
    "updated_at": "2026-04-11T10:00:00+00:00",
    "wishlist": {
@@ -1658,6 +1726,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-04-09T10:00:00+00:00",
    "updated_at": "2026-04-09T10:00:00+00:00",
    "wishlist": {
@@ -1702,6 +1772,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-02-19T10:00:00+00:00",
    "updated_at": "2026-02-19T10:00:00+00:00",
    "wishlist": null,
@@ -1748,6 +1820,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-03-07T10:00:00+00:00",
    "updated_at": "2026-03-07T10:00:00+00:00",
    "wishlist": null,
@@ -1800,6 +1874,8 @@
     "file": "fb4f591ff96c45e5abc0fa81325c564c-7ccde4d9.jpg"
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-09T10:00:00+00:00",
    "updated_at": "2026-01-09T10:00:00+00:00",
    "wishlist": null,
@@ -1855,6 +1931,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-03-17T10:00:00+00:00",
    "updated_at": "2026-03-17T10:00:00+00:00",
    "wishlist": null,
@@ -1892,6 +1970,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-01-17T10:00:00+00:00",
    "updated_at": "2026-01-17T10:00:00+00:00",
    "wishlist": null,
@@ -1937,6 +2017,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-03-09T10:00:00+00:00",
    "updated_at": "2026-03-09T10:00:00+00:00",
    "wishlist": null,
@@ -1971,6 +2053,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-04-03T10:00:00+00:00",
    "updated_at": "2026-04-03T10:00:00+00:00",
    "wishlist": null,
@@ -2012,6 +2096,8 @@
     "file": null
    },
    "needs_details": true,
+   "lookup_tries": 3,
+   "openlibrary_status": "missing",
    "created_at": "2026-03-19T10:00:00+00:00",
    "updated_at": "2026-03-19T10:00:00+00:00",
    "wishlist": null,
@@ -2048,6 +2134,8 @@
     "file": null
    },
    "needs_details": false,
+   "lookup_tries": 0,
+   "openlibrary_status": null,
    "created_at": "2026-03-01T10:00:00+00:00",
    "updated_at": "2026-03-01T10:00:00+00:00",
    "wishlist": null,
@@ -2787,5 +2875,9 @@
  "currency": "EUR",
  "home_keeper": {
   "tab": true
+ },
+ "openlibrary_account": {
+  "connected": false,
+  "username": null
  }
 }

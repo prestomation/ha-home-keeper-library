@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "Library options",
+        "menu_options": {
+          "currency": "Currency",
+          "openlibrary": "Open Library account"
+        }
+      },
+      "currency": {
+        "title": "Currency",
         "data": {
           "currency": "Currency"
         },
         "data_description": {
           "currency": "A code of 3 letters, such as EUR or USD."
         }
+      },
+      "openlibrary": {
+        "title": "Open Library account",
+        "description": "Paste the access key and the secret key from the S3 keys page of your Archive.org account. The library uses them only when you send a book to Open Library.",
+        "data": {
+          "access_key": "Access key",
+          "secret_key": "Secret key"
+        }
       }
     },
     "error": {
-      "invalid_currency": "Enter a currency code of 3 letters."
+      "invalid_currency": "Enter a currency code of 3 letters.",
+      "invalid_auth": "Open Library did not accept these keys.",
+      "cannot_connect": "Open Library is not available. Try again later."
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library is not loaded. Try again after it starts."
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "The ID of the book."
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "Send to Open Library",
+      "description": "Add a book that Open Library does not have, with the connected Open Library account, then link the book.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "fields": {
+          "name": "Fields",
+          "description": "Add publisher, published or isbn to send those details too. The title and the first author always go."
+        },
+        "include_cover": {
+          "name": "Send cover",
+          "description": "Also send the custom cover of the book."
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "Link to Open Library",
+      "description": "Link a book to an Open Library edition and fill its empty fields.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "edition": {
+          "name": "Edition",
+          "description": "An edition key, such as OL123M, or the URL of the edition page."
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "Skip Open Library",
+      "description": "Remove a book from the list of books that are not on Open Library, or put it back.",
+      "fields": {
+        "book_id": {
+          "name": "Book",
+          "description": "The ID of the book."
+        },
+        "skip": {
+          "name": "Skip",
+          "description": "Turn off to put the book back in the list."
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "Disconnect Open Library",
+      "description": "Remove the keys of the Open Library account."
     },
     "scan_isbn": {
       "name": "Scan ISBN",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "Only {person} or an admin user can change this to-do list."
+    },
+    "openlibrary_not_connected": {
+      "message": "Connect an Open Library account in the library settings first."
+    },
+    "openlibrary_already_linked": {
+      "message": "This book is already linked to Open Library."
+    },
+    "openlibrary_needs_author": {
+      "message": "Add an author to the book before you send it."
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library found more than 1 work that can be this book. Add the book on the Open Library website."
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library did not accept the account keys. Connect the account again."
+    },
+    "openlibrary_not_found": {
+      "message": "Open Library has no edition {edition}."
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} is not an Open Library edition key or URL."
     }
   }
 }

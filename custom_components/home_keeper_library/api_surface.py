@@ -167,6 +167,10 @@ SERVICES: tuple[ServiceSpec, ...] = (
     ServiceSpec("update_book", response="optional", **_ADMIN),
     ServiceSpec("delete_book", response="optional", **_ADMIN),
     ServiceSpec("refresh_book", response="optional", **_ADMIN),
+    ServiceSpec("send_to_openlibrary", response="optional", **_ADMIN),
+    ServiceSpec("link_openlibrary", response="optional", **_ADMIN),
+    ServiceSpec("skip_openlibrary", response="optional", **_ADMIN),
+    ServiceSpec("disconnect_openlibrary", response="optional", **_ADMIN),
     ServiceSpec("scan_isbn", response="optional", **_ADMIN),
     ServiceSpec("add_copy", response="optional", **_ADMIN),
     ServiceSpec("update_copy", response="optional", **_ADMIN),
@@ -514,12 +518,15 @@ SURFACE_KINDS: tuple[SurfaceKind, ...] = (
     SurfaceKind(
         "Config entry options",
         "published",
-        "The currency of the prices and values of the copies.",
+        "The currency of the prices and values of the copies. The Open Library "
+        "account is in the entry data, not in the options.",
     ),
     SurfaceKind(
         "Config flow",
         "published",
-        "A single-instance setup flow with a currency field.",
+        "A single-instance setup flow with a currency field. The options flow has "
+        "a menu: the currency, and the Archive.org S3 keys of an Open Library "
+        "account.",
     ),
     SurfaceKind(
         "Websocket commands",
@@ -539,7 +546,8 @@ SURFACE_KINDS: tuple[SurfaceKind, ...] = (
     SurfaceKind(
         "Reauth / reconfigure flows",
         "not_applicable",
-        "The storage is local and needs no credentials.",
+        "The storage is local. The admin sets the Open Library keys again in the "
+        "options flow, and a send with refused keys says so.",
     ),
     SurfaceKind(
         "Repairs / issue registry",

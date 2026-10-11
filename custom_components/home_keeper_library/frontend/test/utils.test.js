@@ -409,6 +409,56 @@ describe('reading helpers and search', () => {
   });
 });
 
+describe('Open Library helpers', () => {
+  it('lists a book that Open Library does not have and no admin skipped', () => {
+    expect(u.notOnOpenLibrary(book('a', { openlibrary_status: 'missing' }))).toBe(true);
+    expect(u.notOnOpenLibrary(book('a', { openlibrary_status: 'skipped' }))).toBe(false);
+    expect(u.notOnOpenLibrary(book('a', { openlibrary_status: null }))).toBe(false);
+    expect(u.notOnOpenLibrary(book('a'))).toBe(false);
+    const linked = { edition_key: 'OL1M', work_key: null, cover_id: null };
+    expect(u.notOnOpenLibrary(book('a', { openlibrary_status: 'missing', openlibrary: linked }))).toBe(false);
+  });
+
+  it.each([
+    ['OL5M', 'OL5M'],
+    ['OL12345M', 'OL12345M'],
+    [' OL5M ', 'OL5M'],
+    ['/books/OL12345M/x', 'OL12345M'],
+    ['/books/OL5M', 'OL5M'],
+    ['https://openlibrary.org/books/OL5M/Ferns_of_the_Rain_City', 'OL5M'],
+    ['https://openlibrary.org/books/OL5M.json', 'OL5M'],
+    ['https://openlibrary.org/books/OL5M?x=1', 'OL5M'],
+    ['https://openlibrary.org/books/OL5M#top', 'OL5M'],
+    ['https://openlibrary.org/works/OL5W', null],
+    ['https://example.org/OL5M', null],
+    ['OL5W', null],
+    ['OL5MX', null],
+    ['xOL5M', null],
+    ['', null],
+    [null, null],
+    [undefined, null],
+  ])('reads the edition key of %s', (text, key) => {
+    expect(u.editionKey(text)).toBe(key);
+  });
+
+  it('shows the Not on Open Library filter to admins only', () => {
+    expect(u.ADMIN_STATUS_FILTERS).toEqual(['not_on_ol']);
+    expect(u.STATUS_FILTERS).toContain('not_on_ol');
+  });
+
+  it('builds the edition page and the edit page', () => {
+    expect(u.openLibraryUrl('OL5M')).toBe('https://openlibrary.org/books/OL5M');
+    expect(u.openLibraryUrl('OL5M', true)).toBe('https://openlibrary.org/books/OL5M/edit');
+    expect(u.openLibraryUrl('a b')).toBe('https://openlibrary.org/books/a%20b');
+  });
+
+  it('reads the account of get_state', () => {
+    expect(u.normalizeState({}).openlibrary).toBeNull();
+    expect(u.normalizeState({ openlibrary_account: { connected: true, username: 'alex' } }).openlibrary).toEqual({ connected: true, username: 'alex' });
+    expect(u.normalizeState({ openlibrary_account: { connected: 'yes' } }).openlibrary).toEqual({ connected: false, username: null });
+  });
+});
+
 describe('filterBooks, statusCounts and sortBooks', () => {
   let l;
   let ctx;
@@ -416,9 +466,9 @@ describe('filterBooks, statusCounts and sortBooks', () => {
     l = lib({
       books: {
         a: book('a', { title: 'Alpha', authors: ['Zed Last'], subjects: ['SF'], reading: { me: row('read', { rating: 3 }), p2: row('read') }, created_at: '2026-01-03', published: '1999' }),
-        b: book('b', { title: 'Beta', authors: ['Amy Bee'], reading: { me: row('reading') }, needs_details: true, created_at: '2026-01-02', published: 'May 1970' }),
+        b: book('b', { title: 'Beta', authors: ['Amy Bee'], reading: { me: row('reading') }, needs_details: true, openlibrary_status: 'missing', created_at: '2026-01-02', published: 'May 1970' }),
         c: book('c', { title: 'Gamma', authors: ['Amy Bee'], owned: false, reading: { me: row('want', { rating: 5 }) }, created_at: '2026-01-01' }),
-        d: book('d', { title: 'Delta', authors: [], subjects: ['SF', 'Art'], created_at: '2026-01-04', published: '2001' }),
+        d: book('d', { title: 'Delta', authors: [], subjects: ['SF', 'Art'], openlibrary_status: 'skipped', created_at: '2026-01-04', published: '2001' }),
       },
       copies: { k1: copy('k1', 'a', 's1'), k2: copy('k2', 'b', 's3'), k3: copy('k3', 'd', null) },
     });
@@ -437,6 +487,7 @@ describe('filterBooks, statusCounts and sortBooks', () => {
     expect(ids({ status: 'reading' })).toEqual(['b']);
     expect(ids({ status: 'unread' })).toEqual(['b', 'd']);
     expect(ids({ status: 'needs' })).toEqual(['b']);
+    expect(ids({ status: 'not_on_ol' })).toEqual(['b']);
   });
 
   it('filters by place', () => {
@@ -458,9 +509,9 @@ describe('filterBooks, statusCounts and sortBooks', () => {
   });
 
   it('counts each status with the other filters on', () => {
-    expect(u.statusCounts(l.books, u.readFilters({}), ctx)).toEqual({ all: 3, unread: 2, reading: 1, read: 1, needs: 1 });
-    expect(u.statusCounts(l.books, u.readFilters({ status: 'read', owned: 'all' }), ctx)).toEqual({ all: 4, unread: 3, reading: 1, read: 1, needs: 1 });
-    expect(u.statusCounts(l.books, u.readFilters({ room: 'r1' }), ctx)).toEqual({ all: 1, unread: 0, reading: 0, read: 1, needs: 0 });
+    expect(u.statusCounts(l.books, u.readFilters({}), ctx)).toEqual({ all: 3, unread: 2, reading: 1, read: 1, needs: 1, not_on_ol: 1 });
+    expect(u.statusCounts(l.books, u.readFilters({ status: 'read', owned: 'all' }), ctx)).toEqual({ all: 4, unread: 3, reading: 1, read: 1, needs: 1, not_on_ol: 1 });
+    expect(u.statusCounts(l.books, u.readFilters({ room: 'r1' }), ctx)).toEqual({ all: 1, unread: 0, reading: 0, read: 1, needs: 0, not_on_ol: 0 });
   });
 
   it('sorts by each key with the title as the tiebreak', () => {

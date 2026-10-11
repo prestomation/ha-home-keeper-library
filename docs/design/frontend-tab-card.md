@@ -25,7 +25,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/styles.ts
   - custom_components/home_keeper_library/frontend/src/global.d.ts
 related: [home-keeper-dependency, scan-and-isbn, csv-import-export, people-privilege]
-source_hash: b15cb1a2d6a2
+source_hash: 1973c1b2bdf1
 ---
 
 # Tab and card
@@ -102,8 +102,9 @@ are `;key=value` parameters on the last segment, as in `/books;q=le%20guin;statu
 | `/scan`, `/import` | Scan flow, import | `tab-scan.ts`, `tab-import.ts` |
 
 The book filters are `q`, `status`, `room`, `shelf`, `reader`, `subject`, `owned`, `sort` and
-`view`. `utils.filterBooks` and `utils.sortBooks` apply them. Each view is a free function over
-`ViewCtx` (`tab-types.ts`) that returns 1 HTML string. `tab.ts` renders it with
+`view`. `utils.filterBooks` and `utils.sortBooks` apply them. An admin also gets `status=not_on_ol`,
+the books to send ([open-library-contribute](open-library-contribute.md)). Each view is a free
+function over `ViewCtx` (`tab-types.ts`) that returns 1 HTML string. `tab.ts` renders it with
 `dom.renderKeepFocus`. It keeps the focus, the caret, the typed text and the camera video in the
 page. For each event type, 1 delegated listener reads the `data-act`, `data-chg`, `data-input` and
 `data-form` attributes. The dialogs of `tab-dialogs.ts` are a separate layer, so a data push does
@@ -111,25 +112,24 @@ not clear a form. A dialog error keeps the typed input. A failed command renders
 
 ### The card
 
-`home-keeper-library-card` shows the person of the user, or the `person` of the config for
-an admin. Its sections are search with the location of each result, Reading with the
-page and a Read button, Want to read with a random pick, the yearly goal and the household
-activity of the people who share their reading. Each section has a toggle in the visual
-editor. The card calls `set_reading` with no `person_id` for its own person.
+`home-keeper-library-card` shows the person of the user, or the `person` of the config for an admin.
+Its sections are search with the location of each result, Reading with the page and a Read button,
+Want to read with a random pick, the yearly goal and the household activity of the people who share
+their reading. Each section has a toggle in the visual editor. The card calls `set_reading` with no
+`person_id` for its own person.
 
 ### Markup, text and style
 
-- `markup.ts` builds the shared pieces, such as a cover, a status label and a person dot,
-  and escapes each user value with `utils.escapeHTML`. A person dot has the color of the
-  place of the person in the name order (`utils.normalizePeople`). A cover with no file is a colored
-  block with the initials. The cover view requires a token, and an `<img>` cannot send
-  one. So `markup.wireCovers` signs each `cover_url` with `auth/sign_path` for 1 hour,
-  and `utils.CoverUrls` signs it again after 45 minutes. A cover shows the block until
-  its signed URL is ready.
+- `markup.ts` builds the shared pieces, such as a cover, a status label and a person dot, and
+  escapes each user value with `utils.escapeHTML`. A person dot has the color of the place of the
+  person in the name order (`utils.normalizePeople`). A cover with no file is a colored block with
+  the initials. The cover view requires a token, and an `<img>` cannot send one. So
+  `markup.wireCovers` signs each `cover_url` with `auth/sign_path` for 1 hour, and `utils.CoverUrls`
+  signs it again after 45 minutes. A cover shows the block until its signed URL is ready.
 - `markdown.ts` renders the notes with `ha-markdown`, and plain escaped text until the
   element loads.
-- `i18n.ts` picks the table of the Home Assistant language, then its base language, then
-  English, with `t()`, `tn()` and the number, date and money formats.
+- `i18n.ts` picks the table of the Home Assistant language, then its base language, then English,
+  with `t()`, `tn()` and the number, date and money formats.
 - `styles.ts` defines the `--hkl-*` tokens from the Home Assistant theme variables. The
   phone layout starts below 700 px, in CSS only.
 

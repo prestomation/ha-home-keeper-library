@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "Options de la bibliothèque",
+        "menu_options": {
+          "currency": "Devise",
+          "openlibrary": "Compte Open Library"
+        }
+      },
+      "currency": {
+        "title": "Devise",
         "data": {
           "currency": "Devise"
         },
         "data_description": {
           "currency": "Un code de 3 lettres, par exemple EUR ou USD."
         }
+      },
+      "openlibrary": {
+        "title": "Compte Open Library",
+        "description": "Collez la clé d'accès et la clé secrète de la page des clés S3 de votre compte Archive.org. La bibliothèque les utilise seulement quand vous envoyez un livre à Open Library.",
+        "data": {
+          "access_key": "Clé d'accès",
+          "secret_key": "Clé secrète"
+        }
       }
     },
     "error": {
-      "invalid_currency": "Saisissez un code de devise de 3 lettres."
+      "invalid_currency": "Saisissez un code de devise de 3 lettres.",
+      "invalid_auth": "Open Library n'a pas accepté ces clés.",
+      "cannot_connect": "Open Library n'est pas disponible. Réessayez plus tard."
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library n'est pas chargée. Réessayez après son démarrage."
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "L'ID du livre."
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "Envoyer à Open Library",
+      "description": "Ajoute un livre qu'Open Library n'a pas, avec le compte Open Library connecté, puis lie le livre.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "fields": {
+          "name": "Champs",
+          "description": "Les champs facultatifs à envoyer : publisher, published et isbn. Le titre et le premier auteur sont toujours envoyés."
+        },
+        "include_cover": {
+          "name": "Envoyer la couverture",
+          "description": "Envoie aussi la couverture personnalisée du livre."
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "Lier à Open Library",
+      "description": "Lie un livre à une édition d'Open Library et remplit ses champs vides.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "edition": {
+          "name": "Édition",
+          "description": "Une clé d'édition, comme OL123M, ou l'URL de la page de l'édition."
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "Ignorer Open Library",
+      "description": "Retire un livre de la liste des livres absents d'Open Library, ou le remet dans la liste.",
+      "fields": {
+        "book_id": {
+          "name": "Livre",
+          "description": "L'ID du livre."
+        },
+        "skip": {
+          "name": "Ignorer",
+          "description": "Désactivez pour remettre le livre dans la liste."
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "Déconnecter Open Library",
+      "description": "Supprime les clés du compte Open Library."
     },
     "scan_isbn": {
       "name": "Scanner un ISBN",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "Seul {person} ou un administrateur peut modifier cette liste de tâches."
+    },
+    "openlibrary_not_connected": {
+      "message": "Connectez d'abord un compte Open Library dans les paramètres de la bibliothèque."
+    },
+    "openlibrary_already_linked": {
+      "message": "Ce livre est déjà lié à Open Library."
+    },
+    "openlibrary_needs_author": {
+      "message": "Ajoutez un auteur au livre avant de l'envoyer."
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library a trouvé plus d'1 œuvre qui peut être ce livre. Ajoutez le livre sur le site d'Open Library."
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library n'a pas accepté les clés du compte. Connectez de nouveau le compte."
+    },
+    "openlibrary_not_found": {
+      "message": "Open Library n'a pas d'édition {edition}."
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} n'est pas une clé ou une URL d'édition d'Open Library."
     }
   }
 }

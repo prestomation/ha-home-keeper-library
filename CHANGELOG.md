@@ -5,7 +5,14 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
-## [Unreleased]
+## [0.3.0b1]
+
+### Added
+
+- **[Send books to Open Library](https://prestomation.github.io/ha-home-keeper-library/docs/guide/open-library).**
+  An admin can connect an Open Library account and send a book that Open Library does not
+  have, and the library links the new record. The **Not on Open Library** filter lists
+  these books.
 
 ### Changed
 

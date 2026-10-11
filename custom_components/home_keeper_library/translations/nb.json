@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "Bibliotekalternativer",
+        "menu_options": {
+          "currency": "Valuta",
+          "openlibrary": "Open Library-konto"
+        }
+      },
+      "currency": {
+        "title": "Valuta",
         "data": {
           "currency": "Valuta"
         },
         "data_description": {
           "currency": "En kode på 3 bokstaver, for eksempel EUR eller USD."
         }
+      },
+      "openlibrary": {
+        "title": "Open Library-konto",
+        "description": "Lim inn tilgangsnøkkelen og den hemmelige nøkkelen fra siden med S3-nøkler på Archive.org-kontoen din. Biblioteket bruker dem bare når du sender en bok til Open Library.",
+        "data": {
+          "access_key": "Tilgangsnøkkel",
+          "secret_key": "Hemmelig nøkkel"
+        }
       }
     },
     "error": {
-      "invalid_currency": "Skriv inn en valutakode på 3 bokstaver."
+      "invalid_currency": "Skriv inn en valutakode på 3 bokstaver.",
+      "invalid_auth": "Open Library godtok ikke disse nøklene.",
+      "cannot_connect": "Open Library er ikke tilgjengelig. Prøv igjen senere."
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library er ikke lastet. Prøv igjen når den har startet."
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "ID-en til boken."
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "Send til Open Library",
+      "description": "Legg til en bok som Open Library ikke har, med den tilkoblede Open Library-kontoen, og koble deretter boken.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "ID-en til boken."
+        },
+        "fields": {
+          "name": "Felt",
+          "description": "De valgfrie feltene som sendes: publisher, published og isbn. Tittelen og den første forfatteren sendes alltid."
+        },
+        "include_cover": {
+          "name": "Send omslag",
+          "description": "Send også det egne omslaget til boken."
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "Koble til Open Library",
+      "description": "Koble en bok til en utgave i Open Library, og fyll ut de tomme feltene.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "ID-en til boken."
+        },
+        "edition": {
+          "name": "Utgave",
+          "description": "En utgavenøkkel, for eksempel OL123M, eller URL-en til utgavesiden."
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "Hopp over Open Library",
+      "description": "Fjern en bok fra listen over bøker som ikke er på Open Library, eller legg den tilbake.",
+      "fields": {
+        "book_id": {
+          "name": "Bok",
+          "description": "ID-en til boken."
+        },
+        "skip": {
+          "name": "Hopp over",
+          "description": "Slå av for å legge boken tilbake i listen."
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "Koble fra Open Library",
+      "description": "Fjern nøklene til Open Library-kontoen."
     },
     "scan_isbn": {
       "name": "Skann ISBN",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "Bare {person} eller en administrator kan endre denne gjøremålslisten."
+    },
+    "openlibrary_not_connected": {
+      "message": "Koble først til en Open Library-konto i bibliotekinnstillingene."
+    },
+    "openlibrary_already_linked": {
+      "message": "Denne boken er allerede koblet til Open Library."
+    },
+    "openlibrary_needs_author": {
+      "message": "Legg til en forfatter i boken før du sender den."
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library fant mer enn 1 verk som kan være denne boken. Legg til boken på nettstedet til Open Library."
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library godtok ikke kontonøklene. Koble til kontoen på nytt."
+    },
+    "openlibrary_not_found": {
+      "message": "Open Library har ingen utgave {edition}."
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} er ikke en utgavenøkkel eller URL fra Open Library."
     }
   }
 }

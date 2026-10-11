@@ -4,8 +4,11 @@ The integration has 1 config entry. The flow first checks Home Keeper. If Home
 Keeper is not installed, not set up or too old, the flow stops with the reason
 and a link. The only setting is the currency of the prices and values of the
 copies. Its default is the currency of Home Assistant.
-The options flow merges its input into the stored options, so a key that the
-form does not show stays.
+The options flow is a menu with 2 steps. ``currency`` changes the currency. It
+merges its input into the stored options, so a key that the form does not show
+stays. ``openlibrary`` connects an Open Library account: it takes 2 Archive.org
+S3 keys, logs in once to check them, and keeps them in the entry data. The keys
+come in only here, so no service call, event or recorder row holds them.
 """
 
 from __future__ import annotations
@@ -20,9 +23,29 @@ from homeassistant.config_entries import (
     OptionsFlow,
 )
 from homeassistant.core import callback
+from homeassistant.helpers.selector import (
+    TextSelector,
+    TextSelectorConfig,
+    TextSelectorType,
+)
 
-from .const import CONF_CURRENCY, DEFAULT_CURRENCY, DOMAIN, NAME
+from .const import (
+    CONF_CURRENCY,
+    CONF_OPENLIBRARY_ACCESS,
+    CONF_OPENLIBRARY_SECRET,
+    CONF_OPENLIBRARY_USERNAME,
+    DEFAULT_CURRENCY,
+    DOMAIN,
+    NAME,
+)
 from .home_keeper import async_check, placeholders
+from .openlibrary_account import OpenLibraryAuthError, OpenLibraryWriter
+from .openlibrary_client import OpenLibraryError
+
+# The fields of the ``openlibrary`` options step.
+ACCESS_KEY = "access_key"
+SECRET_KEY = "secret_key"
+OPTIONS_MENU = ("currency", "openlibrary")
 
 
 def _currency_schema(default: str) -> vol.Schema:
@@ -75,10 +98,57 @@ class LibraryConfigFlow(ConfigFlow, domain=DOMAIN):
         return LibraryOptionsFlow()
 
 
+def _openlibrary_schema() -> vol.Schema:
+    secret = TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD))
+    return vol.Schema({vol.Required(ACCESS_KEY): str, vol.Required(SECRET_KEY): secret})
+
+
 class LibraryOptionsFlow(OptionsFlow):
-    """Change the currency."""
+    """Change the currency, or connect an Open Library account."""
 
     async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Show the menu."""
+        return self.async_show_menu(step_id="init", menu_options=list(OPTIONS_MENU))
+
+    async def async_step_openlibrary(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Take the 2 S3 keys, check them with a login, and keep them."""
+        errors: dict[str, str] = {}
+        if user_input is not None:
+            access = str(user_input.get(ACCESS_KEY) or "").strip()
+            secret = str(user_input.get(SECRET_KEY) or "").strip()
+            coordinator = getattr(self.config_entry, "runtime_data", None)
+            if coordinator is None:
+                return self.async_abort(reason="not_loaded")
+            try:
+                _, username = await OpenLibraryWriter(coordinator.client).async_login(
+                    access, secret
+                )
+            except OpenLibraryAuthError:
+                errors["base"] = "invalid_auth"
+            except OpenLibraryError:
+                errors["base"] = "cannot_connect"
+            else:
+                data = {
+                    **self.config_entry.data,
+                    CONF_OPENLIBRARY_ACCESS: access,
+                    CONF_OPENLIBRARY_SECRET: secret,
+                    CONF_OPENLIBRARY_USERNAME: username,
+                }
+                self.hass.config_entries.async_update_entry(
+                    self.config_entry, data=data
+                )
+                return self.async_create_entry(
+                    data=merge_flow_input(self.config_entry, {})
+                )
+        return self.async_show_form(
+            step_id="openlibrary", data_schema=_openlibrary_schema(), errors=errors
+        )
+
+    async def async_step_currency(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Show the currency form."""
@@ -94,5 +164,5 @@ class LibraryOptionsFlow(OptionsFlow):
             self.hass.config.currency or DEFAULT_CURRENCY
         )
         return self.async_show_form(
-            step_id="init", data_schema=_currency_schema(current), errors=errors
+            step_id="currency", data_schema=_currency_schema(current), errors=errors
         )

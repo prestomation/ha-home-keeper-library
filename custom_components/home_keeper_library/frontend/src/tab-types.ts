@@ -54,6 +54,11 @@ export interface UiState {
   todoEntities: Array<{ entity_id: string; name?: string }>;
   exportFormat: 'goodreads' | 'library';
   exportPerson: string;
+  /** The Open Library connect form: busy while the flow runs, and its error. */
+  olBusy: boolean;
+  olError: string;
+  /** The typed access key, so a failed connect keeps it. The secret key is not kept. */
+  olAccess: string;
 }
 
 export interface ViewCtx {

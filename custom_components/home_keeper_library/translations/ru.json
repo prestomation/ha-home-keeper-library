@@ -27,16 +27,36 @@
     "step": {
       "init": {
         "title": "Настройки библиотеки",
+        "menu_options": {
+          "currency": "Валюта",
+          "openlibrary": "Учётная запись Open Library"
+        }
+      },
+      "currency": {
+        "title": "Валюта",
         "data": {
           "currency": "Валюта"
         },
         "data_description": {
           "currency": "Код из 3 букв, например EUR или USD."
         }
+      },
+      "openlibrary": {
+        "title": "Учётная запись Open Library",
+        "description": "Вставьте ключ доступа и секретный ключ со страницы ключей S3 вашей учётной записи Archive.org. Библиотека использует их, только когда вы отправляете книгу в Open Library.",
+        "data": {
+          "access_key": "Ключ доступа",
+          "secret_key": "Секретный ключ"
+        }
       }
     },
     "error": {
-      "invalid_currency": "Введите код валюты из 3 букв."
+      "invalid_currency": "Введите код валюты из 3 букв.",
+      "invalid_auth": "Open Library не приняла эти ключи.",
+      "cannot_connect": "Open Library недоступна. Повторите попытку позже."
+    },
+    "abort": {
+      "not_loaded": "Home Keeper Library не загружена. Повторите попытку после её запуска."
     }
   },
   "entity": {
@@ -425,6 +445,56 @@
           "description": "ID книги."
         }
       }
+    },
+    "send_to_openlibrary": {
+      "name": "Отправить в Open Library",
+      "description": "Добавляет книгу, которой нет в Open Library, через подключённую учётную запись Open Library, затем связывает книгу.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "fields": {
+          "name": "Поля",
+          "description": "Необязательные поля для отправки: publisher, published и isbn. Название и первый автор отправляются всегда."
+        },
+        "include_cover": {
+          "name": "Отправить обложку",
+          "description": "Также отправить собственную обложку книги."
+        }
+      }
+    },
+    "link_openlibrary": {
+      "name": "Связать с Open Library",
+      "description": "Связывает книгу с изданием в Open Library и заполняет её пустые поля.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "edition": {
+          "name": "Издание",
+          "description": "Ключ издания, например OL123M, или URL-адрес страницы издания."
+        }
+      }
+    },
+    "skip_openlibrary": {
+      "name": "Пропустить Open Library",
+      "description": "Убирает книгу из списка книг, которых нет в Open Library, или возвращает её.",
+      "fields": {
+        "book_id": {
+          "name": "Книга",
+          "description": "ID книги."
+        },
+        "skip": {
+          "name": "Пропустить",
+          "description": "Выключите, чтобы вернуть книгу в список."
+        }
+      }
+    },
+    "disconnect_openlibrary": {
+      "name": "Отключить Open Library",
+      "description": "Удаляет ключи учётной записи Open Library."
     },
     "scan_isbn": {
       "name": "Сканировать ISBN",
@@ -1109,6 +1179,27 @@
     },
     "todo_not_allowed": {
       "message": "Изменить этот список дел может только {person} или администратор."
+    },
+    "openlibrary_not_connected": {
+      "message": "Сначала подключите учётную запись Open Library в настройках библиотеки."
+    },
+    "openlibrary_already_linked": {
+      "message": "Эта книга уже связана с Open Library."
+    },
+    "openlibrary_needs_author": {
+      "message": "Добавьте автора книги перед отправкой."
+    },
+    "openlibrary_ambiguous": {
+      "message": "Open Library нашла больше 1 произведения, которое может быть этой книгой. Добавьте книгу на сайте Open Library."
+    },
+    "openlibrary_login_failed": {
+      "message": "Open Library не приняла ключи учётной записи. Подключите учётную запись снова."
+    },
+    "openlibrary_not_found": {
+      "message": "В Open Library нет издания {edition}."
+    },
+    "invalid_openlibrary_edition": {
+      "message": "{edition} — это не ключ и не URL-адрес издания Open Library."
     }
   }
 }

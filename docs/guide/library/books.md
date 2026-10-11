@@ -14,7 +14,7 @@ also the ISBN, the series, the tags and the notes.
 
 | Filter | Values |
 |---|---|
-| Status | **All**, **Not read by me**, **Reading**, **Read**, **Needs details** |
+| Status | **All**, **Not read by me**, **Reading**, **Read**, **Needs details**, **Not on Open Library** |
 | **Room** and **Shelf** | The books with a copy in that place |
 | **Read by** | The books that a person has read |
 | **Subject** | A subject from Open Library |
@@ -24,6 +24,10 @@ also the ISBN, the series, the tags and the notes.
 The status filters show the status of your own person. **Needs details** shows the books
 that have no details from Open Library yet. **Not owned** shows the books with no copy,
 such as library books that a person read, and the wishlist.
+
+An admin also sees **Not on Open Library** if 1 or more books have this mark. It shows
+the books that Open Library does not have, with **Send to Open Library** and **Skip**
+on each row ([Send books to Open Library](open-library.md)).
 
 Select **Clear filters** to show all books again. Each filter is in the address of the
 page, so a bookmark keeps the filters.

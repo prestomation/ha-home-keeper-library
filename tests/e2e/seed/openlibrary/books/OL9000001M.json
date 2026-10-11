@@ -1,0 +1,7 @@
+{
+  "key": "/books/OL9000001M",
+  "title": "Field Notes of a Fixture Garden",
+  "publishers": ["Fixture Press"],
+  "publish_date": "2026",
+  "works": [{"key": "/works/OL9000001W"}]
+}

@@ -23,6 +23,7 @@ export const USER_SECTIONS = [
   {slug: 'loans', title: 'Loans', group: 'library'},
   {slug: 'wishlist', title: 'Wishlist', group: 'library'},
   {slug: 'import-export', title: 'Import and export', group: 'library'},
+  {slug: 'open-library', title: 'Send books to Open Library', group: 'library'},
   {slug: 'dashboard-card', title: 'Dashboard card', label: 'Dashboard card', group: 'views'},
   {slug: 'services', title: 'Services and events', group: 'automation'},
 ];

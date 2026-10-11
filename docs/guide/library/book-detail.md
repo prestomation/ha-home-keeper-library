@@ -59,6 +59,9 @@ of the integration.
 - **Lend**: lend a copy ([Loans](loans.md)).
 - **Update from Open Library**: fill the empty details from Open Library. The library
   keeps each detail that you changed.
+- **Send to Open Library**: add a book that Open Library does not have
+  ([Send books to Open Library](open-library.md)). A banner at the top shows this
+  action. Select **Not now** to hide the banner for this book.
 - **Delete**: delete the book with its copies, its reading status and its loans.
 
 ## Phone

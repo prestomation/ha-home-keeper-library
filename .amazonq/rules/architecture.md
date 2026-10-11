@@ -88,6 +88,11 @@ result in the plan's Security section ([pr-workflow.md](pr-workflow.md)).
 - **Admin-only: each operation that shows what Home Assistant hides from a user**, such
   as the list of to-do entities.
 - **An upload always needs a real admin user.** A signed URL never writes.
+- **A credential comes in only through a config flow or options flow step.** It lives in
+  the config entry data. It is never a service field, an event value, a reply value or a
+  diagnostics value. A service field puts it in `call_service` events and the recorder.
+- **A write to an outside catalog is admin-only and is for 1 record.** It starts only
+  when an admin selects it, as `send_to_openlibrary` does.
 - **If no rule fits, ask the maintainer.** Write the answer in the plan, then add the rule
   here.
 
@@ -124,8 +129,9 @@ How the entities work is in [entities](../../docs/design/entities.md).
 
 ## Options
 
-- The only option is `currency`. The config flow and the options flow ask for it, and
-  `set_settings` writes it.
+- The only option is `currency`. The config flow and the `currency` step of the options
+  flow ask for it, and `set_settings` writes it. The `openlibrary` step of the options
+  flow writes the entry data, not the options.
 - **An options flow merges. It never replaces.** Return `config_flow.merge_flow_input`
   from `async_create_entry`, never `user_input`. Home Assistant stores the result as the
   whole options object, so a raw return deletes every key that the form does not show.

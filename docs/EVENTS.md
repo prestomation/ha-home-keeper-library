@@ -93,7 +93,9 @@ The other keys of each event are in the generated API reference and in
 - `person_settings_updated` has `person_id`, `changed_fields` and `origin`, and
   no setting values.
 - `settings_updated` has `changed_fields`, `currency` and `origin`. The
-  `set_settings` service and the options flow both fire it.
+  `set_settings` service, the `disconnect_openlibrary` service and the options flow
+  fire it. `changed_fields` names `currency` or `openlibrary_account`. The payload has
+  no Open Library key and no user name.
 
 ## Rules
 
@@ -101,6 +103,9 @@ The other keys of each event are in the generated API reference and in
   each hour. A new due date can fire it again.
 - A CSV import fires only `import_completed`. It fires no event for each row.
 - `book_finished` fires with `reading_changed`, in that order.
+- A book that Open Library does not have fires `book_updated` with
+  `openlibrary_status` in `changed_fields`. A link to Open Library, a skip and a send
+  fire it too. A send fires no event of its own.
 - The first copy of a book on the wishlist takes the book off the wishlist. The
   scan, `add_copy` and `got_wishlist_book` fire `copy_added` and then
   `wishlist_removed`.

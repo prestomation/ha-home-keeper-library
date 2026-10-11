@@ -5,7 +5,8 @@ scan whose lookup failed, or a book from a CSV import. The worker reads Open
 Library for the book (by ISBN, else by title and author), fills the empty fields
 and downloads the cover. A network failure tries again later, at most 3 times,
 with a longer wait each time. A book that Open Library does not have keeps
-``needs_details: true``, and the user adds the details.
+``needs_details: true`` and gets ``openlibrary_status: missing``. The user adds
+the details, and an admin can send the book to Open Library.
 
 The queue is in memory, so setup queues again each book that still needs a
 lookup (``models.books_to_look_up``). The count of tries is the book field
@@ -116,10 +117,18 @@ class BookLookup:
             await self._retry_later(book, err)
             return
         if draft is None:
-            # Open Library does not have the book. Do not ask again.
-            await self._coordinator.store.set_lookup_tries(book_id, LOOKUP_MAX_TRIES)
+            # Open Library does not have the book. Do not ask again, and list
+            # the book as "Not on Open Library".
+            await self.async_mark_missing(book_id)
             return
         await self.async_apply(book_id, draft)
+
+    async def async_mark_missing(self, book_id: str) -> None:
+        """Record that Open Library does not have a book."""
+        store = self._coordinator.store
+        await store.set_lookup_tries(book_id, LOOKUP_MAX_TRIES)
+        if store.state["books"].get(book_id, {}).get("openlibrary_status") is None:
+            await store.set_openlibrary_status(book_id, "missing", origin=ORIGIN)
 
     async def async_find(self, book: dict[str, Any]) -> dict[str, Any] | None:
         """The Open Library draft of a book, by ISBN, else by title and author."""

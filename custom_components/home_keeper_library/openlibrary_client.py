@@ -17,6 +17,7 @@ import asyncio
 import logging
 import time
 from collections.abc import Mapping
+from http.cookies import SimpleCookie
 from typing import Any, TypedDict
 from urllib.parse import urlencode, urlsplit
 
@@ -40,6 +41,7 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 _MAX_AUTHORS = 3
 _MAX_COVER_BYTES = 10 * 1024 * 1024
+_COOKIE: SimpleCookie = SimpleCookie()
 
 
 class OpenLibraryUrls(TypedDict, total=False):
@@ -64,6 +66,14 @@ def openlibrary_urls(env: Mapping[str, str]) -> OpenLibraryUrls:
 
 class OpenLibraryError(Exception):
     """Open Library could not be read: a network error, a timeout or a 5xx."""
+
+
+class PostReply(TypedDict):
+    """The parts of a POST reply that the writer reads."""
+
+    status: int
+    location: str | None
+    cookies: dict[str, str]
 
 
 class OpenLibraryClient:
@@ -92,6 +102,62 @@ class OpenLibraryClient:
         if delay > 0:
             await asyncio.sleep(delay)
         self._last[host] = time.monotonic()
+
+    @property
+    def base_url(self) -> str:
+        """The base URL of Open Library."""
+        return self._base
+
+    async def async_post(
+        self,
+        path: str,
+        *,
+        json: Any = None,
+        data: Any = None,
+        cookie: str | None = None,
+    ) -> PostReply:
+        """POST to *path* below the base URL, with no redirect.
+
+        The reply gives the status, the ``Location`` header and the cookies that
+        Open Library sets. The same limit of 1 request a second holds. Raise
+        :class:`OpenLibraryError` on a network error, a timeout or a 5xx.
+        """
+        url = f"{self._base}{path}"
+        host = urlsplit(url).netloc
+        lock = self._locks.setdefault(host, asyncio.Lock())
+        session = async_get_clientsession(self._hass)
+        headers = dict(self._headers)
+        if cookie:
+            headers["Cookie"] = cookie
+        async with lock:
+            await self._wait_turn(host)
+            try:
+                async with session.post(
+                    url,
+                    json=json,
+                    data=data,
+                    headers=headers,
+                    allow_redirects=False,
+                    timeout=aiohttp.ClientTimeout(total=OPENLIBRARY_TIMEOUT_S),
+                ) as response:
+                    if response.status >= 500:
+                        raise OpenLibraryError(f"HTTP {response.status}")
+                    return {
+                        "status": response.status,
+                        "location": response.headers.get("Location"),
+                        # The value in the quoted form of a Cookie header, as
+                        # the server sent it.
+                        "cookies": {
+                            name: _COOKIE.value_encode(morsel.value)[1]
+                            for name, morsel in response.cookies.items()
+                        },
+                    }
+            except (TimeoutError, aiohttp.ClientError) as err:
+                raise OpenLibraryError(str(err)) from err
+
+    async def async_get_json(self, path: str) -> Any:
+        """GET the JSON at *path* below the base URL, or None for a 404."""
+        return await self._request(f"{self._base}{path}")
 
     async def _request(self, url: str, *, binary: bool = False) -> Any:
         """GET *url*. Return the JSON or the bytes, or None for a 404."""
@@ -129,6 +195,11 @@ class OpenLibraryClient:
     def _remember_miss(self, key: str) -> None:
         self._misses[key] = time.monotonic() + OPENLIBRARY_MISS_TTL_S
 
+    def forget_miss(self, isbn13: str | None) -> None:
+        """Forget the miss of an ISBN, so the next lookup asks Open Library again."""
+        if isbn13:
+            self._misses.pop(f"isbn:{isbn13}", None)
+
     async def async_lookup_isbn(self, isbn13: str) -> dict[str, Any] | None:
         """The book draft of an ISBN, or None if Open Library has no edition.
 
@@ -141,6 +212,25 @@ class OpenLibraryClient:
         if not isinstance(edition, dict):
             self._remember_miss(key)
             return None
+        draft = await self._draft(edition)
+        if not draft.get("isbn13"):
+            draft["isbn13"] = isbn13
+        return draft
+
+    async def async_lookup_edition(self, edition_key: str) -> dict[str, Any] | None:
+        """The book draft of an edition key ``OL…M``, or None if there is none.
+
+        Raise :class:`OpenLibraryError` if Open Library cannot be read.
+        """
+        edition = await self._request(f"{self._base}/books/{edition_key}.json")
+        if not isinstance(edition, dict) or not str(edition.get("key", "")).startswith(
+            "/books/"
+        ):
+            return None
+        return await self._draft(edition)
+
+    async def _draft(self, edition: dict[str, Any]) -> dict[str, Any]:
+        """The draft of an edition document, with its work and its authors."""
         work = None
         if work_key := openlibrary.work_key(edition):
             found = await self._request(openlibrary.work_url(self._base, work_key))
@@ -150,10 +240,7 @@ class OpenLibraryClient:
             found = await self._request(openlibrary.author_url(self._base, author_key))
             if isinstance(found, dict):
                 authors.append(found)
-        draft = openlibrary.parse_edition(edition, work, authors)
-        if not draft.get("isbn13"):
-            draft["isbn13"] = isbn13
-        return draft
+        return openlibrary.parse_edition(edition, work, authors)
 
     async def async_search(
         self, title: str, authors: list[str]
