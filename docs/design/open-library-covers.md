@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/book_lookup.py
   - custom_components/home_keeper_library/covers.py
 related: [scan-and-isbn, csv-import-export, store-models, people-privilege]
-source_hash: 6887cba0eea8
+source_hash: 4639989d12ee
 ---
 
 # Open Library and covers

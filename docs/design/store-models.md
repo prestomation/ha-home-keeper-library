@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/store.py
   - custom_components/home_keeper_library/models.py
 related: [architecture, events-api, people-privilege, csv-import-export]
-source_hash: a45f034528f0
+source_hash: b5287eccc59b
 ---
 
 # Store and models

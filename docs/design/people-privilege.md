@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/people.py
   - custom_components/home_keeper_library/projections.py
 related: [events-api, entities, architecture]
-source_hash: 173006f6925e
+source_hash: 496683ae64cc
 ---
 
 # People and privilege
