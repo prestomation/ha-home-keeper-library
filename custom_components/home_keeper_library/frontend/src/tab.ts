@@ -465,9 +465,12 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   }
 
   private _closeDialog(): void {
+    const sheet = this._sheetOpen();
     this._dialog = null;
     this._renderDialog();
     this._askMiss();
+    // After the last title sheet, the ISBN field gets the focus, if it shows.
+    if (sheet && !this._dialog) this._main.querySelector<HTMLElement>('[data-k="isbn-input"]')?.focus();
   }
 
   /** True when the open dialog is a sheet that only a submit or a remove can close. */
@@ -594,7 +597,10 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     if (kind === 'currency') void this._saveCurrency(form);
     if (kind === 'ol-connect') void this._connectOpenLibrary(form);
     if (kind === 'isbn') {
-      if (this._scanPaused()) return;
+      if (this._scanPaused()) {
+        this._askMiss();
+        return;
+      }
       const input = form.elements.namedItem('isbn') as HTMLInputElement;
       const isbn = normalizeIsbn(input.value);
       if (!isbn) {
@@ -1302,7 +1308,10 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   }
 
   private _onCode(code: string): void {
-    if (this._scanPaused()) return;
+    if (this._scanPaused()) {
+      this._askMiss();
+      return;
+    }
     const isbn = isbnFromEan(code);
     if (!this._gate(isbn ?? code, Date.now())) return;
     if (!isbn) {
@@ -1342,14 +1351,9 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     void this._refresh();
   }
 
-  /**
-   * True when the scan takes no code: a dialog is open, or a book with no match
-   * has no title yet. Then the title sheet opens if it is not open.
-   */
+  /** True when the scan takes no code: a dialog is open, or a book with no match has no title yet. */
   private _scanPaused(): boolean {
-    if (!this._dialog && !nextMiss(this._ui.scan.results)) return false;
-    this._askMiss();
-    return true;
+    return Boolean(this._dialog || nextMiss(this._ui.scan.results));
   }
 
   /** Open the title sheet for the next scan with no match, if no dialog is open. */

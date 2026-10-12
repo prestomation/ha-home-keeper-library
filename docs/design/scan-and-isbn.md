@@ -88,8 +88,10 @@ The camera reads no code and **Enter ISBN** adds no book until the user saves a 
 selects **Remove this scan**. The sheet has no close button, and Escape and the scrim do
 not close it. Save calls `update_book` with the title and each optional field that has a
 value, `update_copy` for a new format, and `set_cover` for a photo. Remove calls
-`delete_book`. The book keeps `needs_details`. A 2nd miss waits until the 1st closes. If
-the user leaves the scan, the sheet closes and the book keeps its ISBN as the title.
+`delete_book`. A failed call keeps the sheet open with the error. The book keeps
+`needs_details`. A 2nd miss waits until the 1st closes. After the last sheet, the ISBN field
+gets the focus. If the user leaves the scan, the sheet closes and the book keeps its ISBN as
+the title.
 
 In borrowed mode each scan calls `borrow_book` with the ISBN, the lender and the due date
 of the session, and adds no copy ([loans-home-keeper](loans-home-keeper.md)).

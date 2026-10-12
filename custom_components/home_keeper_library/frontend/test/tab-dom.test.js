@@ -690,6 +690,7 @@ describe('scan with no match', () => {
     expect(fake.calls('update_copy')).toHaveLength(0);
     expect(fake.calls('set_cover')).toHaveLength(0);
     expect(sheet()).toBeNull();
+    expect(el.shadowRoot.activeElement).toBe($('[data-k="isbn-input"]'));
     const row = $$('.hkl-result').find((r) => r.textContent.includes('Field Notes on Moss'));
     expect(row.textContent).toContain('No match in Open Library');
 
@@ -709,6 +710,34 @@ describe('scan with no match', () => {
     await flush();
     expect(sheet().querySelector('.hkl-error').textContent).toBe('Type the title.');
     expect(fake.calls('update_book')).toHaveLength(0);
+  });
+
+  it('keeps the sheet open with the error when a save call fails', async () => {
+    const state = fixture();
+    const miss = missing(state, '9781402894626', 'new');
+    const fake = await mount(`/scan;shelf=${state.shelves[0].id};step=camera`, {
+      state,
+      replies: {
+        scan_isbn: miss.reply,
+        update_copy: () => {
+          throw { code: 'home_assistant_error', message: 'Copy save failed' };
+        },
+      },
+    });
+    await scan(miss.book.isbn13);
+    await flush();
+    typeTitle('Field Notes on Moss');
+    sheet().querySelector('[name="format"]').value = 'hardcover';
+    sheet().querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(fake.calls('update_book')).toHaveLength(1);
+    expect(sheet()).not.toBeNull();
+    expect(sheet().querySelector('.hkl-error').textContent).toContain('Copy save failed');
+    expect(sheet().querySelector('[name="title"]').value).toBe('Field Notes on Moss');
+    // The scan stays paused.
+    await scan('9780441478125');
+    await flush();
+    expect(fake.calls('scan_isbn')).toHaveLength(1);
   });
 
   it('saves the details that the user adds', async () => {
