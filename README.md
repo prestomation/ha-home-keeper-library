@@ -81,6 +81,7 @@ conventions behind them are in [`AGENTS.md`](AGENTS.md) and
 |---|---|---|
 | **ruff** lint and format | `lint.yml` | Style and format drift in the Python code. |
 | **mypy**, strict, with Home Assistant | `lint.yml` | Type errors against the real Home Assistant API, from `requirements-typing.txt`. |
+| **Oldest Home Assistant** | `test.yml`, `integration.yml` | A change that breaks the oldest supported Home Assistant, which `ci/oldest-ha.env` names. |
 | **Stale Home Assistant resolve** | `ci/check-ha-version.py` | pip that goes back to an old Home Assistant on an old Python, while the job stays green. |
 | **Prose linting** | `lint.yml` (vale) | AI-writing tells and breaks of the STE rules (`styles/STE/`) in the docs and the strings that Home Assistant shows. Scoped to the changed lines. |
 | **Docs audit** | `lint.yml` (`docs-audit`, `ci/docs.py check`) | A design doc that no longer matches its code, a source file that no design doc covers, a doc over its cap, history in a doc, a broken link, and a reference to a file or function that does not exist. |

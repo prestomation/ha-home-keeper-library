@@ -20,6 +20,7 @@ the job whose whole point is the version.)
 Usage:
     python3 ci/check-ha-version.py            # newest stable is expected
     python3 ci/check-ha-version.py --pre      # newest pre-release is expected
+    python3 ci/check-ha-version.py --expect 2026.9.4   # the oldest-version lane
 
 Exit status is 1 when the installed version is older than the newest one PyPI offers
 for the requested channel, 0 otherwise. When PyPI is unreachable the version is still
@@ -78,6 +79,17 @@ def _newest_on_pypi(allow_prerelease: bool) -> Version | None:
     return newest(releases, allow_prerelease)
 
 
+def read_env(text: str) -> dict[str, str]:
+    """Read the KEY=value lines of ``ci/oldest-ha.env``."""
+    values = {}
+    for line in text.splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, _, value = line.partition("=")
+            values[key.strip()] = value.strip()
+    return values
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -85,9 +97,23 @@ def main() -> int:
         action="store_true",
         help="expect the newest pre-release (for jobs using `pip install --pre`)",
     )
+    parser.add_argument(
+        "--expect",
+        metavar="VERSION",
+        help="expect exactly this version (the oldest-version lane); skips PyPI",
+    )
     args = parser.parse_args()
 
     installed = _installed()
+    if args.expect is not None:
+        print(f"HA {installed} (expected {args.expect})")
+        if installed != Version(args.expect):
+            print(
+                f"::error::The oldest-version lane needs Home Assistant {args.expect}, "
+                f"but pip resolved {installed}."
+            )
+            return 1
+        return 0
     latest = _newest_on_pypi(args.pre)
 
     channel = "pre-release" if args.pre else "stable"

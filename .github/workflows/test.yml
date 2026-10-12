@@ -60,3 +60,43 @@ jobs:
 
       - name: Run hassfest
         uses: "home-assistant/actions/hassfest@master"
+
+  # The oldest supported Home Assistant is named in ci/oldest-ha.env. A change that
+  # breaks it fails here, so dropping an old version is always a choice. The Docker
+  # lane for it is in integration.yml.
+  component-oldest:
+    name: component (HA oldest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Read the oldest version
+        run: grep -E "^[A-Z_]+=" ci/oldest-ha.env >> "$GITHUB_ENV"
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ env.OLDEST_PYTHON }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: bash ci/install-deps.sh
+
+      # The test harness pins one Home Assistant version for each of its releases.
+      - name: Pin the oldest Home Assistant
+        run: pip install "pytest-homeassistant-custom-component==$OLDEST_PHCC"
+
+      - name: Check the Home Assistant version
+        run: python ci/check-ha-version.py --expect "$OLDEST_HA"
+
+      - name: Build panel JS
+        run: bash ci/build-panel.sh
+
+      - name: Run Python component tests (in-process HA harness)
+        run: bash ci/test-python-component.sh

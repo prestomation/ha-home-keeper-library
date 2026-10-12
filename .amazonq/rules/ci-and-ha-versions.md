@@ -10,9 +10,9 @@ summary: What each CI workflow gates, the mutation and typing gates, vale, and h
 | Workflow | What it does |
 |---|---|
 | `lint.yml` | ruff, mypy (HA installed), vale, `docs-audit`, `changelog-release-gap` |
-| `test.yml` | vitest, pytest unit and component, i18n coverage, HACS validation, hassfest |
+| `test.yml` | vitest, pytest unit and component, i18n coverage, HACS validation, hassfest, oldest-HA component tier |
 | `mutation.yml` | mutmut and Stryker on the changed code, 80% gate |
-| `integration.yml` | Docker integration tests with the real Home Keeper, and no HA harness |
+| `integration.yml` | Docker integration tests with the real Home Keeper, on `stable` and the oldest HA |
 | `e2e.yml` | Docker, the real Home Keeper and Playwright; uploads the report on a failure |
 | `walkthrough-preview.yml` | the walkthrough gif comment ([pr-workflow.md](pr-workflow.md#walkthrough-video)) |
 | `docs-preview.yml` | builds the docs site for a PR and links the changed pages |
@@ -113,6 +113,13 @@ bash ci/test-mutation-frontend.sh          # Stryker, changed line ranges only
 - **PRs test `stable`.** `HA_TAG` in `tests/integration/docker-compose.yml` defaults to
   it. Override locally with `HA_TAG=beta bash ci/e2e-up.sh`. The nightly tests `beta`, about
   4 weeks before a release.
+- **The oldest supported HA is named in `ci/oldest-ha.env`, and nowhere else.** The
+  component tier (`test.yml`) and the Docker integration tier (`integration.yml`) run on
+  it for each PR. `hacs.json`, the README badge and the install guide must match it;
+  `tests/unit/test_oldest_ha.py` fails if they do not. A failure on the oldest lane is a
+  choice: fix the code, or drop that version (change those 4 places and add a CHANGELOG
+  entry). Never skip the lane. `check-ha-version.py --expect` fails a job that did not
+  get the pinned version.
 - **A job that installs HA runs on a Python at or above HA's floor, and checks what pip
   resolved.** On an older Python, pip goes back to an old HA and the job checks an API
   that nobody runs. Run `python ci/check-ha-version.py` (`--pre` for a pre-release).
