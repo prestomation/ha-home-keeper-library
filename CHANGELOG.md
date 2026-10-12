@@ -5,41 +5,7 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
-## [0.3.0b5]
-
-### Changed
-
-- **Integration icon.** Home Keeper Library now has its own icon: the Home Keeper house
-  with a stack of books. It shows on the integration pages of Home Assistant.
-
-## [0.3.0b4]
-
-### Added
-
-- **[Library in Home Keeper export](https://prestomation.github.io/ha-home-keeper-library/docs/guide/import-export).**
-  The Home Keeper export file now holds your whole library: books, shelves, reading
-  status, loans and wishlists. Its import brings them back or applies your edits, and a
-  bundle export also holds the covers.
-
-## [0.3.0b3]
-
-### Added
-
-- **[Title for unmatched scans](https://prestomation.github.io/ha-home-keeper-library/docs/guide/scan-books).**
-  If Open Library has no match for a scanned book, the scan stops and asks for its title,
-  so you can find the book again later. You can also add the other details and a photo of
-  the cover, or remove the scan.
-
-## [0.3.0b2]
-
-### Changed
-
-- **Catalog service names.** The Open Library services are now `send_to_catalog`,
-  `link_catalog`, `skip_catalog` and `disconnect_catalog`, so that the library can
-  support more catalogs of books later. Change your automations that use the old names
-  or the `link_openlibrary` field `edition`, which is now `record`.
-
-## [0.3.0b1]
+## [0.3.0] - 2026-10-12
 
 ### Added
 
@@ -47,6 +13,14 @@ is the single source of truth (see `RELEASE.md`).
   An admin can connect an Open Library account and send a book that Open Library does not
   have, and the library links the new record. The **Not on Open Library** filter lists
   these books.
+- **[Title for unmatched scans](https://prestomation.github.io/ha-home-keeper-library/docs/guide/scan-books).**
+  If Open Library has no match for a scanned book, the scan stops and asks for its title,
+  so you can find the book again later. You can also add the other details and a photo of
+  the cover, or remove the scan.
+- **[Library in Home Keeper export](https://prestomation.github.io/ha-home-keeper-library/docs/guide/import-export).**
+  The Home Keeper export file now holds your whole library: books, shelves, reading
+  status, loans and wishlists. Its import brings them back or applies your edits, and a
+  bundle export also holds the covers.
 
 ### Changed
 
@@ -54,6 +28,8 @@ is the single source of truth (see `RELEASE.md`).
   check the Home Keeper version number now.
 - **Camera on HTTP pages.** On an `http://` address, the scan says at once that the
   camera needs HTTPS, and it does not start the camera. **Enter ISBN** still works.
+- **Integration icon.** Home Keeper Library now has its own icon: the Home Keeper house
+  with a stack of books. It shows on the integration pages of Home Assistant.
 
 ### Fixed
 
