@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Währung",
           "openlibrary": "Open-Library-Konto"
+        },
+        "data": {
+          "currency": "Währung"
+        },
+        "data_description": {
+          "currency": "Ein Code aus 3 Buchstaben, zum Beispiel EUR oder USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Personen auflisten",
       "description": "Die Personen und ihre Bibliothekseinstellungen zurückgeben."
+    },
+    "export_data": {
+      "name": "Daten exportieren",
+      "description": "Den Bibliotheksteil des Home-Keeper-Exports exportieren.",
+      "fields": {
+        "files_dir": {
+          "name": "Dateiverzeichnis",
+          "description": "Das Verzeichnis eines Pakets für die Coverdateien. Es muss unter .storage/home_keeper_import_export liegen."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Daten importieren",
+      "description": "Den Bibliotheksteil eines Home-Keeper-Exports importieren. Passende Einträge werden aktualisiert, und kein Eintrag wird gelöscht.",
+      "fields": {
+        "document": {
+          "name": "Bibliotheksteil",
+          "description": "Die Daten des Bibliotheksteils des Exports."
+        },
+        "dry_run": {
+          "name": "Probelauf",
+          "description": "Nur die Änderungen des Imports melden."
+        },
+        "files_dir": {
+          "name": "Dateiverzeichnis",
+          "description": "Das Verzeichnis eines Pakets für die Coverdateien. Es muss unter .storage/home_keeper_import_export liegen."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} ist kein Ausgabeschlüssel und keine URL von Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "Das Dateiverzeichnis muss unter .storage/home_keeper_import_export liegen."
+    },
+    "import_format_too_new": {
+      "message": "Das Dokument hat das Format {format}. Diese Version liest Format {max} oder niedriger."
+    },
+    "import_not_a_list": {
+      "message": "{field} muss eine Liste sein."
+    },
+    "import_not_an_object": {
+      "message": "{field} muss ein Objekt sein."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} ist weder im Dokument noch in der Bibliothek."
+    },
+    "import_person_not_found": {
+      "message": "Keine Person passt zu {name}."
+    },
+    "import_area_not_found": {
+      "message": "Kein Bereich passt zu {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Keine To-do-Liste passt zu {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "Die Coverdatei {file} ist kein gültiges Bild."
     }
   }
 }

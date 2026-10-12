@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Currency",
           "openlibrary": "Open Library account"
+        },
+        "data": {
+          "currency": "Currency"
+        },
+        "data_description": {
+          "currency": "A code of 3 letters, such as EUR or USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "List people",
       "description": "Return the people and their library settings."
+    },
+    "export_data": {
+      "name": "Export data",
+      "description": "Export the library section of the Home Keeper export.",
+      "fields": {
+        "files_dir": {
+          "name": "Files directory",
+          "description": "The directory of a bundle for the cover files. It must be below .storage/home_keeper_import_export."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Import data",
+      "description": "Import the library section of a Home Keeper export. Records that match are updated, and no record is deleted.",
+      "fields": {
+        "document": {
+          "name": "Library section",
+          "description": "The data of the library section of the export."
+        },
+        "dry_run": {
+          "name": "Dry run",
+          "description": "Only report the changes of the import."
+        },
+        "files_dir": {
+          "name": "Files directory",
+          "description": "The directory of a bundle for the cover files. It must be below .storage/home_keeper_import_export."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} is not an Open Library edition key or URL."
+    },
+    "files_dir_invalid": {
+      "message": "The files directory must be below .storage/home_keeper_import_export."
+    },
+    "import_format_too_new": {
+      "message": "The document has format {format}. This version reads format {max} or lower."
+    },
+    "import_not_a_list": {
+      "message": "{field} must be a list."
+    },
+    "import_not_an_object": {
+      "message": "{field} must be an object."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} is not in the document or in the library."
+    },
+    "import_person_not_found": {
+      "message": "No person matches {name}."
+    },
+    "import_area_not_found": {
+      "message": "No area matches {name}."
+    },
+    "import_todo_not_found": {
+      "message": "No to-do list matches {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "The cover file {file} is not a valid image."
     }
   }
 }

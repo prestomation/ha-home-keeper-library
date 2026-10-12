@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Valuutta",
           "openlibrary": "Open Library -tili"
+        },
+        "data": {
+          "currency": "Valuutta"
+        },
+        "data_description": {
+          "currency": "3 kirjaimen koodi, esimerkiksi EUR tai USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Luettele henkilöt",
       "description": "Palauta henkilöt ja heidän kirjastoasetuksensa."
+    },
+    "export_data": {
+      "name": "Vie tiedot",
+      "description": "Vie Home Keeperin viennin kirjasto-osa.",
+      "fields": {
+        "files_dir": {
+          "name": "Tiedostohakemisto",
+          "description": "Paketin hakemisto kansikuvatiedostoille. Sen on oltava hakemiston .storage/home_keeper_import_export alla."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Tuo tiedot",
+      "description": "Tuo Home Keeper -viennin kirjasto-osa. Vastaavat tietueet päivitetään, eikä mitään tietuetta poisteta.",
+      "fields": {
+        "document": {
+          "name": "Kirjasto-osa",
+          "description": "Viennin kirjasto-osan tiedot."
+        },
+        "dry_run": {
+          "name": "Koeajo",
+          "description": "Raportoi vain tuonnin muutokset."
+        },
+        "files_dir": {
+          "name": "Tiedostohakemisto",
+          "description": "Paketin hakemisto kansikuvatiedostoille. Sen on oltava hakemiston .storage/home_keeper_import_export alla."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} ei ole Open Libraryn painoksen avain tai URL-osoite."
+    },
+    "files_dir_invalid": {
+      "message": "Tiedostohakemiston on oltava hakemiston .storage/home_keeper_import_export alla."
+    },
+    "import_format_too_new": {
+      "message": "Asiakirjan muoto on {format}. Tämä versio lukee muodon {max} tai alemman."
+    },
+    "import_not_a_list": {
+      "message": "Kentän {field} on oltava luettelo."
+    },
+    "import_not_an_object": {
+      "message": "Kentän {field} on oltava objekti."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} ei ole asiakirjassa eikä kirjastossa."
+    },
+    "import_person_not_found": {
+      "message": "Mikään henkilö ei vastaa nimeä {name}."
+    },
+    "import_area_not_found": {
+      "message": "Mikään alue ei vastaa nimeä {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Mikään tehtäväluettelo ei vastaa nimeä {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "Kansikuvatiedosto {file} ei ole kelvollinen kuva."
     }
   }
 }

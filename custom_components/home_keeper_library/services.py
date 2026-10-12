@@ -15,8 +15,10 @@ and its handler checks that. A call with no user (an automation) is trusted.
 from __future__ import annotations
 
 import logging
+import os
 from collections.abc import Awaitable, Callable, Coroutine
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import voluptuous as vol
@@ -27,9 +29,11 @@ from homeassistant.core import (
     SupportsResponse,
 )
 from homeassistant.exceptions import ServiceValidationError, Unauthorized
+from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_registry as er
 
-from . import csv_io, models, people, projections
+from . import csv_io, import_export, models, people, projections
 from . import openlibrary_contribute as contribute
 from .api_surface import SERVICES, ServiceSpec
 from .backend_i18n import resolve_exception
@@ -42,9 +46,18 @@ from .const import (
     MAX_IMPORT_ROW_RESULTS,
     OPENLIBRARY_SECRET_KEYS,
     ORIGIN,
+    PANEL_VERSION,
 )
 from .coordinator import LibraryCoordinator, find_coordinator
-from .covers import async_store_openlibrary_cover, async_use_upload, cover_path
+from .covers import (
+    async_bundle_cover,
+    async_store_openlibrary_cover,
+    async_use_upload,
+    copy_covers_out,
+    cover_path,
+    covers_dir,
+    release_cover,
+)
 from .isbn import IsbnError
 from .isbn import normalize as normalize_isbn
 from .models import LibraryError
@@ -293,6 +306,12 @@ SERVICE_FIELDS: dict[str, dict[Any, Any]] = {
     "export_csv": {
         vol.Optional("person_id"): _OPT_STR,
         vol.Optional("format", default="goodreads"): vol.In(csv_io.EXPORT_FORMATS),
+    },
+    "export_data": {vol.Optional("files_dir"): _OPT_STR},
+    "import_data": {
+        vol.Required("document"): dict,
+        vol.Optional("dry_run", default=False): cv.boolean,
+        vol.Optional("files_dir"): _OPT_STR,
     },
     "list_books": {
         vol.Optional("query"): cv.string,
@@ -933,6 +952,150 @@ async def _export_csv(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     return {"filename": csv_io.export_filename(fmt, today()), "content": content}
 
 
+# ── Home Keeper export and import ────────────────────────────────────────────
+
+
+def _person_names(hass: HomeAssistant) -> dict[str, str]:
+    return {p["person_id"]: str(p["name"]) for p in people.persons(hass)}
+
+
+def _area_names(hass: HomeAssistant) -> dict[str, str]:
+    return {area.id: area.name for area in ar.async_get(hass).async_list_areas()}
+
+
+def _todo_names(hass: HomeAssistant) -> dict[str, str]:
+    """The to-do entities that a wishlist can use. The library lists are left out."""
+    registry = er.async_get(hass)
+    out = {}
+    for state in hass.states.async_all("todo"):
+        entry = registry.async_get(state.entity_id)
+        if entry is not None and entry.platform == DOMAIN:
+            continue
+        out[state.entity_id] = str(
+            state.attributes.get("friendly_name") or state.entity_id
+        )
+    return out
+
+
+async def _files_dir(ctx: Ctx, raw: str | None) -> Path | None:
+    """The checked ``files_dir`` of a bundle, or None for no bundle.
+
+    The real path is checked again, so a symbolic link cannot point out of the
+    directory of the bundles.
+    """
+    if not raw:
+        return None
+    config_dir = ctx.hass.config.config_dir
+    path = import_export.check_files_dir(raw, config_dir)
+    real, real_config = await ctx.hass.async_add_executor_job(
+        lambda: (os.path.realpath(path), os.path.realpath(config_dir))
+    )
+    return Path(import_export.check_files_dir(real, real_config))
+
+
+async def _export_data(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+    files_dir = await _files_dir(ctx, data.get("files_dir"))
+    state = models.clone(ctx.store.state)
+    cover_files: dict[str, str] = {}
+    if files_dir is not None:
+        cover_files = await ctx.hass.async_add_executor_job(
+            copy_covers_out,
+            covers_dir(ctx.hass),
+            files_dir,
+            import_export.covers_to_copy(state),
+        )
+    section, skipped = import_export.build_export(
+        state,
+        person_names=_person_names(ctx.hass),
+        area_names=_area_names(ctx.hass),
+        entity_names=_todo_names(ctx.hass),
+        cover_files=cover_files,
+    )
+    return {
+        "format": import_export.FORMAT,
+        "version": PANEL_VERSION,
+        "data": projections.project_export(section, is_admin=ctx.actor.is_admin),
+        "skipped": skipped,
+    }
+
+
+async def _bundle_covers(
+    ctx: Ctx, plan: import_export.ImportPlan, files_dir: Path | None, write: bool
+) -> tuple[dict[str, int], list[str]]:
+    """Read the cover files of the plan. Return the counts and the old files.
+
+    With *write*, each new cover file is on its book in ``plan.state``, so the
+    import writes the covers with the records.
+    """
+    covers = {"imported": 0, "skipped": 0}
+    released: list[str] = []
+    for job in plan.covers:
+        name = None
+        if files_dir is not None:
+            name = await async_bundle_cover(
+                ctx.hass, files_dir, job.book_id, job.file, write=write
+            )
+            if name is None:
+                plan.problems.append(
+                    import_export.Problem(
+                        import_export.LEVEL_WARNING,
+                        job.path,
+                        "import_cover_unreadable",
+                        {"file": job.file},
+                    )
+                )
+        covers["skipped" if name is None else "imported"] += 1
+        if write and name is not None:
+            book = plan.state["books"][job.book_id]
+            old = (book.get("cover") or {}).get("file")
+            book["cover"] = {"kind": job.kind, "file": name}
+            if old:
+                released.append(old)
+    return covers, released
+
+
+async def _import_data(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+    files_dir = await _files_dir(ctx, data.get("files_dir"))
+    dry_run = data.get("dry_run", False)
+    snapshot = models.clone(ctx.store.state)
+    persons = _person_names(ctx.hass)
+    areas = _area_names(ctx.hass)
+    todos = _todo_names(ctx.hass)
+    stamp = now()
+    plan = await ctx.hass.async_add_executor_job(
+        lambda: import_export.plan_import(
+            snapshot,
+            data["document"],
+            persons=persons,
+            areas=areas,
+            todo_entities=todos,
+            now=stamp,
+        )
+    )
+    write = plan.ok and not dry_run
+    covers, released = await _bundle_covers(ctx, plan, files_dir, write)
+    if write:
+        # The plan ran on a snapshot. The store merges it into the current
+        # data, so a change made while the plan ran stays.
+        await ctx.store.commit_data_import(snapshot, plan.state, plan.counts)
+        for file in released:
+            release_cover(ctx.hass, file)
+        for book_id in plan.lookup_ids:
+            ctx.coordinator.lookup.async_enqueue(book_id)
+        # The loan tasks and the to-do items are not imported. The syncs make
+        # them again.
+        await ctx.coordinator.loan_sync.async_reconcile()
+        await ctx.coordinator.wishlist_sync.async_run()
+    lang = ctx.hass.config.language
+    messages = {
+        index: resolve_exception(lang, problem.key, **problem.placeholders)
+        for index, problem in enumerate(plan.problems)
+    }
+    reply = import_export.report(plan, dry_run=dry_run, messages=messages)
+    reply["counts"]["covers"] = covers
+    return reply
+
+
 # ── Reads ────────────────────────────────────────────────────────────────────
 
 
@@ -1065,6 +1228,8 @@ SERVICE_HANDLERS: dict[str, Handler] = {
     "set_settings": _set_settings,
     "import_csv": _import_csv,
     "export_csv": _export_csv,
+    "export_data": _export_data,
+    "import_data": _import_data,
     "list_books": _list_books,
     "get_book": _get_book,
     "list_locations": _list_locations,

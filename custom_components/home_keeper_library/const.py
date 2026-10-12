@@ -42,7 +42,7 @@ PLATFORMS = ["sensor", "todo"]
 
 # PANEL_VERSION is the same string as the manifest version. release.yml checks it,
 # and rollup.config.mjs reads it.
-PANEL_VERSION = "0.3.0b3"
+PANEL_VERSION = "0.3.0b4"
 
 # The built bundles are in frontend/dist/ and Home Assistant serves them here.
 STATIC_URL = "/home_keeper_library_static"
@@ -80,6 +80,9 @@ CONF_OPENLIBRARY_ACCESS = "openlibrary_access"
 CONF_OPENLIBRARY_SECRET = "openlibrary_secret"
 CONF_OPENLIBRARY_USERNAME = "openlibrary_username"
 OPENLIBRARY_SECRET_KEYS = (CONF_OPENLIBRARY_ACCESS, CONF_OPENLIBRARY_SECRET)
+
+# The Home Keeper capability of a companion that joins the export and import.
+HOME_KEEPER_CAPABILITY_IMPORT_EXPORT = "import_export"
 
 # The CSV import limits.
 MAX_CSV_BYTES = 5 * 1024 * 1024
@@ -138,6 +141,7 @@ EVENT_LOAN_REMOVED = f"{DOMAIN}_loan_removed"
 EVENT_WISHLIST_ADDED = f"{DOMAIN}_wishlist_added"
 EVENT_WISHLIST_REMOVED = f"{DOMAIN}_wishlist_removed"
 EVENT_IMPORT_COMPLETED = f"{DOMAIN}_import_completed"
+EVENT_DATA_IMPORTED = f"{DOMAIN}_data_imported"
 EVENT_PERSON_SETTINGS_UPDATED = f"{DOMAIN}_person_settings_updated"
 EVENT_SETTINGS_UPDATED = f"{DOMAIN}_settings_updated"
 

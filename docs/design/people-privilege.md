@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/people.py
   - custom_components/home_keeper_library/projections.py
 related: [events-api, entities, architecture]
-source_hash: 173006f6925e
+source_hash: 496683ae64cc
 ---
 
 # People and privilege
@@ -73,6 +73,9 @@ each signed-in user, because covers are not private.
 - the wishlist entry of another person drops `PRIVATE_WISHLIST_FIELDS` (`todo_entity`,
   `todo_uid`);
 - the reply of `get_state` has no `catalog_accounts`.
+
+`projections.project_export` drops the same fields from the section of a Home Keeper
+export for a non-admin viewer. `export_data` is admin-only, so an admin reads it full.
 
 The viewer's own rows are full. Each book also gets `owned`, `copy_count` and
 `cover_url`. The sensors and the card use the count functions at the end of the module.

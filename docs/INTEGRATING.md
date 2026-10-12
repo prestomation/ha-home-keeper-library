@@ -32,7 +32,7 @@ Each operation of the tab is a `home_keeper_library.*` service. The groups are:
 | Loans | `lend_book`, `borrow_book`, `return_loan`, `update_loan`, `delete_loan` |
 | Wishlist | `add_to_wishlist`, `update_wishlist`, `remove_from_wishlist`, `got_wishlist_book` |
 | People and settings | `set_person_settings`, `set_settings` |
-| Files | `import_csv`, `export_csv` |
+| Files | `import_csv`, `export_csv`, `export_data`, `import_data` |
 | Catalogs (Open Library) | `send_to_catalog`, `link_catalog`, `skip_catalog`, `disconnect_catalog` |
 | Reads | `list_books`, `get_book`, `list_locations`, `list_loans`, `list_people` |
 
@@ -113,6 +113,11 @@ The library calls the Home Keeper services `register_companion`, `add_task`,
 `home_keeper_register_companions`. A loan task in Home Keeper has the source
 `{"home_keeper_library": {"loan_id": "<id>"}}`. Do not change that source from another
 integration.
+
+The library registers the capability `import_export`, so the Home Keeper export holds
+the library section. Home Keeper calls `export_data` and `import_data` for it. The import
+matches each record and never deletes one
+([import and export](https://prestomation.github.io/ha-home-keeper-library/docs/guide/import-export#home-keeper-export-includes-your-library)).
 
 ## Contract
 

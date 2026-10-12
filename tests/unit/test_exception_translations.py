@@ -96,6 +96,9 @@ def _literal_keys(func_names: set[str]) -> set[str]:
             )
             if name in ("resolve_exception", "_error") and len(node.args) >= 2:
                 arg = node.args[1] if name == "resolve_exception" else node.args[3]
+            # An import problem is ``(level, path, key, ...)``.
+            if name in ("problem", "Problem") and len(node.args) >= 3:
+                arg = node.args[2]
             if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
                 keys.add(arg.value)
     return keys
@@ -111,7 +114,10 @@ def test_library_error_keys_exist_in_strings() -> None:
         pytest.skip("mutmut copies mutated source")
     strings = json.loads((_COMPONENT / "strings.json").read_text(encoding="utf-8"))
     defined = set(strings["exceptions"])
-    used = _literal_keys({"LibraryError", "CoverError", "resolve_exception", "_error"})
+    used = _literal_keys(
+        {"LibraryError", "CoverError", "resolve_exception", "_error"}
+        | {"problem", "Problem"}
+    )
     # A raise with a constant ``translation_key`` uses its key too.
     used |= {
         key.value

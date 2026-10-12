@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/websocket_api.py
   - custom_components/home_keeper_library/events.py
 related: [people-privilege, store-models, entities, architecture]
-source_hash: cfa6d1aa5829
+source_hash: d4f1fd641a76
 ---
 
 # Services, websocket commands, events and the API surface
@@ -75,10 +75,11 @@ that is not a read service:
 `events.py` has 1 pure builder for each payload shape. The book events share the spine
 `{book_id, title, person_id, origin}` from `events.book_event_data`. The room, bookcase
 and shelf events have their own id, their parent id and the name. `import_completed` has
-the person, the source and the counts. The store fires each event after the save, in the
-order of the change: a `force` delete fires each `copy_moved`, then the `*_removed` of
-each child, then the `*_removed` of the parent. `book_finished` follows its
-`reading_changed`.
+the person, the source and the counts. `data_imported` has the counts of each section of
+a Home Keeper import ([import-export](import-export.md)). The store fires each event after
+the save, in the order of the change: a `force` delete fires each `copy_moved`, then the
+`*_removed` of each child, then the `*_removed` of the parent. `book_finished` follows
+its `reading_changed`.
 
 An update fires an event only if a field changed. Each `*_updated` event names the
 fields in `changed_fields`. A payload never holds a price, a value, private notes or the

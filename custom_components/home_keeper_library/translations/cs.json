@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Měna",
           "openlibrary": "Účet Open Library"
+        },
+        "data": {
+          "currency": "Měna"
+        },
+        "data_description": {
+          "currency": "Kód ze 3 písmen, například EUR nebo USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Vypsat osoby",
       "description": "Vrátit osoby a jejich nastavení knihovny."
+    },
+    "export_data": {
+      "name": "Exportovat data",
+      "description": "Exportovat část knihovny z exportu Home Keeper.",
+      "fields": {
+        "files_dir": {
+          "name": "Adresář souborů",
+          "description": "Adresář balíčku pro soubory obálek. Musí být uvnitř .storage/home_keeper_import_export."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Importovat data",
+      "description": "Importovat část knihovny z exportu Home Keeper. Shodné záznamy se aktualizují a žádný záznam se nesmaže.",
+      "fields": {
+        "document": {
+          "name": "Část knihovny",
+          "description": "Data části knihovny z exportu."
+        },
+        "dry_run": {
+          "name": "Zkušební běh",
+          "description": "Jen ohlásit změny importu."
+        },
+        "files_dir": {
+          "name": "Adresář souborů",
+          "description": "Adresář balíčku pro soubory obálek. Musí být uvnitř .storage/home_keeper_import_export."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} není klíč ani adresa URL vydání v Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "Adresář souborů musí být uvnitř .storage/home_keeper_import_export."
+    },
+    "import_format_too_new": {
+      "message": "Dokument má formát {format}. Tato verze čte formát {max} nebo nižší."
+    },
+    "import_not_a_list": {
+      "message": "{field} musí být seznam."
+    },
+    "import_not_an_object": {
+      "message": "{field} musí být objekt."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} není v dokumentu ani v knihovně."
+    },
+    "import_person_not_found": {
+      "message": "Žádná osoba neodpovídá {name}."
+    },
+    "import_area_not_found": {
+      "message": "Žádná oblast neodpovídá {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Žádný seznam úkolů neodpovídá {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "Soubor obálky {file} není platný obrázek."
     }
   }
 }

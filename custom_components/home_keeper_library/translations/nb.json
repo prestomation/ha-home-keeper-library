@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Valuta",
           "openlibrary": "Open Library-konto"
+        },
+        "data": {
+          "currency": "Valuta"
+        },
+        "data_description": {
+          "currency": "En kode på 3 bokstaver, for eksempel EUR eller USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Vis personer",
       "description": "Returner personene og bibliotekinnstillingene deres."
+    },
+    "export_data": {
+      "name": "Eksporter data",
+      "description": "Eksporter biblioteksdelen av Home Keeper-eksporten.",
+      "fields": {
+        "files_dir": {
+          "name": "Filmappe",
+          "description": "Mappen i en pakke for omslagsfilene. Den må ligge under .storage/home_keeper_import_export."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Importer data",
+      "description": "Importer biblioteksdelen av en Home Keeper-eksport. Poster som samsvarer, oppdateres, og ingen post slettes.",
+      "fields": {
+        "document": {
+          "name": "Biblioteksdel",
+          "description": "Dataene i biblioteksdelen av eksporten."
+        },
+        "dry_run": {
+          "name": "Prøvekjøring",
+          "description": "Rapporter bare endringene fra importen."
+        },
+        "files_dir": {
+          "name": "Filmappe",
+          "description": "Mappen i en pakke for omslagsfilene. Den må ligge under .storage/home_keeper_import_export."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} er ikke en utgavenøkkel eller URL fra Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "Filmappen må ligge under .storage/home_keeper_import_export."
+    },
+    "import_format_too_new": {
+      "message": "Dokumentet har format {format}. Denne versjonen leser format {max} eller lavere."
+    },
+    "import_not_a_list": {
+      "message": "{field} må være en liste."
+    },
+    "import_not_an_object": {
+      "message": "{field} må være et objekt."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} finnes ikke i dokumentet eller i biblioteket."
+    },
+    "import_person_not_found": {
+      "message": "Ingen person samsvarer med {name}."
+    },
+    "import_area_not_found": {
+      "message": "Ingen område samsvarer med {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Ingen gjøremålsliste samsvarer med {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "Omslagsfilen {file} er ikke et gyldig bilde."
     }
   }
 }

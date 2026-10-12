@@ -4,7 +4,7 @@ summary: How the library checks Home Keeper, registers its tab and its companion
 implements:
   - custom_components/home_keeper_library/home_keeper.py
 related: [architecture, loans-home-keeper, frontend-tab-card]
-source_hash: 9674b95139a5
+source_hash: ccd58f59b7a6
 ---
 
 # Home Keeper dependency
@@ -76,8 +76,9 @@ diagnostics, and to `get_state` as `tab` in the `home_keeper` block.
 
 `home_keeper.async_register_companion` calls the Home Keeper service
 `register_companion` with the
-domain, the name, the icon, the description from `backend_strings`, the config entry id
-and the docs URL. It runs when Home Keeper becomes available, and again on each
+domain, the name, the icon, the description from `backend_strings`, the config entry id,
+the docs URL and the capability `import_export`
+([import-export](import-export.md)). It runs when Home Keeper becomes available, and again on each
 `home_keeper_register_companions` event. A failure is logged at debug level.
 
 ## Trade-offs

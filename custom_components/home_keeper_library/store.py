@@ -33,6 +33,7 @@ from .const import (
     EVENT_COPY_MOVED,
     EVENT_COPY_REMOVED,
     EVENT_COPY_UPDATED,
+    EVENT_DATA_IMPORTED,
     EVENT_IMPORT_COMPLETED,
     EVENT_LOAN_OVERDUE,
     EVENT_LOAN_REMOVED,
@@ -967,3 +968,23 @@ class LibraryStore:
         )
         payload = events.import_completed_event_data(summary, person_id, source, origin)
         await self._commit([(EVENT_IMPORT_COMPLETED, payload)])
+
+    async def commit_data_import(
+        self,
+        before: dict[str, Any],
+        after: dict[str, Any],
+        counts: dict[str, dict[str, int]],
+        *,
+        origin: str | None = None,
+    ) -> None:
+        """Write the result of a Home Keeper import of the library section.
+
+        The plan ran on the snapshot *before*, as for :meth:`commit_import`, and
+        the merge writes only what the plan changed. The import fires only
+        ``data_imported``, not 1 event for each record.
+        """
+        self.state = models.normalize_state(
+            models.merge_changes(self.state, before, after)
+        )
+        payload = events.data_imported_event_data(counts, origin)
+        await self._commit([(EVENT_DATA_IMPORTED, payload)])

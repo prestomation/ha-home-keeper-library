@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/book_lookup.py
   - custom_components/home_keeper_library/covers.py
 related: [scan-and-isbn, csv-import-export, store-models, people-privilege]
-source_hash: 6887cba0eea8
+source_hash: 4639989d12ee
 ---
 
 # Open Library and covers
@@ -100,6 +100,8 @@ from its cache.
   path.
 - **Delete.** A new cover or a deleted book releases the old file, and the store deletes
   it in an executor job.
+- **Bundle.** A Home Keeper export copies the cover files into its bundle, and an import
+  writes each file again with `covers.reencode` ([import-export](import-export.md#files)).
 
 ## Trade-offs
 

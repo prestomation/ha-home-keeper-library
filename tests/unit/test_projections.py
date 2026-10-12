@@ -301,3 +301,41 @@ def test_project_state_is_fast_for_5000_books() -> None:
     pr.list_books(state, {"query": "book 4999"}, viewer="bob", is_admin=False)
     assert len(reply["books"]) == 5000
     assert time.perf_counter() - start < 2.0
+
+
+def _export_section() -> dict:
+    return {
+        "format": 1,
+        "copies": [{"id": "c", "price": 3, "value": 4, "acquired_from": "Shop"}],
+        "loans": [{"id": "l", "party": "Sam", "due": None}],
+        "reading": [
+            {"person_id": "a", "books": [{"book_id": "b", "private_notes": "x"}]}
+        ],
+        "people": [
+            {
+                "person_id": "a",
+                "share_reading": True,
+                "wishlist_todo": "todo.x",
+                "wishlist_todo_name": "X",
+            }
+        ],
+    }
+
+
+def test_project_export_admin_reads_everything() -> None:
+    section = _export_section()
+    out = pr.project_export(section, is_admin=True)
+    assert out == section
+    out["copies"][0]["price"] = 99
+    assert section["copies"][0]["price"] == 3
+
+
+def test_project_export_non_admin_never_leaks() -> None:
+    section = _export_section()
+    out = pr.project_export(section, is_admin=False)
+    assert out["copies"] == [{"id": "c"}]
+    assert out["loans"] == [{"id": "l", "due": None}]
+    assert out["reading"] == [{"person_id": "a", "books": [{"book_id": "b"}]}]
+    assert out["people"] == [{"person_id": "a", "share_reading": True}]
+    assert out["format"] == 1
+    assert section == _export_section()

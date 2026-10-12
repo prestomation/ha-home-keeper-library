@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Валюта",
           "openlibrary": "Учётная запись Open Library"
+        },
+        "data": {
+          "currency": "Валюта"
+        },
+        "data_description": {
+          "currency": "Код из 3 букв, например EUR или USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Список людей",
       "description": "Вернуть людей и их настройки библиотеки."
+    },
+    "export_data": {
+      "name": "Экспорт данных",
+      "description": "Экспортировать раздел библиотеки из экспорта Home Keeper.",
+      "fields": {
+        "files_dir": {
+          "name": "Папка файлов",
+          "description": "Папка пакета для файлов обложек. Она должна быть внутри .storage/home_keeper_import_export."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Импорт данных",
+      "description": "Импортировать раздел библиотеки из экспорта Home Keeper. Совпадающие записи обновляются, и ни одна запись не удаляется.",
+      "fields": {
+        "document": {
+          "name": "Раздел библиотеки",
+          "description": "Данные раздела библиотеки из экспорта."
+        },
+        "dry_run": {
+          "name": "Пробный запуск",
+          "description": "Только показать изменения импорта."
+        },
+        "files_dir": {
+          "name": "Папка файлов",
+          "description": "Папка пакета для файлов обложек. Она должна быть внутри .storage/home_keeper_import_export."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} — это не ключ и не URL-адрес издания Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "Папка файлов должна быть внутри .storage/home_keeper_import_export."
+    },
+    "import_format_too_new": {
+      "message": "Документ имеет формат {format}. Эта версия читает формат {max} или ниже."
+    },
+    "import_not_a_list": {
+      "message": "{field} должно быть списком."
+    },
+    "import_not_an_object": {
+      "message": "{field} должно быть объектом."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} нет ни в документе, ни в библиотеке."
+    },
+    "import_person_not_found": {
+      "message": "Нет человека, который соответствует {name}."
+    },
+    "import_area_not_found": {
+      "message": "Нет пространства, которое соответствует {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Нет списка дел, который соответствует {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "Файл обложки {file} не является допустимым изображением."
     }
   }
 }

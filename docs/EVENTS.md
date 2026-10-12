@@ -50,6 +50,7 @@ Names follow `home_keeper_library_<noun>_<verb>`.
 | `home_keeper_library_wishlist_added` | A book goes on the wishlist of a person. |
 | `home_keeper_library_wishlist_removed` | A book leaves the wishlist. |
 | `home_keeper_library_import_completed` | A CSV import is written. |
+| `home_keeper_library_data_imported` | The library section of a Home Keeper import is written. |
 | `home_keeper_library_person_settings_updated` | The library settings of a person change. |
 | `home_keeper_library_settings_updated` | The options of the library change, such as the currency. |
 
@@ -90,6 +91,8 @@ The other keys of each event are in the generated API reference and in
 - The room, bookcase and shelf events have their own ids and `name` in place of
   the book spine.
 - `import_completed` has `person_id`, `source` and the counts of the import.
+- `data_imported` has `counts` and `origin`. `counts` has `created`, `updated` and
+  `skipped` for each section, such as `books`.
 - `person_settings_updated` has `person_id`, `changed_fields` and `origin`, and
   no setting values.
 - `settings_updated` has `changed_fields`, `currency` and `origin`. The
@@ -102,6 +105,7 @@ The other keys of each event are in the generated API reference and in
 - `loan_overdue` fires once for each due date. The library checks at setup and
   each hour. A new due date can fire it again.
 - A CSV import fires only `import_completed`. It fires no event for each row.
+- A Home Keeper import fires only `data_imported`. It fires no event for each record.
 - `book_finished` fires with `reading_changed`, in that order.
 - A book that Open Library does not have fires `book_updated` with
   `catalog_status` in `changed_fields`. A link to Open Library, a skip and a send

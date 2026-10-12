@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Waluta",
           "openlibrary": "Konto Open Library"
+        },
+        "data": {
+          "currency": "Waluta"
+        },
+        "data_description": {
+          "currency": "Kod z 3 liter, na przykład EUR lub USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Wyświetl osoby",
       "description": "Zwróć osoby i ich ustawienia biblioteki."
+    },
+    "export_data": {
+      "name": "Eksportuj dane",
+      "description": "Eksportuj część biblioteki z eksportu Home Keeper.",
+      "fields": {
+        "files_dir": {
+          "name": "Katalog plików",
+          "description": "Katalog pakietu na pliki okładek. Musi być w .storage/home_keeper_import_export."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Importuj dane",
+      "description": "Importuj część biblioteki z eksportu Home Keeper. Pasujące rekordy są aktualizowane i żaden rekord nie jest usuwany.",
+      "fields": {
+        "document": {
+          "name": "Część biblioteki",
+          "description": "Dane części biblioteki z eksportu."
+        },
+        "dry_run": {
+          "name": "Próba",
+          "description": "Tylko pokaż zmiany importu."
+        },
+        "files_dir": {
+          "name": "Katalog plików",
+          "description": "Katalog pakietu na pliki okładek. Musi być w .storage/home_keeper_import_export."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} nie jest kluczem ani adresem URL wydania Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "Katalog plików musi być w .storage/home_keeper_import_export."
+    },
+    "import_format_too_new": {
+      "message": "Dokument ma format {format}. Ta wersja czyta format {max} lub niższy."
+    },
+    "import_not_a_list": {
+      "message": "{field} musi być listą."
+    },
+    "import_not_an_object": {
+      "message": "{field} musi być obiektem."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} nie ma w dokumencie ani w bibliotece."
+    },
+    "import_person_not_found": {
+      "message": "Żadna osoba nie pasuje do {name}."
+    },
+    "import_area_not_found": {
+      "message": "Żaden obszar nie pasuje do {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Żadna lista zadań nie pasuje do {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "Plik okładki {file} nie jest poprawnym obrazem."
     }
   }
 }

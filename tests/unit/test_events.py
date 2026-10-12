@@ -136,3 +136,16 @@ def test_change_payloads_name_the_fields() -> None:
     fields.append("x")
     for payload in (copy, reading, loan, person, settings):
         assert payload["changed_fields"] == ["note", "price"], "no alias"
+
+
+def test_data_imported_payload() -> None:
+    counts = {"books": {"created": 2, "updated": True, "skipped": 0}}
+    data = ev.data_imported_event_data(counts, "home_keeper")
+    assert data == {
+        "counts": {"books": {"created": 2, "updated": 1, "skipped": 0}},
+        "origin": "home_keeper",
+    }
+    assert type(data["counts"]["books"]["updated"]) is int
+    # The payload has its own copy of the counts.
+    counts["books"]["created"] = 9
+    assert data["counts"]["books"]["created"] == 2

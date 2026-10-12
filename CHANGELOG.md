@@ -5,6 +5,15 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
+## [0.3.0b4]
+
+### Added
+
+- **[Library in Home Keeper export](https://prestomation.github.io/ha-home-keeper-library/docs/guide/import-export).**
+  The Home Keeper export file now holds your whole library: books, shelves, reading
+  status, loans and wishlists. Its import brings them back or applies your edits, and a
+  bundle export also holds the covers.
+
 ## [0.3.0b3]
 
 ### Added

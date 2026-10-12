@@ -30,6 +30,12 @@
         "menu_options": {
           "currency": "Valuta",
           "openlibrary": "Open Library-account"
+        },
+        "data": {
+          "currency": "Valuta"
+        },
+        "data_description": {
+          "currency": "Een code van 3 letters, bijvoorbeeld EUR of USD."
         }
       },
       "currency": {
@@ -1057,6 +1063,34 @@
     "list_people": {
       "name": "Personen weergeven",
       "description": "De personen en hun bibliotheekinstellingen teruggeven."
+    },
+    "export_data": {
+      "name": "Gegevens exporteren",
+      "description": "Het bibliotheekdeel van de Home Keeper-export exporteren.",
+      "fields": {
+        "files_dir": {
+          "name": "Bestandsmap",
+          "description": "De map van een pakket voor de omslagbestanden. Deze moet onder .storage/home_keeper_import_export staan."
+        }
+      }
+    },
+    "import_data": {
+      "name": "Gegevens importeren",
+      "description": "Het bibliotheekdeel van een Home Keeper-export importeren. Overeenkomende records worden bijgewerkt en er wordt geen record verwijderd.",
+      "fields": {
+        "document": {
+          "name": "Bibliotheekdeel",
+          "description": "De gegevens van het bibliotheekdeel van de export."
+        },
+        "dry_run": {
+          "name": "Proefrun",
+          "description": "Alleen de wijzigingen van de import melden."
+        },
+        "files_dir": {
+          "name": "Bestandsmap",
+          "description": "De map van een pakket voor de omslagbestanden. Deze moet onder .storage/home_keeper_import_export staan."
+        }
+      }
     }
   },
   "exceptions": {
@@ -1200,6 +1234,33 @@
     },
     "invalid_openlibrary_edition": {
       "message": "{edition} is geen editiesleutel of URL van Open Library."
+    },
+    "files_dir_invalid": {
+      "message": "De bestandsmap moet onder .storage/home_keeper_import_export staan."
+    },
+    "import_format_too_new": {
+      "message": "Het document heeft formaat {format}. Deze versie leest formaat {max} of lager."
+    },
+    "import_not_a_list": {
+      "message": "{field} moet een lijst zijn."
+    },
+    "import_not_an_object": {
+      "message": "{field} moet een object zijn."
+    },
+    "import_reference_missing": {
+      "message": "{field} {id} staat niet in het document en niet in de bibliotheek."
+    },
+    "import_person_not_found": {
+      "message": "Geen persoon komt overeen met {name}."
+    },
+    "import_area_not_found": {
+      "message": "Geen ruimte komt overeen met {name}."
+    },
+    "import_todo_not_found": {
+      "message": "Geen takenlijst komt overeen met {name}."
+    },
+    "import_cover_unreadable": {
+      "message": "Het omslagbestand {file} is geen geldige afbeelding."
     }
   }
 }

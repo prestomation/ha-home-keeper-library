@@ -209,6 +209,19 @@ def import_completed_event_data(
     }
 
 
+def data_imported_event_data(
+    counts: dict[str, dict[str, int]], origin: str | None
+) -> dict[str, Any]:
+    """The payload of ``data_imported``: the counts of each section."""
+    return {
+        "counts": {
+            section: {key: int(value) for key, value in numbers.items()}
+            for section, numbers in counts.items()
+        },
+        "origin": origin,
+    }
+
+
 def person_settings_event_data(
     person_id: str, changed_fields: list[str], origin: str | None
 ) -> dict[str, Any]:

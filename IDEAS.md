@@ -42,13 +42,12 @@ Take a photo of a shelf, and let the AI task service of Home Assistant read the 
 Show each title as a scan result row with the same duplicate choices. The photo is never
 stored.
 
-### JSON backup
+### Sync mode for the Home Keeper import
 
-A JSON export and import of the whole library, as an `export_json` and `import_json`
-service pair for the document and the covers. The CSV library format keeps the books,
-the copies and the reading of 1 person. A JSON backup keeps every section, every person
-and the loans. A new persisted field round-trips through it, or is excluded with a
-reason.
+The import of the library section is an upsert. A record that the user deleted from the
+document stays in the library. A sync mode option of `import_data` deletes each record
+that the document does not have, after a dry run shows the list. It needs the same mode
+in Home Keeper ([import-export](docs/design/import-export.md)).
 
 ## Testing and CI
 

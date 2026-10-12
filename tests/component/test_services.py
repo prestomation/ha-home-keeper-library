@@ -51,6 +51,8 @@ _ADMIN_DATA = {
     "got_wishlist_book": {"book_id": "x"},
     "import_csv": {"content": "Title\nx\n", "source": "goodreads", "person_id": BOB},
     "export_csv": {},
+    "export_data": {},
+    "import_data": {"document": {}},
     "set_settings": {"currency": "USD"},
 }
 

@@ -191,6 +191,8 @@ SERVICES: tuple[ServiceSpec, ...] = (
     ServiceSpec("set_settings", response="optional", **_ADMIN),
     ServiceSpec("import_csv", response="optional", **_ADMIN),
     ServiceSpec("export_csv", response="only", **_ADMIN),
+    ServiceSpec("export_data", response="only", **_ADMIN),
+    ServiceSpec("import_data", response="only", **_ADMIN),
     ServiceSpec("list_books", response="only"),
     ServiceSpec("get_book", response="only"),
     ServiceSpec("list_locations", response="only"),
@@ -253,6 +255,14 @@ PAYLOAD_SPINES: dict[str, tuple[Field, ...]] = {
         Field("reading_set", "int"),
         Field("wishlist_added", "int"),
         Field("errors", "int"),
+        _ORIGIN,
+    ),
+    "data_import": (
+        Field(
+            "counts",
+            "dict[str, dict[str, int]]",
+            "created, updated and skipped for each section.",
+        ),
         _ORIGIN,
     ),
     "person_settings": (
@@ -368,6 +378,11 @@ EVENTS: tuple[EventSpec, ...] = (
     _event("EVENT_WISHLIST_ADDED", "book", "A book was added to a wishlist.", _WISH),
     _event("EVENT_WISHLIST_REMOVED", "book", "A book left the wishlist.", _WISH),
     _event("EVENT_IMPORT_COMPLETED", "import", "A CSV import was written."),
+    _event(
+        "EVENT_DATA_IMPORTED",
+        "data_import",
+        "The library section of a Home Keeper import was written.",
+    ),
     _event(
         "EVENT_PERSON_SETTINGS_UPDATED",
         "person_settings",

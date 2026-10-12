@@ -46,6 +46,7 @@ _PURE_MODULES = (
     "openlibrary",
     "openlibrary_contribute",
     "csv_io",
+    "import_export",
     "wishlist",
     "loan_tasks",
     "card_resource",

@@ -283,6 +283,7 @@ def _built() -> dict[str, dict[str, Any]]:
         const.EVENT_IMPORT_COMPLETED: events.import_completed_event_data(
             {}, "p1", "goodreads", None
         ),
+        const.EVENT_DATA_IMPORTED: events.data_imported_event_data({}, None),
     }
 
 
