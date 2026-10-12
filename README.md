@@ -134,7 +134,7 @@ MIT. See [LICENSE](LICENSE).
 [commits-shield]: https://img.shields.io/github/last-commit/prestomation/ha-home-keeper-library?style=for-the-badge
 [commits]: https://github.com/prestomation/ha-home-keeper-library/commits/main
 [maintenance-shield]: https://img.shields.io/badge/maintainer-%40prestomation-blue.svg?style=for-the-badge
-[ha-version-shield]: https://img.shields.io/badge/Home%20Assistant-2026.9%2B-blue.svg?style=for-the-badge
+[ha-version-shield]: https://img.shields.io/badge/Home%20Assistant-2025.7%2B-blue.svg?style=for-the-badge
 [ha-version]: https://www.home-assistant.io/
 [docs-shield]: https://img.shields.io/badge/docs-website-03a9f4.svg?style=for-the-badge
 [docs]: https://prestomation.github.io/ha-home-keeper-library/

@@ -89,8 +89,9 @@ jobs:
         run: bash ci/install-deps.sh
 
       # The test harness pins one Home Assistant version for each of its releases.
+      # An old aiodns breaks on pycares 5, so that package stays on version 4.
       - name: Pin the oldest Home Assistant
-        run: pip install "pytest-homeassistant-custom-component==$OLDEST_PHCC"
+        run: pip install "pytest-homeassistant-custom-component==$OLDEST_PHCC" "pycares<5"
 
       - name: Check the Home Assistant version
         run: python ci/check-ha-version.py --expect "$OLDEST_HA"

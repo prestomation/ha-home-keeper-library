@@ -5,6 +5,13 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
+## [0.4.0b1] - 2026-10-12
+
+### Changed
+
+- **Older Home Assistant.** The library now works with Home Assistant 2025.7 and later.
+  Before, it needed 2026.9.
+
 ## [0.3.0] - 2026-10-12
 
 ### Added
