@@ -11,6 +11,10 @@ export interface ScanEntry {
   error?: string;
   /** What the user picked for a duplicate. */
   choice?: 'move' | 'add_copy' | 'skip';
+  /** The user gave the title of a book with no match in Open Library. */
+  named?: boolean;
+  /** The user removed the book of a scan with no match. */
+  removed?: boolean;
 }
 
 export interface ScanSession {

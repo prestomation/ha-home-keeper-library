@@ -616,6 +616,173 @@ describe('scan', () => {
   });
 });
 
+describe('scan with no match', () => {
+  beforeEach(() => {
+    Object.defineProperty(window, 'isSecureContext', { value: false, configurable: true });
+  });
+
+  /** A book that a scan saved with no match: its ISBN is its title. */
+  function missing(state, isbn, id) {
+    const shelf = state.shelves[0].id;
+    const book = { ...state.books[0], id, title: isbn, subtitle: '', authors: [], isbn13: isbn, isbn10: null, publisher: '', published: '', pages: null, needs_details: true, cover: null };
+    const copy = { ...state.copies[0], id: `c-${id}`, book_id: id, shelf_id: shelf, format: 'paperback' };
+    state.books.push(book);
+    state.copies.push(copy);
+    return { book, copy, reply: { result: 'not_found', book, copy, existing_copies: [] } };
+  }
+
+  async function scan(isbn) {
+    $('[data-k="isbn-input"]').value = isbn;
+    $('[data-k="isbn-add"]').click();
+  }
+
+  const sheet = () => $('.hkl-dialog.sheet');
+
+  function typeTitle(value) {
+    const input = sheet().querySelector('[name="title"]');
+    input.value = value;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  it('asks for the title before the next scan, and saves only the title', async () => {
+    const state = fixture();
+    const miss = missing(state, '9781402894626', 'new');
+    const fake = await mount(`/scan;shelf=${state.shelves[0].id};step=camera`, {
+      state,
+      replies: {
+        scan_isbn: miss.reply,
+        update_book: (m) => {
+          miss.book.title = m.title;
+          return { book: miss.book };
+        },
+      },
+    });
+    await scan(miss.book.isbn13);
+    await flush();
+    expect(sheet()).not.toBeNull();
+    expect(sheet().querySelector('h2').textContent).toBe('No match in Open Library');
+    expect(sheet().querySelector('[data-k="d-isbn"]').textContent).toBe('ISBN 9781402894626');
+    expect(sheet().querySelector('[data-k="d-x"]')).toBeNull();
+    expect(sheet().querySelector('[data-k="d-cancel"]')).toBeNull();
+    expect(sheet().querySelector('[data-k="d-more"]').open).toBe(false);
+    const submit = sheet().querySelector('[data-k="d-submit"]');
+    expect(submit.textContent).toBe('Save and scan next');
+    expect(submit.disabled).toBe(true);
+    expect(el.shadowRoot.activeElement).toBe(sheet().querySelector('[name="title"]'));
+
+    // Escape, a click on the scrim and a new scan do not close the sheet.
+    sheet().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true }));
+    $('.hkl-scrim').click();
+    await scan('9780441478125');
+    await flush();
+    expect(sheet()).not.toBeNull();
+    expect(fake.calls('scan_isbn')).toHaveLength(1);
+
+    typeTitle('  ');
+    expect(submit.disabled).toBe(true);
+    typeTitle('Field Notes on Moss');
+    expect(submit.disabled).toBe(false);
+    submit.click();
+    await flush();
+    const calls = fake.calls('update_book');
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toEqual({ type: 'home_keeper_library/update_book', book_id: 'new', title: 'Field Notes on Moss' });
+    expect(fake.calls('update_copy')).toHaveLength(0);
+    expect(fake.calls('set_cover')).toHaveLength(0);
+    expect(sheet()).toBeNull();
+    const row = $$('.hkl-result').find((r) => r.textContent.includes('Field Notes on Moss'));
+    expect(row.textContent).toContain('No match in Open Library');
+
+    // The scan goes on.
+    await scan('9780441478125');
+    await flush();
+    expect(fake.calls('scan_isbn')).toHaveLength(2);
+  });
+
+  it('shows the error of an empty title and keeps the sheet open', async () => {
+    const state = fixture();
+    const miss = missing(state, '9781402894626', 'new');
+    const fake = await mount(`/scan;shelf=${state.shelves[0].id};step=camera`, { state, replies: { scan_isbn: miss.reply } });
+    await scan(miss.book.isbn13);
+    await flush();
+    sheet().dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    await flush();
+    expect(sheet().querySelector('.hkl-error').textContent).toBe('Type the title.');
+    expect(fake.calls('update_book')).toHaveLength(0);
+  });
+
+  it('saves the details that the user adds', async () => {
+    const state = fixture();
+    const miss = missing(state, '9781402894626', 'new');
+    const fake = await mount(`/scan;shelf=${state.shelves[0].id};step=camera`, { state, replies: { scan_isbn: miss.reply } });
+    await scan(miss.book.isbn13);
+    await flush();
+    sheet().querySelector('[data-k="d-more-toggle"]').click();
+    expect(sheet().querySelector('[data-k="d-more"]').open).toBe(true);
+    expect(sheet().querySelector('[data-k="d-cover"]').getAttribute('capture')).toBe('environment');
+    typeTitle('Field Notes on Moss');
+    const set = (name, value) => (sheet().querySelector(`[name="${name}"]`).value = value);
+    set('authors', 'A. Hollins, B. Reed');
+    set('published', '2004');
+    set('pages', '120');
+    set('format', 'hardcover');
+    sheet().querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(fake.calls('update_book')[0]).toEqual({
+      type: 'home_keeper_library/update_book',
+      book_id: 'new',
+      title: 'Field Notes on Moss',
+      authors: ['A. Hollins', 'B. Reed'],
+      published: '2004',
+      pages: 120,
+    });
+    expect(fake.calls('update_copy')[0]).toEqual({ type: 'home_keeper_library/update_copy', copy_id: 'c-new', format: 'hardcover' });
+    expect(sheet()).toBeNull();
+  });
+
+  it('removes a scan, then asks for the next book with no match', async () => {
+    const state = fixture();
+    const first = missing(state, '9781402894626', 'one');
+    const second = missing(state, '9780306406157', 'two');
+    const fake = await mount(`/scan;shelf=${state.shelves[0].id};step=camera`, {
+      state,
+      replies: { scan_isbn: (m) => (m.isbn === first.book.isbn13 ? first.reply : second.reply) },
+    });
+    // The 2nd scan starts while the lookup of the 1st one runs.
+    void scan(first.book.isbn13);
+    void scan(second.book.isbn13);
+    await flush();
+    expect(fake.calls('scan_isbn')).toHaveLength(2);
+    expect(sheet().querySelector('[data-k="d-isbn"]').textContent).toBe('ISBN 9781402894626');
+    const remove = sheet().querySelector('[data-k="d-remove"]');
+    expect(remove.textContent).toBe('Remove this scan');
+    remove.click();
+    await flush();
+    expect(fake.calls('delete_book')).toEqual([{ type: 'home_keeper_library/delete_book', book_id: 'one' }]);
+    expect(sheet().querySelector('[data-k="d-isbn"]').textContent).toBe('ISBN 9780306406157');
+    expect($$('[data-k^="removed-"]').map((p) => p.textContent)).toEqual(['Removed']);
+
+    typeTitle('Second book');
+    sheet().querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(sheet()).toBeNull();
+    $('[data-k="scan-done"]').click();
+    expect($$('.hkl-stat b').map((b) => b.textContent)).toEqual(['0', '0', '1']);
+  });
+
+  it('closes the sheet when the user leaves the scan', async () => {
+    const state = fixture();
+    const miss = missing(state, '9781402894626', 'new');
+    await mount(`/scan;shelf=${state.shelves[0].id};step=camera`, { state, replies: { scan_isbn: miss.reply } });
+    await scan(miss.book.isbn13);
+    await flush();
+    expect(sheet()).not.toBeNull();
+    el.route = { path: '/books' };
+    await flush();
+    expect(sheet()).toBeNull();
+  });
+});
+
 describe('scan camera', () => {
   let cam;
 

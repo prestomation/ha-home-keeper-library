@@ -263,6 +263,7 @@ button { font: inherit; color: inherit; }
 .hkl-cam { position: relative; background: #111; aspect-ratio: 4 / 3; max-height: 52vh; width: 100%; overflow: hidden; }
 .hkl-cam-video, .hkl-cam-video video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hkl-frame { position: absolute; left: 12%; right: 12%; top: 30%; bottom: 30%; border: 3px solid rgba(255,255,255,.92); border-radius: 12px; box-shadow: 0 0 0 999px rgba(0,0,0,.35); }
+.hkl-cam-paused { position: absolute; top: 12px; left: 12px; z-index: 1; padding: 4px 10px; border-radius: 999px; background: rgba(0,0,0,.75); color: #fff; font-size: 12px; font-weight: 600; }
 .hkl-cam-hint { position: absolute; left: 0; right: 0; bottom: 12px; text-align: center; color: #fff; font-weight: 500; text-shadow: 0 1px 2px #000; }
 .hkl-iconbtn.torch { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,.45); color: #fff; }
 .hkl-iconbtn.torch.on { background: #fff; color: #111; }
@@ -311,6 +312,19 @@ button { font: inherit; color: inherit; }
 .hkl-dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .hkl-dlg-body { display: flex; flex-direction: column; gap: 12px; }
 .hkl-dlg-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.hkl-dialog.sheet { width: min(480px, 100%); }
+.hkl-dialog.sheet .hkl-dlg-actions { justify-content: space-between; }
+.hkl-miss-head { display: flex; gap: 12px; align-items: flex-start; }
+.hkl-miss-head .hkl-row-main { gap: 2px; }
+.hkl-cover-thumb.miss { height: 58px; background: var(--hkl-warn-soft); border: 2px dashed var(--hkl-warn); box-shadow: none; }
+.hkl-dialog.sheet .hkl-field input[name="title"] { height: 48px; font-size: 16px; }
+.hkl-more > summary { min-height: 44px; display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--hkl-primary); font-weight: 500; list-style: none; }
+.hkl-more > summary::-webkit-details-marker { display: none; }
+.hkl-more > summary::before { content: ''; width: 7px; height: 7px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(-45deg); transition: transform .15s; }
+.hkl-more[open] > summary::before { transform: rotate(45deg); }
+.hkl-more > .hkl-fields { padding-top: 4px; }
+.hkl-file { flex: 1 1 100%; cursor: pointer; }
+.hkl-file:focus-within { outline: 2px solid var(--hkl-primary); outline-offset: 2px; }
 .hkl-file { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border: 1px solid var(--hkl-divider); border-radius: 10px; flex-wrap: wrap; }
 .hkl-file.empty { border-style: dashed; }
 .hkl-pills { display: inline-flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
@@ -355,7 +369,9 @@ button { font: inherit; color: inherit; }
   .hkl-scan { max-width: none; }
   .hkl-cam { aspect-ratio: 3 / 4; }
   .hkl-scrim { align-items: flex-end; padding: 0; }
-  .hkl-dialog, .hkl-dialog.wide { width: 100%; border-radius: 16px 16px 0 0; max-height: 92vh; padding: 16px; }
+  .hkl-dialog, .hkl-dialog.wide, .hkl-dialog.sheet { width: 100%; border-radius: 16px 16px 0 0; max-height: 92vh; padding: 16px; }
+  .hkl-dialog.sheet .hkl-dlg-actions { flex-direction: column-reverse; align-items: stretch; }
+  .hkl-dialog.sheet .hkl-dlg-actions .hkl-btn { height: 48px; }
   .hkl-listrow .hkl-btn { height: 36px; }
   .hkl-table th, .hkl-table td { padding: 6px; }
 }

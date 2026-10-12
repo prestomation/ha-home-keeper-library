@@ -22,6 +22,7 @@ export const ICONS = {
   close: svg('<path d="M6 6l12 12M18 6L6 18"/>'),
   star: '<svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg>',
   torch: svg('<path d="M9 2h6l-1 6h-4zM10 8h4v12a2 2 0 01-4 0z"/>'),
+  camera: svg('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
   check: svg('<path d="M5 12l5 5 9-10"/>', 16),
 };
 

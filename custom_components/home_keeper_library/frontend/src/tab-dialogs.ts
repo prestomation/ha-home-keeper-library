@@ -14,6 +14,8 @@ export type Dialog =
   | { kind: 'copy'; bookId: string; copyId: string | null }
   | { kind: 'move'; copyId: string }
   | { kind: 'set-shelf' }
+  /** A scan found no match in Open Library: ask for the title before the next scan. */
+  | { kind: 'scan-title'; key: number; bookId: string; copyId: string | null; isbn: string }
   | { kind: 'lend'; bookId: string | null }
   | { kind: 'borrow' }
   | { kind: 'wish-add'; bookId: string | null }
@@ -128,7 +130,40 @@ function copyFields(ctx: ViewCtx, copy: Copy | null): string {
   ${field(t('copy.note'), text('note', copy?.note), 'wide')}`;
 }
 
-function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): { title: string; html: string; submit: string; danger?: boolean; noCancel?: boolean } {
+interface DialogBody {
+  title: string;
+  html: string;
+  submit: string;
+  danger?: boolean;
+  noCancel?: boolean;
+  /** A sheet has no close button. The user must submit it or remove the scan. */
+  sheet?: boolean;
+}
+
+/** The title sheet of a scan with no match. Only the title is required. */
+function scanTitleBody(ctx: ViewCtx, d: Extract<Dialog, { kind: 'scan-title' }>): DialogBody {
+  const copy = d.copyId ? ctx.idx.copy.get(d.copyId) : undefined;
+  return {
+    title: t('scan.no_match'),
+    submit: t('scan.miss_save'),
+    sheet: true,
+    html: `<div class="hkl-miss-head"><span class="hkl-cover hkl-cover-thumb miss" aria-hidden="true"></span><span class="hkl-row-main"><span class="hkl-muted" data-k="d-isbn">ISBN ${escapeHTML(d.isbn)}</span><span class="hkl-muted">${escapeHTML(t('scan.miss_hint'))}</span></span></div>
+      ${field(t('book.title'), text('title', '', `required autocomplete="off" data-input="miss-title" placeholder="${escapeHTML(t('scan.miss_placeholder'))}"`), 'wide')}
+      <details class="hkl-more" data-k="d-more"><summary data-k="d-more-toggle">${escapeHTML(t('scan.miss_more'))}</summary>
+        <div class="hkl-fields">
+          ${field(t('book.subtitle'), text('subtitle'), 'wide')}
+          ${field(t('book.authors'), text('authors'), 'wide')}
+          ${field(t('book.publisher'), text('publisher'))}
+          ${field(t('book.published'), text('published'), 'small')}
+          ${field(t('copy.format'), `<select name="format" data-k="d-format">${formatOptions(copy?.format ?? 'paperback')}</select>`)}
+          ${field(t('book.pages_label'), text('pages', '', 'type="number" min="0"'), 'small')}
+          <label class="hkl-btn outline hkl-file wide">${ICONS.camera}<input class="hkl-sr" type="file" name="cover" accept="image/jpeg,image/png,image/webp" capture="environment" data-chg="miss-cover" data-k="d-cover" /><span data-k="d-cover-name">${escapeHTML(t('scan.miss_cover'))}</span></label>
+        </div>
+      </details>`,
+  };
+}
+
+function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): DialogBody {
   switch (d.kind) {
     case 'send-ol':
       return sendBody(ctx, d);
@@ -145,6 +180,8 @@ function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): { title:
             ${field(t('copy.format'), `<select name="format" data-k="d-format">${formatOptions('paperback')}</select>`)}
           </div>`,
       };
+    case 'scan-title':
+      return scanTitleBody(ctx, d);
     case 'edit-book': {
       const b = ctx.idx.book.get(d.bookId);
       return {
@@ -283,15 +320,21 @@ function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): { title:
 
 /** The dialog layer markup. */
 export function renderDialog(ctx: ViewCtx, state: DialogState, areas: Array<[string, string]>): string {
-  const { title, html, submit, danger, noCancel } = body(ctx, state.dialog, areas);
-  return `<div class="hkl-scrim" data-act="dialog-scrim">
-    <form class="hkl-dialog" data-form="dialog" role="dialog" aria-modal="true" aria-labelledby="hkl-dlg-title" novalidate>
-      <div class="hkl-dlg-head"><h2 id="hkl-dlg-title">${escapeHTML(title)}</h2><button type="button" class="hkl-iconbtn" data-act="dialog-close" data-k="d-x" aria-label="${escapeHTML(t('action.close'))}">${ICONS.close}</button></div>
+  const { title, html, submit, danger, noCancel, sheet } = body(ctx, state.dialog, areas);
+  const close = sheet ? '' : `<button type="button" class="hkl-iconbtn" data-act="dialog-close" data-k="d-x" aria-label="${escapeHTML(t('action.close'))}">${ICONS.close}</button>`;
+  const cancel = sheet
+    ? `<button type="button" class="hkl-btn text" data-act="scan-miss-remove" data-k="d-remove">${escapeHTML(t('scan.miss_remove'))}</button>`
+    : noCancel ? '' : `<button type="button" class="hkl-btn text" data-act="dialog-close" data-k="d-cancel">${escapeHTML(t('action.cancel'))}</button>`;
+  // A sheet starts with an empty title, so its submit is off until the user types one.
+  const off = state.busy || sheet;
+  return `<div class="hkl-scrim"${sheet ? '' : ' data-act="dialog-scrim"'}>
+    <form class="hkl-dialog${sheet ? ' sheet' : ''}" data-form="dialog" role="dialog" aria-modal="true" aria-labelledby="hkl-dlg-title" novalidate>
+      <div class="hkl-dlg-head"><h2 id="hkl-dlg-title">${escapeHTML(title)}</h2>${close}</div>
       <div class="hkl-dlg-body">${html}</div>
       ${state.error ? `<div class="hkl-error" role="alert">${escapeHTML(state.error)}</div>` : ''}
       <div class="hkl-dlg-actions">
-        ${noCancel ? '' : `<button type="button" class="hkl-btn text" data-act="dialog-close" data-k="d-cancel">${escapeHTML(t('action.cancel'))}</button>`}
-        <button type="submit" class="hkl-btn ${danger ? 'danger-primary' : 'primary'}" data-k="d-submit"${state.busy ? ' disabled' : ''}>${escapeHTML(submit)}</button>
+        ${cancel}
+        <button type="submit" class="hkl-btn ${danger ? 'danger-primary' : 'primary'}" data-k="d-submit"${off ? ' disabled' : ''}>${escapeHTML(submit)}</button>
       </div>
     </form>
   </div>`;

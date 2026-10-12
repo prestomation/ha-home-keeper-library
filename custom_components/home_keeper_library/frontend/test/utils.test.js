@@ -819,6 +819,20 @@ describe('scanTally, loansFor and csvRowCount', () => {
     expect(u.scanTally([])).toEqual({ added: 0, moved: 0, needs: 0, duplicate: 0, skipped: 0 });
   });
 
+  it('finds the next scan with no match that has no title', () => {
+    const book = { id: 'b1' };
+    const miss = (extra = {}) => ({ res: { result: 'not_found', book }, ...extra });
+    const first = miss();
+    const second = miss();
+    expect(u.nextMiss([{ res: null }, { res: { result: 'added', book } }, first, second])).toBe(first);
+    expect(u.nextMiss([miss({ named: true }), second])).toBe(second);
+    expect(u.nextMiss([miss({ removed: true }), second])).toBe(second);
+    expect(u.nextMiss([{ res: { result: 'not_found', book: null } }])).toBeNull();
+    expect(u.nextMiss([miss({ named: true }), miss({ removed: true })])).toBeNull();
+    expect(u.nextMiss([{ res: { result: 'duplicate', book } }, { res: { result: 'skipped', book } }])).toBeNull();
+    expect(u.nextMiss([])).toBeNull();
+  });
+
   it('sorts loans for each tab', () => {
     const loans = [
       { id: 'a', direction: 'out', due: '2026-02-01', started: '2026-01-01', returned: null },

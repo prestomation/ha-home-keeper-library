@@ -31,6 +31,7 @@ import {
   intOrNull,
   isbnFromEan,
   makeCodeGate,
+  nextMiss,
   normalizeIsbn,
   normalizeState,
   numberOrNull,
@@ -196,6 +197,8 @@ export class HomeKeeperLibraryTab extends HTMLElement {
       if (this._route.view === 'import' && prev.view !== 'import') this._ui.import = freshImport(this._lib?.me.person_id ?? null);
     }
     if (prev.view === 'book' && prev.id !== this._route.id) this._ui.readingPerson = null;
+    // The title sheet belongs to the scan. If the user leaves, the book keeps its ISBN as the title.
+    if (this._route.view !== 'scan' && this._sheetOpen()) this._closeDialog();
     this._syncScanner();
     if (this._route.view === 'settings') void this._loadTodo();
     this._render();
@@ -464,6 +467,12 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   private _closeDialog(): void {
     this._dialog = null;
     this._renderDialog();
+    this._askMiss();
+  }
+
+  /** True when the open dialog is a sheet that only a submit or a remove can close. */
+  private _sheetOpen(): boolean {
+    return this._dialog?.dialog.kind === 'scan-title';
   }
 
   // ── Events ─────────────────────────────────────────────────────────────────
@@ -485,7 +494,9 @@ export class HomeKeeperLibraryTab extends HTMLElement {
 
   private _onKey(ev: KeyboardEvent): void {
     if (ev.key !== 'Escape') return;
-    if (this._dialog) {
+    if (this._sheetOpen()) {
+      ev.stopPropagation();
+    } else if (this._dialog) {
       this._closeDialog();
       ev.stopPropagation();
     } else if (this._route.view === 'import') {
@@ -496,6 +507,10 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   private _onInput(ev: Event): void {
     const el = ev.target as HTMLInputElement;
     if (el.dataset?.input === 'q') this._search(el.value);
+    if (el.dataset?.input === 'miss-title') {
+      const submit = this._dlg.querySelector<HTMLButtonElement>('[data-k="d-submit"]');
+      if (submit) submit.disabled = Boolean(this._dialog?.busy) || !el.value.trim();
+    }
   }
 
   private async _onChange(ev: Event): Promise<void> {
@@ -521,6 +536,12 @@ export class HomeKeeperLibraryTab extends HTMLElement {
       case 'cover-file':
         await this._uploadCover(el);
         return;
+      case 'miss-cover': {
+        const name = el.files?.[0]?.name;
+        const label = this._dlg.querySelector<HTMLElement>('[data-k="d-cover-name"]');
+        if (label) label.textContent = name ?? t('scan.miss_cover');
+        return;
+      }
       case 'wish-buy':
         await this._run('update_wishlist', { book_id: id, buy: Boolean(value) });
         return;
@@ -573,6 +594,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     if (kind === 'currency') void this._saveCurrency(form);
     if (kind === 'ol-connect') void this._connectOpenLibrary(form);
     if (kind === 'isbn') {
+      if (this._scanPaused()) return;
       const input = form.elements.namedItem('isbn') as HTMLInputElement;
       const isbn = normalizeIsbn(input.value);
       if (!isbn) {
@@ -747,6 +769,9 @@ export class HomeKeeperLibraryTab extends HTMLElement {
       case 'dialog-close':
       case 'dialog-scrim':
         this._closeDialog();
+        return;
+      case 'scan-miss-remove':
+        await this._removeMiss();
         return;
       case 'export':
         await this._export();
@@ -930,6 +955,31 @@ export class HomeKeeperLibraryTab extends HTMLElement {
           }
           if (on('details_done')) fields.needs_details = false;
           await api.call('update_book', fields);
+          break;
+        }
+        case 'scan-title': {
+          const title = str('title');
+          if (!title) throw new Error(t('scan.miss_need_title'));
+          const cover = data.get('cover');
+          const photo = cover instanceof File && cover.size > 0 ? cover : null;
+          if (photo && photo.size > MAX_COVER_BYTES) throw new Error(t('book.cover_too_big'));
+          // Send only what the user typed. An empty field keeps the stored value.
+          const fields: Fields = { book_id: d.bookId, title };
+          for (const name of ['subtitle', 'publisher', 'published']) if (str(name)) fields[name] = str(name);
+          const authors = splitList(str('authors'));
+          if (authors.length) fields.authors = authors;
+          const pages = intOrNull(str('pages'));
+          if (pages !== null) fields.pages = pages;
+          await api.call('update_book', fields);
+          const format = str('format');
+          if (d.copyId && format && format !== this._idx?.copy.get(d.copyId)?.format) {
+            await api.call('update_copy', { copy_id: d.copyId, format });
+          }
+          if (photo) {
+            const fileId = await api.uploadCover(photo);
+            await api.call('set_cover', { book_id: d.bookId, kind: 'custom', file_id: fileId });
+          }
+          this._markMiss(d.key, 'named');
           break;
         }
         case 'copy': {
@@ -1252,6 +1302,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   }
 
   private _onCode(code: string): void {
+    if (this._scanPaused()) return;
     const isbn = isbnFromEan(code);
     if (!this._gate(isbn ?? code, Date.now())) return;
     if (!isbn) {
@@ -1287,7 +1338,54 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     }
     entry.pending = false;
     this._render();
+    this._askMiss();
     void this._refresh();
+  }
+
+  /**
+   * True when the scan takes no code: a dialog is open, or a book with no match
+   * has no title yet. Then the title sheet opens if it is not open.
+   */
+  private _scanPaused(): boolean {
+    if (!this._dialog && !nextMiss(this._ui.scan.results)) return false;
+    this._askMiss();
+    return true;
+  }
+
+  /** Open the title sheet for the next scan with no match, if no dialog is open. */
+  private _askMiss(): void {
+    if (this._dialog || this._route.view !== 'scan') return;
+    const miss = nextMiss(this._ui.scan.results);
+    const book = miss?.res?.book;
+    if (!miss || !book) return;
+    this._openDialog({ kind: 'scan-title', key: miss.key, bookId: book.id, copyId: miss.res?.copy?.id ?? null, isbn: miss.isbn });
+    this._render();
+  }
+
+  private _markMiss(key: number, flag: 'named' | 'removed'): void {
+    const entry = this._ui.scan.results.find((r) => r.key === key);
+    if (entry) entry[flag] = true;
+  }
+
+  /** Delete the book of the open title sheet, with its copy. */
+  private async _removeMiss(): Promise<void> {
+    const state = this._dialog;
+    const d = state?.dialog;
+    if (!state || d?.kind !== 'scan-title' || state.busy) return;
+    state.busy = true;
+    state.error = '';
+    this._showDialogStatus();
+    try {
+      await this._api!.call('delete_book', { book_id: d.bookId });
+      this._markMiss(d.key, 'removed');
+      if (this._dialog === state) this._closeDialog();
+      this._render();
+      void this._refresh();
+    } catch (err) {
+      state.busy = false;
+      state.error = errorText(err);
+      if (this._dialog === state) this._showDialogStatus();
+    }
   }
 
   private async _scanDuplicate(entry: ScanEntry, choice: 'move' | 'add_copy' | 'skip'): Promise<void> {
