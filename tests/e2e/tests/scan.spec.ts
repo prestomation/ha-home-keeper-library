@@ -1,5 +1,6 @@
 import { library } from '../ha-ws';
 import type { Locator, Page } from '@playwright/test';
+import { resolve } from 'node:path';
 import { adminState, bookByTitle, expect, fakeCamera, openTab, test } from './helpers';
 
 /**
@@ -9,6 +10,10 @@ import { adminState, bookByTitle, expect, fakeCamera, openTab, test } from './he
 const NEW_ISBN = '9780553418606';
 const NEW_TITLE = 'The Library at Mount Char';
 const SEEDED_ISBN = '9780441478125';
+/** The fixture Open Library does not have this ISBN. */
+const MISS_ISBN = '9781402894626';
+const MISS_TITLE = 'Field Notes on Moss';
+const COVER = resolve(__dirname, '../seed/covers/13be6b0e5c354e1981a89fe2766196e0-552257a9.jpg');
 
 async function shelfId(room: string, bookcase: string, shelf: string): Promise<string> {
   const state = await adminState();
@@ -19,7 +24,7 @@ async function shelfId(room: string, bookcase: string, shelf: string): Promise<s
 
 async function deleteNewBook(): Promise<void> {
   const state = await adminState();
-  for (const book of state.books.filter((b: { isbn13: string }) => b.isbn13 === NEW_ISBN)) {
+  for (const book of state.books.filter((b: { isbn13: string }) => b.isbn13 === NEW_ISBN || b.isbn13 === MISS_ISBN)) {
     await library('delete_book', { book_id: book.id });
   }
 }
@@ -51,6 +56,59 @@ test.describe('Scan', { tag: '@responsive' }, () => {
     await tab.locator('[data-k="scan-done"]').click();
     await expect(tab.locator('.hkl-scan-head')).toContainText('Scan summary');
     await expect(tab.locator('.hkl-stat b').first()).toHaveText('1');
+  });
+
+  test('a book with no match asks for its title before the next scan', async ({ page }) => {
+    const shelf = await shelfId('Office', 'Tall bookcase', 'Shelf 3');
+    const tab = await openTab(page, `/scan;shelf=${shelf}`);
+    await tab.locator('[data-k="m-manual"]').check();
+    await tab.locator('[data-k="scan-start"]').click();
+    await tab.locator('[data-k="isbn-input"]').fill(MISS_ISBN);
+    await tab.locator('[data-k="isbn-add"]').click();
+
+    const sheet = tab.locator('.hkl-dialog.sheet');
+    await expect(sheet).toBeVisible({ timeout: 30_000 });
+    await expect(sheet.locator('h2')).toHaveText('No match in Open Library');
+    await expect(sheet.locator('[data-k="d-isbn"]')).toHaveText(`ISBN ${MISS_ISBN}`);
+    await expect(sheet.locator('[name="title"]')).toBeFocused();
+    const submit = sheet.locator('[data-k="d-submit"]');
+    await expect(submit).toBeDisabled();
+    await expect(sheet.locator('[name="authors"]')).toBeHidden();
+    await page.keyboard.press('Escape');
+    await expect(sheet).toBeVisible();
+
+    await sheet.locator('[name="title"]').fill(MISS_TITLE);
+    await expect(submit).toBeEnabled();
+    await sheet.locator('[data-k="d-more-toggle"]').click();
+    await sheet.locator('[name="authors"]').fill('A. Hollins');
+    await sheet.locator('[name="format"]').selectOption('hardcover');
+    await sheet.locator('[data-k="d-cover"]').setInputFiles(COVER);
+    await expect(sheet.locator('[data-k="d-cover-name"]')).toHaveText('13be6b0e5c354e1981a89fe2766196e0-552257a9.jpg');
+    await submit.click();
+    await expect(sheet).toHaveCount(0);
+    await expect(tab.locator('.hkl-result').filter({ hasText: MISS_TITLE })).toContainText('No match in Open Library');
+
+    const state = await adminState();
+    const book = state.books.find((b: { isbn13: string }) => b.isbn13 === MISS_ISBN);
+    expect(book).toMatchObject({ title: MISS_TITLE, authors: ['A. Hollins'], needs_details: true });
+    expect(book.cover.kind).toBe('custom');
+    const copies = state.copies.filter((c: { book_id: string }) => c.book_id === book.id);
+    expect(copies.map((c: { shelf_id: string; format: string }) => [c.shelf_id, c.format])).toEqual([[shelf, 'hardcover']]);
+  });
+
+  test('Remove this scan deletes the book with no match', async ({ page }) => {
+    const tab = await openTab(page, '/scan');
+    await tab.locator('[data-k="m-manual"]').check();
+    await tab.locator('[data-k="scan-start"]').click();
+    await tab.locator('[data-k="isbn-input"]').fill(MISS_ISBN);
+    await tab.locator('[data-k="isbn-add"]').click();
+    const sheet = tab.locator('.hkl-dialog.sheet');
+    await expect(sheet).toBeVisible({ timeout: 30_000 });
+    await sheet.locator('[data-k="d-remove"]').click();
+    await expect(sheet).toHaveCount(0);
+    await expect(tab.locator('[data-k^="removed-"]')).toHaveText('Removed');
+    const state = await adminState();
+    expect(state.books.filter((b: { isbn13: string }) => b.isbn13 === MISS_ISBN)).toEqual([]);
   });
 
   test('a duplicate shows its actions and Skip changes nothing', async ({ page }) => {
@@ -120,6 +178,36 @@ test.describe('Scan camera', { tag: '@responsive' }, () => {
     await expect
       .poll(() => page.evaluate(() => (window as unknown as { __hklStream: MediaStream }).__hklStream.getVideoTracks()[0].readyState))
       .toBe('ended');
+  });
+});
+
+test.describe('Scan camera with no match', { tag: '@responsive' }, () => {
+  test.beforeEach(deleteNewBook);
+  test.afterEach(deleteNewBook);
+
+  test('the camera shows Scan paused and reads no code until the title is saved', async ({ page }) => {
+    await fakeCamera(page);
+    const tab = await openTab(page, '/scan');
+    await tab.locator('[data-k="scan-start"]').click();
+    const video = tab.locator('[data-slot="video"] video');
+    await expect.poll(() => playing(video)).toBe(true);
+    await page.evaluate((isbn) => ((window as unknown as Record<string, unknown>).__hklCode = isbn), MISS_ISBN);
+    const sheet = tab.locator('.hkl-dialog.sheet');
+    await expect(sheet).toBeVisible({ timeout: 30_000 });
+    await expect(tab.locator('[data-k="cam-paused"]')).toHaveText('Scan paused');
+
+    // A code read now adds no book.
+    await page.evaluate((isbn) => ((window as unknown as Record<string, unknown>).__hklCode = isbn), NEW_ISBN);
+    await expect.poll(() => page.evaluate(() => (window as unknown as Record<string, string>).__hklCode)).toBe('');
+    await expect(tab.locator('.hkl-result')).toHaveCount(1);
+
+    await sheet.locator('[name="title"]').fill(MISS_TITLE);
+    await sheet.locator('[data-k="d-submit"]').click();
+    await expect(sheet).toHaveCount(0);
+    await expect(tab.locator('[data-k="cam-paused"]')).toHaveCount(0);
+    expect(await playing(video)).toBe(true);
+    const state = await adminState();
+    expect(state.books.filter((b: { isbn13: string }) => b.isbn13 === NEW_ISBN)).toEqual([]);
   });
 });
 

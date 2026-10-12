@@ -4,7 +4,7 @@ import { t, tn } from './i18n';
 import { cameraNeedsHttps } from './scanner';
 import { button, cover, ICONS, personOptions } from './markup';
 import type { ScanEntry, ViewCtx } from './tab-types';
-import { buildPath, escapeHTML, locationLabel, nextShelf, scanTally, shelfPath } from './utils';
+import { buildPath, escapeHTML, locationLabel, nextMiss, nextShelf, scanTally, shelfPath } from './utils';
 
 /** True when the scan adds borrowed books (`;mode=borrowed`). */
 export function isBorrowedMode(ctx: ViewCtx): boolean {
@@ -88,7 +88,9 @@ function setupBorrowed(ctx: ViewCtx): string {
 }
 
 function resultRow(ctx: ViewCtx, e: ScanEntry): string {
-  const book = e.res?.book ?? null;
+  // The stored book has the title that the user gave after the scan.
+  const scanned = e.res?.book ?? null;
+  const book = (scanned && ctx.idx.book.get(scanned.id)) || scanned;
   const thumb = book ? cover(book, 'thumb') : '<span class="hkl-cover hkl-cover-thumb blank" aria-hidden="true"></span>';
   const title = book?.title ?? e.isbn;
   const by = book ? [book.authors.join(', '), book.published].filter(Boolean).join(' · ') : '';
@@ -98,6 +100,9 @@ function resultRow(ctx: ViewCtx, e: ScanEntry): string {
   let cls = '';
   if (e.pending) {
     sub = escapeHTML(t('scan.looking_up'));
+  } else if (e.removed) {
+    sub = escapeHTML(t('scan.no_match'));
+    right = `<span class="hkl-pill" data-k="removed-${e.key}">${escapeHTML(t('scan.result_removed'))}</span>`;
   } else if (e.error) {
     sub = escapeHTML(e.error);
     cls = 'late';
@@ -129,10 +134,12 @@ function cameraStep(ctx: ViewCtx): string {
   const stalled = s.stalled
     ? `<button class="hkl-cam-restart" data-act="scan-camera" data-k="cam-restart">${escapeHTML(t('scan.camera_paused'))}</button>`
     : '';
+  // A book with no match waits for its title, and the camera reads no code.
+  const paused = nextMiss(s.results) ? `<span class="hkl-cam-paused" data-k="cam-paused">${escapeHTML(t('scan.paused'))}</span>` : '';
   // The debug view (`;debug=1`) shows the camera state. The tab writes its text.
   const debug = ctx.route.query.debug === '1' ? '<pre class="hkl-cam-debug" data-k="cam-debug"></pre>' : '';
   const cam = camera
-    ? `<div class="hkl-cam"><div class="hkl-cam-video" data-slot="video"></div><div class="hkl-frame" aria-hidden="true"></div>${stalled}${s.torch !== null ? `<button class="hkl-iconbtn torch${s.torch ? ' on' : ''}" data-act="scan-torch" data-k="torch" aria-pressed="${s.torch}" aria-label="${escapeHTML(t('scan.torch'))}">${ICONS.torch}</button>` : ''}<span class="hkl-cam-hint">${escapeHTML(t('scan.frame_hint'))}</span></div>`
+    ? `<div class="hkl-cam"><div class="hkl-cam-video" data-slot="video"></div><div class="hkl-frame" aria-hidden="true"></div>${paused}${stalled}${s.torch !== null ? `<button class="hkl-iconbtn torch${s.torch ? ' on' : ''}" data-act="scan-torch" data-k="torch" aria-pressed="${s.torch}" aria-label="${escapeHTML(t('scan.torch'))}">${ICONS.torch}</button>` : ''}<span class="hkl-cam-hint">${escapeHTML(t('scan.frame_hint'))}</span></div>`
     : '';
   const added = s.results.filter((r) => r.res?.result === 'added' || r.res?.result === 'moved' || (isBorrowedMode(ctx) && r.res)).length;
   const manual = s.manualOpen || !camera
@@ -156,7 +163,8 @@ function cameraStep(ctx: ViewCtx): string {
 
 function summaryStep(ctx: ViewCtx): string {
   const s = ctx.ui.scan;
-  const tally = scanTally(s.results.filter((r) => r.res).map((r) => ({ result: r.res!.result, book: r.res!.book })));
+  const kept = s.results.filter((r) => r.res && !r.removed);
+  const tally = scanTally(kept.map((r) => ({ result: r.res!.result, book: r.res!.book })));
   const shelfId = routeShelf(ctx);
   const where = isBorrowedMode(ctx) ? t('scan.title_borrowed') : shelfId ? locationLabel(ctx.idx, shelfId) : t('common.no_shelf');
   const tiles = [
@@ -166,10 +174,9 @@ function summaryStep(ctx: ViewCtx): string {
   ]
     .map(([k, n]) => `<div class="hkl-stat"><b>${n}</b><span>${escapeHTML(t(`scan.sum_${k}`))}</span></div>`)
     .join('');
-  const rows = s.results
-    .filter((r) => r.res)
+  const rows = kept
     .map((r) => {
-      const book = r.res!.book;
+      const book = (r.res!.book && ctx.idx.book.get(r.res!.book.id)) || r.res!.book;
       const res = r.res!.result;
       let label = t(`scan.result_${res}`);
       if (res === 'moved' && r.res!.existing_copies[0]?.shelf_id) {

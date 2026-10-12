@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/zxing-decoder.ts
   - custom_components/home_keeper_library/frontend/src/tab-scan.ts
 related: [open-library-covers, store-models, frontend-tab-card, loans-home-keeper]
-source_hash: 50750adb3472
+source_hash: 5aa4a6d268d8
 ---
 
 # Scan and ISBN
@@ -81,6 +81,18 @@ shows From wishlist when the reply has `from_wishlist: true`. **Next shelf** goe
 next shelf in display order. The summary can set the status Read for the caller on each
 book that the session added or moved.
 
+### Title sheet
+
+A `not_found` result opens the title sheet (`scan-title` dialog, `nextMiss` in `utils.ts`).
+The camera reads no code and **Enter ISBN** adds no book until the user saves a title or
+selects **Remove this scan**. The sheet has no close button, and Escape and the scrim do
+not close it. Save calls `update_book` with the title and each optional field that has a
+value, `update_copy` for a new format, and `set_cover` for a photo. Remove calls
+`delete_book`. A failed call keeps the sheet open with the error. The book keeps
+`needs_details`. A 2nd miss waits until the 1st closes. After the last sheet, the ISBN field
+gets the focus. If the user leaves the scan, the sheet closes and the book keeps its ISBN as
+the title.
+
 In borrowed mode each scan calls `borrow_book` with the ISBN, the lender and the due date
 of the session, and adds no copy ([loans-home-keeper](loans-home-keeper.md)).
 
@@ -107,6 +119,8 @@ to-do item goes at once.
   and an automation can use the same service. The cost is 1 round trip for each book.
 - **The native detector first** over **zxing always**: the native path is faster and
   costs no download. The cost is 2 code paths to test.
+- **A required title** over **a dashed row only**: a row scrolls away as the scan goes
+  on, and the user cannot find the book later. The cost is 1 stop for each miss.
 - **Ask on a duplicate** over **add a copy by default**: a scan of a shelf that is already
   in the library is the most common duplicate, and it means a move.
 

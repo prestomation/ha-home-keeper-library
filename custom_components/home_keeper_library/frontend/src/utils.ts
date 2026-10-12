@@ -846,6 +846,21 @@ export function scanTally(results: Array<Pick<ScanResult, 'result' | 'book'>>): 
   return out;
 }
 
+/** A scan row that can ask for a title: its reply, and what the user did. */
+export interface MissRow {
+  res: Pick<ScanResult, 'result' | 'book'> | null;
+  named?: boolean;
+  removed?: boolean;
+}
+
+/**
+ * The first scan that found no match in Open Library and still has no title
+ * from the user, or null. The scan pauses until the user names or removes it.
+ */
+export function nextMiss<T extends MissRow>(results: T[]): T | null {
+  return results.find((r) => r.res?.result === 'not_found' && r.res.book !== null && !r.named && !r.removed) ?? null;
+}
+
 // ── Loans ────────────────────────────────────────────────────────────────────
 
 export type LoanTab = 'out' | 'in' | 'returned';

@@ -20,6 +20,8 @@ const DESKTOP_SHOT = { width: 1280, height: 900 };
 const SCAN_ISBNS = ['9780553418606', '9780441478125', '9781250313188'];
 /** The scanned books that are not in the seed. The 2nd ISBN is a seeded book. */
 const NEW_ISBNS = [SCAN_ISBNS[0], SCAN_ISBNS[2]];
+/** The fixture Open Library does not have the 3rd ISBN, so the scan asks for this title. */
+const MISS_TITLE = 'Field Notes on Moss';
 
 async function shot(page: Page, name: string): Promise<void> {
   // Let the covers and the fonts settle, and move the pointer out of the way.
@@ -65,7 +67,12 @@ async function deleteScanned(): Promise<void> {
   }
 }
 
-async function scanSession(page: Page): Promise<void> {
+/**
+ * Scan the 3 ISBNs into Shelf 3. Open Library does not have the 3rd one, so the
+ * title sheet opens: shoot it as *missShot*, and with its details open as
+ * *detailsShot*. Then give the title, so the scan goes on.
+ */
+async function scanSession(page: Page, missShot: string, detailsShot?: string): Promise<void> {
   const state = await adminState();
   const office = state.rooms.find((r: { name: string }) => r.name === 'Office');
   const tall = state.bookcases.find((c: { room_id: string }) => c.room_id === office.id);
@@ -80,7 +87,21 @@ async function scanSession(page: Page): Promise<void> {
     // Each lookup reads Open Library 1 request a second, so wait for it to end.
     await expect(tab.locator('.hkl-result').filter({ hasText: 'Searching Open Library' })).toHaveCount(0, { timeout: 30_000 });
   }
+  const sheet = tab.locator('.hkl-dialog.sheet');
+  await expect(sheet).toBeVisible();
+  await expect(sheet.locator('[data-k="d-submit"]')).toBeDisabled();
+  await shot(page, missShot);
+  await sheet.locator('[name="title"]').fill(MISS_TITLE);
+  if (detailsShot) {
+    await sheet.locator('[data-k="d-more-toggle"]').click();
+    await sheet.locator('[name="authors"]').fill('A. Hollins');
+    await sheet.locator('[name="published"]').fill('2004');
+    await shot(page, detailsShot);
+  }
+  await sheet.locator('[data-k="d-submit"]').click();
+  await expect(sheet).toHaveCount(0);
   await expect(tab.locator('.hkl-result')).toHaveCount(3);
+  await expect(tab.locator('.hkl-result').filter({ hasText: MISS_TITLE })).toBeVisible();
 }
 
 /** Open the Lend dialog of a book with a copy to lend, type a note, and submit with no borrower. */
@@ -197,6 +218,10 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await openSendDialog(page, 'openlibrary-banner-desktop');
   await shot(page, 'openlibrary-send-desktop');
 
+  // A scanned book that Open Library does not have: the title sheet as a dialog.
+  await scanSession(page, 'scan-miss-desktop');
+  await deleteScanned();
+
   // The card on a dashboard, as Alex. The window is tall enough for the whole card.
   await page.setViewportSize({ width: 1280, height: 1500 });
   const card = await openCard(page);
@@ -233,7 +258,7 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await expect(tab.locator('a.hkl-task').first()).toBeVisible({ timeout: 30_000 });
   await shot(page, 'loans-mobile');
 
-  await scanSession(page);
+  await scanSession(page, 'scan-miss-mobile', 'scan-miss-details-mobile');
   await shot(page, 'scan-mobile');
   // Skip the duplicate, so the seed keeps its copies.
   await libraryTab(page).locator('.hkl-result.dup').getByRole('button', { name: 'Skip' }).click();

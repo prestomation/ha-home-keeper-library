@@ -34,13 +34,46 @@ The library accepts an ISBN with or without hyphens. It checks the check digit, 
 |---|---|
 | **Added** | The book and a copy on this shelf are in the library. |
 | **Already in** *place* | The library has a copy of the book on another shelf. |
-| **No match** | Open Library has no book with this ISBN. Select **Add details** to type the title and the authors. |
+| **No match** | Open Library has no book with this ISBN. The scan asks for the title. |
 
 For a book that is already in the library, select 1 of these:
 
 - **Move here**: move the copy to this shelf.
 - **Add 2nd copy**: add 1 more copy on this shelf.
 - **Skip**: change nothing.
+
+## Books with no match
+
+If Open Library has no book with the ISBN, the scan stops and asks for the title. Then
+you can find each of these books on the shelf later and add the other details.
+
+![The title sheet of a book with no match on a phone](../../images/scan-miss-mobile.png)
+
+1. Type the title from the cover of the book.
+2. Select **Save and scan next**. The scan continues.
+
+The camera reads no barcode until you select **Save and scan next** or **Remove this
+scan**.
+
+To add more details now, select **More details (optional)**. These fields show:
+
+- Subtitle
+- Authors
+- Publisher
+- Published
+- Format
+- Pages
+- **Take a photo of the cover**
+
+![The title sheet with the details open](../../images/scan-miss-details-mobile.png)
+
+If you scanned the wrong barcode, select **Remove this scan**. The library deletes the
+book and its copy.
+
+The book keeps **Needs details**. To add the other details later, open the book and
+select **Add details**.
+
+![The title sheet on a computer](../../images/scan-miss-desktop.png)
 
 If Open Library does not answer, the library saves the book with its ISBN and tries
 again later. The book shows **Needs details** until the details arrive.
