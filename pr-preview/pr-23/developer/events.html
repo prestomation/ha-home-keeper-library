@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Events reference | Home Keeper Library</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-23/img/logo.svg"><meta data-rh="true" name="twitter:image" content="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-23/img/logo.svg"><meta data-rh="true" property="og:url" content="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-23/developer/events"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-developer-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-developer-current"><meta data-rh="true" property="og:title" content="Events reference | Home Keeper Library"><meta data-rh="true" name="description" content="Home Keeper Library fires a Home Assistant bus event for each change to the"><meta data-rh="true" property="og:description" content="Home Keeper Library fires a Home Assistant bus event for each change to the"><link data-rh="true" rel="icon" href="/ha-home-keeper-library/pr-preview/pr-23/img/favicon.svg"><link data-rh="true" rel="canonical" href="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-23/developer/events"><link data-rh="true" rel="alternate" href="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-23/developer/events" hreflang="en"><link data-rh="true" rel="alternate" href="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-23/developer/events" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Events","item":"https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-23/developer/events"}]}</script><link rel="stylesheet" href="/ha-home-keeper-library/pr-preview/pr-23/assets/css/styles.eef33b07.css">
-<script src="/ha-home-keeper-library/pr-preview/pr-23/assets/js/runtime~main.657ed6b8.js" defer="defer"></script>
-<script src="/ha-home-keeper-library/pr-preview/pr-23/assets/js/main.d1ee4707.js" defer="defer"></script>
+<script src="/ha-home-keeper-library/pr-preview/pr-23/assets/js/runtime~main.d28c0c7a.js" defer="defer"></script>
+<script src="/ha-home-keeper-library/pr-preview/pr-23/assets/js/main.fadeb121.js" defer="defer"></script>
 </head>
 <body>
 <svg style="display: none;"><defs>
@@ -183,7 +183,9 @@ the book spine.</li>
 <li class=""><code>person_settings_updated</code> has <code>person_id</code>, <code>changed_fields</code> and <code>origin</code>, and
 no setting values.</li>
 <li class=""><code>settings_updated</code> has <code>changed_fields</code>, <code>currency</code> and <code>origin</code>. The
-<code>set_settings</code> service and the options flow both fire it.</li>
+<code>set_settings</code> service, the <code>disconnect_catalog</code> service and the options flow
+fire it. <code>changed_fields</code> names <code>currency</code> or <code>catalog_accounts</code>. The payload has
+no Open Library key and no user name.</li>
 </ul>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="rules">Rules<a href="#rules" class="hash-link" aria-label="Direct link to Rules" title="Direct link to Rules" translate="no">​</a></h2>
 <ul>
@@ -192,6 +194,9 @@ each hour. A new due date can fire it again.</li>
 <li class="">A CSV import fires only <code>import_completed</code>. It fires no event for each row.</li>
 <li class="">A Home Keeper import fires only <code>data_imported</code>. It fires no event for each record.</li>
 <li class=""><code>book_finished</code> fires with <code>reading_changed</code>, in that order.</li>
+<li class="">A book that Open Library does not have fires <code>book_updated</code> with
+<code>catalog_status</code> in <code>changed_fields</code>. A link to Open Library, a skip and a send
+fire it too, with <code>catalogs</code> or <code>catalog_status</code>. A send fires no event of its own.</li>
 <li class="">The first copy of a book on the wishlist takes the book off the wishlist. The
 scan, <code>add_copy</code> and <code>got_wishlist_book</code> fire <code>copy_added</code> and then
 <code>wishlist_removed</code>.</li>
