@@ -46,15 +46,17 @@ Open Library account ([Send books to Open Library](../library/open-library.md)).
 
 ```yaml
 actions:
-  - action: home_keeper_library.send_to_openlibrary
+  - action: home_keeper_library.send_to_catalog
     data:
       book_id: "5f0c1b2a9d8e4f7a8b6c5d4e3f2a1b0c"
       fields: [publisher, published, isbn]
     response_variable: sent
 ```
 
-The response has `result` (`added` or `existing`) and `edition_key`. With `existing`,
-check the edition and link it with `link_openlibrary`.
+The response has `result` (`added` or `existing`) and `record`, the Open Library edition
+key. With `existing`, check the edition and link it with `link_catalog`. The service names
+say "catalog" because the library can support more catalogs of books later. Open Library
+is the only catalog now.
 
 ## Events
 

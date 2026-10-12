@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "An Open Library senden",
       "description": "Ein Buch, das Open Library nicht hat, mit dem verbundenen Open-Library-Konto hinzufügen und dann das Buch verknüpfen.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Mit Open Library verknüpfen",
       "description": "Ein Buch mit einer Open-Library-Ausgabe verknüpfen und seine leeren Felder füllen.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Buch",
           "description": "Die ID des Buchs."
         },
-        "edition": {
+        "record": {
           "name": "Ausgabe",
           "description": "Ein Ausgabeschlüssel wie OL123M oder die URL der Ausgabeseite."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Open Library überspringen",
       "description": "Ein Buch aus der Liste der Bücher entfernen, die nicht in Open Library sind, oder es zurücksetzen.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Open Library trennen",
       "description": "Die Schlüssel des Open-Library-Kontos entfernen."
     },

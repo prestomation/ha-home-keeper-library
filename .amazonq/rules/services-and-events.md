@@ -30,6 +30,13 @@ How the surfaces work is in [events-api](../../docs/design/events-api.md). Integ
   returns its record with `SupportsResponse.OPTIONAL`.
 - A handler finds the coordinator for each call and raises the localized `not_loaded`
   error while no entry is loaded.
+- **Name a catalog surface with "catalog", not with the name of the catalog.** Open
+  Library is the first catalog of books, not the only possible one. A service is
+  `send_to_catalog`, not `send_to_openlibrary`. A value for each catalog is an object with
+  the catalog name as the key: the book fields `catalogs` and `catalog_status`, and the
+  `get_state` key `catalog_accounts`. A second catalog adds an optional `catalog` field
+  with the default `openlibrary`, so an old call keeps working. Internal modules, error
+  keys and the cover kind `openlibrary` keep the name of the catalog.
 - A service that takes a book takes `book_id`. Titles are not unique. `borrow_book` and
   `add_to_wishlist` also take `isbn` or `title`, and add the book when none matches.
 

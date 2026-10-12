@@ -191,22 +191,22 @@ SERVICE_FIELDS: dict[str, dict[Any, Any]] = {
     "update_book": {vol.Required("book_id"): cv.string, **_BOOK_FIELDS},
     "delete_book": {vol.Required("book_id"): cv.string},
     "refresh_book": {vol.Required("book_id"): cv.string},
-    "send_to_openlibrary": {
+    "send_to_catalog": {
         vol.Required("book_id"): cv.string,
         vol.Optional("fields"): vol.All(
             cv.ensure_list, [vol.In(contribute.OPTIONAL_SEND_FIELDS)]
         ),
         vol.Optional("include_cover", default=False): cv.boolean,
     },
-    "link_openlibrary": {
+    "link_catalog": {
         vol.Required("book_id"): cv.string,
-        vol.Required("edition"): cv.string,
+        vol.Required("record"): cv.string,
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
         vol.Required("book_id"): cv.string,
         vol.Optional("skip", default=True): cv.boolean,
     },
-    "disconnect_openlibrary": {},
+    "disconnect_catalog": {},
     "scan_isbn": {
         vol.Required("isbn"): cv.string,
         vol.Optional("shelf_id"): _OPT_STR,
@@ -535,18 +535,18 @@ async def _link_edition(ctx: Ctx, book_id: str, edition_key: str) -> None:
     await ctx.coordinator.lookup.async_apply(book_id, draft)
 
 
-async def _link_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+async def _link_catalog(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     book = ctx.store.book(data["book_id"])
-    edition_key = contribute.edition_key(data["edition"])
+    edition_key = contribute.edition_key(data["record"])
     if edition_key is None:
-        raise LibraryError("invalid_openlibrary_edition", edition=str(data["edition"]))
+        raise LibraryError("invalid_openlibrary_edition", edition=str(data["record"]))
     await _link_edition(ctx, book["id"], edition_key)
     return {"book": ctx.book_reply(ctx.store.book(book["id"]))}
 
 
-async def _skip_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+async def _skip_catalog(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     status = "skipped" if data.get("skip", True) else "missing"
-    book = await ctx.store.set_openlibrary_status(data["book_id"], status)
+    book = await ctx.store.set_catalog_status(data["book_id"], status)
     return {"book": ctx.book_reply(book)}
 
 
@@ -565,7 +565,7 @@ async def _cover_bytes(ctx: Ctx, book: dict[str, Any]) -> bytes | None:
     return await ctx.hass.async_add_executor_job(_read)
 
 
-async def _send_to_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+async def _send_to_catalog(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     """Add a book to Open Library with the connected account, then link it.
 
     If Open Library already has the ISBN, or finds the edition when it reads the
@@ -576,21 +576,21 @@ async def _send_to_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]
     keys = account_keys(ctx.coordinator.config_entry.data)
     if keys is None:
         raise LibraryError("openlibrary_not_connected")
-    if (book.get("openlibrary") or {}).get("edition_key"):
+    if models.catalog_record(book).get("edition_key"):
         raise LibraryError("openlibrary_already_linked")
     if not book.get("authors"):
         raise LibraryError("openlibrary_needs_author")
     fields = contribute.send_fields(data.get("fields"))
     client = ctx.coordinator.client
     writer = OpenLibraryWriter(client)
-    reply: dict[str, Any] = {"result": "existing", "edition_key": None}
+    reply: dict[str, Any] = {"result": "existing", "record": None}
     reply["cover"] = "skipped"
     try:
         if "isbn" in fields and book.get("isbn13"):
             client.forget_miss(book["isbn13"])
             found = await client.async_lookup_isbn(book["isbn13"])
-            if found and (found.get("openlibrary") or {}).get("edition_key"):
-                reply["edition_key"] = found["openlibrary"]["edition_key"]
+            if found and (key := models.catalog_record(found).get("edition_key")):
+                reply["record"] = key
                 reply["book"] = ctx.book_reply(book)
                 return reply
         cookie, _ = await writer.async_login(*keys)
@@ -599,7 +599,7 @@ async def _send_to_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]
         result, edition_key = await writer.async_add_book(cookie, form)
         if result == "ambiguous" or edition_key is None:
             raise LibraryError("openlibrary_ambiguous")
-        reply["result"], reply["edition_key"] = result, edition_key
+        reply["result"], reply["record"] = result, edition_key
         if result == "added":
             if data.get("include_cover") and (image := await _cover_bytes(ctx, book)):
                 sent = await writer.async_add_cover(cookie, edition_key, image)
@@ -609,7 +609,7 @@ async def _send_to_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]
             except LibraryError:
                 # Open Library has the new edition, but cannot show it yet.
                 # Keep the key, so the book is linked anyway.
-                link = {"openlibrary": {"edition_key": edition_key}}
+                link = {"catalogs": {models.OPENLIBRARY: {"edition_key": edition_key}}}
                 await ctx.store.fill_book(book["id"], link, origin=ORIGIN)
     except OpenLibraryAuthError as err:
         raise LibraryError("openlibrary_login_failed") from err
@@ -619,14 +619,14 @@ async def _send_to_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]
     return reply
 
 
-async def _disconnect_openlibrary(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+async def _disconnect_catalog(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     entry = ctx.coordinator.config_entry
     drop = (*OPENLIBRARY_SECRET_KEYS, CONF_OPENLIBRARY_USERNAME)
     ctx.hass.config_entries.async_update_entry(
         entry, data={k: v for k, v in entry.data.items() if k not in drop}
     )
     ctx.coordinator.async_check_settings()
-    return {"openlibrary_account": ctx.coordinator.openlibrary_account}
+    return {"catalog_accounts": ctx.coordinator.catalog_accounts}
 
 
 def _copies_with_location(ctx: Ctx, book_id: str) -> list[dict[str, Any]]:
@@ -1041,10 +1041,10 @@ SERVICE_HANDLERS: dict[str, Handler] = {
     "update_book": _update_book,
     "delete_book": _delete_book,
     "refresh_book": _refresh_book,
-    "send_to_openlibrary": _send_to_openlibrary,
-    "link_openlibrary": _link_openlibrary,
-    "skip_openlibrary": _skip_openlibrary,
-    "disconnect_openlibrary": _disconnect_openlibrary,
+    "send_to_catalog": _send_to_catalog,
+    "link_catalog": _link_catalog,
+    "skip_catalog": _skip_catalog,
+    "disconnect_catalog": _disconnect_catalog,
     "scan_isbn": _scan_isbn,
     "add_copy": _add_copy,
     "update_copy": _update_copy,

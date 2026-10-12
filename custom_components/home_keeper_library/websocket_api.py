@@ -135,7 +135,7 @@ async def ws_get_state(
             currency=coordinator.currency,
             tab=coordinator.tab_registered,
             revision=coordinator.store.revision,
-            openlibrary_account=coordinator.openlibrary_account,
+            catalog_accounts=coordinator.catalog_accounts,
         ),
     )
 

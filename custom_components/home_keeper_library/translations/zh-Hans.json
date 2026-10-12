@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "发送到 Open Library",
       "description": "使用已连接的 Open Library 账户添加 Open Library 没有的图书，然后关联该图书。",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "关联到 Open Library",
       "description": "将图书关联到 Open Library 的某个版本，并填写其空字段。",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "图书",
           "description": "图书的 ID。"
         },
-        "edition": {
+        "record": {
           "name": "版本",
           "description": "版本键（例如 OL123M）或版本页面的 URL。"
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "跳过 Open Library",
       "description": "将图书从不在 Open Library 上的图书列表中移除，或放回列表。",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "断开 Open Library",
       "description": "移除 Open Library 账户的密钥。"
     },

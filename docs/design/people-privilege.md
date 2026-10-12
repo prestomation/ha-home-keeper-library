@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/people.py
   - custom_components/home_keeper_library/projections.py
 related: [events-api, entities, architecture]
-source_hash: 0d83f1c14a6d
+source_hash: 173006f6925e
 ---
 
 # People and privilege
@@ -72,7 +72,7 @@ each signed-in user, because covers are not private.
 - the settings of another person drop `wishlist_todo`;
 - the wishlist entry of another person drops `PRIVATE_WISHLIST_FIELDS` (`todo_entity`,
   `todo_uid`);
-- the reply of `get_state` has no `openlibrary_account`.
+- the reply of `get_state` has no `catalog_accounts`.
 
 The viewer's own rows are full. Each book also gets `owned`, `copy_count` and
 `cover_url`. The sensors and the card use the count functions at the end of the module.

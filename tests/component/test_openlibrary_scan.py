@@ -53,7 +53,7 @@ async def test_client_lookup_and_miss_cache(hass, setup_entry, aioclient_mock) -
     assert draft["title"] == "The Left Hand of Darkness"
     assert draft["authors"] == ["Ursula K. Le Guin"]
     headers = aioclient_mock.mock_calls[0][3]
-    assert headers["User-Agent"].startswith("HomeKeeperLibrary/0.3.0b1 (+https://")
+    assert headers["User-Agent"].startswith("HomeKeeperLibrary/0.3.0b2 (+https://")
     aioclient_mock.get(f"{OL}/isbn/9780000000002.json", status=404)
     assert await client.async_lookup_isbn("9780000000002") is None
     calls = aioclient_mock.call_count
@@ -83,7 +83,7 @@ async def test_client_search_and_cover(hass, setup_entry, aioclient_mock) -> Non
         json=_json("search_dune.json"),
     )
     draft = await client.async_search("Dune", ["Frank Herbert"])
-    assert draft["openlibrary"]["work_key"] == "OL893415W"
+    assert draft["catalogs"]["openlibrary"]["work_key"] == "OL893415W"
     aioclient_mock.get(
         f"{OL}/search.json?title=Nothing&limit=5", json=_json("search_empty.json")
     )
@@ -171,14 +171,14 @@ async def test_scan_not_found_and_unavailable(
     store = setup_entry.runtime_data.store
     assert store.state["books"][reply["book"]["id"]]["lookup_tries"] == 1
     # A network failure is not a miss: the book is not "Not on Open Library".
-    assert store.state["books"][reply["book"]["id"]]["openlibrary_status"] is None
+    assert store.state["books"][reply["book"]["id"]]["catalog_status"] == {}
     assert len(lookup._timers) == 1
     # Open Library does not have the first book: the queue never tries it again.
     first = next(
         b for b in store.state["books"].values() if b["isbn13"] == "9780000000002"
     )
     assert first["lookup_tries"] == LOOKUP_MAX_TRIES
-    assert first["openlibrary_status"] == "missing"
+    assert first["catalog_status"] == {"openlibrary": "missing"}
 
 
 def _requests(aioclient_mock, isbn: str) -> int:
@@ -310,7 +310,7 @@ async def test_custom_cover_wins_over_a_late_download(hass, setup_entry, call) -
     coordinator = setup_entry.runtime_data
     store = coordinator.store
     book = (await call("add_book", {"title": "Dune", "lookup": False}))["book"]
-    store.state["books"][book["id"]]["openlibrary"] = {"cover_id": 1}
+    store.state["books"][book["id"]]["catalogs"] = {"openlibrary": {"cover_id": 1}}
     custom = covers.new_cover_name(book["id"])
 
     async def _cover_during_upload(_cover_id: int) -> bytes:

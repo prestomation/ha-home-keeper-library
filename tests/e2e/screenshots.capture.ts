@@ -186,7 +186,7 @@ test('capture the Library screenshots', async ({ page, browser }) => {
 
   // Open Library: the account card, the list of books that it does not have,
   // and the send dialog of 1 of them.
-  await library('disconnect_openlibrary');
+  await library('disconnect_catalog');
   await openLibraryCard(page);
   await shot(page, 'settings-openlibrary-desktop');
   tab = await openTab(page, '/books;status=not_on_ol');
@@ -225,7 +225,7 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await expect(tab.locator('.hkl-olrow')).toHaveCount(4);
   await coversLoaded(page);
   await shot(page, 'openlibrary-list-mobile');
-  await library('disconnect_openlibrary');
+  await library('disconnect_catalog');
   await openLibraryCard(page);
   await shot(page, 'settings-openlibrary-mobile');
 

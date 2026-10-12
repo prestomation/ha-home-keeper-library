@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Send til Open Library",
       "description": "Legg til en bok som Open Library ikke har, med den tilkoblede Open Library-kontoen, og koble deretter boken.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Koble til Open Library",
       "description": "Koble en bok til en utgave i Open Library, og fyll ut de tomme feltene.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Bok",
           "description": "ID-en til boken."
         },
-        "edition": {
+        "record": {
           "name": "Utgave",
           "description": "En utgavenøkkel, for eksempel OL123M, eller URL-en til utgavesiden."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Hopp over Open Library",
       "description": "Fjern en bok fra listen over bøker som ikke er på Open Library, eller legg den tilbake.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Koble fra Open Library",
       "description": "Fjern nøklene til Open Library-kontoen."
     },

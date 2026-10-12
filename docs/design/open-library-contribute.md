@@ -12,8 +12,8 @@ source_hash: c8d5067a3fbe
 
 An admin can send a book that Open Library does not have. The library signs in with the
 Archive.org S3 keys of the household account, posts the "Add a book" form of Open
-Library, and links the book to the new edition. The book field `openlibrary_status`
-keeps the "Not on Open Library" list.
+Library, and links the book to the new edition. The `openlibrary` entry of the book
+field `catalog_status` keeps the "Not on Open Library" list.
 
 ## Goals
 
@@ -38,21 +38,30 @@ keeps the "Not on Open Library" list.
 
 ## Design
 
+### Catalog names
+
+The services, the book fields and the `get_state` key use the word "catalog", so that a
+second catalog of books can come later with no rename. Open Library is the only catalog
+(`models.CATALOGS`). A book keeps its record in `catalogs.openlibrary` and its status in
+`catalog_status.openlibrary`. The services have no `catalog` field yet. A later catalog
+adds an optional field with the default `openlibrary`, so a call that works now keeps
+working.
+
 ### Status of a book
 
-`openlibrary_status` is `None`, `missing` or `skipped`.
+`catalog_status.openlibrary` is absent, `missing` or `skipped`.
 
 - The lookup queue and `add_book` set `missing` through `BookLookup.async_mark_missing`
   when Open Library has no book. A network error sets nothing.
-- `skip_openlibrary` sets `skipped`, or `missing` again with `skip: false`.
-- `fill_from_draft` clears it when it writes an `openlibrary` block.
-  `LibraryStore.set_openlibrary_status` keeps it clear on a linked book.
-- `models.stored_openlibrary_status` gives an old book `missing` at load if its lookups
-  used all tries and it has no Open Library data.
+- `skip_catalog` sets `skipped`, or `missing` again with `skip: false`.
+- `fill_from_draft` clears it when it writes a record to `catalogs.openlibrary`.
+  `LibraryStore.set_catalog_status` keeps it clear on a linked book.
+- `models.normalize_catalogs` gives an old book `missing` at load if its lookups used
+  all tries and it has no Open Library data.
 
-Each change fires `book_updated` with `openlibrary_status` in `changed_fields`. The field
-is not a CSV column. The tab lists a book with `missing` and no `openlibrary` block in
-the **Not on Open Library** filter, for admins only.
+Each change fires `book_updated` with `catalog_status` in `changed_fields`. The field is
+not a CSV column. The tab lists a book with `missing` and no Open Library record in the
+**Not on Open Library** filter, for admins only.
 
 ### Account
 
@@ -62,14 +71,14 @@ writes the 2 keys and the user name to the entry data. A refused login gives
 `invalid_auth`, a network error `cannot_connect`. The tab drives the same flow over
 the REST flow API, so the keys never go over a service.
 
-`LibraryCoordinator.openlibrary_account` gives `{connected, username}`, with no keys.
-`project_state` adds it for an admin. `async_check_settings` fires `settings_updated`
-with `openlibrary_account` in `changed_fields` when it changes. `disconnect_openlibrary`
-removes the keys.
+`LibraryCoordinator.catalog_accounts` gives `{openlibrary: {connected, username}}`, with
+no keys. `project_state` adds it for an admin. `async_check_settings` fires
+`settings_updated` with `catalog_accounts` in `changed_fields` when it changes.
+`disconnect_catalog` removes the keys.
 
 ### Send
 
-`send_to_openlibrary` runs these steps:
+`send_to_catalog` runs these steps:
 
 1. Refuse a book with no account (`openlibrary_not_connected`), a linked book
    (`openlibrary_already_linked`) or no author (`openlibrary_needs_author`).
@@ -89,8 +98,9 @@ network error or a 5xx gives `lookup_unavailable`. A failed cover upload gives
 `cover: failed`, not an error, because Open Library replies with a page in both cases:
 the writer reads the edition again and checks `covers`.
 
-`link_openlibrary` takes a key or an openlibrary.org URL (`edition_key`), reads the
-edition and fills the book. It is also the second step of `existing`.
+`link_catalog` takes an edition key or an openlibrary.org URL in `record`, reads the
+edition and fills the book. It is also the second step of `existing`. The reply of a
+send gives the edition key in `record`.
 
 ### HTTP
 
@@ -109,13 +119,16 @@ paths.
   The cost is 1 more request for each send.
 - **5 details and a link to the edit page** over **the edit form**: no risk to erase
   data on Open Library. The cost is a second step on the website.
+- **Catalog names** over **Open Library names**: a second catalog needs no rename of a
+  service, a field or a stored key. The cost is 1 more level in the book fields.
 
 ## One-way doors
 
-- The book field `openlibrary_status` and its values `missing` and `skipped`.
+- The book field `catalog_status`, keyed by catalog name, and its values `missing` and
+  `skipped`.
 - The entry data keys `openlibrary_access`, `openlibrary_secret` and
   `openlibrary_username`, and the options flow steps `currency` and `openlibrary`.
-- The services `send_to_openlibrary`, `link_openlibrary`, `skip_openlibrary` and
-  `disconnect_openlibrary`, with their fields and the reply keys `result`,
-  `edition_key` and `cover`.
-- The `get_state` key `openlibrary_account`.
+- The services `send_to_catalog`, `link_catalog`, `skip_catalog` and
+  `disconnect_catalog`, with their fields and the reply keys `result`, `record` and
+  `cover`.
+- The `get_state` key `catalog_accounts`, keyed by catalog name.

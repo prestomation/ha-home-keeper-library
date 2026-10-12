@@ -33,7 +33,7 @@ Each operation of the tab is a `home_keeper_library.*` service. The groups are:
 | Wishlist | `add_to_wishlist`, `update_wishlist`, `remove_from_wishlist`, `got_wishlist_book` |
 | People and settings | `set_person_settings`, `set_settings` |
 | Files | `import_csv`, `export_csv` |
-| Open Library | `send_to_openlibrary`, `link_openlibrary`, `skip_openlibrary`, `disconnect_openlibrary` |
+| Catalogs (Open Library) | `send_to_catalog`, `link_catalog`, `skip_catalog`, `disconnect_catalog` |
 | Reads | `list_books`, `get_book`, `list_locations`, `list_loans`, `list_people` |
 
 A service that changes data returns its record when the call asks for a response. A read
@@ -121,7 +121,7 @@ integration.
 - A service raises `ServiceValidationError` with a translation key for bad input, such as
   an unknown id, an invalid ISBN or a shelf that is not empty.
 - A non-admin caller of an admin-only service gets `Unauthorized`.
-- `send_to_openlibrary` writes to Open Library with the account that an admin connects
+- `send_to_catalog` writes to Open Library with the account that an admin connects
   in the options flow. It sends 1 book for each call. Do not call it in a loop. Open
   Library asks for a bot account for bulk edits.
 - The services, the tab and the card use the same code for each operation. A change from

@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Lähetä Open Libraryyn",
       "description": "Lisää kirja, jota Open Libraryssä ei ole, yhdistetyllä Open Library -tilillä ja linkitä sitten kirja.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Linkitä Open Libraryyn",
       "description": "Linkitä kirja Open Libraryn painokseen ja täytä sen tyhjät kentät.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Kirja",
           "description": "Kirjan ID."
         },
-        "edition": {
+        "record": {
           "name": "Painos",
           "description": "Painoksen avain, kuten OL123M, tai painoksen sivun URL-osoite."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Ohita Open Library",
       "description": "Poista kirja niiden kirjojen luettelosta, joita ei ole Open Libraryssä, tai palauta se.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Katkaise Open Library -yhteys",
       "description": "Poista Open Library -tilin avaimet."
     },

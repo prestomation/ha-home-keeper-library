@@ -21,6 +21,7 @@ from .const import (
     DEFAULT_CURRENCY,
     DOMAIN,
 )
+from .models import OPENLIBRARY
 from .openlibrary_account import account_keys
 from .store import LibraryStore
 
@@ -52,7 +53,7 @@ class LibraryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.home_keeper: HomeKeeperLink
         self.tab_registered = False
         self._currency_seen = self.currency
-        self._account_seen = self.openlibrary_account
+        self._account_seen = self.catalog_accounts
 
     @property
     def currency(self) -> str:
@@ -72,11 +73,16 @@ class LibraryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "username": username if isinstance(username, str) else None,
         }
 
+    @property
+    def catalog_accounts(self) -> dict[str, Any]:
+        """The connected account of each catalog, with no keys."""
+        return {OPENLIBRARY: self.openlibrary_account}
+
     @callback
     def async_check_settings(self) -> None:
         """Fire ``settings_updated`` once when the currency or the account changed.
 
-        The ``set_settings`` service, the ``disconnect_openlibrary`` service and
+        The ``set_settings`` service, the ``disconnect_catalog`` service and
         the update listener of the entry (the options flow) call this. The second
         call finds no change.
         """
@@ -85,10 +91,10 @@ class LibraryCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if currency != self._currency_seen:
             self._currency_seen = currency
             changed.append(CONF_CURRENCY)
-        account = self.openlibrary_account
+        account = self.catalog_accounts
         if account != self._account_seen:
             self._account_seen = account
-            changed.append("openlibrary_account")
+            changed.append("catalog_accounts")
         if changed:
             self.store.async_settings_updated(changed, currency)
 

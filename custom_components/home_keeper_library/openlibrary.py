@@ -9,8 +9,9 @@ The client (``openlibrary_client.py``) reads these documents:
   row with no ISBN.
 
 The functions here turn them into a *book draft*: a dict with the book fields of
-``models.DRAFT_FIELDS`` and an ``openlibrary`` block. The parser accepts the
-shapes that Open Library documents show, and ignores a value of the wrong type.
+``models.DRAFT_FIELDS`` and a ``catalogs`` block with the ``openlibrary`` record.
+The parser accepts the shapes that Open Library documents show, and ignores a
+value of the wrong type.
 
 This module imports no Home Assistant code.
 """
@@ -183,10 +184,12 @@ def parse_edition(
         "subjects": subjects[:_MAX_SUBJECTS],
         "series": _series(edition.get("series")),
         "description": description,
-        "openlibrary": {
-            "edition_key": _key(edition.get("key"), "books"),
-            "work_key": work_key(edition) or _key(work.get("key"), "works"),
-            "cover_id": cover_id,
+        "catalogs": {
+            "openlibrary": {
+                "edition_key": _key(edition.get("key"), "books"),
+                "work_key": work_key(edition) or _key(work.get("key"), "works"),
+                "cover_id": cover_id,
+            },
         },
     }
 
@@ -218,10 +221,12 @@ def parse_search_doc(doc: dict[str, Any]) -> dict[str, Any]:
         "subjects": _str_list(doc.get("subject"))[:_MAX_SUBJECTS],
         "series": None,
         "description": "",
-        "openlibrary": {
-            "edition_key": editions[0] if editions else None,
-            "work_key": _key(doc.get("key"), "works"),
-            "cover_id": _first_int(doc.get("cover_i")),
+        "catalogs": {
+            "openlibrary": {
+                "edition_key": editions[0] if editions else None,
+                "work_key": _key(doc.get("key"), "works"),
+                "cover_id": _first_int(doc.get("cover_i")),
+            },
         },
     }
 

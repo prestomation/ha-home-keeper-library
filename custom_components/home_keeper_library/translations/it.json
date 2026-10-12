@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Invia a Open Library",
       "description": "Aggiunge un libro che Open Library non ha, con l'account Open Library collegato, poi collega il libro.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Collega a Open Library",
       "description": "Collega un libro a un'edizione di Open Library e ne compila i campi vuoti.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Libro",
           "description": "L'ID del libro."
         },
-        "edition": {
+        "record": {
           "name": "Edizione",
           "description": "Una chiave di edizione, come OL123M, o l'URL della pagina dell'edizione."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Salta Open Library",
       "description": "Rimuove un libro dall'elenco dei libri che non sono su Open Library, o lo rimette.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Disconnetti Open Library",
       "description": "Rimuove le chiavi dell'account Open Library."
     },

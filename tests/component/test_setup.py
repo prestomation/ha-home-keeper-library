@@ -266,3 +266,68 @@ async def test_diagnostics_redact_names_and_notes(hass, setup_entry, call) -> No
         assert secret not in text, secret
     assert data["counts"]["books"] == 1 and data["tab_registered"] is True
     assert case["name"] in text
+
+
+async def test_load_moves_the_old_open_library_keys(
+    hass, hass_storage, persons, hk_entry, call
+) -> None:
+    """A store from 0.2.0 or 0.3.0b1 loads in the catalogs shape, and saves so."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    record = {"edition_key": "OL5M", "work_key": "OL9W", "cover_id": 7}
+    old = {"title": "T", "authors": [], "needs_details": False, "lookup_tries": 0}
+    hass_storage[DOMAIN] = {
+        "version": 1,
+        "minor_version": 1,
+        "key": DOMAIN,
+        "data": {
+            "books": {
+                # 0.2.0: a record and no status.
+                "linked": {**old, "id": "linked", "openlibrary": record},
+                # 0.2.0: 3 lookups that gave no details.
+                "lost": {
+                    **old,
+                    "id": "lost",
+                    "openlibrary": None,
+                    "needs_details": True,
+                    "lookup_tries": 3,
+                },
+                # 0.3.0b1: a status.
+                "skipped": {
+                    **old,
+                    "id": "skipped",
+                    "openlibrary": None,
+                    "openlibrary_status": "skipped",
+                },
+            }
+        },
+    }
+    entry = MockConfigEntry(domain=DOMAIN, data={}, options={}, unique_id=DOMAIN)
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    books = entry.runtime_data.store.state["books"]
+    assert {key: books[key]["catalogs"] for key in books} == {
+        "linked": {"openlibrary": record},
+        "lost": {},
+        "skipped": {},
+    }
+    assert {key: books[key]["catalog_status"] for key in books} == {
+        "linked": {},
+        "lost": {"openlibrary": "missing"},
+        "skipped": {"openlibrary": "skipped"},
+    }
+    reply = await call("get_book", {"book_id": "linked"})
+    assert reply["book"]["catalogs"] == {"openlibrary": record}
+    assert "openlibrary" not in reply["book"]
+    await call("update_book", {"book_id": "linked", "subtitle": "S"})
+    saved = hass_storage[DOMAIN]["data"]["books"]
+    assert all(
+        "openlibrary" not in book and "openlibrary_status" not in book
+        for book in saved.values()
+    )
+    assert saved["skipped"]["catalog_status"] == {"openlibrary": "skipped"}
+    assert (hass_storage[DOMAIN]["version"], hass_storage[DOMAIN]["minor_version"]) == (
+        1,
+        1,
+    )

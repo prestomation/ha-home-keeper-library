@@ -304,7 +304,7 @@ refresh_book:
       selector:
         text:
 
-send_to_openlibrary:
+send_to_catalog:
   fields:
     book_id:
       required: true
@@ -324,19 +324,19 @@ send_to_openlibrary:
       selector:
         boolean:
 
-link_openlibrary:
+link_catalog:
   fields:
     book_id:
       required: true
       selector:
         text:
-    edition:
+    record:
       required: true
       example: "OL123M"
       selector:
         text:
 
-skip_openlibrary:
+skip_catalog:
   fields:
     book_id:
       required: true
@@ -347,7 +347,7 @@ skip_openlibrary:
       selector:
         boolean:
 
-disconnect_openlibrary:
+disconnect_catalog:
 
 scan_isbn:
   fields:

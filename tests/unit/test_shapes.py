@@ -73,11 +73,11 @@ def test_build_book_shape() -> None:
         "description": "",
         "tags": [],
         "shared_notes": "",
-        "openlibrary": None,
+        "catalogs": {},
         "cover": {"kind": "none", "file": None},
         "needs_details": False,
         "lookup_tries": 0,
-        "openlibrary_status": None,
+        "catalog_status": {},
         "created_at": NOW,
         "updated_at": NOW,
         "wishlist": None,
@@ -199,10 +199,10 @@ def test_field_names_in_errors() -> None:
     assert key(m.copy_field, "signed", 1)[1] == {"field": "signed"}
     assert key(m.copy_field, "note", [])[1] == {"field": "note"}
     assert key(m.copy_field, "acquired_from", [])[1] == {"field": "acquired_from"}
-    assert key(m.book_field, "openlibrary", {"cover_id": 0})[1]["field"] == (
-        "openlibrary"
-    )
-    assert key(m.book_field, "openlibrary", 3)[1] == {"field": "openlibrary"}
+    ol_cover = {"openlibrary": {"cover_id": 0}}
+    assert key(m.book_field, "catalogs", ol_cover)[1]["field"] == "catalogs"
+    assert key(m.book_field, "catalogs", 3)[1] == {"field": "catalogs"}
+    assert key(m.book_field, "catalogs", {"openlibrary": 3})[1] == {"field": "catalogs"}
     assert key(m.book_field, "series", [1])[1] == {"field": "series"}
     assert key(m.book_field, "language", [])[1] == {"field": "language"}
     assert key(m.book_field, "needs_details", "yes")[1] == {"field": "needs_details"}
@@ -236,13 +236,25 @@ def test_field_names_in_errors() -> None:
     )
 
 
-def test_openlibrary_block() -> None:
-    assert m.book_field("openlibrary", {"edition_key": "OL1M"}) == {
-        "edition_key": "OL1M",
-        "work_key": None,
-        "cover_id": None,
+def test_catalogs_block() -> None:
+    assert m.book_field("catalogs", {"openlibrary": {"edition_key": "OL1M"}}) == {
+        "openlibrary": {"edition_key": "OL1M", "work_key": None, "cover_id": None}
     }
-    assert m.book_field("openlibrary", {"cover_id": "12"})["cover_id"] == 12
+    cover = m.book_field("catalogs", {"openlibrary": {"cover_id": "12"}})
+    assert cover["openlibrary"]["cover_id"] == 12
+
+    def record(**fields):
+        return m.book_field("catalogs", {"openlibrary": fields})["openlibrary"]
+
+    assert record(cover_id=1)["cover_id"] == 1
+    assert record(cover_id=2**53)["cover_id"] == 2**53
+    assert record(edition_key="E" * 50)["edition_key"] == "E" * 50
+    assert record(work_key="W" * 50)["work_key"] == "W" * 50
+    bad = ({"cover_id": 2**53 + 1}, {"edition_key": "E" * 51}, {"work_key": []})
+    for fields in bad:
+        err = _raises(m.book_field, "catalogs", {"openlibrary": fields})
+        assert err.placeholders["field"] == "catalogs"
+    assert _raises(m.book_field, "catalogs", {"openlibrary": {"work_key": "W" * 51}})
     assert m.book_field("series", {"name": "D", "number": 2.5}) == {
         "name": "D",
         "number": "2.5",
@@ -277,11 +289,14 @@ def test_parse_search_doc_shape() -> None:
         "subjects": ["x"],
         "series": None,
         "description": "",
-        "openlibrary": {"edition_key": "OL1M", "work_key": "OL5W", "cover_id": 3},
+        "catalogs": {
+            "openlibrary": {"edition_key": "OL1M", "work_key": "OL5W", "cover_id": 3}
+        },
     }
     empty = ol.parse_search_doc({})
     assert empty["isbn10"] is None and empty["published"] == ""
-    assert empty["publisher"] == "" and empty["openlibrary"]["edition_key"] is None
+    assert empty["publisher"] == ""
+    assert empty["catalogs"]["openlibrary"]["edition_key"] is None
 
 
 def _two_books() -> dict:

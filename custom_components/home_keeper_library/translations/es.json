@@ -446,7 +446,7 @@
         }
       }
     },
-    "send_to_openlibrary": {
+    "send_to_catalog": {
       "name": "Enviar a Open Library",
       "description": "Añade un libro que Open Library no tiene, con la cuenta de Open Library conectada, y después vincula el libro.",
       "fields": {
@@ -464,7 +464,7 @@
         }
       }
     },
-    "link_openlibrary": {
+    "link_catalog": {
       "name": "Vincular con Open Library",
       "description": "Vincula un libro con una edición de Open Library y rellena sus campos vacíos.",
       "fields": {
@@ -472,13 +472,13 @@
           "name": "Libro",
           "description": "El ID del libro."
         },
-        "edition": {
+        "record": {
           "name": "Edición",
           "description": "Una clave de edición, como OL123M, o la URL de la página de la edición."
         }
       }
     },
-    "skip_openlibrary": {
+    "skip_catalog": {
       "name": "Omitir Open Library",
       "description": "Quita un libro de la lista de libros que no están en Open Library, o vuelve a ponerlo.",
       "fields": {
@@ -492,7 +492,7 @@
         }
       }
     },
-    "disconnect_openlibrary": {
+    "disconnect_catalog": {
       "name": "Desconectar Open Library",
       "description": "Elimina las claves de la cuenta de Open Library."
     },

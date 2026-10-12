@@ -836,8 +836,8 @@ describe('Open Library', () => {
   function olState({ connected = true, title = RICE, status = 'missing', extra = {} } = {}) {
     const state = fixture();
     const book = Object.values(state.books).find((b) => b.title === title);
-    Object.assign(book, { openlibrary: null, openlibrary_status: status, ...extra });
-    state.openlibrary_account = { connected, username: connected ? 'alex_reads' : null };
+    Object.assign(book, { catalogs: {}, catalog_status: status ? { openlibrary: status } : {}, ...extra });
+    state.catalog_accounts = { openlibrary: { connected, username: connected ? 'alex_reads' : null } };
     return { state, id: book.id };
   }
 
@@ -847,14 +847,14 @@ describe('Open Library', () => {
     expect($('[data-k="ol-banner"]').textContent).toContain('Open Library does not have this book');
     $('[data-k="ol-not-now"]').click();
     await flush();
-    expect(fake.calls('skip_openlibrary')).toEqual([{ type: 'home_keeper_library/skip_openlibrary', book_id: id }]);
+    expect(fake.calls('skip_catalog')).toEqual([{ type: 'home_keeper_library/skip_catalog', book_id: id }]);
     expect(host.showToast).toHaveBeenCalledWith('The book is no longer in the Not on Open Library list.');
   });
 
   it('shows no banner to a non-admin user, on a linked book or on a skipped book', async () => {
     const user = olState();
     user.state.me.is_admin = false;
-    delete user.state.openlibrary_account;
+    delete user.state.catalog_accounts;
     await mount(`/books/${user.id}`, { state: user.state });
     expect($('[data-k="ol-banner"]')).toBeNull();
     el.remove();
@@ -880,8 +880,8 @@ describe('Open Library', () => {
 
   it('sends the selected fields and shows the new edition', async () => {
     const { state, id } = olState({ extra: { publisher: 'Bloomsbury', published: '2013', isbn13: '9781408802526', cover: { kind: 'custom', file: 'x.jpg' } } });
-    const reply = { result: 'added', edition_key: 'OL5M', cover: 'failed', book: {} };
-    const fake = await mount(`/books/${id}`, { state, replies: { send_to_openlibrary: reply } });
+    const reply = { result: 'added', record: 'OL5M', cover: 'failed', book: {} };
+    const fake = await mount(`/books/${id}`, { state, replies: { send_to_catalog: reply } });
     $('[data-k="ol-banner-send"]').click();
     const dlg = el.shadowRoot.getElementById('dlg');
     expect(dlg.textContent).toContain('You send as alex_reads.');
@@ -891,8 +891,8 @@ describe('Open Library', () => {
     dlg.querySelector('[data-k="d-send-cover"]').checked = true;
     dlg.querySelector('[data-k="d-submit"]').click();
     await flush();
-    expect(fake.calls('send_to_openlibrary')).toEqual([
-      { type: 'home_keeper_library/send_to_openlibrary', book_id: id, fields: ['publisher', 'isbn'], include_cover: true },
+    expect(fake.calls('send_to_catalog')).toEqual([
+      { type: 'home_keeper_library/send_to_catalog', book_id: id, fields: ['publisher', 'isbn'], include_cover: true },
     ]);
     expect(dlg.querySelector('[data-k="d-ol-added"]').textContent).toContain('OL5M');
     expect(dlg.querySelector('[data-k="d-ol-cover-failed"]')).not.toBeNull();
@@ -915,8 +915,8 @@ describe('Open Library', () => {
 
   it('offers to link an edition that Open Library already has', async () => {
     const { state, id } = olState();
-    const reply = { result: 'existing', edition_key: 'OL9M', cover: 'skipped', book: {} };
-    const fake = await mount(`/books/${id}`, { state, replies: { send_to_openlibrary: reply } });
+    const reply = { result: 'existing', record: 'OL9M', cover: 'skipped', book: {} };
+    const fake = await mount(`/books/${id}`, { state, replies: { send_to_catalog: reply } });
     $('[data-k="ol-banner-send"]').click();
     const dlg = el.shadowRoot.getElementById('dlg');
     dlg.querySelector('[data-k="d-submit"]').click();
@@ -925,14 +925,14 @@ describe('Open Library', () => {
     expect(dlg.querySelector('[data-k="d-submit"]').textContent).toBe('Link to OL9M');
     dlg.querySelector('[data-k="d-submit"]').click();
     await flush();
-    expect(fake.calls('link_openlibrary')).toEqual([{ type: 'home_keeper_library/link_openlibrary', book_id: id, edition: 'OL9M' }]);
+    expect(fake.calls('link_catalog')).toEqual([{ type: 'home_keeper_library/link_catalog', book_id: id, record: 'OL9M' }]);
     expect(host.showToast).toHaveBeenCalledWith('Book linked to Open Library.');
     expect(dlg.innerHTML).toBe('');
   });
 
   it('shows a send error in the dialog and hides the busy line', async () => {
     const { state, id } = olState();
-    await mount(`/books/${id}`, { state, replies: { send_to_openlibrary: () => Promise.reject({ message: 'Refused' }) } });
+    await mount(`/books/${id}`, { state, replies: { send_to_catalog: () => Promise.reject({ message: 'Refused' }) } });
     $('[data-k="ol-banner-send"]').click();
     const dlg = el.shadowRoot.getElementById('dlg');
     dlg.querySelector('[data-k="d-submit"]').click();
@@ -954,14 +954,14 @@ describe('Open Library', () => {
     expect(untitled.querySelector('[data-act="send-ol"]')).toBeNull();
     $(`[data-k="ol-skip-${id}"]`).click();
     await flush();
-    expect(fake.calls('skip_openlibrary')[0]).toMatchObject({ book_id: id });
+    expect(fake.calls('skip_catalog')[0]).toMatchObject({ book_id: id });
     $(`[data-k="ol-send-${id}"]`).click();
     expect(el.shadowRoot.getElementById('dlg').textContent).toContain('Send to Open Library');
   });
 
   it('hides the chip with no book in it, and from a non-admin user', async () => {
     const none = fixture();
-    for (const b of Object.values(none.books)) b.openlibrary_status = null;
+    for (const b of Object.values(none.books)) b.catalog_status = {};
     await mount('/books', { state: none });
     expect($('[data-k="st-not_on_ol"]')).toBeNull();
     el.remove();
@@ -1036,13 +1036,13 @@ describe('settings Open Library', () => {
 
   it('shows the account and disconnects it after a confirm', async () => {
     const state = fixture();
-    state.openlibrary_account = { connected: true, username: 'alex_reads' };
+    state.catalog_accounts = { openlibrary: { connected: true, username: 'alex_reads' } };
     const fake = await mount('/settings', { state });
     expect($('[data-k="ol-connected"]').textContent).toBe('Connected as alex_reads');
     expect($('[data-k="ol-access"]')).toBeNull();
     $('[data-k="ol-disconnect"]').click();
     el.shadowRoot.getElementById('dlg').querySelector('[data-k="d-submit"]').click();
     await flush();
-    expect(fake.calls('disconnect_openlibrary')).toHaveLength(1);
+    expect(fake.calls('disconnect_catalog')).toHaveLength(1);
   });
 });

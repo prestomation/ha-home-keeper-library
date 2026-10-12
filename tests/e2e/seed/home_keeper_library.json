@@ -123,14 +123,14 @@
      "Hugo winner"
     ],
     "shared_notes": "Book club pick, **Oct 2026**. Sam has the map of Gethen bookmarked on page 6.",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "custom",
      "file": "58247cad1ced46248fefe4d2b0db71b5-cff560bf.jpg"
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-01T10:00:00+00:00",
     "updated_at": "2026-01-01T10:00:00+00:00",
     "wishlist": null
@@ -158,10 +158,12 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": {
-     "edition_key": "OL5241542M",
-     "work_key": "/works/OL5241542W",
-     "cover_id": 12623421
+    "catalogs": {
+     "openlibrary": {
+      "edition_key": "OL5241542M",
+      "work_key": "/works/OL5241542W",
+      "cover_id": 12623421
+     }
     },
     "cover": {
      "kind": "openlibrary",
@@ -169,7 +171,7 @@
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-03T10:00:00+00:00",
     "updated_at": "2026-01-03T10:00:00+00:00",
     "wishlist": null
@@ -200,10 +202,12 @@
      "Hugo winner"
     ],
     "shared_notes": "",
-    "openlibrary": {
-     "edition_key": "OL11947964M",
-     "work_key": "/works/OL11947964W",
-     "cover_id": 8231862
+    "catalogs": {
+     "openlibrary": {
+      "edition_key": "OL11947964M",
+      "work_key": "/works/OL11947964W",
+      "cover_id": 8231862
+     }
     },
     "cover": {
      "kind": "openlibrary",
@@ -211,7 +215,7 @@
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-05T10:00:00+00:00",
     "updated_at": "2026-01-05T10:00:00+00:00",
     "wishlist": null
@@ -236,14 +240,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-07T10:00:00+00:00",
     "updated_at": "2026-01-07T10:00:00+00:00",
     "wishlist": null
@@ -271,10 +275,12 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": {
-     "edition_key": "OL7076247M",
-     "work_key": "/works/OL7076247W",
-     "cover_id": 12623433
+    "catalogs": {
+     "openlibrary": {
+      "edition_key": "OL7076247M",
+      "work_key": "/works/OL7076247W",
+      "cover_id": 12623433
+     }
     },
     "cover": {
      "kind": "openlibrary",
@@ -282,7 +288,7 @@
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-09T10:00:00+00:00",
     "updated_at": "2026-01-09T10:00:00+00:00",
     "wishlist": null
@@ -310,14 +316,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-11T10:00:00+00:00",
     "updated_at": "2026-01-11T10:00:00+00:00",
     "wishlist": null
@@ -347,14 +353,14 @@
      "Nebula winner"
     ],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-13T10:00:00+00:00",
     "updated_at": "2026-01-13T10:00:00+00:00",
     "wishlist": null
@@ -379,14 +385,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-15T10:00:00+00:00",
     "updated_at": "2026-01-15T10:00:00+00:00",
     "wishlist": null
@@ -414,14 +420,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-17T10:00:00+00:00",
     "updated_at": "2026-01-17T10:00:00+00:00",
     "wishlist": null
@@ -446,14 +452,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-19T10:00:00+00:00",
     "updated_at": "2026-01-19T10:00:00+00:00",
     "wishlist": null
@@ -480,10 +486,12 @@
      "Book club"
     ],
     "shared_notes": "",
-    "openlibrary": {
-     "edition_key": "OL1382631M",
-     "work_key": "/works/OL1382631W",
-     "cover_id": 10307413
+    "catalogs": {
+     "openlibrary": {
+      "edition_key": "OL1382631M",
+      "work_key": "/works/OL1382631W",
+      "cover_id": 10307413
+     }
     },
     "cover": {
      "kind": "openlibrary",
@@ -491,7 +499,7 @@
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-21T10:00:00+00:00",
     "updated_at": "2026-01-21T10:00:00+00:00",
     "wishlist": null
@@ -516,10 +524,12 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": {
-     "edition_key": "OL932852M",
-     "work_key": "/works/OL932852W",
-     "cover_id": 11200092
+    "catalogs": {
+     "openlibrary": {
+      "edition_key": "OL932852M",
+      "work_key": "/works/OL932852W",
+      "cover_id": 11200092
+     }
     },
     "cover": {
      "kind": "openlibrary",
@@ -527,7 +537,7 @@
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-01-23T10:00:00+00:00",
     "updated_at": "2026-01-23T10:00:00+00:00",
     "wishlist": null
@@ -558,10 +568,12 @@
      "Hugo winner"
     ],
     "shared_notes": "",
-    "openlibrary": {
-     "edition_key": "OL12869656M",
-     "work_key": "/works/OL12869656W",
-     "cover_id": 8296560
+    "catalogs": {
+     "openlibrary": {
+      "edition_key": "OL12869656M",
+      "work_key": "/works/OL12869656W",
+      "cover_id": 8296560
+     }
     },
     "cover": {
      "kind": "openlibrary",
@@ -569,7 +581,7 @@
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-01T10:00:00+00:00",
     "updated_at": "2026-02-01T10:00:00+00:00",
     "wishlist": null
@@ -597,10 +609,12 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": {
-     "edition_key": "OL10492718M",
-     "work_key": "/works/OL10492718W",
-     "cover_id": 11481354
+    "catalogs": {
+     "openlibrary": {
+      "edition_key": "OL10492718M",
+      "work_key": "/works/OL10492718W",
+      "cover_id": 11481354
+     }
     },
     "cover": {
      "kind": "openlibrary",
@@ -608,7 +622,7 @@
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-03T10:00:00+00:00",
     "updated_at": "2026-02-03T10:00:00+00:00",
     "wishlist": null
@@ -636,14 +650,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-05T10:00:00+00:00",
     "updated_at": "2026-02-05T10:00:00+00:00",
     "wishlist": null
@@ -668,10 +682,12 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": {
-     "edition_key": "OL14483060M",
-     "work_key": "/works/OL14483060W",
-     "cover_id": 10958358
+    "catalogs": {
+     "openlibrary": {
+      "edition_key": "OL14483060M",
+      "work_key": "/works/OL14483060W",
+      "cover_id": 10958358
+     }
     },
     "cover": {
      "kind": "openlibrary",
@@ -679,7 +695,7 @@
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-07T10:00:00+00:00",
     "updated_at": "2026-02-07T10:00:00+00:00",
     "wishlist": null
@@ -707,14 +723,16 @@
      "Kitchen"
     ],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 3,
-    "openlibrary_status": "missing",
+    "catalog_status": {
+     "openlibrary": "missing"
+    },
     "created_at": "2026-02-09T10:00:00+00:00",
     "updated_at": "2026-02-09T10:00:00+00:00",
     "wishlist": null
@@ -741,14 +759,14 @@
      "Kitchen"
     ],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "custom",
      "file": "2ff469fc40f54abfbb1a50274f264dae-fb97e18d.jpg"
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-11T10:00:00+00:00",
     "updated_at": "2026-02-11T10:00:00+00:00",
     "wishlist": null
@@ -776,14 +794,14 @@
      "Kitchen"
     ],
     "shared_notes": "The *pancake* recipe is on page 102.\n\n- Sticky notes from Jo\n- Do not lend",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-13T10:00:00+00:00",
     "updated_at": "2026-02-13T10:00:00+00:00",
     "wishlist": null
@@ -809,14 +827,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-15T10:00:00+00:00",
     "updated_at": "2026-02-15T10:00:00+00:00",
     "wishlist": null
@@ -842,14 +860,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-17T10:00:00+00:00",
     "updated_at": "2026-02-17T10:00:00+00:00",
     "wishlist": null
@@ -877,14 +895,14 @@
      "Pulitzer winner"
     ],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-19T10:00:00+00:00",
     "updated_at": "2026-02-19T10:00:00+00:00",
     "wishlist": null
@@ -910,14 +928,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-21T10:00:00+00:00",
     "updated_at": "2026-02-21T10:00:00+00:00",
     "wishlist": null
@@ -944,10 +962,12 @@
      "Family"
     ],
     "shared_notes": "First edition of the family. Keep it out of the sun.",
-    "openlibrary": {
-     "edition_key": "OL7500623M",
-     "work_key": "/works/OL7500623W",
-     "cover_id": 12003830
+    "catalogs": {
+     "openlibrary": {
+      "edition_key": "OL7500623M",
+      "work_key": "/works/OL7500623W",
+      "cover_id": 12003830
+     }
     },
     "cover": {
      "kind": "openlibrary",
@@ -955,7 +975,7 @@
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-02-23T10:00:00+00:00",
     "updated_at": "2026-02-23T10:00:00+00:00",
     "wishlist": null
@@ -982,14 +1002,14 @@
      "Family"
     ],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-03-01T10:00:00+00:00",
     "updated_at": "2026-03-01T10:00:00+00:00",
     "wishlist": null
@@ -1020,14 +1040,14 @@
      "Study"
     ],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-03-03T10:00:00+00:00",
     "updated_at": "2026-03-03T10:00:00+00:00",
     "wishlist": null
@@ -1055,14 +1075,14 @@
      "Study"
     ],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-03-05T10:00:00+00:00",
     "updated_at": "2026-03-05T10:00:00+00:00",
     "wishlist": null
@@ -1088,14 +1108,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-03-07T10:00:00+00:00",
     "updated_at": "2026-03-07T10:00:00+00:00",
     "wishlist": null
@@ -1120,14 +1140,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-03-09T10:00:00+00:00",
     "updated_at": "2026-03-09T10:00:00+00:00",
     "wishlist": null
@@ -1152,14 +1172,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-03-11T10:00:00+00:00",
     "updated_at": "2026-03-11T10:00:00+00:00",
     "wishlist": null
@@ -1189,14 +1209,14 @@
      "Hugo winner"
     ],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-03-13T10:00:00+00:00",
     "updated_at": "2026-03-13T10:00:00+00:00",
     "wishlist": null
@@ -1221,14 +1241,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-03-15T10:00:00+00:00",
     "updated_at": "2026-03-15T10:00:00+00:00",
     "wishlist": null
@@ -1253,14 +1273,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-03-17T10:00:00+00:00",
     "updated_at": "2026-03-17T10:00:00+00:00",
     "wishlist": null
@@ -1281,14 +1301,16 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": true,
     "lookup_tries": 3,
-    "openlibrary_status": "missing",
+    "catalog_status": {
+     "openlibrary": "missing"
+    },
     "created_at": "2026-03-19T10:00:00+00:00",
     "updated_at": "2026-03-19T10:00:00+00:00",
     "wishlist": null
@@ -1309,14 +1331,16 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": true,
     "lookup_tries": 3,
-    "openlibrary_status": "missing",
+    "catalog_status": {
+     "openlibrary": "missing"
+    },
     "created_at": "2026-03-21T10:00:00+00:00",
     "updated_at": "2026-03-21T10:00:00+00:00",
     "wishlist": null
@@ -1341,14 +1365,16 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 3,
-    "openlibrary_status": "missing",
+    "catalog_status": {
+     "openlibrary": "missing"
+    },
     "created_at": "2026-03-23T10:00:00+00:00",
     "updated_at": "2026-03-23T10:00:00+00:00",
     "wishlist": null
@@ -1373,14 +1399,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "custom",
      "file": "ae18ed68fc3445f484544a09c13ece47-a66afeef.jpg"
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-04-01T10:00:00+00:00",
     "updated_at": "2026-04-01T10:00:00+00:00",
     "wishlist": null
@@ -1405,14 +1431,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-04-03T10:00:00+00:00",
     "updated_at": "2026-04-03T10:00:00+00:00",
     "wishlist": null
@@ -1437,14 +1463,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-04-05T10:00:00+00:00",
     "updated_at": "2026-04-05T10:00:00+00:00",
     "wishlist": null
@@ -1469,14 +1495,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-04-07T10:00:00+00:00",
     "updated_at": "2026-04-07T10:00:00+00:00",
     "wishlist": null
@@ -1504,14 +1530,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-04-09T10:00:00+00:00",
     "updated_at": "2026-04-09T10:00:00+00:00",
     "wishlist": {
@@ -1546,14 +1572,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-04-11T10:00:00+00:00",
     "updated_at": "2026-04-11T10:00:00+00:00",
     "wishlist": {
@@ -1586,14 +1612,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-04-13T10:00:00+00:00",
     "updated_at": "2026-04-13T10:00:00+00:00",
     "wishlist": {
@@ -1629,14 +1655,14 @@
     "description": "",
     "tags": [],
     "shared_notes": "",
-    "openlibrary": null,
+    "catalogs": {},
     "cover": {
      "kind": "none",
      "file": null
     },
     "needs_details": false,
     "lookup_tries": 0,
-    "openlibrary_status": null,
+    "catalog_status": {},
     "created_at": "2026-04-15T10:00:00+00:00",
     "updated_at": "2026-04-15T10:00:00+00:00",
     "wishlist": {

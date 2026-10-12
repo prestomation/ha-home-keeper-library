@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/websocket_api.py
   - custom_components/home_keeper_library/events.py
 related: [people-privilege, store-models, entities, architecture]
-source_hash: cfd6b0fe2516
+source_hash: cfa6d1aa5829
 ---
 
 # Services, websocket commands, events and the API surface
@@ -58,7 +58,7 @@ caller asks for a response.
 that is not a read service:
 
 - `home_keeper_library/get_state` returns the projected document, the caller (`me`), the
-  currency, the tab state and the revision. An admin also gets `openlibrary_account`.
+  currency, the tab state and the revision. An admin also gets `catalog_accounts`.
 - `home_keeper_library/subscribe` sends `{"type": "changed", "revision": n}` after each
   store change. The client then calls `get_state` again. The command listens to the
   dispatcher signal `const.SIGNAL_STORE_CHANGED`, so a subscription stays after a reload
@@ -98,7 +98,7 @@ shelf. `reading_updated` fires for a change that keeps the status, and `reading_
 for a new status. The loan keys are `loan_id`, `direction`, `copy_id`, `party`, `started`,
 `due` and `returned`. `settings_updated` is not a store change: the currency and the Open
 Library account are on the entry. `coordinator.async_check_settings` fires it 1 time for
-each change, with `currency` or `openlibrary_account` in `changed_fields`.
+each change, with `currency` or `catalog_accounts` in `changed_fields`.
 
 ### API surface
 

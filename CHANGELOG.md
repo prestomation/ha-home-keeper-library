@@ -5,6 +5,15 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
+## [0.3.0b2]
+
+### Changed
+
+- **Catalog service names.** The Open Library services are now `send_to_catalog`,
+  `link_catalog`, `skip_catalog` and `disconnect_catalog`, so that the library can
+  support more catalogs of books later. Change your automations that use the old names
+  or the `link_openlibrary` field `edition`, which is now `record`.
+
 ## [0.3.0b1]
 
 ### Added
