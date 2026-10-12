@@ -189,6 +189,26 @@ def _card_resources(hass) -> list[dict]:
     ]
 
 
+async def test_resources_read_the_mode_of_an_older_home_assistant(hass) -> None:
+    """Before Home Assistant 2026.2, the Lovelace data has `mode` only."""
+    from types import SimpleNamespace
+
+    from homeassistant.components.lovelace.const import LOVELACE_DATA
+
+    from custom_components.home_keeper_library.card import _storage_resources
+
+    resources = object()
+    hass.data[LOVELACE_DATA] = SimpleNamespace(mode="storage", resources=resources)
+    assert _storage_resources(hass) is resources
+    hass.data[LOVELACE_DATA] = SimpleNamespace(mode="yaml", resources=resources)
+    assert _storage_resources(hass) is None
+    # A newer Home Assistant sets `resource_mode`, and it wins over `mode`.
+    hass.data[LOVELACE_DATA] = SimpleNamespace(
+        mode="yaml", resource_mode="storage", resources=resources
+    )
+    assert _storage_resources(hass) is resources
+
+
 def _extra_card_urls(hass) -> list[str]:
     from homeassistant.components.frontend import DATA_EXTRA_MODULE_URL
 

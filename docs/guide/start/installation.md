@@ -1,7 +1,7 @@
 # Installation
 
 Home Keeper Library is a custom integration that installs with [HACS](https://hacs.xyz/).
-It requires Home Assistant 2026.9 or later, and Home Keeper.
+It requires Home Assistant 2025.7 or later, and Home Keeper.
 
 ## Install Home Keeper first
 

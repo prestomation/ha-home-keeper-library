@@ -1,9 +1,17 @@
 # Home Keeper Library
 
+[![Integration Usage][usage-shield]][usage]
+[![GitHub Downloads][downloads-shield]][releases]
 [![GitHub Release][release-shield]][releases]
+[![GitHub Release Date][release-date-shield]][releases]
+[![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
 [![hacs][hacs-shield]][hacs]
+![Project Maintenance][maintenance-shield]
+[![ko-fi][kofi-shield]][kofi]
 [![HACS Validation][hacs-validation-shield]][hacs-validation]
+[![HA Version][ha-version-shield]][ha-version]
+[![Docs][docs-shield]][docs]
 
 **Home Keeper Library requires [Home Keeper](https://github.com/prestomation/ha-home-keeper).
 Install and set up Home Keeper first.**
@@ -73,6 +81,7 @@ conventions behind them are in [`AGENTS.md`](AGENTS.md) and
 |---|---|---|
 | **ruff** lint and format | `lint.yml` | Style and format drift in the Python code. |
 | **mypy**, strict, with Home Assistant | `lint.yml` | Type errors against the real Home Assistant API, from `requirements-typing.txt`. |
+| **Oldest Home Assistant** | `test.yml`, `integration.yml` | A change that breaks the oldest supported Home Assistant, which `ci/oldest-ha.env` names. |
 | **Stale Home Assistant resolve** | `ci/check-ha-version.py` | pip that goes back to an old Home Assistant on an old Python, while the job stays green. |
 | **Prose linting** | `lint.yml` (vale) | AI-writing tells and breaks of the STE rules (`styles/STE/`) in the docs and the strings that Home Assistant shows. Scoped to the changed lines. |
 | **Docs audit** | `lint.yml` (`docs-audit`, `ci/docs.py check`) | A design doc that no longer matches its code, a source file that no design doc covers, a doc over its cap, history in a doc, a broken link, and a reference to a file or function that does not exist. |
@@ -118,3 +127,16 @@ MIT. See [LICENSE](LICENSE).
 [hacs]: https://github.com/hacs/integration
 [hacs-validation-shield]: https://github.com/prestomation/ha-home-keeper-library/actions/workflows/hacs.yml/badge.svg
 [hacs-validation]: https://github.com/prestomation/ha-home-keeper-library/actions/workflows/hacs.yml
+[usage-shield]: https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https%3A%2F%2Fanalytics.home-assistant.io%2Fcustom_integrations.json&query=%24.home_keeper_library.total&style=for-the-badge
+[usage]: https://analytics.home-assistant.io/
+[downloads-shield]: https://img.shields.io/github/downloads/prestomation/ha-home-keeper-library/total.svg?style=for-the-badge
+[release-date-shield]: https://img.shields.io/github/release-date/prestomation/ha-home-keeper-library?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/last-commit/prestomation/ha-home-keeper-library?style=for-the-badge
+[commits]: https://github.com/prestomation/ha-home-keeper-library/commits/main
+[maintenance-shield]: https://img.shields.io/badge/maintainer-%40prestomation-blue.svg?style=for-the-badge
+[ha-version-shield]: https://img.shields.io/badge/Home%20Assistant-2025.7%2B-blue.svg?style=for-the-badge
+[ha-version]: https://www.home-assistant.io/
+[docs-shield]: https://img.shields.io/badge/docs-website-03a9f4.svg?style=for-the-badge
+[docs]: https://prestomation.github.io/ha-home-keeper-library/
+[kofi-shield]: https://img.shields.io/badge/Ko--fi-donate-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white
+[kofi]: https://ko-fi.com/prestomation

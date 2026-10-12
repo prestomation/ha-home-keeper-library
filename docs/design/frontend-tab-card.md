@@ -25,7 +25,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/styles.ts
   - custom_components/home_keeper_library/frontend/src/global.d.ts
 related: [home-keeper-dependency, scan-and-isbn, csv-import-export, people-privilege]
-source_hash: 97bfbd58069a
+source_hash: c600bc9da36f
 ---
 
 # Tab and card
@@ -64,8 +64,8 @@ inlined, and the zxing decoder as a separate chunk. `card.async_register_card` d
 - **Lovelace resource.** With the resources in storage, which is the default, the card
   is a resource of type `module`. `card_resource.plan_card_resource` matches the rows by
   path with no `?v=` and leaves 1 row with the current URL. The same bundle writes no row.
-- **Frontend module.** With `resource_mode: yaml`, or if the resource write fails, the
-  card goes to `frontend.add_extra_js_url`.
+- **Frontend module.** With `resource_mode: yaml` (the field is `mode` before Home Assistant
+  2026.2), or if the resource write fails, the card goes to `frontend.add_extra_js_url`.
 
 Only 1 path runs. Home Assistant 2026.9 puts a scoped custom element registry in front
 of `window.customElements`, and an app shell import that runs first puts the card in the

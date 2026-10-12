@@ -57,7 +57,14 @@ def _storage_resources(hass: HomeAssistant) -> ResourceStorageCollection | None:
     """The resource collection that the library can write, or None."""
     if (data := hass.data.get(LOVELACE_DATA)) is None:
         return None
-    if data.resource_mode != MODE_STORAGE:
+    # Home Assistant 2026.2 added `resource_mode` and later dropped `mode`. Before
+    # that, `mode` holds the same value.
+    mode = (
+        data.resource_mode
+        if hasattr(data, "resource_mode")
+        else getattr(data, "mode", None)
+    )
+    if mode != MODE_STORAGE:
         return None
     return cast("ResourceStorageCollection", data.resources)
 
