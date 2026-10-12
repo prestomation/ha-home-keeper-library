@@ -5,7 +5,8 @@
  *   bash ci/capture-video.sh        # writes docs/videos/walkthrough.{webm,mp4,gif}
  *
  * The tour: open the Library tab in Home Keeper, browse the grid, search, open a
- * book, set the reading status, scan a book by ISBN into a shelf, lend a book with
+ * book, set the reading status, scan a book by ISBN into a shelf, give the title of a
+ * scanned book that Open Library does not have, lend a book with
  * a Home Keeper task, see the loan, connect Open Library and send a book that it
  * does not have, and open the card on a dashboard. `BEAT` pauses
  * let each step read in the video. The tour puts the seed back at the end.
@@ -21,6 +22,9 @@ import { DESKTOP } from './viewports';
 const OUT = process.env.VIDEO_DIR || '/tmp/home-keeper-library-video';
 const BEAT = 900;
 const NEW_ISBN = '9780553418606';
+// A scanned book that the fixture Open Library does not have. The scan asks for its title.
+const MISS_ISBN = '9781402894626';
+const MISS_TITLE = 'Field Notes on Moss';
 const LEND_TITLE = 'Station Eleven';
 const PARTY = 'Robin';
 const STATUS_TITLE = 'The Lathe of Heaven';
@@ -34,7 +38,7 @@ async function beat(page: Page, n = 1): Promise<void> {
 
 async function cleanUp(): Promise<void> {
   const state = await adminState();
-  for (const book of state.books.filter((b: { isbn13: string }) => b.isbn13 === NEW_ISBN || b.isbn13 === OL_ISBN)) {
+  for (const book of state.books.filter((b: { isbn13: string }) => [NEW_ISBN, MISS_ISBN, OL_ISBN].includes(b.isbn13))) {
     await library('delete_book', { book_id: book.id });
   }
   const lent = state.books.find((b: { title: string }) => b.title === LEND_TITLE);
@@ -97,6 +101,18 @@ test('record the Library walkthrough', async ({ browser }) => {
     await tab.locator('[data-k="isbn-input"]').pressSequentially(NEW_ISBN, { delay: 60 });
     await tab.locator('[data-k="isbn-add"]').click();
     await expect(tab.locator('.hkl-result .hkl-pill.ok')).toHaveText('Added', { timeout: 30_000 });
+    await beat(page, 2);
+    // A book that Open Library does not have: the scan stops and asks for the title.
+    await tab.locator('[data-k="isbn-input"]').pressSequentially(MISS_ISBN, { delay: 60 });
+    await tab.locator('[data-k="isbn-add"]').click();
+    const sheet = tab.locator('.hkl-dialog.sheet');
+    await expect(sheet).toBeVisible({ timeout: 30_000 });
+    await beat(page, 2);
+    await sheet.locator('[name="title"]').pressSequentially(MISS_TITLE, { delay: 60 });
+    await beat(page);
+    await sheet.locator('[data-k="d-submit"]').click();
+    await expect(sheet).toHaveCount(0);
+    await expect(tab.locator('.hkl-result').filter({ hasText: MISS_TITLE })).toBeVisible();
     await beat(page, 2);
     await tab.locator('[data-k="scan-done"]').click();
     await expect(tab.locator('.hkl-scan-head')).toContainText('Scan summary');

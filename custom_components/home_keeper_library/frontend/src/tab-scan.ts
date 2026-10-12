@@ -134,9 +134,9 @@ function cameraStep(ctx: ViewCtx): string {
   const stalled = s.stalled
     ? `<button class="hkl-cam-restart" data-act="scan-camera" data-k="cam-restart">${escapeHTML(t('scan.camera_paused'))}</button>`
     : '';
-  // The debug view (`;debug=1`) shows the camera state. The tab writes its text.
   // A book with no match waits for its title, and the camera reads no code.
   const paused = nextMiss(s.results) ? `<span class="hkl-cam-paused" data-k="cam-paused">${escapeHTML(t('scan.paused'))}</span>` : '';
+  // The debug view (`;debug=1`) shows the camera state. The tab writes its text.
   const debug = ctx.route.query.debug === '1' ? '<pre class="hkl-cam-debug" data-k="cam-debug"></pre>' : '';
   const cam = camera
     ? `<div class="hkl-cam"><div class="hkl-cam-video" data-slot="video"></div><div class="hkl-frame" aria-hidden="true"></div>${paused}${stalled}${s.torch !== null ? `<button class="hkl-iconbtn torch${s.torch ? ' on' : ''}" data-act="scan-torch" data-k="torch" aria-pressed="${s.torch}" aria-label="${escapeHTML(t('scan.torch'))}">${ICONS.torch}</button>` : ''}<span class="hkl-cam-hint">${escapeHTML(t('scan.frame_hint'))}</span></div>`

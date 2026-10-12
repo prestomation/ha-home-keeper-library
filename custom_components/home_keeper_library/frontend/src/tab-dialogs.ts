@@ -149,7 +149,7 @@ function scanTitleBody(ctx: ViewCtx, d: Extract<Dialog, { kind: 'scan-title' }>)
     sheet: true,
     html: `<div class="hkl-miss-head"><span class="hkl-cover hkl-cover-thumb miss" aria-hidden="true"></span><span class="hkl-row-main"><span class="hkl-muted" data-k="d-isbn">ISBN ${escapeHTML(d.isbn)}</span><span class="hkl-muted">${escapeHTML(t('scan.miss_hint'))}</span></span></div>
       ${field(t('book.title'), text('title', '', `required autocomplete="off" data-input="miss-title" placeholder="${escapeHTML(t('scan.miss_placeholder'))}"`), 'wide')}
-      <details class="hkl-more" data-k="d-more"><summary data-k="d-more-toggle">${escapeHTML(t('scan.miss_more'))}</summary>
+      <details class="hkl-miss-more" data-k="d-more"><summary data-k="d-more-toggle">${escapeHTML(t('scan.miss_more'))}</summary>
         <div class="hkl-fields">
           ${field(t('book.subtitle'), text('subtitle'), 'wide')}
           ${field(t('book.authors'), text('authors'), 'wide')}
@@ -157,7 +157,7 @@ function scanTitleBody(ctx: ViewCtx, d: Extract<Dialog, { kind: 'scan-title' }>)
           ${field(t('book.published'), text('published'), 'small')}
           ${field(t('copy.format'), `<select name="format" data-k="d-format">${formatOptions(copy?.format ?? 'paperback')}</select>`)}
           ${field(t('book.pages_label'), text('pages', '', 'type="number" min="0"'), 'small')}
-          <label class="hkl-btn outline hkl-file wide">${ICONS.camera}<input class="hkl-sr" type="file" name="cover" accept="image/jpeg,image/png,image/webp" capture="environment" data-chg="miss-cover" data-k="d-cover" /><span data-k="d-cover-name">${escapeHTML(t('scan.miss_cover'))}</span></label>
+          <label class="hkl-btn outline hkl-miss-cover">${ICONS.camera}<input class="hkl-sr" type="file" name="cover" accept="image/jpeg,image/png,image/webp" capture="environment" data-chg="miss-cover" data-k="d-cover" /><span data-k="d-cover-name">${escapeHTML(t('scan.miss_cover'))}</span></label>
         </div>
       </details>`,
   };
