@@ -8,7 +8,7 @@
 | custom\_components/home\_keeper\_library/api\_surface.py            |       91 |        0 |        0 |        0 |    100% |           |
 | custom\_components/home\_keeper\_library/backend\_i18n.py           |       51 |        1 |        8 |        1 |     97% |        76 |
 | custom\_components/home\_keeper\_library/book\_lookup.py            |      110 |       10 |       28 |        7 |     88% |56, 61, 89, 92-\>exit, 113, 130-\>exit, 140, 147-148, 151-152, 165 |
-| custom\_components/home\_keeper\_library/card.py                    |       78 |       20 |       28 |        7 |     71% |59, 61, 73-75, 77-78, 82, 95, 108, 115-126, 130, 150-151 |
+| custom\_components/home\_keeper\_library/card.py                    |       79 |       19 |       28 |        6 |     73% |59, 80-82, 84-85, 89, 102, 115, 122-133, 137, 157-158 |
 | custom\_components/home\_keeper\_library/card\_resource.py          |       29 |        0 |        2 |        0 |    100% |           |
 | custom\_components/home\_keeper\_library/config\_flow.py            |       72 |        1 |       14 |        1 |     98% |       125 |
 | custom\_components/home\_keeper\_library/const.py                   |       87 |        0 |        0 |        0 |    100% |           |
@@ -38,7 +38,7 @@
 | custom\_components/home\_keeper\_library/websocket\_api.py          |       79 |        6 |       12 |        2 |     91% |101-108, 124-125, 153-154 |
 | custom\_components/home\_keeper\_library/wishlist.py                |      117 |        0 |       44 |        0 |    100% |           |
 | custom\_components/home\_keeper\_library/wishlist\_sync.py          |      105 |        7 |       28 |        3 |     92% |73-\>exit, 93-\>exit, 99, 109-111, 129-131 |
-| **TOTAL**                                                           | **5131** |  **168** | **1650** |  **114** | **96%** |           |
+| **TOTAL**                                                           | **5132** |  **167** | **1650** |  **113** | **96%** |           |
 
 
 ## Setup coverage badge
