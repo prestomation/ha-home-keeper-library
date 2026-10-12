@@ -9,7 +9,7 @@ implements:
   - custom_components/home_keeper_library/backend_i18n.py
   - custom_components/home_keeper_library/manifest.json
 related: [store-models, people-privilege, events-api, home-keeper-dependency, frontend-tab-card]
-source_hash: d3b0b457d6cc
+source_hash: 8247db189a11
 ---
 
 # Architecture

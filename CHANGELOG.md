@@ -5,6 +5,13 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
+## [0.3.0b5]
+
+### Changed
+
+- **Integration icon.** Home Keeper Library now has its own icon: the Home Keeper house
+  with a stack of books. It shows on the integration pages of Home Assistant.
+
 ## [0.3.0b4]
 
 ### Added
