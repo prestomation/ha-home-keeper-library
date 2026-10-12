@@ -52,9 +52,18 @@ you can find each of these books on the shelf later and add the other details.
 1. Type the title from the cover of the book.
 2. Select **Save and scan next**. The scan continues.
 
-The camera reads no barcode until you save the title. To add more details now, select
-**More details (optional)**. You can type the subtitle, the authors, the publisher, the
-year, the format and the number of pages. **Take a photo of the cover** adds a cover.
+The camera reads no barcode until you select **Save and scan next** or **Remove this
+scan**.
+
+To add more details now, select **More details (optional)**. These fields show:
+
+- Subtitle
+- Authors
+- Publisher
+- Published
+- Format
+- Pages
+- **Take a photo of the cover**
 
 ![The title sheet with the details open](../../images/scan-miss-details-mobile.png)
 
