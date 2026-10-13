@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Catalogus doorzoeken",
+      "description": "Zoek het beste werk in Open Library voor een titel en een auteur. De bibliotheek blijft gelijk.",
+      "fields": {
+        "title": {
+          "name": "Titel",
+          "description": "De titel van het boek."
+        },
+        "authors": {
+          "name": "Auteurs",
+          "description": "De auteurs. Alleen de eerste auteur wordt gebruikt."
+        }
+      }
+    },
     "add_book": {
       "name": "Boek toevoegen",
       "description": "Een boek toevoegen. Als een boek hetzelfde ISBN heeft, geeft de dienst dat boek terug.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Koppelen aan Open Library",
-      "description": "Koppel een boek aan een editie in Open Library en vul de lege velden.",
+      "description": "Koppel een boek aan een editie of werk in Open Library en vul de lege velden.",
       "fields": {
         "book_id": {
           "name": "Boek",
           "description": "De ID van het boek."
         },
         "record": {
-          "name": "Editie",
-          "description": "Een editiesleutel, zoals OL123M, of de URL van de editiepagina."
+          "name": "Editie of werk",
+          "description": "Een editiesleutel zoals OL123M, een werksleutel zoals OL45W of de URL van de pagina."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library heeft de accountsleutels niet geaccepteerd. Koppel het account opnieuw."
     },
     "openlibrary_not_found": {
-      "message": "Open Library heeft geen editie {edition}."
+      "message": "Open Library heeft geen record {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} is geen editiesleutel of URL van Open Library."
+      "message": "{edition} is geen sleutel of URL van Open Library."
     },
     "files_dir_invalid": {
       "message": "De bestandsmap moet onder .storage/home_keeper_import_export staan."

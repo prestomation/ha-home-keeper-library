@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Cerca nel catalogo",
+      "description": "Trova la migliore opera di Open Library per un titolo e un autore. La biblioteca non cambia.",
+      "fields": {
+        "title": {
+          "name": "Titolo",
+          "description": "Il titolo del libro."
+        },
+        "authors": {
+          "name": "Autori",
+          "description": "Gli autori. Si usa solo il primo autore."
+        }
+      }
+    },
     "add_book": {
       "name": "Aggiungi libro",
       "description": "Aggiungi un libro. Se un libro ha lo stesso ISBN, il servizio restituisce quel libro.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Collega a Open Library",
-      "description": "Collega un libro a un'edizione di Open Library e ne compila i campi vuoti.",
+      "description": "Collega un libro a un'edizione o a un'opera di Open Library e compila i campi vuoti.",
       "fields": {
         "book_id": {
           "name": "Libro",
           "description": "L'ID del libro."
         },
         "record": {
-          "name": "Edizione",
-          "description": "Una chiave di edizione, come OL123M, o l'URL della pagina dell'edizione."
+          "name": "Edizione o opera",
+          "description": "Una chiave di edizione, come OL123M, una chiave di opera, come OL45W, o l'URL della pagina."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library non ha accettato le chiavi dell'account. Collega di nuovo l'account."
     },
     "openlibrary_not_found": {
-      "message": "Open Library non ha l'edizione {edition}."
+      "message": "Open Library non ha il record {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} non è una chiave o un URL di edizione di Open Library."
+      "message": "{edition} non è una chiave o un URL di Open Library."
     },
     "files_dir_invalid": {
       "message": "La cartella dei file deve essere sotto .storage/home_keeper_import_export."

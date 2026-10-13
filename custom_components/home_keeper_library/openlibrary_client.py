@@ -229,6 +229,23 @@ class OpenLibraryClient:
             return None
         return await self._draft(edition)
 
+    async def async_lookup_work(self, work_key: str) -> dict[str, Any] | None:
+        """The book draft of a work key ``OL…W``, or None if there is none.
+
+        Raise :class:`OpenLibraryError` if Open Library cannot be read.
+        """
+        work = await self._request(openlibrary.work_url(self._base, work_key))
+        if not isinstance(work, dict) or not str(work.get("key", "")).startswith(
+            "/works/"
+        ):
+            return None
+        authors = []
+        for author_key in openlibrary.author_keys({}, work)[:_MAX_AUTHORS]:
+            found = await self._request(openlibrary.author_url(self._base, author_key))
+            if isinstance(found, dict):
+                authors.append(found)
+        return openlibrary.parse_work(work, authors)
+
     async def _draft(self, edition: dict[str, Any]) -> dict[str, Any]:
         """The draft of an edition document, with its work and its authors."""
         work = None

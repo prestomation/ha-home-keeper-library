@@ -1,0 +1,8 @@
+{
+  "key": "/works/OL9000002W",
+  "title": "The Hollow Orchard",
+  "authors": [{"author": {"key": "/authors/OL9000002A"}, "type": {"key": "/type/author_role"}}],
+  "description": "A family keeps an old apple orchard alive through 3 dry summers.",
+  "subjects": ["Orchards", "Family life", "Fiction"],
+  "covers": [8167231]
+}

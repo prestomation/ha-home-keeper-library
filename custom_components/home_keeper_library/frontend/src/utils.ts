@@ -494,8 +494,10 @@ export function editionKey(text: string | null | undefined): string | null {
 }
 
 /** The page of an edition on Open Library. */
-export function openLibraryUrl(editionKey: string, edit = false): string {
-  return `https://openlibrary.org/books/${encodeURIComponent(editionKey)}${edit ? '/edit' : ''}`;
+export function openLibraryUrl(key: string, edit = false): string {
+  const bare = key.replace(/^\/(books|works)\//, '');
+  const kind = /^OL\d+W$/.test(bare) ? 'works' : 'books';
+  return `https://openlibrary.org/${kind}/${encodeURIComponent(bare)}${edit ? '/edit' : ''}`;
 }
 
 /** True if *book* passes every filter except the status filter. */

@@ -33,7 +33,7 @@ from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import entity_registry as er
 
-from . import csv_io, import_export, models, people, projections
+from . import csv_io, import_export, models, openlibrary, people, projections
 from . import openlibrary_contribute as contribute
 from .api_surface import SERVICES, ServiceSpec
 from .backend_i18n import resolve_exception
@@ -197,6 +197,10 @@ SERVICE_FIELDS: dict[str, dict[Any, Any]] = {
         vol.Optional("force", default=False): cv.boolean,
     },
     "lookup_isbn": {vol.Required("isbn"): cv.string},
+    "search_catalog": {
+        vol.Required("title"): cv.string,
+        vol.Optional("authors"): _STR_LIST,
+    },
     "add_book": {
         **_BOOK_FIELDS,
         vol.Optional("lookup", default=True): cv.boolean,
@@ -511,6 +515,26 @@ async def _lookup_isbn(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+async def _search_catalog(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
+    """The best catalog match for a title and an author, for a book with no match.
+
+    The match is a work, not an edition. The reply has no edition fields.
+    """
+    title = str(data["title"]).strip()
+    if not title:
+        raise LibraryError("field_required", field="title")
+    authors = [a.strip() for a in data.get("authors") or [] if a.strip()]
+    try:
+        draft = await ctx.coordinator.client.async_search(title, authors)
+    except OpenLibraryError as err:
+        _LOGGER.debug("Open Library search for %s failed: %s", title, err)
+        return {"status": "unavailable", "match": None}
+    match = openlibrary.search_match(draft) if draft else None
+    if match is None or not match["work_key"]:
+        return {"status": "not_found", "match": None}
+    return {"status": "found", "match": match}
+
+
 async def _add_book_service(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     book, existing, status = await _add_book(ctx, data, lookup=data.get("lookup", True))
     return {"book": ctx.book_reply(book), "existing": existing, "lookup": status}
@@ -554,12 +578,28 @@ async def _link_edition(ctx: Ctx, book_id: str, edition_key: str) -> None:
     await ctx.coordinator.lookup.async_apply(book_id, draft)
 
 
+async def _link_work(ctx: Ctx, book_id: str, work_key: str) -> None:
+    """Link a book to an Open Library work and fill its empty work fields.
+
+    A work is not an edition, so the ISBN and the other edition fields stay.
+    """
+    try:
+        draft = await ctx.coordinator.client.async_lookup_work(work_key)
+    except OpenLibraryError as err:
+        raise LibraryError("lookup_unavailable") from err
+    if draft is None:
+        raise LibraryError("openlibrary_not_found", edition=work_key)
+    await ctx.coordinator.lookup.async_apply(book_id, draft)
+
+
 async def _link_catalog(ctx: Ctx, data: dict[str, Any]) -> dict[str, Any]:
     book = ctx.store.book(data["book_id"])
-    edition_key = contribute.edition_key(data["record"])
-    if edition_key is None:
+    if edition_key := contribute.edition_key(data["record"]):
+        await _link_edition(ctx, book["id"], edition_key)
+    elif work_key := contribute.work_key(data["record"]):
+        await _link_work(ctx, book["id"], work_key)
+    else:
         raise LibraryError("invalid_openlibrary_edition", edition=str(data["record"]))
-    await _link_edition(ctx, book["id"], edition_key)
     return {"book": ctx.book_reply(ctx.store.book(book["id"]))}
 
 
@@ -1200,6 +1240,7 @@ SERVICE_HANDLERS: dict[str, Handler] = {
     "update_shelf": _update_shelf,
     "delete_shelf": _delete_shelf,
     "lookup_isbn": _lookup_isbn,
+    "search_catalog": _search_catalog,
     "add_book": _add_book_service,
     "update_book": _update_book,
     "delete_book": _delete_book,

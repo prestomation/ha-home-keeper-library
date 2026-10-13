@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Buscar en el catálogo",
+      "description": "Busca la mejor obra de Open Library para un título y un autor. La biblioteca no cambia.",
+      "fields": {
+        "title": {
+          "name": "Título",
+          "description": "El título del libro."
+        },
+        "authors": {
+          "name": "Autores",
+          "description": "Los autores. Solo se usa el primer autor."
+        }
+      }
+    },
     "add_book": {
       "name": "Añadir libro",
       "description": "Añadir un libro. Si un libro tiene el mismo ISBN, el servicio devuelve ese libro.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Vincular con Open Library",
-      "description": "Vincula un libro con una edición de Open Library y rellena sus campos vacíos.",
+      "description": "Vincula un libro a una edición o una obra de Open Library y rellena sus campos vacíos.",
       "fields": {
         "book_id": {
           "name": "Libro",
           "description": "El ID del libro."
         },
         "record": {
-          "name": "Edición",
-          "description": "Una clave de edición, como OL123M, o la URL de la página de la edición."
+          "name": "Edición u obra",
+          "description": "Una clave de edición, como OL123M, una clave de obra, como OL45W, o la URL de la página."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library no aceptó las claves de la cuenta. Vuelva a conectar la cuenta."
     },
     "openlibrary_not_found": {
-      "message": "Open Library no tiene la edición {edition}."
+      "message": "Open Library no tiene el registro {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} no es una clave ni una URL de edición de Open Library."
+      "message": "{edition} no es una clave ni una URL de Open Library."
     },
     "files_dir_invalid": {
       "message": "El directorio de archivos debe estar dentro de .storage/home_keeper_import_export."

@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Hledat v katalogu",
+      "description": "Najde nejlepší dílo v Open Library podle názvu a autora. Knihovna se nemění.",
+      "fields": {
+        "title": {
+          "name": "Název",
+          "description": "Název knihy."
+        },
+        "authors": {
+          "name": "Autoři",
+          "description": "Autoři. Použije se jen první autor."
+        }
+      }
+    },
     "add_book": {
       "name": "Přidat knihu",
       "description": "Přidat knihu. Pokud má kniha stejné ISBN, služba vrátí tuto knihu.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Propojit s Open Library",
-      "description": "Propojí knihu s vydáním v Open Library a vyplní její prázdná pole.",
+      "description": "Propojí knihu s vydáním nebo dílem v Open Library a vyplní její prázdná pole.",
       "fields": {
         "book_id": {
           "name": "Kniha",
           "description": "ID knihy."
         },
         "record": {
-          "name": "Vydání",
-          "description": "Klíč vydání, například OL123M, nebo adresa URL stránky vydání."
+          "name": "Vydání nebo dílo",
+          "description": "Klíč vydání, například OL123M, klíč díla, například OL45W, nebo URL stránky."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library nepřijala klíče účtu. Připojte účet znovu."
     },
     "openlibrary_not_found": {
-      "message": "Open Library nemá vydání {edition}."
+      "message": "Open Library nemá záznam {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} není klíč ani adresa URL vydání v Open Library."
+      "message": "{edition} není klíč ani URL Open Library."
     },
     "files_dir_invalid": {
       "message": "Adresář souborů musí být uvnitř .storage/home_keeper_import_export."

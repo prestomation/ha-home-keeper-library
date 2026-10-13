@@ -6,7 +6,7 @@ The client (``openlibrary_client.py``) reads these documents:
 * ``/works/{key}.json``: the work of the edition.
 * ``/authors/{key}.json``: each author.
 * ``/search.json?title=&author=&limit=5``: a title and author search, for a CSV
-  row with no ISBN.
+  row with no ISBN, and for the title of a scan with no match.
 
 The functions here turn them into a *book draft*: a dict with the book fields of
 ``models.DRAFT_FIELDS`` and a ``catalogs`` block with the ``openlibrary`` record.
@@ -191,6 +191,49 @@ def parse_edition(
                 "cover_id": cover_id,
             },
         },
+    }
+
+
+def parse_work(
+    work: dict[str, Any], authors: list[dict[str, Any]] | None = None
+) -> dict[str, Any]:
+    """A book draft from a work and its author documents.
+
+    A work has no edition, so the draft has only the fields that are the same
+    for each edition. The ISBN, publisher, date, pages and language stay empty.
+    """
+    subjects = _str_list(work.get("subjects"))
+    return {
+        "title": _str(work.get("title")),
+        "subtitle": _str(work.get("subtitle")),
+        "authors": [name for a in authors or [] if (name := author_name(a))],
+        "isbn13": None,
+        "isbn10": None,
+        "publisher": "",
+        "published": "",
+        "pages": None,
+        "language": None,
+        "subjects": subjects[:_MAX_SUBJECTS],
+        "series": None,
+        "description": _text_value(work.get("description")),
+        "catalogs": {
+            "openlibrary": {
+                "edition_key": None,
+                "work_key": _key(work.get("key"), "works"),
+                "cover_id": _first_int(work.get("covers")),
+            },
+        },
+    }
+
+
+def search_match(draft: dict[str, Any]) -> dict[str, Any]:
+    """The ``match`` of a ``search_catalog`` reply, from a search draft."""
+    record = draft.get("catalogs", {}).get("openlibrary") or {}
+    return {
+        "title": draft.get("title") or "",
+        "authors": list(draft.get("authors") or []),
+        "first_published": draft.get("published") or "",
+        "work_key": record.get("work_key"),
     }
 
 

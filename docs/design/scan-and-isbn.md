@@ -93,6 +93,12 @@ value, `update_copy` for a new format, and `set_cover` for a photo. Remove calls
 gets the focus. If the user leaves the scan, the sheet closes and the book keeps its ISBN as
 the title.
 
+After the save, the tab calls `search_catalog` with the title and the authors. If Open
+Library has a work, the sheet becomes the match dialog (`scan-match`): the title, the
+authors, the first year and a link to the work. **Use these details** calls `link_catalog`
+with the work key. **Not this book** closes it. The scan stays paused while it shows. No
+match, or a failed search, closes the sheet at once.
+
 In borrowed mode each scan calls `borrow_book` with the ISBN, the lender and the due date
 of the session, and adds no copy ([loans-home-keeper](loans-home-keeper.md)).
 
@@ -121,6 +127,8 @@ to-do item goes at once.
   costs no download. The cost is 2 code paths to test.
 - **A required title** over **a dashed row only**: a row scrolls away as the scan goes
   on, and the user cannot find the book later. The cost is 1 stop for each miss.
+- **A confirm for a title match** over **fill at once**: a title can match a different
+  book, and the user holds the book. The cost is 1 more tap for each match.
 - **Ask on a duplicate** over **add a copy by default**: a scan of a shelf that is already
   in the library is the most common duplicate, and it means a move.
 

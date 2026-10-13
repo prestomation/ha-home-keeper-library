@@ -6,8 +6,10 @@ runs this server next to Home Assistant and sets the 2 environment variables of
 it; the Home Assistant code has no test path.
 
 A request for ``/<path>`` returns the file ``<this directory>/<path>``, with the
-query string left out. ``/search.json`` and ``/search/authors.json`` always find
-nothing. Each other path returns 404, as Open Library does for an unknown ISBN.
+query string left out. ``/search/authors.json`` always finds nothing.
+``/search.json`` returns ``search/title/<slug>.json`` for a title that has a file,
+where the slug is the title in lower case with a hyphen for each space. Else it
+finds nothing. Each other path returns 404, as Open Library does for an unknown ISBN.
 
 3 POST paths act as the write paths of Open Library for a send:
 
@@ -24,7 +26,7 @@ import json
 import mimetypes
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, urlsplit
 
 ROOT = Path(__file__).resolve().parent
 PORT = 8080
@@ -39,7 +41,14 @@ class Handler(BaseHTTPRequestHandler):
     """Serve the fixture files. Nothing outside ROOT is served."""
 
     def do_GET(self) -> None:
-        path = urlsplit(self.path).path.lstrip("/")
+        parts = urlsplit(self.path)
+        path = parts.path.lstrip("/")
+        if path == "search.json":
+            title = (parse_qs(parts.query).get("title") or [""])[0]
+            slug = "-".join(title.lower().split())
+            found = f"search/title/{slug}.json"
+            if slug.replace("-", "").isalnum() and (ROOT / found).is_file():
+                path = found
         target = (ROOT / path).resolve()
         if ROOT not in target.parents or not target.is_file() or target.suffix == ".py":
             self.send_error(404)

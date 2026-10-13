@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "搜索目录",
+      "description": "按书名和作者查找 Open Library 中最匹配的作品。藏书不变。",
+      "fields": {
+        "title": {
+          "name": "书名",
+          "description": "图书的书名。"
+        },
+        "authors": {
+          "name": "作者",
+          "description": "作者。只使用第一位作者。"
+        }
+      }
+    },
     "add_book": {
       "name": "添加图书",
       "description": "添加一本图书。如果已有相同 ISBN 的图书，服务返回那本书。",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "关联到 Open Library",
-      "description": "将图书关联到 Open Library 的某个版本，并填写其空字段。",
+      "description": "将图书关联到 Open Library 的某个版本或作品，并填写其空字段。",
       "fields": {
         "book_id": {
           "name": "图书",
           "description": "图书的 ID。"
         },
         "record": {
-          "name": "版本",
-          "description": "版本键（例如 OL123M）或版本页面的 URL。"
+          "name": "版本或作品",
+          "description": "版本键（例如 OL123M）、作品键（例如 OL45W）或页面的 URL。"
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library 未接受账户密钥。请重新连接账户。"
     },
     "openlibrary_not_found": {
-      "message": "Open Library 没有版本 {edition}。"
+      "message": "Open Library 没有记录 {edition}。"
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} 不是 Open Library 的版本键或 URL。"
+      "message": "{edition} 不是 Open Library 的键或 URL。"
     },
     "files_dir_invalid": {
       "message": "文件目录必须位于 .storage/home_keeper_import_export 之下。"

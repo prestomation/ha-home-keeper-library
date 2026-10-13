@@ -29,6 +29,7 @@ import {
   notOnOpenLibrary,
   olRecord,
   olStatus,
+  openLibraryUrl,
   progress,
   readFilters,
   readingOf,
@@ -355,7 +356,7 @@ export function renderBook(ctx: ViewCtx, book: Book | undefined): string {
   ].filter(Boolean).map((x) => escapeHTML(x));
   const olKey = olRecord(book)?.edition_key || olRecord(book)?.work_key;
   if (olKey) {
-    meta.push(`<a href="https://openlibrary.org/${olKey.startsWith('/') ? '' : 'books/'}${escapeHTML(olKey.replace(/^\//, ''))}" target="_blank" rel="noreferrer noopener">Open Library</a>`);
+    meta.push(`<a href="${escapeHTML(openLibraryUrl(olKey))}" target="_blank" rel="noreferrer noopener">Open Library</a>`);
   }
   const tags = [...book.subjects.slice(0, 6), ...book.tags]
     .map((x) => `<span class="hkl-chip">${escapeHTML(x)}</span>`)

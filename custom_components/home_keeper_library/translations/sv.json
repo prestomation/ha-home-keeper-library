@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Sök i katalogen",
+      "description": "Hitta det bästa verket i Open Library för en titel och en författare. Biblioteket ändras inte.",
+      "fields": {
+        "title": {
+          "name": "Titel",
+          "description": "Bokens titel."
+        },
+        "authors": {
+          "name": "Författare",
+          "description": "Författarna. Bara den första författaren används."
+        }
+      }
+    },
     "add_book": {
       "name": "Lägg till bok",
       "description": "Lägg till en bok. Om en bok har samma ISBN returnerar tjänsten den boken.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Länka till Open Library",
-      "description": "Länka en bok till en utgåva i Open Library och fyll i dess tomma fält.",
+      "description": "Länka en bok till en utgåva eller ett verk i Open Library och fyll i de tomma fälten.",
       "fields": {
         "book_id": {
           "name": "Bok",
           "description": "Bokens ID."
         },
         "record": {
-          "name": "Utgåva",
-          "description": "En utgåvenyckel, till exempel OL123M, eller URL:en till utgåvans sida."
+          "name": "Utgåva eller verk",
+          "description": "En utgåvenyckel som OL123M, en verknyckel som OL45W eller sidans URL."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library godkände inte kontots nycklar. Anslut kontot igen."
     },
     "openlibrary_not_found": {
-      "message": "Open Library har ingen utgåva {edition}."
+      "message": "Open Library har ingen post {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} är inte en utgåvenyckel eller URL från Open Library."
+      "message": "{edition} är inte en nyckel eller URL från Open Library."
     },
     "files_dir_invalid": {
       "message": "Filkatalogen måste ligga under .storage/home_keeper_import_export."

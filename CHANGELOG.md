@@ -5,6 +5,15 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
+## [0.4.0b2] - 2026-10-13
+
+### Added
+
+- **[Open Library title match](https://prestomation.github.io/ha-home-keeper-library/docs/guide/scan-books).**
+  When a scanned ISBN has no match, the library looks for the title that you type on Open
+  Library and asks if it is your book. If you confirm, the book gets the description,
+  subjects and cover from Open Library, and keeps your ISBN.
+
 ## [0.4.0b1] - 2026-10-12
 
 ### Changed

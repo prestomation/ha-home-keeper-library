@@ -13,6 +13,9 @@ const SEEDED_ISBN = '9780441478125';
 /** The fixture Open Library does not have this ISBN. */
 const MISS_ISBN = '9781402894626';
 const MISS_TITLE = 'Field Notes on Moss';
+/** The fixture Open Library has no edition with this ISBN, but has a work with the title. */
+const MATCH_ISBN = '9781935788225';
+const MATCH_TITLE = 'The Hollow Orchard';
 const COVER = resolve(__dirname, '../seed/covers/13be6b0e5c354e1981a89fe2766196e0-552257a9.jpg');
 
 async function shelfId(room: string, bookcase: string, shelf: string): Promise<string> {
@@ -24,7 +27,7 @@ async function shelfId(room: string, bookcase: string, shelf: string): Promise<s
 
 async function deleteNewBook(): Promise<void> {
   const state = await adminState();
-  for (const book of state.books.filter((b: { isbn13: string }) => b.isbn13 === NEW_ISBN || b.isbn13 === MISS_ISBN)) {
+  for (const book of state.books.filter((b: { isbn13: string }) => [NEW_ISBN, MISS_ISBN, MATCH_ISBN].includes(b.isbn13))) {
     await library('delete_book', { book_id: book.id });
   }
 }
@@ -94,6 +97,61 @@ test.describe('Scan', { tag: '@responsive' }, () => {
     expect(book.cover.kind).toBe('custom');
     const copies = state.copies.filter((c: { book_id: string }) => c.book_id === book.id);
     expect(copies.map((c: { shelf_id: string; format: string }) => [c.shelf_id, c.format])).toEqual([[shelf, 'hardcover']]);
+  });
+
+  test('the title of a book with no match finds its work, and Use these details links it', async ({ page }) => {
+    const tab = await openTab(page, '/scan');
+    await tab.locator('[data-k="m-manual"]').check();
+    await tab.locator('[data-k="scan-start"]').click();
+    await tab.locator('[data-k="isbn-input"]').fill(MATCH_ISBN);
+    await tab.locator('[data-k="isbn-add"]').click();
+    const sheet = tab.locator('.hkl-dialog.sheet');
+    await expect(sheet).toBeVisible({ timeout: 30_000 });
+    await sheet.locator('[name="title"]').fill(MATCH_TITLE);
+    await sheet.locator('[data-k="d-submit"]').click();
+
+    const match = tab.locator('.hkl-dialog');
+    await expect(match.locator('h2')).toHaveText('Found on Open Library', { timeout: 30_000 });
+    await expect(sheet).toHaveCount(0);
+    await expect(match.locator('[data-k="d-match-title"]')).toHaveText(MATCH_TITLE);
+    await expect(match.locator('[data-k="d-match-by"]')).toHaveText('June Calder · first published 1998');
+    await expect(match.locator('[data-k="d-match-view"]')).toHaveAttribute('href', 'https://openlibrary.org/works/OL9000002W');
+    await expect(match.locator('[data-k="d-cancel"]')).toHaveText('Not this book');
+    await match.locator('[data-k="d-submit"]').click();
+    await expect(match).toHaveCount(0);
+
+    await expect
+      .poll(async () => (await adminState()).books.find((b: { isbn13: string }) => b.isbn13 === MATCH_ISBN)?.catalogs, { timeout: 30_000 })
+      .toEqual({ openlibrary: { edition_key: null, work_key: 'OL9000002W', cover_id: 8167231 } });
+    const book = (await adminState()).books.find((b: { isbn13: string }) => b.isbn13 === MATCH_ISBN);
+    expect(book).toMatchObject({
+      title: MATCH_TITLE,
+      authors: ['June Calder'],
+      description: 'A family keeps an old apple orchard alive through 3 dry summers.',
+      subjects: ['Orchards', 'Family life', 'Fiction'],
+      publisher: '',
+      needs_details: false,
+      catalog_status: {},
+    });
+    await expect.poll(async () => (await adminState()).books.find((b: { isbn13: string }) => b.isbn13 === MATCH_ISBN)?.cover?.kind).toBe('openlibrary');
+  });
+
+  test('Not this book keeps the book with no match', async ({ page }) => {
+    const tab = await openTab(page, '/scan');
+    await tab.locator('[data-k="m-manual"]').check();
+    await tab.locator('[data-k="scan-start"]').click();
+    await tab.locator('[data-k="isbn-input"]').fill(MATCH_ISBN);
+    await tab.locator('[data-k="isbn-add"]').click();
+    const sheet = tab.locator('.hkl-dialog.sheet');
+    await expect(sheet).toBeVisible({ timeout: 30_000 });
+    await sheet.locator('[name="title"]').fill(MATCH_TITLE);
+    await sheet.locator('[data-k="d-submit"]').click();
+    const match = tab.locator('.hkl-dialog');
+    await expect(match.locator('h2')).toHaveText('Found on Open Library', { timeout: 30_000 });
+    await match.locator('[data-k="d-cancel"]').click();
+    await expect(match).toHaveCount(0);
+    const book = (await adminState()).books.find((b: { isbn13: string }) => b.isbn13 === MATCH_ISBN);
+    expect(book).toMatchObject({ title: MATCH_TITLE, description: '', catalogs: {}, catalog_status: { openlibrary: 'missing' } });
   });
 
   test('Remove this scan deletes the book with no match', async ({ page }) => {

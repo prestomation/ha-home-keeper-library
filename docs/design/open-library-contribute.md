@@ -5,7 +5,7 @@ implements:
   - custom_components/home_keeper_library/openlibrary_contribute.py
   - custom_components/home_keeper_library/openlibrary_account.py
 related: [open-library-covers, people-privilege, events-api, frontend-tab-card]
-source_hash: c8d5067a3fbe
+source_hash: bf2ef5a2e1e3
 ---
 
 # Send books to Open Library
@@ -98,8 +98,11 @@ network error or a 5xx gives `lookup_unavailable`. A failed cover upload gives
 `cover: failed`, not an error, because Open Library replies with a page in both cases:
 the writer reads the edition again and checks `covers`.
 
-`link_catalog` takes an edition key or an openlibrary.org URL in `record`, reads the
-edition and fills the book. It is also the second step of `existing`. The reply of a
+`link_catalog` takes an edition key, a work key or an openlibrary.org URL of either in
+`record`. An edition fills the empty fields of the book. A work fills only the empty work
+fields and links the work with no edition key. A book with a record has no
+`catalog_status`, so a work link takes the book off the "Not on Open Library" list. It is
+also the second step of `existing`. The reply of a
 send gives the edition key in `record`.
 
 ### HTTP

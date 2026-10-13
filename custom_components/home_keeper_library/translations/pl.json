@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Szukaj w katalogu",
+      "description": "Znajduje najlepsze dzieło w Open Library dla tytułu i autora. Biblioteka się nie zmienia.",
+      "fields": {
+        "title": {
+          "name": "Tytuł",
+          "description": "Tytuł książki."
+        },
+        "authors": {
+          "name": "Autorzy",
+          "description": "Autorzy. Używany jest tylko pierwszy autor."
+        }
+      }
+    },
     "add_book": {
       "name": "Dodaj książkę",
       "description": "Dodaj książkę. Gdy książka ma ten sam ISBN, usługa zwraca tę książkę.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Połącz z Open Library",
-      "description": "Łączy książkę z wydaniem w Open Library i wypełnia jej puste pola.",
+      "description": "Łączy książkę z wydaniem lub dziełem w Open Library i wypełnia jej puste pola.",
       "fields": {
         "book_id": {
           "name": "Książka",
           "description": "ID książki."
         },
         "record": {
-          "name": "Wydanie",
-          "description": "Klucz wydania, na przykład OL123M, lub adres URL strony wydania."
+          "name": "Wydanie lub dzieło",
+          "description": "Klucz wydania, np. OL123M, klucz dzieła, np. OL45W, lub URL strony."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library nie zaakceptowała kluczy konta. Połącz konto ponownie."
     },
     "openlibrary_not_found": {
-      "message": "Open Library nie ma wydania {edition}."
+      "message": "Open Library nie ma rekordu {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} nie jest kluczem ani adresem URL wydania Open Library."
+      "message": "{edition} nie jest kluczem ani adresem URL Open Library."
     },
     "files_dir_invalid": {
       "message": "Katalog plików musi być w .storage/home_keeper_import_export."

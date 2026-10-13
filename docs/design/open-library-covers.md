@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/book_lookup.py
   - custom_components/home_keeper_library/covers.py
 related: [scan-and-isbn, csv-import-export, store-models, people-privilege]
-source_hash: 4639989d12ee
+source_hash: 8e0672d2f71b
 ---
 
 # Open Library and covers
@@ -40,14 +40,16 @@ an import saved with no details. Covers are JPEG files next to the storage docum
 and its authors into a draft: the fields of `models.DRAFT_FIELDS` and a `catalogs` block
 with the `openlibrary` record: the edition key, the work key and the cover id.
 `openlibrary.parse_search` and `openlibrary.best_match` read `/search.json` for a book with
-no ISBN. A value of the wrong type is ignored.
+no ISBN. `openlibrary.parse_work` turns a work and its authors into a draft with only the
+fields that are the same in each edition: no ISBN, publisher, date, pages or language, and
+no edition key. A value of the wrong type is ignored.
 
 `OpenLibraryClient` uses the shared aiohttp session of Home Assistant, a timeout of 10
 seconds and the User-Agent `const.USER_AGENT` with the repository URL. An async limiter
 spaces the requests to each host by 1 second. An ISBN or a search that finds no book is a
 miss for 24 hours, in memory. A network error raises `OpenLibraryError`. It is not a miss.
-`async_lookup_edition` reads an edition by its key, and `forget_miss` clears the miss of
-an ISBN. `async_post` is the write path of a send
+`async_lookup_edition` reads an edition by its key, `async_lookup_work` reads a work by its
+key, and `forget_miss` clears the miss of an ISBN. `async_post` is the write path of a send
 ([open-library-contribute](open-library-contribute.md)).
 
 The base URLs are `const.OPENLIBRARY_URL` and `const.OPENLIBRARY_COVERS_URL`. The
@@ -55,6 +57,16 @@ environment variables `HOME_KEEPER_LIBRARY_OPENLIBRARY_URL` and
 `HOME_KEEPER_LIBRARY_OPENLIBRARY_COVERS_URL` replace them (`openlibrary_client.openlibrary_urls`).
 They are for tests only: `tests/e2e/docker-compose.e2e.yml` sets them to point the
 container at a fixture server.
+
+### Title search
+
+`search_catalog` finds the best work for a title and its first author with `best_match`.
+It changes nothing. The reply is `status` (`found`, `not_found` or `unavailable`) and
+`match` (`openlibrary.search_match`: `title`, `authors`, `first_published` and
+`work_key`), with no edition field, because the match is often a different edition. The
+title sheet of a scan uses it, and a person confirms the match
+([scan-and-isbn](scan-and-isbn.md#title-sheet)). The lookup queue never uses a title
+search for a book with an ISBN, because no person checks the match.
 
 ### Lookup queue
 
@@ -118,5 +130,7 @@ from its cache.
   `/api/home_keeper_library/upload`.
 - The `catalogs` block of a book, keyed by catalog name. The `openlibrary` record has
   `edition_key`, `work_key` and `cover_id`. The `lookup_isbn` draft has the same block.
+- The `search_catalog` fields `title` and `authors`, the reply keys `status` and `match`,
+  and the `match` keys.
 - The book field `lookup_tries` and the covers directory `home_keeper_library_covers`.
 - The cover `kind` values and the file name format.

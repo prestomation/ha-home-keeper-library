@@ -6,7 +6,8 @@
  *
  * The tour: open the Library tab in Home Keeper, browse the grid, search, open a
  * book, set the reading status, scan a book by ISBN into a shelf, give the title of a
- * scanned book that Open Library does not have, lend a book with
+ * scanned book that Open Library does not have, confirm the Open Library work of
+ * another scanned title, lend a book with
  * a Home Keeper task, see the loan, connect Open Library and send a book that it
  * does not have, and open the card on a dashboard. `BEAT` pauses
  * let each step read in the video. The tour puts the seed back at the end.
@@ -25,6 +26,9 @@ const NEW_ISBN = '9780553418606';
 // A scanned book that the fixture Open Library does not have. The scan asks for its title.
 const MISS_ISBN = '9781402894626';
 const MISS_TITLE = 'Field Notes on Moss';
+// The fixture Open Library has no edition with this ISBN, but has a work with the title.
+const MATCH_ISBN = '9781935788225';
+const MATCH_TITLE = 'The Hollow Orchard';
 const LEND_TITLE = 'Station Eleven';
 const PARTY = 'Robin';
 const STATUS_TITLE = 'The Lathe of Heaven';
@@ -38,7 +42,7 @@ async function beat(page: Page, n = 1): Promise<void> {
 
 async function cleanUp(): Promise<void> {
   const state = await adminState();
-  for (const book of state.books.filter((b: { isbn13: string }) => [NEW_ISBN, MISS_ISBN, OL_ISBN].includes(b.isbn13))) {
+  for (const book of state.books.filter((b: { isbn13: string }) => [NEW_ISBN, MISS_ISBN, MATCH_ISBN, OL_ISBN].includes(b.isbn13))) {
     await library('delete_book', { book_id: book.id });
   }
   const lent = state.books.find((b: { title: string }) => b.title === LEND_TITLE);
@@ -114,6 +118,18 @@ test('record the Library walkthrough', async ({ browser }) => {
     await expect(sheet).toHaveCount(0);
     await expect(tab.locator('.hkl-result').filter({ hasText: MISS_TITLE })).toBeVisible();
     await beat(page, 2);
+    // Open Library has a work with the title of the next miss: the user confirms it.
+    await tab.locator('[data-k="isbn-input"]').pressSequentially(MATCH_ISBN, { delay: 60 });
+    await tab.locator('[data-k="isbn-add"]').click();
+    await expect(sheet).toBeVisible({ timeout: 30_000 });
+    await sheet.locator('[name="title"]').pressSequentially(MATCH_TITLE, { delay: 60 });
+    await sheet.locator('[data-k="d-submit"]').click();
+    const match = tab.locator('.hkl-dialog');
+    await expect(match.locator('h2')).toHaveText('Found on Open Library', { timeout: 30_000 });
+    await beat(page, 3);
+    await match.locator('[data-k="d-submit"]').click();
+    await expect(match).toHaveCount(0);
+    await beat(page);
     await tab.locator('[data-k="scan-done"]').click();
     await expect(tab.locator('.hkl-scan-head')).toContainText('Scan summary');
     await beat(page, 2);

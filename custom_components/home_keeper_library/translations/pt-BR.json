@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Pesquisar no catálogo",
+      "description": "Encontra a melhor obra da Open Library para um título e um autor. A biblioteca não muda.",
+      "fields": {
+        "title": {
+          "name": "Título",
+          "description": "O título do livro."
+        },
+        "authors": {
+          "name": "Autores",
+          "description": "Os autores. Apenas o primeiro autor é usado."
+        }
+      }
+    },
     "add_book": {
       "name": "Adicionar livro",
       "description": "Adicionar um livro. Se um livro tiver o mesmo ISBN, o serviço devolve esse livro.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Vincular ao Open Library",
-      "description": "Vincula um livro a uma edição do Open Library e preenche os campos vazios.",
+      "description": "Vincula um livro a uma edição ou obra da Open Library e preenche os campos vazios.",
       "fields": {
         "book_id": {
           "name": "Livro",
           "description": "O ID do livro."
         },
         "record": {
-          "name": "Edição",
-          "description": "Uma chave de edição, como OL123M, ou a URL da página da edição."
+          "name": "Edição ou obra",
+          "description": "Uma chave de edição, como OL123M, uma chave de obra, como OL45W, ou a URL da página."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "O Open Library não aceitou as chaves da conta. Conecte a conta novamente."
     },
     "openlibrary_not_found": {
-      "message": "O Open Library não tem a edição {edition}."
+      "message": "A Open Library não tem o registro {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} não é uma chave nem uma URL de edição do Open Library."
+      "message": "{edition} não é uma chave nem uma URL da Open Library."
     },
     "files_dir_invalid": {
       "message": "O diretório de arquivos deve estar dentro de .storage/home_keeper_import_export."

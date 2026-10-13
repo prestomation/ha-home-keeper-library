@@ -461,6 +461,10 @@ describe('Open Library helpers', () => {
     expect(u.openLibraryUrl('OL5M')).toBe('https://openlibrary.org/books/OL5M');
     expect(u.openLibraryUrl('OL5M', true)).toBe('https://openlibrary.org/books/OL5M/edit');
     expect(u.openLibraryUrl('a b')).toBe('https://openlibrary.org/books/a%20b');
+    expect(u.openLibraryUrl('OL45W')).toBe('https://openlibrary.org/works/OL45W');
+    expect(u.openLibraryUrl('/works/OL45W')).toBe('https://openlibrary.org/works/OL45W');
+    expect(u.openLibraryUrl('/books/OL5M', true)).toBe('https://openlibrary.org/books/OL5M/edit');
+    expect(u.openLibraryUrl('OL45WX')).toBe('https://openlibrary.org/books/OL45WX');
   });
 
   it('reads the account of get_state', () => {

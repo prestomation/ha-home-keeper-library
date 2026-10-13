@@ -26,6 +26,7 @@ _ADMIN_DATA = {
     "update_shelf": {"shelf_id": "x"},
     "delete_shelf": {"shelf_id": "x"},
     "lookup_isbn": {"isbn": "0441478123"},
+    "search_catalog": {"title": "x"},
     "add_book": {"title": "x"},
     "update_book": {"book_id": "x"},
     "delete_book": {"book_id": "x"},

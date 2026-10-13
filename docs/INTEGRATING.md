@@ -33,7 +33,7 @@ Each operation of the tab is a `home_keeper_library.*` service. The groups are:
 | Wishlist | `add_to_wishlist`, `update_wishlist`, `remove_from_wishlist`, `got_wishlist_book` |
 | People and settings | `set_person_settings`, `set_settings` |
 | Files | `import_csv`, `export_csv`, `export_data`, `import_data` |
-| Catalogs (Open Library) | `send_to_catalog`, `link_catalog`, `skip_catalog`, `disconnect_catalog` |
+| Catalogs (Open Library) | `search_catalog`, `send_to_catalog`, `link_catalog`, `skip_catalog`, `disconnect_catalog` |
 | Reads | `list_books`, `get_book`, `list_locations`, `list_loans`, `list_people` |
 
 A service that changes data returns its record when the call asks for a response. A read

@@ -136,6 +136,76 @@ def test_year_from_publish_date() -> None:
     assert ol.parse_edition({})["published"] == ""
 
 
+def test_parse_work_has_only_work_fields() -> None:
+    work = _load("work_OL59863W.json")
+    author = _load("author_OL26320A.json")
+    assert ol.parse_work(work, [author]) == {
+        "title": "The Left Hand of Darkness",
+        "subtitle": "",
+        "authors": ["Ursula K. Le Guin"],
+        "isbn13": None,
+        "isbn10": None,
+        "publisher": "",
+        "published": "",
+        "pages": None,
+        "language": None,
+        "subjects": ["Science fiction", "Androgyny", "Fiction"],
+        "series": None,
+        "description": (
+            "A groundbreaking work of science fiction about an envoy on the planet "
+            "Gethen."
+        ),
+        "catalogs": {
+            "openlibrary": {
+                "edition_key": None,
+                "work_key": "OL59863W",
+                "cover_id": 8231856,
+            },
+        },
+    }
+
+
+def test_parse_work_ignores_wrong_types() -> None:
+    work = {
+        "key": "/books/OL1M",
+        "title": 5,
+        "subtitle": " S ",
+        "subjects": [f"s{n}" for n in range(12)],
+        "description": "Plain text",
+        "covers": ["x"],
+    }
+    draft = ol.parse_work(work, [{"name": ""}, {"personal_name": "P"}])
+    assert draft["title"] == "" and draft["subtitle"] == "S"
+    assert draft["authors"] == ["P"]
+    assert draft["subjects"] == [f"s{n}" for n in range(10)]
+    assert draft["description"] == "Plain text"
+    assert draft["catalogs"]["openlibrary"] == {
+        "edition_key": None,
+        "work_key": None,
+        "cover_id": None,
+    }
+    assert ol.parse_work({})["authors"] == []
+
+
+def test_search_match() -> None:
+    dune = ol.parse_search(_load("search_dune.json"))[0]
+    assert ol.search_match(dune) == {
+        "title": "Dune",
+        "authors": ["Frank Herbert"],
+        "first_published": "1965",
+        "work_key": "OL893415W",
+    }
+    assert ol.search_match({}) == {
+        "title": "",
+        "authors": [],
+        "first_published": "",
+        "work_key": None,
+    }
+    authors = ["A"]
+    match = ol.search_match({"authors": authors})
+    assert match["authors"] == ["A"] and match["authors"] is not authors
+
+
 def test_parse_search() -> None:
     drafts = ol.parse_search(_load("search_dune.json"))
     assert len(drafts) == 2

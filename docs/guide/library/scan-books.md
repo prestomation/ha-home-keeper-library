@@ -78,6 +78,25 @@ select **Add details**.
 If Open Library does not answer, the library saves the book with its ISBN and tries
 again later. The book shows **Needs details** until the details arrive.
 
+### Find the book by its title
+
+Open Library often has the same book under a different ISBN, such as an older printing.
+So when you save the title, the library looks for that title and author on Open Library.
+A match shows in **Found on Open Library**, with the year of the first edition.
+
+![The match on Open Library on a phone](../../images/scan-match-mobile.png)
+
+- Select **Use these details** if it is your book. The library fills only the empty
+  details, such as the description and the cover. Your ISBN, publisher and page
+  count do not change. A cover photo that you took stays.
+- Select **Not this book** if it is a different book. Nothing changes.
+- Select **View on Open Library** to compare the book on the Open Library website first.
+
+The camera reads no barcode until you select 1 of the 2 buttons. An author makes the
+search more accurate. To add an author, open **More details (optional)** before you save.
+
+![The match on Open Library on a computer](../../images/scan-match-desktop.png)
+
 ## Summary
 
 ![The summary of a shelf scan on a phone](../../images/scan-summary-mobile.png)
