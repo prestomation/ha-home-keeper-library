@@ -311,7 +311,7 @@
   "loans.tab_out": "Pożyczone",
   "loans.tab_returned": "Zwrócone",
   "match.first_published": "pierwsze wydanie {year}",
-  "match.hint": "To może być inne wydanie. Zmieniają się tylko puste dane: opis, tematy, autorzy i okładka. ISBN się nie zmienia.",
+  "match.hint": "To może być inne wydanie. Biblioteka uzupełnia tylko puste dane, na przykład opis i okładkę. ISBN się nie zmienia.",
   "match.linked": "Dodano dane z Open Library.",
   "match.not_this": "To nie ta książka",
   "match.title": "Znaleziono w Open Library",

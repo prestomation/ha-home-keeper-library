@@ -287,7 +287,7 @@
   "loans.tab_out": "Uitgeleend",
   "loans.tab_returned": "Teruggebracht",
   "match.first_published": "voor het eerst verschenen in {year}",
-  "match.hint": "Dit kan een andere editie zijn. Alleen lege gegevens veranderen: de beschrijving, de onderwerpen, de auteurs en de omslag. Het ISBN blijft gelijk.",
+  "match.hint": "Dit kan een andere editie zijn. De bibliotheek vult alleen lege gegevens in, zoals de beschrijving en de omslag. Het ISBN blijft gelijk.",
   "match.linked": "Gegevens toegevoegd uit Open Library.",
   "match.not_this": "Niet dit boek",
   "match.title": "Gevonden in Open Library",

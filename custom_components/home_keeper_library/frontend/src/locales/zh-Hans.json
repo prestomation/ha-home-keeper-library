@@ -287,7 +287,7 @@
   "loans.tab_out": "借出",
   "loans.tab_returned": "已归还",
   "match.first_published": "首次出版于 {year} 年",
-  "match.hint": "这可能是另一个版本。只会填写空白的信息：简介、主题、作者和封面。ISBN 保持不变。",
+  "match.hint": "这可能是另一个版本。藏书只会填写空白的信息，例如简介和封面。ISBN 保持不变。",
   "match.linked": "已从 Open Library 添加信息。",
   "match.not_this": "不是这本书",
   "match.title": "在 Open Library 中找到",

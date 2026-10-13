@@ -299,7 +299,7 @@
   "loans.tab_out": "Prestati",
   "loans.tab_returned": "Restituiti",
   "match.first_published": "pubblicato per la prima volta nel {year}",
-  "match.hint": "Può essere un'altra edizione. Cambiano solo i dati vuoti: la descrizione, i soggetti, gli autori e la copertina. L'ISBN resta lo stesso.",
+  "match.hint": "Può essere un'altra edizione. La biblioteca compila solo i dati vuoti, come la descrizione e la copertina. L'ISBN resta lo stesso.",
   "match.linked": "Dati aggiunti da Open Library.",
   "match.not_this": "Non è questo libro",
   "match.title": "Trovato su Open Library",

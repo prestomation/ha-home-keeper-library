@@ -287,7 +287,7 @@
   "loans.tab_out": "Utlånt",
   "loans.tab_returned": "Levert",
   "match.first_published": "først utgitt {year}",
-  "match.hint": "Dette kan være en annen utgave. Bare tomme opplysninger endres: beskrivelsen, emnene, forfatterne og omslaget. ISBN forblir det samme.",
+  "match.hint": "Dette kan være en annen utgave. Biblioteket fyller bare ut tomme opplysninger, som beskrivelsen og omslaget. ISBN forblir det samme.",
   "match.linked": "Opplysninger lagt til fra Open Library.",
   "match.not_this": "Ikke denne boken",
   "match.title": "Funnet i Open Library",

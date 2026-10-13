@@ -287,7 +287,7 @@
   "loans.tab_out": "Lainaksi annetut",
   "loans.tab_returned": "Palautetut",
   "match.first_published": "julkaistu ensimmäisen kerran {year}",
-  "match.hint": "Tämä voi olla eri painos. Vain tyhjät tiedot muuttuvat: kuvaus, aiheet, tekijät ja kansi. ISBN pysyy samana.",
+  "match.hint": "Tämä voi olla eri painos. Kirjasto täyttää vain tyhjät tiedot, kuten kuvauksen ja kannen. ISBN pysyy samana.",
   "match.linked": "Tiedot lisätty Open Librarysta.",
   "match.not_this": "Ei tämä kirja",
   "match.title": "Löytyi Open Librarysta",

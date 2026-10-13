@@ -299,7 +299,7 @@
   "loans.tab_out": "Deixats",
   "loans.tab_returned": "Retornats",
   "match.first_published": "publicat per primer cop el {year}",
-  "match.hint": "Pot ser una altra edició. Només canvien les dades buides: la descripció, els temes, els autors i la coberta. L'ISBN no canvia.",
+  "match.hint": "Pot ser una altra edició. La biblioteca només omple les dades buides, com la descripció i la coberta. L'ISBN no canvia.",
   "match.linked": "Dades afegides des d'Open Library.",
   "match.not_this": "No és aquest llibre",
   "match.title": "Trobat a Open Library",

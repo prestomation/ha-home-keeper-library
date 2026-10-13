@@ -81,8 +81,9 @@ again later. The book shows **Needs details** until the details arrive.
 ### Find the book by its title
 
 Open Library often has the same book under a different ISBN, such as an older printing.
-So when you save the title, the library looks for that title and author on Open Library.
-A match shows in **Found on Open Library**, with the year of the first edition.
+So when the title sheet closes, the library searches Open Library by title and author. If
+it finds the book, the **Found on Open Library** dialog opens with the year of the first
+edition.
 
 ![The match on Open Library on a phone](../../images/scan-match-mobile.png)
 

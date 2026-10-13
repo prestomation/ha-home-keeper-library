@@ -311,7 +311,7 @@
   "loans.tab_out": "Půjčené",
   "loans.tab_returned": "Vrácené",
   "match.first_published": "poprvé vydáno {year}",
-  "match.hint": "Může to být jiné vydání. Změní se jen prázdné údaje: popis, témata, autoři a obálka. ISBN zůstane stejné.",
+  "match.hint": "Může to být jiné vydání. Knihovna vyplní jen prázdné údaje, například popis a obálku. ISBN zůstane stejné.",
   "match.linked": "Údaje z Open Library jsou přidány.",
   "match.not_this": "Tohle není ta kniha",
   "match.title": "Nalezeno v Open Library",
