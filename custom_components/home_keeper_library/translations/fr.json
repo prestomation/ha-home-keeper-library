@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Rechercher dans le catalogue",
+      "description": "Trouve la meilleure œuvre d'Open Library pour un titre et un auteur. La bibliothèque ne change pas.",
+      "fields": {
+        "title": {
+          "name": "Titre",
+          "description": "Le titre du livre."
+        },
+        "authors": {
+          "name": "Auteurs",
+          "description": "Les auteurs. Seul le premier auteur est utilisé."
+        }
+      }
+    },
     "add_book": {
       "name": "Ajouter un livre",
       "description": "Ajouter un livre. Si un livre a le même ISBN, le service renvoie ce livre.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Lier à Open Library",
-      "description": "Lie un livre à une édition d'Open Library et remplit ses champs vides.",
+      "description": "Lie un livre à une édition ou une œuvre d'Open Library et remplit ses champs vides.",
       "fields": {
         "book_id": {
           "name": "Livre",
           "description": "L'ID du livre."
         },
         "record": {
-          "name": "Édition",
-          "description": "Une clé d'édition, comme OL123M, ou l'URL de la page de l'édition."
+          "name": "Édition ou œuvre",
+          "description": "Une clé d'édition, comme OL123M, une clé d'œuvre, comme OL45W, ou l'URL de la page."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library n'a pas accepté les clés du compte. Connectez de nouveau le compte."
     },
     "openlibrary_not_found": {
-      "message": "Open Library n'a pas d'édition {edition}."
+      "message": "Open Library n'a pas de notice {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} n'est pas une clé ou une URL d'édition d'Open Library."
+      "message": "{edition} n'est pas une clé ou une URL d'Open Library."
     },
     "files_dir_invalid": {
       "message": "Le dossier des fichiers doit être sous .storage/home_keeper_import_export."

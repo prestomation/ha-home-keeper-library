@@ -33,6 +33,11 @@ Nothing here is committed scope. When an item ships, remove it. The design docs 
 - **More details in a send to Open Library.** The send posts only the 5 fields of the
   "Add a book" form. The edit form of Open Library takes the subtitle, the pages and the
   language, but it replaces the whole record and can ask for a captcha.
+- **Send the edition of a work match.** A scan that the user links to an Open Library
+  work leaves the "Not on Open Library" list, but Open Library still has no edition with
+  its ISBN. Let the admin send that edition under the linked work.
+- **Title match for other books.** Offer the title match of a scan on the book page of
+  each book that is not on Open Library, and in the CSV import.
 - **Event for a send to Open Library.** A `home_keeper_library_book_contributed` event
   with the edition key, if an integrator needs more than `book_updated`.
 

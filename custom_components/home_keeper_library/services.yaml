@@ -161,6 +161,19 @@ lookup_isbn:
       selector:
         text:
 
+search_catalog:
+  fields:
+    title:
+      required: true
+      example: "The Hobbit"
+      selector:
+        text:
+    authors:
+      example: "J. R. R. Tolkien"
+      selector:
+        text:
+          multiple: true
+
 add_book:
   fields:
     title:

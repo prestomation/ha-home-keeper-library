@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Katalog durchsuchen",
+      "description": "Das beste Werk in Open Library für einen Titel und einen Autor finden. Die Bibliothek bleibt unverändert.",
+      "fields": {
+        "title": {
+          "name": "Titel",
+          "description": "Der Titel des Buchs."
+        },
+        "authors": {
+          "name": "Autoren",
+          "description": "Die Autoren. Nur der erste Autor wird verwendet."
+        }
+      }
+    },
     "add_book": {
       "name": "Buch hinzufügen",
       "description": "Ein Buch hinzufügen. Hat ein Buch dieselbe ISBN, gibt der Dienst dieses Buch zurück.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Mit Open Library verknüpfen",
-      "description": "Ein Buch mit einer Open-Library-Ausgabe verknüpfen und seine leeren Felder füllen.",
+      "description": "Ein Buch mit einer Ausgabe oder einem Werk von Open Library verknüpfen und seine leeren Felder füllen.",
       "fields": {
         "book_id": {
           "name": "Buch",
           "description": "Die ID des Buchs."
         },
         "record": {
-          "name": "Ausgabe",
-          "description": "Ein Ausgabeschlüssel wie OL123M oder die URL der Ausgabeseite."
+          "name": "Ausgabe oder Werk",
+          "description": "Ein Ausgabeschlüssel wie OL123M, ein Werkschlüssel wie OL45W oder die URL der Seite."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library hat die Kontoschlüssel nicht akzeptiert. Verbinden Sie das Konto erneut."
     },
     "openlibrary_not_found": {
-      "message": "Open Library hat keine Ausgabe {edition}."
+      "message": "Open Library hat keinen Eintrag {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} ist kein Ausgabeschlüssel und keine URL von Open Library."
+      "message": "{edition} ist kein Schlüssel und keine URL von Open Library."
     },
     "files_dir_invalid": {
       "message": "Das Dateiverzeichnis muss unter .storage/home_keeper_import_export liegen."

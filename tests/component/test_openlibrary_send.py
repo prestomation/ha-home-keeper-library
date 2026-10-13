@@ -359,7 +359,7 @@ async def test_link_catalog(hass, setup_entry, call, aioclient_mock) -> None:
 async def test_link_errors(hass, setup_entry, call, aioclient_mock) -> None:
     book = await _book(call)
     with pytest.raises(ServiceValidationError) as info:
-        await call("link_catalog", {"book_id": book["id"], "record": "OL5W"})
+        await call("link_catalog", {"book_id": book["id"], "record": "OL5A"})
     assert _error_key(info) == "invalid_openlibrary_edition"
     aioclient_mock.get(f"{OL}/books/OL5M.json", status=404)
     with pytest.raises(ServiceValidationError) as info:
@@ -369,6 +369,60 @@ async def test_link_errors(hass, setup_entry, call, aioclient_mock) -> None:
     aioclient_mock.get(f"{OL}/books/OL5M.json", status=500)
     with pytest.raises(ServiceValidationError) as info:
         await call("link_catalog", {"book_id": book["id"], "record": "OL5M"})
+    assert _error_key(info) == "lookup_unavailable"
+
+
+async def test_link_catalog_work_fills_only_work_fields(
+    hass, setup_entry, call, aioclient_mock
+) -> None:
+    book = await _book(call, publisher="", published="")
+    await setup_entry.runtime_data.store.set_catalog_status(book["id"], "missing")
+    work = {
+        "key": "/works/OL9W",
+        "title": "Ferns of the Rain City",
+        "description": "A field guide to the ferns of Seattle.",
+        "subjects": ["Ferns", "Seattle"],
+        "covers": [77],
+        "authors": [{"author": {"key": "/authors/OL3A"}}],
+    }
+    aioclient_mock.get(f"{OL}/works/OL9W.json", json=work)
+    aioclient_mock.get(f"{OL}/authors/OL3A.json", json={"name": "M. Ellison"})
+    aioclient_mock.get(f"{COVERS}/b/id/77-L.jpg?default=false", status=404)
+    reply = await call(
+        "link_catalog",
+        {"book_id": book["id"], "record": "https://openlibrary.org/works/OL9W/x"},
+    )
+    linked = reply["book"]
+    assert linked["catalogs"]["openlibrary"] == {
+        "edition_key": None,
+        "work_key": "OL9W",
+        "cover_id": 77,
+    }
+    assert linked["description"] == "A field guide to the ferns of Seattle."
+    assert linked["subjects"] == ["Ferns", "Seattle"]
+    # The book keeps its ISBN, its authors and its empty edition fields.
+    assert linked["isbn13"] == ISBN
+    assert linked["authors"] == ["Mara Ellison"]
+    assert linked["publisher"] == "" and linked["published"] == ""
+    assert linked["catalog_status"] == {}
+
+
+async def test_link_work_errors(hass, setup_entry, call, aioclient_mock) -> None:
+    book = await _book(call)
+    aioclient_mock.get(f"{OL}/works/OL9W.json", status=404)
+    with pytest.raises(ServiceValidationError) as info:
+        await call("link_catalog", {"book_id": book["id"], "record": "OL9W"})
+    assert _error_key(info) == "openlibrary_not_found"
+    assert info.value.translation_placeholders == {"edition": "OL9W"}
+    aioclient_mock.clear_requests()
+    aioclient_mock.get(f"{OL}/works/OL9W.json", json={"key": "/books/OL1M"})
+    with pytest.raises(ServiceValidationError) as info:
+        await call("link_catalog", {"book_id": book["id"], "record": "OL9W"})
+    assert _error_key(info) == "openlibrary_not_found"
+    aioclient_mock.clear_requests()
+    aioclient_mock.get(f"{OL}/works/OL9W.json", status=500)
+    with pytest.raises(ServiceValidationError) as info:
+        await call("link_catalog", {"book_id": book["id"], "record": "OL9W"})
     assert _error_key(info) == "lookup_unavailable"
 
 

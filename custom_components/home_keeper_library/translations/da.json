@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Søg i kataloget",
+      "description": "Find det bedste værk i Open Library for en titel og en forfatter. Biblioteket ændres ikke.",
+      "fields": {
+        "title": {
+          "name": "Titel",
+          "description": "Bogens titel."
+        },
+        "authors": {
+          "name": "Forfattere",
+          "description": "Forfatterne. Kun den første forfatter bruges."
+        }
+      }
+    },
     "add_book": {
       "name": "Tilføj bog",
       "description": "Tilføj en bog. Hvis en bog har samme ISBN, returnerer tjenesten den bog.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Forbind med Open Library",
-      "description": "Forbind en bog med en udgave i Open Library, og udfyld dens tomme felter.",
+      "description": "Knyt en bog til en udgave eller et værk i Open Library, og udfyld dens tomme felter.",
       "fields": {
         "book_id": {
           "name": "Bog",
           "description": "Bogens ID."
         },
         "record": {
-          "name": "Udgave",
-          "description": "En udgavenøgle, såsom OL123M, eller URL'en til udgavens side."
+          "name": "Udgave eller værk",
+          "description": "En udgavenøgle som OL123M, en værknøgle som OL45W eller sidens URL."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library accepterede ikke kontoens nøgler. Tilknyt kontoen igen."
     },
     "openlibrary_not_found": {
-      "message": "Open Library har ingen udgave {edition}."
+      "message": "Open Library har ingen post {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} er ikke en udgavenøgle eller URL fra Open Library."
+      "message": "{edition} er ikke en nøgle eller URL fra Open Library."
     },
     "files_dir_invalid": {
       "message": "Filmappen skal ligge under .storage/home_keeper_import_export."

@@ -86,6 +86,32 @@ def test_normalize() -> None:
             isbn.normalize(bad)
 
 
+def test_normalize_error_names_the_clean_value() -> None:
+    for bad, value in (
+        ("978-0441478124", "9780441478124"),
+        ("0-441-47812-4", "0441478124"),
+    ):
+        with pytest.raises(isbn.IsbnError) as info:
+            isbn.normalize(bad)
+        assert info.value.args == (value,)
+
+
+def test_normalize_sbn() -> None:
+    # An SBN is the ISBN-10 with no leading 0.
+    assert isbn.normalize("340 01381 8") == ("9780340013816", "0340013818")
+    assert isbn.normalize("SBN 10000007X") == ("9780100000070", "010000007X")
+    assert isbn.normalize(340013818) == ("9780340013816", "0340013818")
+    for bad in ("340013817", "34001381X", "X40013818", "4001381"):
+        with pytest.raises(isbn.IsbnError):
+            isbn.normalize(bad)
+
+
+@given(st.text(alphabet="0123456789", min_size=8, max_size=8))
+def test_sbn_is_the_isbn10_with_no_leading_zero(first8: str) -> None:
+    isbn10 = "0" + first8 + isbn.isbn10_check_char("0" + first8)
+    assert isbn.normalize(isbn10[1:]) == isbn.normalize(isbn10)
+
+
 def test_try_normalize() -> None:
     assert isbn.try_normalize("0441478123") == ("9780441478125", "0441478123")
     assert isbn.try_normalize("nope") == (None, None)

@@ -5,7 +5,7 @@
 import { t } from './i18n';
 import { formatOptions, ICONS, options, personOptions, shelfOptions } from './markup';
 import type { ViewCtx } from './tab-types';
-import type { Book, Copy } from './types';
+import type { Book, CatalogMatch, Copy } from './types';
 import { escapeHTML, locationLabel, openLibraryUrl } from './utils';
 
 export type Dialog =
@@ -16,6 +16,8 @@ export type Dialog =
   | { kind: 'set-shelf' }
   /** A scan found no match in Open Library: ask for the title before the next scan. */
   | { kind: 'scan-title'; key: number; bookId: string; copyId: string | null; isbn: string }
+  /** Open Library has a work with the title of a scan with no match: ask to use it. */
+  | { kind: 'scan-match'; key: number; bookId: string; match: CatalogMatch }
   | { kind: 'lend'; bookId: string | null }
   | { kind: 'borrow' }
   | { kind: 'wish-add'; bookId: string | null }
@@ -136,6 +138,8 @@ interface DialogBody {
   submit: string;
   danger?: boolean;
   noCancel?: boolean;
+  /** The label of the cancel button, if it is not "Cancel". */
+  cancel?: string;
   /** A sheet has no close button. The user must submit it or remove the scan. */
   sheet?: boolean;
 }
@@ -163,6 +167,21 @@ function scanTitleBody(ctx: ViewCtx, d: Extract<Dialog, { kind: 'scan-title' }>)
   };
 }
 
+/** The work that Open Library has for the title of a scan. The user confirms it. */
+function scanMatchBody(d: Extract<Dialog, { kind: 'scan-match' }>): DialogBody {
+  const m = d.match;
+  const year = m.first_published ? t('match.first_published', { year: m.first_published }) : '';
+  const by = [m.authors.join(', '), year].filter(Boolean).join(' · ');
+  return {
+    title: t('match.title'),
+    submit: t('match.use'),
+    cancel: t('match.not_this'),
+    html: `<div class="hkl-miss-head"><span class="hkl-cover hkl-cover-thumb blank" aria-hidden="true"></span><span class="hkl-row-main"><b data-k="d-match-title">${escapeHTML(m.title)}</b><span class="hkl-muted" data-k="d-match-by">${escapeHTML(by)}</span></span></div>
+      <p class="hkl-muted" data-k="d-match-hint">${escapeHTML(t('match.hint'))}</p>
+      <div class="hkl-actions">${olLink(m.work_key, t('ol.view'), false, 'd-match-view')}</div>`,
+  };
+}
+
 function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): DialogBody {
   switch (d.kind) {
     case 'send-ol':
@@ -182,6 +201,8 @@ function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): DialogBo
       };
     case 'scan-title':
       return scanTitleBody(ctx, d);
+    case 'scan-match':
+      return scanMatchBody(d);
     case 'edit-book': {
       const b = ctx.idx.book.get(d.bookId);
       return {
@@ -320,11 +341,11 @@ function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): DialogBo
 
 /** The dialog layer markup. */
 export function renderDialog(ctx: ViewCtx, state: DialogState, areas: Array<[string, string]>): string {
-  const { title, html, submit, danger, noCancel, sheet } = body(ctx, state.dialog, areas);
+  const { title, html, submit, danger, noCancel, cancel: cancelLabel, sheet } = body(ctx, state.dialog, areas);
   const close = sheet ? '' : `<button type="button" class="hkl-iconbtn" data-act="dialog-close" data-k="d-x" aria-label="${escapeHTML(t('action.close'))}">${ICONS.close}</button>`;
   const cancel = sheet
     ? `<button type="button" class="hkl-btn text" data-act="scan-miss-remove" data-k="d-remove">${escapeHTML(t('scan.miss_remove'))}</button>`
-    : noCancel ? '' : `<button type="button" class="hkl-btn text" data-act="dialog-close" data-k="d-cancel">${escapeHTML(t('action.cancel'))}</button>`;
+    : noCancel ? '' : `<button type="button" class="hkl-btn text" data-act="dialog-close" data-k="d-cancel">${escapeHTML(cancelLabel ?? t('action.cancel'))}</button>`;
   // A sheet starts with an empty title, so its submit is off until the user types one.
   const off = state.busy || sheet;
   return `<div class="hkl-scrim"${sheet ? '' : ' data-act="dialog-scrim"'}>

@@ -799,6 +799,104 @@ describe('scan with no match', () => {
     expect($$('.hkl-stat b').map((b) => b.textContent)).toEqual(['0', '0', '1']);
   });
 
+  const MATCH = { title: 'Field Notes on Moss', authors: ['A. Hollins'], first_published: '1999', work_key: 'OL45W' };
+
+  it('shows the Open Library work for the title, and links it on a confirm', async () => {
+    const state = fixture();
+    const miss = missing(state, '9781402894626', 'new');
+    const fake = await mount(`/scan;shelf=${state.shelves[0].id};step=camera`, {
+      state,
+      replies: { scan_isbn: miss.reply, search_catalog: { status: 'found', match: MATCH } },
+    });
+    await scan(miss.book.isbn13);
+    await flush();
+    typeTitle('Field notes on moss');
+    sheet().querySelector('[data-k="d-more-toggle"]').click();
+    sheet().querySelector('[name="authors"]').value = 'Hollins';
+    sheet().querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(fake.calls('search_catalog')).toEqual([
+      { type: 'home_keeper_library/search_catalog', title: 'Field notes on moss', authors: ['Hollins'] },
+    ]);
+    // The title sheet becomes the match dialog. It is not a sheet.
+    expect(sheet()).toBeNull();
+    const dlg = $('.hkl-dialog');
+    expect(dlg.querySelector('h2').textContent).toBe('Found on Open Library');
+    expect(dlg.querySelector('[data-k="d-match-title"]').textContent).toBe('Field Notes on Moss');
+    expect(dlg.querySelector('[data-k="d-match-by"]').textContent).toBe('A. Hollins · first published 1999');
+    expect(dlg.querySelector('[data-k="d-match-hint"]').textContent).toContain('The ISBN stays the same.');
+    expect(dlg.querySelector('[data-k="d-match-view"]').getAttribute('href')).toBe('https://openlibrary.org/works/OL45W');
+    expect(dlg.querySelector('[data-k="d-cancel"]').textContent).toBe('Not this book');
+    expect(dlg.querySelector('[data-k="d-submit"]').textContent).toBe('Use these details');
+    expect(dlg.querySelector('[data-k="d-submit"]').disabled).toBe(false);
+    // The scan stays paused while the match shows.
+    await scan('9780441478125');
+    await flush();
+    expect(fake.calls('scan_isbn')).toHaveLength(1);
+
+    dlg.querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(fake.calls('link_catalog')).toEqual([{ type: 'home_keeper_library/link_catalog', book_id: 'new', record: 'OL45W' }]);
+    expect($('.hkl-dialog')).toBeNull();
+    expect(host.showToast).toHaveBeenCalledWith('Details added from Open Library.');
+    // The row and the summary show the match, not a book that needs details.
+    // The fake keeps the ISBN as the title of the book.
+    const row = $$('.hkl-result').find((r) => r.textContent.includes('9781402894626'));
+    expect(row.textContent).toContain('Found on Open Library');
+    expect(row.textContent).not.toContain('No match in Open Library');
+    expect(row.querySelector('[data-k^="det-"]')).toBeNull();
+    $('[data-k="scan-done"]').click();
+    expect($$('.hkl-stat b').map((b) => b.textContent)).toEqual(['1', '0', '0']);
+  });
+
+  it('closes the match with no link on Not this book', async () => {
+    const state = fixture();
+    const miss = missing(state, '9781402894626', 'new');
+    const fake = await mount(`/scan;shelf=${state.shelves[0].id};step=camera`, {
+      state,
+      replies: { scan_isbn: miss.reply, search_catalog: { status: 'found', match: MATCH } },
+    });
+    await scan(miss.book.isbn13);
+    await flush();
+    typeTitle('Field Notes on Moss');
+    sheet().querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(fake.calls('search_catalog')[0].authors).toEqual([]);
+    $('.hkl-dialog [data-k="d-cancel"]').click();
+    await flush();
+    expect($('.hkl-dialog')).toBeNull();
+    expect(fake.calls('link_catalog')).toHaveLength(0);
+    const row = $$('.hkl-result').find((r) => r.textContent.includes('9781402894626'));
+    expect(row.textContent).toContain('No match in Open Library');
+    await scan('9780441478125');
+    await flush();
+    expect(fake.calls('scan_isbn')).toHaveLength(2);
+  });
+
+  it.each([
+    ['no match', { status: 'not_found', match: null }],
+    ['Open Library is down', { status: 'unavailable', match: null }],
+    ['a match with no work key', { status: 'found', match: { ...MATCH, work_key: '' } }],
+    ['a failed call', () => {
+      throw { code: 'home_assistant_error', message: 'Search failed' };
+    }],
+  ])('goes on with the scan after %s', async (_name, reply) => {
+    const state = fixture();
+    const miss = missing(state, '9781402894626', 'new');
+    const fake = await mount(`/scan;shelf=${state.shelves[0].id};step=camera`, {
+      state,
+      replies: { scan_isbn: miss.reply, search_catalog: reply },
+    });
+    await scan(miss.book.isbn13);
+    await flush();
+    typeTitle('Field Notes on Moss');
+    sheet().querySelector('[data-k="d-submit"]').click();
+    await flush();
+    expect(fake.calls('search_catalog')).toHaveLength(1);
+    expect($('.hkl-dialog')).toBeNull();
+    expect(el.shadowRoot.activeElement).toBe($('[data-k="isbn-input"]'));
+  });
+
   it('closes the sheet when the user leaves the scan', async () => {
     const state = fixture();
     const miss = missing(state, '9781402894626', 'new');

@@ -173,3 +173,26 @@ def test_session_username(cookie, name) -> None:
 )
 def test_edition_key(text, key) -> None:
     assert c.edition_key(text) == key
+
+
+@pytest.mark.parametrize(
+    ("text", "key"),
+    [
+        ("OL45W", "OL45W"),
+        (" OL45W ", "OL45W"),
+        ("/works/OL45W", "OL45W"),
+        ("https://openlibrary.org/works/OL45W/The_Hobbit", "OL45W"),
+        ("https://openlibrary.org/works/OL45W.json", "OL45W"),
+        ("https://openlibrary.org/works/OL45W?edition=x", "OL45W"),
+        ("https://openlibrary.org/works/OL45W#x", "OL45W"),
+        ("https://openlibrary.org/books/OL5M", None),
+        ("OL5M", None),
+        ("OL45WX", None),
+        ("xOL45W", None),
+        ("", None),
+        (None, None),
+        (5, None),
+    ],
+)
+def test_work_key(text, key) -> None:
+    assert c.work_key(text) == key

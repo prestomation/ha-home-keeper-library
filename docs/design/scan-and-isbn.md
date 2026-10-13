@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/zxing-decoder.ts
   - custom_components/home_keeper_library/frontend/src/tab-scan.ts
 related: [open-library-covers, store-models, frontend-tab-card, loans-home-keeper]
-source_hash: 5aa4a6d268d8
+source_hash: 0b666d83ea06
 ---
 
 # Scan and ISBN
@@ -39,7 +39,8 @@ its ISBN by hand. Each scan calls the `scan_isbn` service.
 `isbn.normalize` cleans the input to the ASCII digits `0` to `9` (and `X` for the check
 character of an ISBN-10), checks the check digit, and returns the ISBN-13 and the ISBN-10. An
 ISBN-10 converts to the ISBN-13 with the `978` prefix. Only a `978` ISBN-13 converts back. A
-bad value raises `IsbnError`, which a service turns into `invalid_isbn`. `isbn.is_isbn_barcode`
+bad value raises `IsbnError`, which a service turns into `invalid_isbn`. A 9-character SBN
+is the ISBN-10 with no leading `0`, so `normalize` adds the `0`. `isbn.is_isbn_barcode`
 accepts an EAN-13 with the `978` or `979` prefix. `utils.ts` has the same rules for the tab, so
 the tab can refuse a bad code before a call.
 
@@ -93,6 +94,13 @@ value, `update_copy` for a new format, and `set_cover` for a photo. Remove calls
 gets the focus. If the user leaves the scan, the sheet closes and the book keeps its ISBN as
 the title.
 
+After the save, the tab calls `search_catalog` with the title and the authors. If Open
+Library has a work, the sheet becomes the match dialog (`scan-match`): the title, the
+authors, the first year and a link to the work. **Use these details** calls `link_catalog`
+with the work key, and the row and the summary then count the book as added. **Not this
+book** closes it. The scan stays paused while it shows. No match, or a failed search,
+closes the sheet at once.
+
 In borrowed mode each scan calls `borrow_book` with the ISBN, the lender and the due date
 of the session, and adds no copy ([loans-home-keeper](loans-home-keeper.md)).
 
@@ -121,6 +129,8 @@ to-do item goes at once.
   costs no download. The cost is 2 code paths to test.
 - **A required title** over **a dashed row only**: a row scrolls away as the scan goes
   on, and the user cannot find the book later. The cost is 1 stop for each miss.
+- **A confirm for a title match** over **fill at once**: a title can match a different
+  book, and the user holds the book. The cost is 1 more tap for each match.
 - **Ask on a duplicate** over **add a copy by default**: a scan of a shelf that is already
   in the library is the most common duplicate, and it means a move.
 

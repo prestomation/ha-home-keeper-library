@@ -28,6 +28,10 @@ Use **Enter ISBN** for a book with no barcode, or on a computer with no camera.
 The library accepts an ISBN with or without hyphens. It checks the check digit, and shows
 **This is not a valid ISBN.** for a typing error.
 
+A UK book from before 1974 can have a 9-digit SBN (Standard Book Number) and no ISBN.
+Type the SBN in the ISBN field. The library puts a `0` in front of the SBN to get the
+same ISBN-10.
+
 ## Results
 
 | Result | What it means |
@@ -77,6 +81,26 @@ select **Add details**.
 
 If Open Library does not answer, the library saves the book with its ISBN and tries
 again later. The book shows **Needs details** until the details arrive.
+
+### Find the book by its title
+
+Open Library often has the same book under a different ISBN, such as an older printing.
+So when the title sheet closes, the library searches Open Library by title and author. If
+it finds the book, the **Found on Open Library** dialog opens with the year of the first
+edition.
+
+![The match on Open Library on a phone](../../images/scan-match-mobile.png)
+
+- Select **Use these details** if it is your book. The library fills only the empty
+  details, such as the description and the cover. Your ISBN, publisher and page
+  count do not change. A cover photo that you took stays.
+- Select **Not this book** if it is a different book. Nothing changes.
+- Select **View on Open Library** to compare the book on the Open Library website first.
+
+The camera reads no barcode until you select 1 of the 2 buttons. An author makes the
+search more accurate. To add an author, open **More details (optional)** before you save.
+
+![The match on Open Library on a computer](../../images/scan-match-desktop.png)
 
 ## Summary
 

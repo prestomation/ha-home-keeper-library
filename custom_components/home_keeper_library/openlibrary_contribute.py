@@ -29,6 +29,8 @@ NEW_AUTHOR = "__new__"
 _EDITION_RE = re.compile(r"^/books/(OL\d+M)(?:/|$)")
 _EDITION_KEY_RE = re.compile(r"^OL\d+M$")
 _INPUT_RE = re.compile(r"(?:^|/books/)(OL\d+M)(?:[/?#.]|$)")
+_WORK_KEY_RE = re.compile(r"^OL\d+W$")
+_WORK_INPUT_RE = re.compile(r"(?:^|/works/)(OL\d+W)(?:[/?#.]|$)")
 _ADDED_MODES = ("add-work", "add-book")
 
 
@@ -130,4 +132,15 @@ def edition_key(text: Any) -> str | None:
     if _EDITION_KEY_RE.match(value):
         return value
     match = _INPUT_RE.search(value)
+    return match.group(1) if match else None
+
+
+def work_key(text: Any) -> str | None:
+    """The work key ``OL…W`` in a key or an openlibrary.org URL, or None."""
+    if not isinstance(text, str):
+        return None
+    value = text.strip()
+    if _WORK_KEY_RE.match(value):
+        return value
+    match = _WORK_INPUT_RE.search(value)
     return match.group(1) if match else None

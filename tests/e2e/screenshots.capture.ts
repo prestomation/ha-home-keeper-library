@@ -22,6 +22,9 @@ const SCAN_ISBNS = ['9780553418606', '9780441478125', '9781250313188'];
 const NEW_ISBNS = [SCAN_ISBNS[0], SCAN_ISBNS[2]];
 /** The fixture Open Library does not have the 3rd ISBN, so the scan asks for this title. */
 const MISS_TITLE = 'Field Notes on Moss';
+/** The fixture Open Library has no edition with this ISBN, but has a work with this title. */
+const MATCH_ISBN = '9781935788225';
+const MATCH_TITLE = 'The Hollow Orchard';
 
 async function shot(page: Page, name: string): Promise<void> {
   // Let the covers and the fonts settle, and move the pointer out of the way.
@@ -61,7 +64,7 @@ async function coversLoaded(page: Page): Promise<void> {
 async function deleteScanned(): Promise<void> {
   const state = await adminState();
   for (const book of state.books) {
-    if (NEW_ISBNS.includes(book.isbn13)) {
+    if ([...NEW_ISBNS, MATCH_ISBN].includes(book.isbn13)) {
       await library('delete_book', { book_id: book.id });
     }
   }
@@ -102,6 +105,25 @@ async function scanSession(page: Page, missShot: string, detailsShot?: string): 
   await expect(sheet).toHaveCount(0);
   await expect(tab.locator('.hkl-result')).toHaveCount(3);
   await expect(tab.locator('.hkl-result').filter({ hasText: MISS_TITLE })).toBeVisible();
+}
+
+/** Scan a book with no edition on Open Library, give its title, and shoot the match as *name*. */
+async function matchSession(page: Page, name: string): Promise<void> {
+  const tab = await openTab(page, '/scan');
+  await tab.locator('[data-k="m-manual"]').check();
+  await tab.locator('[data-k="scan-start"]').click();
+  await tab.locator('[data-k="isbn-input"]').fill(MATCH_ISBN);
+  await tab.locator('[data-k="isbn-add"]').click();
+  const sheet = tab.locator('.hkl-dialog.sheet');
+  await expect(sheet).toBeVisible({ timeout: 30_000 });
+  await sheet.locator('[name="title"]').fill(MATCH_TITLE);
+  await sheet.locator('[data-k="d-submit"]').click();
+  const match = tab.locator('.hkl-dialog');
+  await expect(match.locator('h2')).toHaveText('Found on Open Library', { timeout: 30_000 });
+  await expect(match.locator('[data-k="d-match-by"]')).toContainText('June Calder');
+  await shot(page, name);
+  await match.locator('[data-k="d-cancel"]').click();
+  await expect(match).toHaveCount(0);
 }
 
 /** Open the Lend dialog of a book with a copy to lend, type a note, and submit with no borrower. */
@@ -221,6 +243,8 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   // A scanned book that Open Library does not have: the title sheet as a dialog.
   await scanSession(page, 'scan-miss-desktop');
   await deleteScanned();
+  await matchSession(page, 'scan-match-desktop');
+  await deleteScanned();
 
   // The card on a dashboard, as Alex. The window is tall enough for the whole card.
   await page.setViewportSize({ width: 1280, height: 1500 });
@@ -266,6 +290,8 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await libraryTab(page).locator('[data-k="scan-done"]').click();
   await expect(libraryTab(page).locator('.hkl-scan-head')).toContainText('Scan summary');
   await shot(page, 'scan-summary-mobile');
+  await deleteScanned();
+  await matchSession(page, 'scan-match-mobile');
   await deleteScanned();
 
   // The setup step on a page that is not HTTPS: the camera is blocked.

@@ -21,7 +21,7 @@ import { renderLoans, renderSettings, renderWishlist } from './tab-lists';
 import { cameraBlocked, isBorrowedMode, renderScan, routeShelf } from './tab-scan';
 import { renderShelves } from './tab-shelves';
 import type { ImportState, ScanEntry, UiState, ViewCtx } from './tab-types';
-import type { Book, HomeAssistant, ImportSummary, Lib, RawState, ReadingStatus, ScanResult, SendResult, TabHost } from './types';
+import type { Book, HomeAssistant, ImportSummary, Lib, RawState, ReadingStatus, ScanResult, SearchResult, SendResult, TabHost } from './types';
 import {
   buildIndex,
   buildPath,
@@ -916,6 +916,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     try {
       const api = this._api!;
       let after: string | undefined;
+      let next: Dialog | null = null;
       switch (d.kind) {
         case 'add-book': {
           const query = str('query');
@@ -986,8 +987,14 @@ export class HomeKeeperLibraryTab extends HTMLElement {
             await api.call('set_cover', { book_id: d.bookId, kind: 'custom', file_id: fileId });
           }
           this._markMiss(d.key, 'named');
+          next = await this._findMatch(d.key, d.bookId, title, authors);
           break;
         }
+        case 'scan-match':
+          await api.call('link_catalog', { book_id: d.bookId, record: d.match.work_key });
+          this._markMiss(d.key, 'matched');
+          this._toast(t('match.linked'));
+          break;
         case 'copy': {
           const fields: Fields = {
             format: str('format'),
@@ -1116,6 +1123,16 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         void this._refresh();
         return;
       }
+      if (next) {
+        // The title sheet becomes the match dialog. The scan stays paused.
+        if (this._dialog === state) {
+          state.busy = false;
+          state.dialog = next;
+          this._renderDialog();
+        }
+        void this._refresh();
+        return;
+      }
       // The user can close this dialog and open a new one during the call.
       if (this._dialog === state) this._closeDialog();
       void this._refresh();
@@ -1125,6 +1142,19 @@ export class HomeKeeperLibraryTab extends HTMLElement {
       state.error = errorText(err);
       this._dlg.querySelector<HTMLElement>('[data-k="d-sending"]')?.setAttribute('hidden', '');
       if (this._dialog === state) this._showDialogStatus();
+    }
+  }
+
+  /**
+   * The match dialog for a title that Open Library has, or null. A failed search
+   * gives null: the scan goes on, and the book stays "Not on Open Library".
+   */
+  private async _findMatch(key: number, bookId: string, title: string, authors: string[]): Promise<Dialog | null> {
+    try {
+      const res = await this._api!.call<SearchResult>('search_catalog', { title, authors });
+      return res?.status === 'found' && res.match?.work_key ? { kind: 'scan-match', key, bookId, match: res.match } : null;
+    } catch {
+      return null;
     }
   }
 
@@ -1366,7 +1396,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     this._render();
   }
 
-  private _markMiss(key: number, flag: 'named' | 'removed'): void {
+  private _markMiss(key: number, flag: 'named' | 'removed' | 'matched'): void {
     const entry = this._ui.scan.results.find((r) => r.key === key);
     if (entry) entry[flag] = true;
   }

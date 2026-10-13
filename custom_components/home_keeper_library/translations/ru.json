@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Искать в каталоге",
+      "description": "Находит лучшее произведение в Open Library по названию и автору. Библиотека не меняется.",
+      "fields": {
+        "title": {
+          "name": "Название",
+          "description": "Название книги."
+        },
+        "authors": {
+          "name": "Авторы",
+          "description": "Авторы. Используется только первый автор."
+        }
+      }
+    },
     "add_book": {
       "name": "Добавить книгу",
       "description": "Добавить книгу. Если у книги тот же ISBN, служба возвращает эту книгу.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Связать с Open Library",
-      "description": "Связывает книгу с изданием в Open Library и заполняет её пустые поля.",
+      "description": "Связывает книгу с изданием или произведением в Open Library и заполняет её пустые поля.",
       "fields": {
         "book_id": {
           "name": "Книга",
           "description": "ID книги."
         },
         "record": {
-          "name": "Издание",
-          "description": "Ключ издания, например OL123M, или URL-адрес страницы издания."
+          "name": "Издание или произведение",
+          "description": "Ключ издания, например OL123M, ключ произведения, например OL45W, или URL страницы."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library не приняла ключи учётной записи. Подключите учётную запись снова."
     },
     "openlibrary_not_found": {
-      "message": "В Open Library нет издания {edition}."
+      "message": "В Open Library нет записи {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} — это не ключ и не URL-адрес издания Open Library."
+      "message": "{edition} не является ключом или URL Open Library."
     },
     "files_dir_invalid": {
       "message": "Папка файлов должна быть внутри .storage/home_keeper_import_export."

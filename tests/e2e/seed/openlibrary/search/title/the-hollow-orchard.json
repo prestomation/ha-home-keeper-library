@@ -1,0 +1,15 @@
+{
+  "numFound": 1,
+  "start": 0,
+  "numFoundExact": true,
+  "docs": [
+    {
+      "key": "/works/OL9000002W",
+      "title": "The Hollow Orchard",
+      "author_name": ["June Calder"],
+      "first_publish_year": 1998,
+      "edition_key": ["OL9000002M"],
+      "cover_i": 8167231
+    }
+  ]
+}

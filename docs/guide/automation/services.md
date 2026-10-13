@@ -58,6 +58,11 @@ key. With `existing`, check the edition and link it with `link_catalog`. The ser
 say "catalog" because the library can support more catalogs of books later. Open Library
 is the only catalog now.
 
+`search_catalog` finds the Open Library work for a title and an author. It changes
+nothing. To fill the empty details of a book from that work, give the `work_key` of the
+`match` to `link_catalog` as `record`. A work has no ISBN, publisher or page count, so
+those details stay as they are.
+
 ## Events
 
 The library fires an event for each change, such as

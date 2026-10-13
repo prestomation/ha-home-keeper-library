@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Søk i katalogen",
+      "description": "Finn det beste verket i Open Library for en tittel og en forfatter. Biblioteket endres ikke.",
+      "fields": {
+        "title": {
+          "name": "Tittel",
+          "description": "Tittelen på boken."
+        },
+        "authors": {
+          "name": "Forfattere",
+          "description": "Forfatterne. Bare den første forfatteren brukes."
+        }
+      }
+    },
     "add_book": {
       "name": "Legg til bok",
       "description": "Legg til en bok. Hvis en bok har samme ISBN, returnerer tjenesten den boken.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Koble til Open Library",
-      "description": "Koble en bok til en utgave i Open Library, og fyll ut de tomme feltene.",
+      "description": "Knytt en bok til en utgave eller et verk i Open Library, og fyll ut de tomme feltene.",
       "fields": {
         "book_id": {
           "name": "Bok",
           "description": "ID-en til boken."
         },
         "record": {
-          "name": "Utgave",
-          "description": "En utgavenøkkel, for eksempel OL123M, eller URL-en til utgavesiden."
+          "name": "Utgave eller verk",
+          "description": "En utgavenøkkel som OL123M, en verknøkkel som OL45W eller URL-en til siden."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library godtok ikke kontonøklene. Koble til kontoen på nytt."
     },
     "openlibrary_not_found": {
-      "message": "Open Library har ingen utgave {edition}."
+      "message": "Open Library har ingen post {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} er ikke en utgavenøkkel eller URL fra Open Library."
+      "message": "{edition} er ikke en nøkkel eller URL fra Open Library."
     },
     "files_dir_invalid": {
       "message": "Filmappen må ligge under .storage/home_keeper_import_export."

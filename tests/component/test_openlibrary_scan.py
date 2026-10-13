@@ -263,6 +263,67 @@ async def test_lookup_isbn_and_refresh(hass, setup_entry, call, aioclient_mock) 
     assert info.value.translation_key == "lookup_unavailable"
 
 
+async def test_sbn_is_an_isbn(hass, setup_entry, call, aioclient_mock) -> None:
+    aioclient_mock.get(f"{OL}/isbn/9780340013816.json", status=404)
+    reply = await call("lookup_isbn", {"isbn": "340 01381 8"})
+    assert (reply["isbn13"], reply["isbn10"]) == ("9780340013816", "0340013818")
+    book = (
+        await call("add_book", {"isbn": "340013818", "title": "Old", "lookup": False})
+    )["book"]
+    assert (book["isbn13"], book["isbn10"]) == ("9780340013816", "0340013818")
+
+
+async def test_search_catalog(hass, setup_entry, call, aioclient_mock) -> None:
+    aioclient_mock.get(
+        f"{OL}/search.json?title=Dune&limit=5&author=Frank+Herbert",
+        json=_json("search_dune.json"),
+    )
+    reply = await call(
+        "search_catalog", {"title": " Dune ", "authors": ["Frank Herbert", ""]}
+    )
+    assert reply == {
+        "status": "found",
+        "match": {
+            "title": "Dune",
+            "authors": ["Frank Herbert"],
+            "first_published": "1965",
+            "work_key": "OL893415W",
+        },
+    }
+    assert setup_entry.runtime_data.store.state["books"] == {}
+    aioclient_mock.get(
+        f"{OL}/search.json?title=Nothing&limit=5", json=_json("search_empty.json")
+    )
+    reply = await call("search_catalog", {"title": "Nothing", "authors": [" "]})
+    assert reply == {"status": "not_found", "match": None}
+    no_work = {"docs": [{"title": "Lost", "author_name": ["Ann Lee"]}]}
+    aioclient_mock.get(f"{OL}/search.json?title=Lost&limit=5", json=no_work)
+    reply = await call("search_catalog", {"title": "Lost"})
+    assert reply == {"status": "not_found", "match": None}
+    aioclient_mock.get(f"{OL}/search.json?title=Down&limit=5", status=500)
+    reply = await call("search_catalog", {"title": "Down"})
+    assert reply == {"status": "unavailable", "match": None}
+    with pytest.raises(ServiceValidationError) as info:
+        await call("search_catalog", {"title": "  "})
+    assert info.value.translation_key == "field_required"
+    assert info.value.translation_placeholders == {"field": "title"}
+
+
+async def test_client_lookup_work(hass, setup_entry, aioclient_mock) -> None:
+    client = OpenLibraryClient(hass, min_interval=0)
+    aioclient_mock.get(f"{OL}/works/OL59863W.json", json=_json("work_OL59863W.json"))
+    aioclient_mock.get(
+        f"{OL}/authors/OL26320A.json", json=_json("author_OL26320A.json")
+    )
+    draft = await client.async_lookup_work("OL59863W")
+    assert draft["authors"] == ["Ursula K. Le Guin"]
+    assert draft["catalogs"]["openlibrary"]["work_key"] == "OL59863W"
+    aioclient_mock.get(f"{OL}/works/OL1W.json", status=404)
+    assert await client.async_lookup_work("OL1W") is None
+    aioclient_mock.get(f"{OL}/works/OL2W.json", json=["x"])
+    assert await client.async_lookup_work("OL2W") is None
+
+
 async def _upload(hass_client, data: bytes, name: str = "c.png"):
     client = await hass_client()
     form = aiohttp.FormData()

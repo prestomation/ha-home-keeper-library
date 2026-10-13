@@ -186,6 +186,20 @@ export interface SendResult {
   book: Book;
 }
 
+/** The work that `search_catalog` found for a title. */
+export interface CatalogMatch {
+  title: string;
+  authors: string[];
+  first_published: string;
+  work_key: string;
+}
+
+/** The reply of `search_catalog`. */
+export interface SearchResult {
+  status: 'found' | 'not_found' | 'unavailable';
+  match: CatalogMatch | null;
+}
+
 /** The normalized library that every view reads. */
 export interface Lib {
   rooms: Room[];

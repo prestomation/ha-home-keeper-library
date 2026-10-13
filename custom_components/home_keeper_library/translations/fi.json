@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Hae luettelosta",
+      "description": "Etsi Open Libraryn paras teos nimen ja tekijän perusteella. Kirjasto ei muutu.",
+      "fields": {
+        "title": {
+          "name": "Nimi",
+          "description": "Kirjan nimi."
+        },
+        "authors": {
+          "name": "Tekijät",
+          "description": "Tekijät. Vain ensimmäistä tekijää käytetään."
+        }
+      }
+    },
     "add_book": {
       "name": "Lisää kirja",
       "description": "Lisää kirja. Jos kirjalla on sama ISBN, palvelu palauttaa sen kirjan.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Linkitä Open Libraryyn",
-      "description": "Linkitä kirja Open Libraryn painokseen ja täytä sen tyhjät kentät.",
+      "description": "Linkitä kirja Open Libraryn painokseen tai teokseen ja täytä sen tyhjät kentät.",
       "fields": {
         "book_id": {
           "name": "Kirja",
           "description": "Kirjan ID."
         },
         "record": {
-          "name": "Painos",
-          "description": "Painoksen avain, kuten OL123M, tai painoksen sivun URL-osoite."
+          "name": "Painos tai teos",
+          "description": "Painoksen avain, kuten OL123M, teoksen avain, kuten OL45W, tai sivun URL."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library ei hyväksynyt tilin avaimia. Yhdistä tili uudelleen."
     },
     "openlibrary_not_found": {
-      "message": "Open Libraryssä ei ole painosta {edition}."
+      "message": "Open Libraryssa ei ole tietuetta {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} ei ole Open Libraryn painoksen avain tai URL-osoite."
+      "message": "{edition} ei ole Open Libraryn avain tai URL."
     },
     "files_dir_invalid": {
       "message": "Tiedostohakemiston on oltava hakemiston .storage/home_keeper_import_export alla."

@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Search the catalog",
+      "description": "Find the best Open Library work for a title and an author. The library stays the same.",
+      "fields": {
+        "title": {
+          "name": "Title",
+          "description": "The title of the book."
+        },
+        "authors": {
+          "name": "Authors",
+          "description": "The authors. Only the first author is used."
+        }
+      }
+    },
     "add_book": {
       "name": "Add book",
       "description": "Add a book. If a book has the same ISBN, the service returns that book.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Link to Open Library",
-      "description": "Link a book to an Open Library edition and fill its empty fields.",
+      "description": "Link a book to an Open Library edition or work and fill its empty fields.",
       "fields": {
         "book_id": {
           "name": "Book",
           "description": "The ID of the book."
         },
         "record": {
-          "name": "Edition",
-          "description": "An edition key, such as OL123M, or the URL of the edition page."
+          "name": "Edition or work",
+          "description": "An edition key, such as OL123M, a work key, such as OL45W, or the URL of the page."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library did not accept the account keys. Connect the account again."
     },
     "openlibrary_not_found": {
-      "message": "Open Library has no edition {edition}."
+      "message": "Open Library has no record {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} is not an Open Library edition key or URL."
+      "message": "{edition} is not an Open Library key or URL."
     },
     "files_dir_invalid": {
       "message": "The files directory must be below .storage/home_keeper_import_export."

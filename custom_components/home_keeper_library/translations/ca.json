@@ -284,6 +284,20 @@
         }
       }
     },
+    "search_catalog": {
+      "name": "Cerca al catàleg",
+      "description": "Troba la millor obra d'Open Library per a un títol i un autor. La biblioteca no canvia.",
+      "fields": {
+        "title": {
+          "name": "Títol",
+          "description": "El títol del llibre."
+        },
+        "authors": {
+          "name": "Autors",
+          "description": "Els autors. Només es fa servir el primer autor."
+        }
+      }
+    },
     "add_book": {
       "name": "Afegeix un llibre",
       "description": "Afegeix un llibre. Si un llibre té el mateix ISBN, el servei retorna aquest llibre.",
@@ -472,15 +486,15 @@
     },
     "link_catalog": {
       "name": "Enllaça amb Open Library",
-      "description": "Enllaça un llibre amb una edició d'Open Library i omple els camps buits.",
+      "description": "Enllaça un llibre amb una edició o una obra d'Open Library i omple els camps buits.",
       "fields": {
         "book_id": {
           "name": "Llibre",
           "description": "L'ID del llibre."
         },
         "record": {
-          "name": "Edició",
-          "description": "Una clau d'edició, com OL123M, o l'URL de la pàgina de l'edició."
+          "name": "Edició o obra",
+          "description": "Una clau d'edició, com OL123M, una clau d'obra, com OL45W, o l'URL de la pàgina."
         }
       }
     },
@@ -1230,10 +1244,10 @@
       "message": "Open Library no ha acceptat les claus del compte. Torneu a connectar el compte."
     },
     "openlibrary_not_found": {
-      "message": "Open Library no té l'edició {edition}."
+      "message": "Open Library no té el registre {edition}."
     },
     "invalid_openlibrary_edition": {
-      "message": "{edition} no és una clau ni un URL d'edició d'Open Library."
+      "message": "{edition} no és una clau ni un URL d'Open Library."
     },
     "files_dir_invalid": {
       "message": "El directori de fitxers ha d'estar dins de .storage/home_keeper_import_export."

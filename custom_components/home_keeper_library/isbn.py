@@ -6,6 +6,10 @@ the weights 10 down to 1. An ISBN-10 converts to the ISBN-13 with the ``978``
 prefix and a new check digit. Only an ISBN-13 with the ``978`` prefix converts
 back to an ISBN-10.
 
+An SBN is the 9-character Standard Book Number of the UK, from before 1974.
+It is the ISBN-10 with no leading ``0``, and has the same check character, so
+``normalize`` accepts it as that ISBN-10.
+
 This module imports no Home Assistant code.
 """
 
@@ -13,6 +17,7 @@ from __future__ import annotations
 
 ISBN13_PREFIXES = ("978", "979")
 ISBN10_PREFIX = "978"
+SBN_LENGTH = 9
 
 
 class IsbnError(ValueError):
@@ -82,12 +87,14 @@ def to_isbn10(isbn13: str) -> str | None:
 
 
 def normalize(raw: object) -> tuple[str, str | None]:
-    """Return ``(isbn13, isbn10)`` for an ISBN-10 or an ISBN-13.
+    """Return ``(isbn13, isbn10)`` for an SBN, an ISBN-10 or an ISBN-13.
 
     Raise :class:`IsbnError` if *raw* is not a valid ISBN. ``isbn10`` is None for
     an ISBN-13 that has no ISBN-10 form.
     """
     value = clean(raw)
+    if len(value) == SBN_LENGTH:
+        value = "0" + value
     if len(value) == 13:
         if not is_valid_isbn13(value) or not value.startswith(ISBN13_PREFIXES):
             raise IsbnError(value)

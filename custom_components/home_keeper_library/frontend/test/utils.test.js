@@ -461,6 +461,13 @@ describe('Open Library helpers', () => {
     expect(u.openLibraryUrl('OL5M')).toBe('https://openlibrary.org/books/OL5M');
     expect(u.openLibraryUrl('OL5M', true)).toBe('https://openlibrary.org/books/OL5M/edit');
     expect(u.openLibraryUrl('a b')).toBe('https://openlibrary.org/books/a%20b');
+    expect(u.openLibraryUrl('OL45W')).toBe('https://openlibrary.org/works/OL45W');
+    expect(u.openLibraryUrl('/works/OL45W')).toBe('https://openlibrary.org/works/OL45W');
+    expect(u.openLibraryUrl('/books/OL5M', true)).toBe('https://openlibrary.org/books/OL5M/edit');
+    expect(u.openLibraryUrl('OL45WX')).toBe('https://openlibrary.org/books/OL45WX');
+    // Only a leading path is cut, and only a whole work key opens the works page.
+    expect(u.openLibraryUrl('x/works/OL45W')).toBe('https://openlibrary.org/books/x%2Fworks%2FOL45W');
+    expect(u.openLibraryUrl('xOL45W')).toBe('https://openlibrary.org/books/xOL45W');
   });
 
   it('reads the account of get_state', () => {
@@ -611,6 +618,11 @@ describe('ISBN', () => {
     expect(u.normalizeIsbn('0441478124')).toBeNull();
     expect(u.normalizeIsbn('9780441478126')).toBeNull();
     expect(u.normalizeIsbn('12345')).toBeNull();
+    // An SBN is the ISBN-10 with no leading 0.
+    expect(u.normalizeIsbn('340 01381 8')).toBe('9780340013816');
+    expect(u.normalizeIsbn('10000007X')).toBe('9780100000070');
+    expect(u.normalizeIsbn('340013817')).toBeNull();
+    expect(u.normalizeIsbn('40013818')).toBeNull();
   });
 });
 
