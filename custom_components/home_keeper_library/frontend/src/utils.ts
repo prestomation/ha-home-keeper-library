@@ -611,9 +611,13 @@ export function isbnFromEan(code: string): string | null {
   return isValidIsbn13(digits) ? digits : null;
 }
 
-/** A typed ISBN as ISBN-13, or null if it is not a valid ISBN-10 or ISBN-13. */
+/**
+ * A typed ISBN as ISBN-13, or null if it is not a valid ISBN-10 or ISBN-13. A
+ * 9-character SBN (UK, before 1974) is the ISBN-10 with no leading 0.
+ */
 export function normalizeIsbn(value: string): string | null {
-  const v = cleanIsbn(value);
+  let v = cleanIsbn(value);
+  if (v.length === 9) v = `0${v}`;
   if (v.length === 13) return isValidIsbn13(v) ? v : null;
   if (v.length === 10) return isValidIsbn10(v) ? isbn10to13(v) : null;
   return null;

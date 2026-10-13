@@ -263,6 +263,16 @@ async def test_lookup_isbn_and_refresh(hass, setup_entry, call, aioclient_mock) 
     assert info.value.translation_key == "lookup_unavailable"
 
 
+async def test_sbn_is_an_isbn(hass, setup_entry, call, aioclient_mock) -> None:
+    aioclient_mock.get(f"{OL}/isbn/9780340013816.json", status=404)
+    reply = await call("lookup_isbn", {"isbn": "340 01381 8"})
+    assert (reply["isbn13"], reply["isbn10"]) == ("9780340013816", "0340013818")
+    book = (
+        await call("add_book", {"isbn": "340013818", "title": "Old", "lookup": False})
+    )["book"]
+    assert (book["isbn13"], book["isbn10"]) == ("9780340013816", "0340013818")
+
+
 async def test_search_catalog(hass, setup_entry, call, aioclient_mock) -> None:
     aioclient_mock.get(
         f"{OL}/search.json?title=Dune&limit=5&author=Frank+Herbert",

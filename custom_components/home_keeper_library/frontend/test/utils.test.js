@@ -618,6 +618,11 @@ describe('ISBN', () => {
     expect(u.normalizeIsbn('0441478124')).toBeNull();
     expect(u.normalizeIsbn('9780441478126')).toBeNull();
     expect(u.normalizeIsbn('12345')).toBeNull();
+    // An SBN is the ISBN-10 with no leading 0.
+    expect(u.normalizeIsbn('340 01381 8')).toBe('9780340013816');
+    expect(u.normalizeIsbn('10000007X')).toBe('9780100000070');
+    expect(u.normalizeIsbn('340013817')).toBeNull();
+    expect(u.normalizeIsbn('40013818')).toBeNull();
   });
 });
 

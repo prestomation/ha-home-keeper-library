@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/zxing-decoder.ts
   - custom_components/home_keeper_library/frontend/src/tab-scan.ts
 related: [open-library-covers, store-models, frontend-tab-card, loans-home-keeper]
-source_hash: bd15c08d996e
+source_hash: 0b666d83ea06
 ---
 
 # Scan and ISBN
@@ -39,7 +39,8 @@ its ISBN by hand. Each scan calls the `scan_isbn` service.
 `isbn.normalize` cleans the input to the ASCII digits `0` to `9` (and `X` for the check
 character of an ISBN-10), checks the check digit, and returns the ISBN-13 and the ISBN-10. An
 ISBN-10 converts to the ISBN-13 with the `978` prefix. Only a `978` ISBN-13 converts back. A
-bad value raises `IsbnError`, which a service turns into `invalid_isbn`. `isbn.is_isbn_barcode`
+bad value raises `IsbnError`, which a service turns into `invalid_isbn`. A 9-character SBN
+is the ISBN-10 with no leading `0`, so `normalize` adds the `0`. `isbn.is_isbn_barcode`
 accepts an EAN-13 with the `978` or `979` prefix. `utils.ts` has the same rules for the tab, so
 the tab can refuse a bad code before a call.
 

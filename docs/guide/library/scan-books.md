@@ -28,6 +28,10 @@ Use **Enter ISBN** for a book with no barcode, or on a computer with no camera.
 The library accepts an ISBN with or without hyphens. It checks the check digit, and shows
 **This is not a valid ISBN.** for a typing error.
 
+A UK book from before 1974 can have a 9-digit SBN (Standard Book Number) and no ISBN.
+Type the SBN in the ISBN field. The library puts a `0` in front of the SBN to get the
+same ISBN-10.
+
 ## Results
 
 | Result | What it means |
