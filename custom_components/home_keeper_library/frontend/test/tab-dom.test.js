@@ -839,9 +839,14 @@ describe('scan with no match', () => {
     expect(fake.calls('link_catalog')).toEqual([{ type: 'home_keeper_library/link_catalog', book_id: 'new', record: 'OL45W' }]);
     expect($('.hkl-dialog')).toBeNull();
     expect(host.showToast).toHaveBeenCalledWith('Details added from Open Library.');
-    await scan('9780441478125');
-    await flush();
-    expect(fake.calls('scan_isbn')).toHaveLength(2);
+    // The row and the summary show the match, not a book that needs details.
+    // The fake keeps the ISBN as the title of the book.
+    const row = $$('.hkl-result').find((r) => r.textContent.includes('9781402894626'));
+    expect(row.textContent).toContain('Found on Open Library');
+    expect(row.textContent).not.toContain('No match in Open Library');
+    expect(row.querySelector('[data-k^="det-"]')).toBeNull();
+    $('[data-k="scan-done"]').click();
+    expect($$('.hkl-stat b').map((b) => b.textContent)).toEqual(['1', '0', '0']);
   });
 
   it('closes the match with no link on Not this book', async () => {
@@ -861,6 +866,8 @@ describe('scan with no match', () => {
     await flush();
     expect($('.hkl-dialog')).toBeNull();
     expect(fake.calls('link_catalog')).toHaveLength(0);
+    const row = $$('.hkl-result').find((r) => r.textContent.includes('9781402894626'));
+    expect(row.textContent).toContain('No match in Open Library');
     await scan('9780441478125');
     await flush();
     expect(fake.calls('scan_isbn')).toHaveLength(2);

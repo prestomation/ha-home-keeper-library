@@ -987,11 +987,12 @@ export class HomeKeeperLibraryTab extends HTMLElement {
             await api.call('set_cover', { book_id: d.bookId, kind: 'custom', file_id: fileId });
           }
           this._markMiss(d.key, 'named');
-          next = await this._findMatch(d.bookId, title, authors);
+          next = await this._findMatch(d.key, d.bookId, title, authors);
           break;
         }
         case 'scan-match':
           await api.call('link_catalog', { book_id: d.bookId, record: d.match.work_key });
+          this._markMiss(d.key, 'matched');
           this._toast(t('match.linked'));
           break;
         case 'copy': {
@@ -1148,10 +1149,10 @@ export class HomeKeeperLibraryTab extends HTMLElement {
    * The match dialog for a title that Open Library has, or null. A failed search
    * gives null: the scan goes on, and the book stays "Not on Open Library".
    */
-  private async _findMatch(bookId: string, title: string, authors: string[]): Promise<Dialog | null> {
+  private async _findMatch(key: number, bookId: string, title: string, authors: string[]): Promise<Dialog | null> {
     try {
       const res = await this._api!.call<SearchResult>('search_catalog', { title, authors });
-      return res?.status === 'found' && res.match?.work_key ? { kind: 'scan-match', bookId, match: res.match } : null;
+      return res?.status === 'found' && res.match?.work_key ? { kind: 'scan-match', key, bookId, match: res.match } : null;
     } catch {
       return null;
     }
@@ -1395,7 +1396,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     this._render();
   }
 
-  private _markMiss(key: number, flag: 'named' | 'removed'): void {
+  private _markMiss(key: number, flag: 'named' | 'removed' | 'matched'): void {
     const entry = this._ui.scan.results.find((r) => r.key === key);
     if (entry) entry[flag] = true;
   }

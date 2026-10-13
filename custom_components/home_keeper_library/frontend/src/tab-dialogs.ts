@@ -17,7 +17,7 @@ export type Dialog =
   /** A scan found no match in Open Library: ask for the title before the next scan. */
   | { kind: 'scan-title'; key: number; bookId: string; copyId: string | null; isbn: string }
   /** Open Library has a work with the title of a scan with no match: ask to use it. */
-  | { kind: 'scan-match'; bookId: string; match: CatalogMatch }
+  | { kind: 'scan-match'; key: number; bookId: string; match: CatalogMatch }
   | { kind: 'lend'; bookId: string | null }
   | { kind: 'borrow' }
   | { kind: 'wish-add'; bookId: string | null }

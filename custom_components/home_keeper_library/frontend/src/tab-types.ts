@@ -15,6 +15,8 @@ export interface ScanEntry {
   named?: boolean;
   /** The user removed the book of a scan with no match. */
   removed?: boolean;
+  /** The user linked the book of a scan with no match to its Open Library work. */
+  matched?: boolean;
 }
 
 export interface ScanSession {

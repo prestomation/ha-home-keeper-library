@@ -113,12 +113,13 @@ function resultRow(ctx: ViewCtx, e: ScanEntry): string {
     sub = escapeHTML(t('scan.already_in', { place: where }));
     right = `<div class="hkl-dup">${button(escapeHTML(t('scan.move_here')), 'scan-dup', 'tonal', `${k} data-value="move" data-k="dup-m-${e.key}"`)}${button(escapeHTML(t('scan.add_copy')), 'scan-dup', 'tonal', `${k} data-value="add_copy" data-k="dup-a-${e.key}"`)}${button(escapeHTML(t('scan.skip')), 'scan-dup', 'text', `${k} data-value="skip" data-k="dup-s-${e.key}"`)}</div>`;
     cls = 'dup';
-  } else if (e.res?.result === 'not_found') {
+  } else if (e.res?.result === 'not_found' && !e.matched) {
     sub = escapeHTML(t('scan.no_match'));
     right = book ? button(escapeHTML(t('action.add_details')), 'scan-details', 'tonal', `data-id="${escapeHTML(book.id)}" data-k="det-${e.key}"`) : '';
     cls = 'warn';
   } else {
-    const label = e.res?.result ? t(`scan.result_${e.res.result}`) : t('scan.result_added');
+    // A matched scan has no edition on Open Library, but its book has the details of the work.
+    const label = e.matched ? t('match.title') : e.res?.result ? t(`scan.result_${e.res.result}`) : t('scan.result_added');
     const wish = e.res?.from_wishlist === true ? `<span class="hkl-pill st-want" data-k="from-wish-${e.key}">${escapeHTML(t('scan.from_wishlist'))}</span>` : '';
     right = `<span class="hkl-pills">${wish}<span class="hkl-pill ok">${escapeHTML(label)}</span></span>`;
   }
@@ -164,7 +165,9 @@ function cameraStep(ctx: ViewCtx): string {
 function summaryStep(ctx: ViewCtx): string {
   const s = ctx.ui.scan;
   const kept = s.results.filter((r) => r.res && !r.removed);
-  const tally = scanTally(kept.map((r) => ({ result: r.res!.result, book: r.res!.book })));
+  // A matched scan added its copy and has its details, so it counts as added.
+  const resultOf = (r: (typeof kept)[number]) => (r.matched ? 'added' : r.res!.result);
+  const tally = scanTally(kept.map((r) => ({ result: resultOf(r), book: r.matched ? null : r.res!.book })));
   const shelfId = routeShelf(ctx);
   const where = isBorrowedMode(ctx) ? t('scan.title_borrowed') : shelfId ? locationLabel(ctx.idx, shelfId) : t('common.no_shelf');
   const tiles = [
@@ -177,7 +180,7 @@ function summaryStep(ctx: ViewCtx): string {
   const rows = kept
     .map((r) => {
       const book = (r.res!.book && ctx.idx.book.get(r.res!.book.id)) || r.res!.book;
-      const res = r.res!.result;
+      const res = resultOf(r);
       let label = t(`scan.result_${res}`);
       if (res === 'moved' && r.res!.existing_copies[0]?.shelf_id) {
         const from = shelfPath(ctx.idx, r.res!.existing_copies[0].shelf_id).room?.name;

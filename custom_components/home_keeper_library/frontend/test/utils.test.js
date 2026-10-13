@@ -465,6 +465,9 @@ describe('Open Library helpers', () => {
     expect(u.openLibraryUrl('/works/OL45W')).toBe('https://openlibrary.org/works/OL45W');
     expect(u.openLibraryUrl('/books/OL5M', true)).toBe('https://openlibrary.org/books/OL5M/edit');
     expect(u.openLibraryUrl('OL45WX')).toBe('https://openlibrary.org/books/OL45WX');
+    // Only a leading path is cut, and only a whole work key opens the works page.
+    expect(u.openLibraryUrl('x/works/OL45W')).toBe('https://openlibrary.org/books/x%2Fworks%2FOL45W');
+    expect(u.openLibraryUrl('xOL45W')).toBe('https://openlibrary.org/books/xOL45W');
   });
 
   it('reads the account of get_state', () => {

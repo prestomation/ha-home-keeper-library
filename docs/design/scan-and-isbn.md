@@ -7,7 +7,7 @@ implements:
   - custom_components/home_keeper_library/frontend/src/zxing-decoder.ts
   - custom_components/home_keeper_library/frontend/src/tab-scan.ts
 related: [open-library-covers, store-models, frontend-tab-card, loans-home-keeper]
-source_hash: 5aa4a6d268d8
+source_hash: bd15c08d996e
 ---
 
 # Scan and ISBN
@@ -96,8 +96,9 @@ the title.
 After the save, the tab calls `search_catalog` with the title and the authors. If Open
 Library has a work, the sheet becomes the match dialog (`scan-match`): the title, the
 authors, the first year and a link to the work. **Use these details** calls `link_catalog`
-with the work key. **Not this book** closes it. The scan stays paused while it shows. No
-match, or a failed search, closes the sheet at once.
+with the work key, and the row and the summary then count the book as added. **Not this
+book** closes it. The scan stays paused while it shows. No match, or a failed search,
+closes the sheet at once.
 
 In borrowed mode each scan calls `borrow_book` with the ISBN, the lender and the due date
 of the session, and adds no copy ([loans-home-keeper](loans-home-keeper.md)).
