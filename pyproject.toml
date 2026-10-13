@@ -56,6 +56,8 @@ also_copy = [
     "docs",
     "stryker.conf.json",
     "pyproject.toml",
+    "hacs.json",
+    "README.md",
 ]
 # The mutable surface: the pure core, which the fast `tests/unit` tier tests
 # directly. The other modules import Home Assistant and only the component and
