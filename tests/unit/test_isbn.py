@@ -86,6 +86,16 @@ def test_normalize() -> None:
             isbn.normalize(bad)
 
 
+def test_normalize_error_names_the_clean_value() -> None:
+    for bad, value in (
+        ("978-0441478124", "9780441478124"),
+        ("0-441-47812-4", "0441478124"),
+    ):
+        with pytest.raises(isbn.IsbnError) as info:
+            isbn.normalize(bad)
+        assert info.value.args == (value,)
+
+
 def test_normalize_sbn() -> None:
     # An SBN is the ISBN-10 with no leading 0.
     assert isbn.normalize("340 01381 8") == ("9780340013816", "0340013818")
