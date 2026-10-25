@@ -5,7 +5,7 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
-## [0.4.0b2] - 2026-10-13
+## [0.4.0] - 2026-10-25
 
 ### Added
 
@@ -16,8 +16,6 @@ is the single source of truth (see `RELEASE.md`).
 - **[SBN numbers](https://prestomation.github.io/ha-home-keeper-library/docs/guide/scan-books).**
   You can type the 9-digit SBN of an old UK book where the library asks for an ISBN. The
   library finds and stores the book with the matching ISBN.
-
-## [0.4.0b1] - 2026-10-12
 
 ### Changed
 
