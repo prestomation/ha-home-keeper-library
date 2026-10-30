@@ -41,7 +41,7 @@ in the rules files below. Read the file for your topic before you change code or
   `todo` entities and the open services. Do not mix the 2.
 - Docs site: `website/` (Docusaurus). It renders `docs/guide/` and copies some `docs/*.md`.
   Edit the sources, never the generated trees.
-- `README.md` lists every automated check in its **Guardrails** table.
+- `docs/DEVELOPING.md` lists every automated check in its **Guardrails** table.
 
 ## Hard gates
 

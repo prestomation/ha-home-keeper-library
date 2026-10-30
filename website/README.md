@@ -29,6 +29,7 @@ them from the canonical Markdown in the repository and rewrites links and images
 | `docs/EVENTS.md` | website/developer/events.md |
 | `docs/design/architecture.md` | website/developer/architecture.md |
 | `docs/SECURITY.md` | website/developer/security.md |
+| `docs/DEVELOPING.md` | website/developer/developing.md |
 
 The full list is `DEV_DOCS` in `website/scripts/doc-map.mjs`.
 

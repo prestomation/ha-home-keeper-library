@@ -131,8 +131,9 @@ the video. You never commit one: `docs/videos/` is gitignored.
   cases and how to use it, with screenshots embedded by a relative `../../images/…` path.
 - A new guide page needs a `USER_SECTIONS` entry in `website/scripts/doc-map.mjs`, or the
   site build fails.
-- `README.md` is the repository front page and stays short. It keeps the **Guardrails**
-  table: add a row for each new automated check. Feature detail does not go there.
+- `README.md` is the repository front page and stays short. Feature detail does not go
+  there. The **Guardrails** table is in `docs/DEVELOPING.md`: add a row for each new
+  automated check.
 - Edit the canonical sources (`docs/guide/**/*.md`, `docs/*.md`). Never edit the
   generated `website/docs/guide/` or `website/developer/`.
 - **A UI change with a subjective visual choice starts with an artifact.** Mock up the

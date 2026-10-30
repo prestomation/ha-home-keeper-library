@@ -97,6 +97,7 @@ export const DEV_DOCS = [
   {file: 'docs/EVENTS.md', out: 'events.md', title: 'Events reference', label: 'Events', pos: 3},
   {file: 'docs/design/architecture.md', out: 'architecture.md', title: 'Architecture', label: 'Architecture', pos: 4},
   {file: 'docs/SECURITY.md', out: 'security.md', title: 'Security model', label: 'Security', pos: 5},
+  {file: 'docs/DEVELOPING.md', out: 'developing.md', title: 'Developing Home Keeper Library', label: 'Developing', pos: 6},
 ];
 
 // Developer Guide pages with no canonical Markdown source: `ci/generate_api_docs.py`
@@ -127,6 +128,7 @@ export const DOC_ROUTES = {
   'docs/EVENTS.md': '/developer/events',
   'docs/design/architecture.md': '/developer/architecture',
   'docs/SECURITY.md': '/developer/security',
+  'docs/DEVELOPING.md': '/developer/developing',
 };
 
 /**
