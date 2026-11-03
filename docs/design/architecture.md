@@ -9,7 +9,7 @@ implements:
   - custom_components/home_keeper_library/backend_i18n.py
   - custom_components/home_keeper_library/manifest.json
 related: [store-models, people-privilege, events-api, home-keeper-dependency, frontend-tab-card]
-source_hash: fa54b3c24e14
+source_hash: 617a9782a105
 ---
 
 # Architecture
@@ -66,8 +66,8 @@ resource.
 
 `async_setup_entry` runs these steps in order:
 
-1. Read the string tables of the Home Assistant language in an executor job
-   (`backend_i18n.preload`), and load the store.
+1. Read the string tables of every language of the integration in an executor job
+   (`backend_i18n.preload`, 640 KB), so no lookup reads a file, and load the store.
 2. Make `LibraryCoordinator` and give it the Open Library client, the lookup queue and
    the 2 syncs. Store it as `entry.runtime_data`. A store listener sends the dispatcher
    signal `const.SIGNAL_STORE_CHANGED` for the websocket subscriptions. An update listener

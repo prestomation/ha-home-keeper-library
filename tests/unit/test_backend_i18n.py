@@ -70,4 +70,4 @@ def test_all_strings_and_preload() -> None:
     assert set(titles) == set(const.LANGUAGES)
     assert titles["en"] == "Library"
     assert i18n.all_strings("missing") == {}
-    i18n.preload("fr")
+    i18n.preload()

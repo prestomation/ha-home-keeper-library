@@ -48,7 +48,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
 async def async_setup_entry(hass: HomeAssistant, entry: LibraryConfigEntry) -> bool:
     """Set up Home Keeper Library from its config entry."""
-    await hass.async_add_executor_job(backend_i18n.preload, hass.config.language)
+    await hass.async_add_executor_job(backend_i18n.preload)
     store = LibraryStore(hass)
     await store.load()
     store.on_cover_released = partial(covers.release_cover, hass)
