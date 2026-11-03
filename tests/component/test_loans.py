@@ -135,7 +135,7 @@ async def test_borrow_book_sets_reading(hass, setup_entry, call) -> None:
             "authors": ["Jane Austen"],
             "party": "City library",
             "person_id": BOB,
-            "due": "2026-11-01",
+            "due": "2030-11-01",
             "format": "ebook",
         },
     )

@@ -13,10 +13,12 @@ why the tier uses a fake.
 from __future__ import annotations
 
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
 import pytest
+from blockbuster import BlockBuster, blockbuster_ctx
 
 _FAKE = Path(__file__).parent / "fake_home_keeper"
 if str(_FAKE) not in sys.path:
@@ -143,3 +145,22 @@ def ws(hass, hass_ws_client, hass_access_token, hass_read_only_access_token):
         return await hass_ws_client(hass, access_token=token)
 
     return _client
+
+
+@pytest.fixture(autouse=True)
+def blockbuster() -> Iterator[BlockBuster]:
+    """Fail a test when this integration blocks the event loop.
+
+    Blockbuster patches the calls that block (file and socket I/O, sleep, and
+    others). It raises ``BlockingError`` when one runs on the event loop thread.
+    It only looks at calls with a frame of this integration in the stack. Home
+    Assistant and its test harness do blocking work of their own that the
+    library cannot change, for example when the ``frontend`` component starts.
+    """
+    with blockbuster_ctx("custom_components.home_keeper_library") as bb:
+        # The harness logs to a stream handler on the loop thread. A running
+        # Home Assistant logs through a queue, so this write is a test artifact.
+        bb.functions["io.TextIOWrapper.write"].can_block_in(
+            "logging/__init__.py", "emit"
+        )
+        yield bb

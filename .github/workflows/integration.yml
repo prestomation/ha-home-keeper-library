@@ -98,6 +98,26 @@ jobs:
         working-directory: tests/integration
         run: docker compose logs homeassistant
 
+      # The 3 steps below run even when the tests fail. The log has the records of
+      # Home Keeper too. The gate reads only the records of home_keeper_library.
+      # The file name has the lane, so the 2 lanes never share an artifact.
+      - name: Save the Home Assistant log
+        if: always()
+        working-directory: tests/integration
+        run: docker compose logs --no-color homeassistant > "$GITHUB_WORKSPACE/ha-${{ matrix.ha }}.log"
+
+      - name: Upload the Home Assistant log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ha-log-${{ matrix.ha }}
+          path: ha-${{ matrix.ha }}.log
+          retention-days: 7
+
+      - name: Check the Home Assistant log
+        if: always()
+        run: python ci/check-ha-log.py --domain home_keeper_library "ha-${{ matrix.ha }}.log"
+
       - name: Cleanup
         if: always()
         working-directory: tests/integration

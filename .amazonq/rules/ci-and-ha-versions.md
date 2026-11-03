@@ -12,7 +12,7 @@ summary: What each CI workflow gates, the mutation and typing gates, vale, and h
 | `lint.yml` | ruff, mypy (HA installed), vale, `docs-audit`, `changelog-release-gap` |
 | `test.yml` | vitest, pytest unit and component, i18n coverage, HACS validation, hassfest, oldest-HA component tier |
 | `mutation.yml` | mutmut and Stryker on the changed code, 80% gate |
-| `integration.yml` | Docker integration tests with the real Home Keeper, on `stable` and the oldest HA |
+| `integration.yml` | Docker integration tests with the real Home Keeper, on `stable` and the oldest HA; saves the container log (artifact `ha-log-<lane>`) and checks it |
 | `e2e.yml` | Docker, the real Home Keeper and Playwright; uploads the report on a failure |
 | `walkthrough-preview.yml` | the walkthrough gif comment ([pr-workflow.md](pr-workflow.md#walkthrough-video)) |
 | `docs-preview.yml` | builds the docs site for a PR and links the changed pages |
@@ -106,7 +106,8 @@ bash ci/test-mutation-frontend.sh          # Stryker, changed line ranges only
   the major back. Before a move, `npm run build` in the frontend must pass.
 - User-facing exceptions are localized ([architecture.md](architecture.md#localized-text)).
 - Python is linted and formatted with ruff. Run `ruff check .` and
-  `ruff format --check .`.
+  `ruff format --check .`. The `ASYNC` rules find a blocking call in an `async def`. They
+  miss a `Path` built with `/`, so the `blockbuster` fixture is the real guard.
 
 ## Home Assistant versions
 

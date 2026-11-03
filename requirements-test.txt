@@ -12,6 +12,10 @@ PyYAML
 # The pure unit tier needs it too: the ISBN and CSV tests are property-based.
 hypothesis
 
+# The component tier fails a test when this integration blocks the event loop
+# (tests/component/conftest.py). Home Assistant gives the same warning at run time.
+blockbuster
+
 # Linting / formatting (also enforced in CI by .github/workflows/lint.yml).
 ruff
 

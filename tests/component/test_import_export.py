@@ -281,7 +281,8 @@ async def test_symbolic_link_out_of_the_bundles_is_refused(
     hass, setup_entry, call, tmp_path
 ) -> None:
     root = Path(hass.config.path(*BUNDLES))
-    root.mkdir(parents=True, exist_ok=True)
+    # Test setup on an empty temporary directory: a short blocking call is fine.
+    root.mkdir(parents=True, exist_ok=True)  # noqa: ASYNC240
     link = root / "link"
     link.symlink_to(tmp_path, target_is_directory=True)
     with pytest.raises(ServiceValidationError) as err:

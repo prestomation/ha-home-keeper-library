@@ -48,6 +48,16 @@ def _interpolate(template: str, params: dict[str, Any]) -> str:
     )
 
 
+@functools.cache
+def _languages(directory: Path) -> frozenset[str]:
+    """The languages that have a JSON file in *directory*.
+
+    This call blocks the first time. ``preload`` makes it, so that a lookup of a
+    language with no file reads no directory on the event loop.
+    """
+    return frozenset(path.stem for path in directory.glob("*.json"))
+
+
 def _read_json(path: Path) -> Any:
     """The JSON value of the file at *path*, or None if it cannot be read."""
     try:
@@ -70,6 +80,8 @@ def _resolve(
 @functools.cache
 def _exceptions(lang: str) -> dict[str, str]:
     """The ``exceptions.<key>.message`` templates for *lang*, flattened."""
+    if lang not in _languages(_TRANSLATIONS_DIR):
+        return {}
     data = _read_json(_TRANSLATIONS_DIR / f"{lang}.json")
     exceptions = data.get("exceptions") if isinstance(data, dict) else None
     if not isinstance(exceptions, dict):
@@ -92,6 +104,8 @@ def resolve_exception(lang: str, key: str, **params: Any) -> str:
 @functools.cache
 def _backend_strings(lang: str) -> dict[str, str]:
     """The flat ``backend_strings/<lang>.json`` table for *lang*."""
+    if lang not in _languages(_BACKEND_STRINGS_DIR):
+        return {}
     data = _read_json(_BACKEND_STRINGS_DIR / f"{lang}.json")
     return data if isinstance(data, dict) else {}
 
@@ -104,25 +118,28 @@ def resolve_string(lang: str, key: str, **params: Any) -> str:
     return _resolve(_backend_strings, lang, key, params)
 
 
-def preload(lang: str) -> None:
-    """Read every string table for *lang* into the cache.
+def preload() -> None:
+    """Read every string table of every shipped language into the cache.
 
     This call blocks. Call it from an executor job, in ``async_setup_entry``, so
-    that a later lookup on the event loop reads no file.
+    that a later lookup on the event loop reads no file, whatever the language of
+    Home Assistant is at that time. A second call reads nothing.
     """
-    for wanted in language_chain(lang):
-        _exceptions(wanted)
-        _backend_strings(wanted)
+    for lang in sorted(
+        _languages(_TRANSLATIONS_DIR) | _languages(_BACKEND_STRINGS_DIR)
+    ):
+        _exceptions(lang)
+        _backend_strings(lang)
 
 
 def all_strings(key: str) -> dict[str, str]:
     """The value of a backend string key in each language that has it.
 
-    This call blocks the first time for each language.
+    This call blocks the first time. ``preload`` makes it.
     """
     out: dict[str, str] = {}
-    for path in sorted(_BACKEND_STRINGS_DIR.glob("*.json")):
-        value = _backend_strings(path.stem).get(key)
+    for lang in sorted(_languages(_BACKEND_STRINGS_DIR)):
+        value = _backend_strings(lang).get(key)
         if isinstance(value, str) and value:
-            out[path.stem] = value
+            out[lang] = value
     return out
