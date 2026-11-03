@@ -50,6 +50,21 @@ Run the cheapest tier first.
 - Other work can share the machine and port 8123. Wrap each local docker command in
   `flock /tmp/claude-0/docker.lock`, and give the compose project a name with `-p`.
 
+### Blocking calls and the container log
+
+- **The component tier runs `blockbuster`** (autouse, `tests/component/conftest.py`). It
+  fails a test when a call with a frame of this integration in the stack blocks the event
+  loop. It ignores Home Assistant's own blocking work. A blocking function goes through
+  `hass.async_add_executor_job`. The unit tier has no event loop, so it has no such check.
+- **`tests/integration/test_surfaces.py` touches each surface once**: diagnostics, every
+  config and options flow step and every service. A new service needs a call there, or an
+  entry in `VALIDATION_ONLY`. The test sends no request to Open Library.
+- **The container runs in Python dev mode** (`docker-compose.yml`). The last step of each
+  `integration.yml` lane runs `python ci/check-ha-log.py --domain home_keeper_library` on the
+  saved log. Read the grouped report. Fix a real finding. For a message that a test causes
+  on purpose, add a narrow regex and a reason to `ci/ha-log-allowlist.txt`. Never run the
+  gate on a log that you have not read once.
+
 ### Pick the tier for "test against real HA"
 
 - Home Assistant logic (store, coordinator, entities, services, events, config flow)

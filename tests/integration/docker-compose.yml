@@ -15,5 +15,10 @@ services:
       - ./.home_keeper/custom_components/home_keeper:/config/custom_components/home_keeper:ro
     environment:
       - TZ=America/New_York
+      # Python dev mode and asyncio debug mode make Home Assistant log problems
+      # that stay silent otherwise: a coroutine that nobody awaited, a slow
+      # callback, an unclosed resource. ci/check-ha-log.py reads them from the log.
+      - PYTHONDEVMODE=1
+      - PYTHONASYNCIODEBUG=1
     tmpfs:
       - /tmp

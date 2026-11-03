@@ -1,0 +1,6 @@
+# Allowlist for ci/check-ha-log.py
+#
+# Each entry is a regular expression on its own line. The line before it
+# must be a comment that gives the reason. An entry matches a whole log
+# record (the first line plus its traceback lines). Keep this file short.
+# An entry hides a real problem, so fix the cause when you can.
