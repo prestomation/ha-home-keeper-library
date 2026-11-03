@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Architecture | Home Keeper Library</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-50/img/logo.svg"><meta data-rh="true" name="twitter:image" content="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-50/img/logo.svg"><meta data-rh="true" property="og:url" content="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-50/developer/architecture"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-developer-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-developer-current"><meta data-rh="true" property="og:title" content="Architecture | Home Keeper Library"><meta data-rh="true" name="description" content="Home Keeper Library is a Home Assistant integration for the books of a household. It"><meta data-rh="true" property="og:description" content="Home Keeper Library is a Home Assistant integration for the books of a household. It"><link data-rh="true" rel="icon" href="/ha-home-keeper-library/pr-preview/pr-50/img/favicon.svg"><link data-rh="true" rel="canonical" href="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-50/developer/architecture"><link data-rh="true" rel="alternate" href="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-50/developer/architecture" hreflang="en"><link data-rh="true" rel="alternate" href="https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-50/developer/architecture" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Architecture","item":"https://prestomation.github.io/ha-home-keeper-library/pr-preview/pr-50/developer/architecture"}]}</script><link rel="stylesheet" href="/ha-home-keeper-library/pr-preview/pr-50/assets/css/styles.eef33b07.css">
-<script src="/ha-home-keeper-library/pr-preview/pr-50/assets/js/runtime~main.f4723079.js" defer="defer"></script>
+<script src="/ha-home-keeper-library/pr-preview/pr-50/assets/js/runtime~main.a1a8f30b.js" defer="defer"></script>
 <script src="/ha-home-keeper-library/pr-preview/pr-50/assets/js/main.9b095404.js" defer="defer"></script>
 </head>
 <body>
@@ -80,8 +80,8 @@ logic. <code>api_surface.py</code> declares each surface that an integrator sees
 resource.</p>
 <p><code>async_setup_entry</code> runs these steps in order:</p>
 <ol>
-<li class="">Read the string tables of the Home Assistant language in an executor job
-(<code>backend_i18n.preload</code>), and load the store.</li>
+<li class="">Read the string tables of every language of the integration in an executor job
+(<code>backend_i18n.preload</code>, 640 KB), so no lookup reads a file, and load the store.</li>
 <li class="">Make <code>LibraryCoordinator</code> and give it the Open Library client, the lookup queue and
 the 2 syncs. Store it as <code>entry.runtime_data</code>. A store listener sends the dispatcher
 signal <code>const.SIGNAL_STORE_CHANGED</code> for the websocket subscriptions. An update listener
