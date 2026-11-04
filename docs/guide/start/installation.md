@@ -1,6 +1,6 @@
 # Installation
 
-Home Keeper Library is a custom integration that installs with [HACS](https://hacs.xyz/).
+Home Keeper Library is a custom integration in the [HACS](https://hacs.xyz/) default list.
 It requires Home Assistant 2025.7 or later, and Home Keeper.
 
 ## Install Home Keeper first
@@ -15,9 +15,9 @@ The Library tab needs Home Keeper version 0.30.0 or later.
 
 ## Install the library
 
-1. In HACS, add this repository as a custom repository, with the category
-   **Integration**: `https://github.com/prestomation/ha-home-keeper-library`.
-2. Install **Home Keeper Library** and restart Home Assistant.
+1. In HACS, search for **Home Keeper Library**, or
+   [open it in HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=prestomation&repository=ha-home-keeper-library&category=integration).
+2. Download **Home Keeper Library** and restart Home Assistant.
 3. Go to **Settings → Devices & services → Add integration**, and select **Home Keeper
    Library**.
 4. Enter the currency of the prices and values of your books, such as `EUR` or `USD`.
