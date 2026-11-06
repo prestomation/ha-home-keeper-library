@@ -41,9 +41,9 @@ To read list.
 ## Install
 
 1. Install and set up [Home Keeper](https://github.com/prestomation/ha-home-keeper#installation).
-2. In [HACS](https://hacs.xyz/), add this repository as a custom repository, with the
-   category **Integration**: `https://github.com/prestomation/ha-home-keeper-library`.
-3. Install **Home Keeper Library** and restart Home Assistant.
+2. In [HACS](https://hacs.xyz/), search for **Home Keeper Library**, or
+   [open it in HACS](https://my.home-assistant.io/redirect/hacs_repository/?owner=prestomation&repository=ha-home-keeper-library&category=integration).
+3. Download **Home Keeper Library** and restart Home Assistant.
 4. Add the integration in **Settings → Devices & services → Add integration → Home
    Keeper Library**.
 
@@ -74,7 +74,7 @@ MIT. See [LICENSE](LICENSE).
 [releases]: https://github.com/prestomation/ha-home-keeper-library/releases
 [release-shield]: https://img.shields.io/github/release/prestomation/ha-home-keeper-library.svg?style=for-the-badge
 [license-shield]: https://img.shields.io/github/license/prestomation/ha-home-keeper-library.svg?style=for-the-badge
-[hacs-shield]: https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=for-the-badge
+[hacs-shield]: https://img.shields.io/badge/HACS-Default-41BDF5.svg?style=for-the-badge
 [hacs]: https://github.com/hacs/integration
 [hacs-validation-shield]: https://github.com/prestomation/ha-home-keeper-library/actions/workflows/hacs.yml/badge.svg
 [hacs-validation]: https://github.com/prestomation/ha-home-keeper-library/actions/workflows/hacs.yml
