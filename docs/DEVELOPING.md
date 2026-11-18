@@ -66,7 +66,7 @@ conventions behind them are in [`AGENTS.md`](../AGENTS.md) and
 that the release names, and closes it on a stable release (`ci/release-issues.py`).
 
 **Nightly, gating nothing:** `ha-beta.yml` runs the Docker and browser tiers against the
-Home Assistant beta and type-checks against a pre-release, then files 1 reusable issue.
+Home Assistant beta and type-checks against a pre-release, then files and closes 1 reusable issue.
 
 **In review:** the PR body (`.github/pull_request_template.md`) has these parts.
 
