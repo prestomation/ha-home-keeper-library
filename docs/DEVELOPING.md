@@ -61,7 +61,6 @@ conventions behind them are in [`AGENTS.md`](../AGENTS.md) and
 | **HACS validation and hassfest** | `test.yml`, `hacs.yml` | Manifest, brand and repository problems that block an install. |
 | **Release consistency** | `release.yml` | A `manifest.json` version, `PANEL_VERSION` and CHANGELOG section that disagree. |
 | **Release publish gate** | `release.yml`, `tests/unit/test_ci_release_publish_gate.py` | A tag, a release or a docs deploy from a branch other than `main`, or from a dry run. |
-| **Dependabot auto-merge** | `dependabot-auto-merge.yml`, `ci/wait_for_checks.py` | A bump that merges before every check on its head commit is green. |
 
 **After a release:** `notify-issues` in `release.yml` comments on each `(Fixes #N)` issue
 that the release names, and closes it on a stable release (`ci/release-issues.py`).

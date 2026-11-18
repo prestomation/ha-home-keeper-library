@@ -21,7 +21,6 @@ summary: What each CI workflow gates, the mutation and typing gates, vale, and h
 | `release.yml` | tags and publishes on merge ([changelog-and-release.md](changelog-and-release.md)) |
 | `preview-release.yml` | an installable `X.Y.Z.dev<pr>` build for a labelled PR |
 | `docs-deploy.yml` | publishes the docs site after a stable release |
-| `dependabot-auto-merge.yml` | merges a Dependabot PR when every check on its head is green |
 | `hacs.yml` | HACS validation |
 
 - **A pipe hides a failure.** `pytest … | tee log` takes the exit status of `tee`. Put
@@ -39,9 +38,8 @@ summary: What each CI workflow gates, the mutation and typing gates, vale, and h
   so `test_ci_action_pins.py` counts it as a write job and requires pinned actions.
 - `pytest_coverage.yml` runs the PR's code with no write token. `post_coverage_to_pr.yml`
   runs from the base branch on `workflow_run` and never checks the PR out.
-- `dependabot-auto-merge.yml` waits through `ci/wait_for_checks.py` for every check on
-  the head commit. It does not trust the required-checks list of branch protection,
-  which is kept by hand and drifts. Keep required checks on anyway, for human merges.
+- **A Dependabot PR waits for a person.** No workflow merges it. Review it, check that
+  every check is green, then squash merge it like any other PR.
 - **Each job that starts the Home Assistant container runs `ci/fetch-home-keeper.sh`
   first.** The library needs a real Home Keeper for the tab and the loan tasks. That is
   `integration.yml`, `e2e.yml`, `walkthrough-preview.yml` and both container jobs of

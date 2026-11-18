@@ -249,3 +249,43 @@ jobs:
               });
               core.notice(`Opened issue #${issue.number}`);
             }
+
+  # The reverse of `report`: a green nightly run closes the open issue, so a fixed
+  # regression does not stay open. A manual run neither files nor closes.
+  close-on-recovery:
+    name: Close the regression issue
+    needs: [integration, e2e, typing]
+    if: >
+      github.event_name == 'schedule' &&
+      needs.integration.result == 'success' &&
+      needs.e2e.result == 'success' &&
+      needs.typing.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Close the tracking issue
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const label = 'ha-beta-regression';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const { data: open } = await github.rest.issues.listForRepo({
+              ...context.repo, labels: label, state: 'open', per_page: 1,
+            });
+
+            if (!open.length) {
+              core.notice('No open regression issue. Nothing to close.');
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              ...context.repo, issue_number: open[0].number,
+              body: `The nightly Home Assistant \`beta\` run passed: ${runUrl}`,
+            });
+            await github.rest.issues.update({
+              ...context.repo, issue_number: open[0].number,
+              state: 'closed', state_reason: 'completed',
+            });
+            core.notice(`Closed issue #${open[0].number}`);
