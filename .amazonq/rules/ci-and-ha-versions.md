@@ -16,7 +16,7 @@ summary: What each CI workflow gates, the mutation and typing gates, vale, and h
 | `e2e.yml` | Docker, the real Home Keeper and Playwright; uploads the report on a failure |
 | `walkthrough-preview.yml` | the walkthrough gif comment ([pr-workflow.md](pr-workflow.md#walkthrough-video)) |
 | `docs-preview.yml` | builds the docs site for a PR and links the changed pages |
-| `ha-beta.yml` | nightly against HA `beta`; gates nothing, files `ha-beta-regression` |
+| `ha-beta.yml` | nightly against HA `beta`; gates nothing, files and closes `ha-beta-regression` |
 | `pytest_coverage.yml` | runs the coverage; `post_coverage_to_pr.yml` posts the comment |
 | `release.yml` | tags and publishes on merge ([changelog-and-release.md](changelog-and-release.md)) |
 | `preview-release.yml` | an installable `X.Y.Z.dev<pr>` build for a labelled PR |
@@ -32,7 +32,7 @@ summary: What each CI workflow gates, the mutation and typing gates, vale, and h
   only on a schedule, so its inputs come from files that a PR lane also reads.
 - **A job that runs PR code holds a read-only token.** A workflow that must write splits
   into a build job and a publish job that runs no PR code (`walkthrough-preview.yml`,
-  `docs-preview.yml`). A Dependabot PR is a same-repo PR and gets the write token.
+  `docs-preview.yml`).
 - **Each workflow sets `permissions: contents: read` at the top.** A job that needs more
   asks for it in its own block. A job with no block gets the repository default token,
   so `test_ci_action_pins.py` counts it as a write job and requires pinned actions.
