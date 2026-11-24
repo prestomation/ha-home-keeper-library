@@ -15,6 +15,8 @@ import { wireCovers } from './markup';
 import { camLogLines, logCam, Scanner } from './scanner';
 import { STYLES } from './styles';
 import { booksPath, renderBook, renderBooks } from './tab-books';
+import { mountConfirm, type ConfirmContent, type ConfirmHandle } from './confirm-dialog';
+import * as confirms from './confirm-specs';
 import { renderDialog, type Dialog, type DialogState } from './tab-dialogs';
 import { renderImport } from './tab-import';
 import { renderLoans, renderSettings, renderWishlist } from './tab-lists';
@@ -125,6 +127,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   private _dryRunSeq = 0;
   private _ui: UiState = freshUi();
   private _dialog: DialogState | null = null;
+  private _confirmHandle: ConfirmHandle | null = null;
   private _scanner: Scanner | null = null;
   private _stopTimer: ReturnType<typeof setTimeout> | undefined;
   private _stallTimer: ReturnType<typeof setTimeout> | undefined;
@@ -220,6 +223,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
   }
 
   disconnectedCallback(): void {
+    this._closeConfirm(false);
     void this._unsub?.();
     this._unsub = undefined;
     this._search.cancel();
@@ -464,6 +468,49 @@ export class HomeKeeperLibraryTab extends HTMLElement {
     this._renderDialog();
   }
 
+  /**
+   * Ask before an action that deletes, removes or replaces data. This is the 1 door
+   * for every such action in the tab (`frontend/test/destructive-scan-parity.test.js`
+   * checks that). *run* starts only after the confirm button.
+   */
+  private _confirm(content: ConfirmContent, run: () => Promise<unknown> | void): void {
+    this._closeConfirm(false);
+    const opener = this._root.activeElement as HTMLElement | null;
+    const key = opener?.dataset?.k;
+    this._confirmHandle = mountConfirm(this._root, content, {
+      onCancel: () => this._closeConfirm(true, key),
+      onConfirm: () => {
+        this._closeConfirm(false);
+        void run();
+      },
+    });
+  }
+
+  /** Remove the confirm dialog. With *back*, give the keyboard to the control that opened it. */
+  private _closeConfirm(back: boolean, key?: string): void {
+    this._confirmHandle?.close();
+    this._confirmHandle = null;
+    if (back && key) this._root.querySelector<HTMLElement>(`[data-k="${CSS.escape(key)}"]`)?.focus();
+  }
+
+  /** Run a command that deletes. If it works, go to *path*. */
+  private async _runThen(command: string, fields: Fields, path: string): Promise<void> {
+    if (await this._run(command, fields)) this._go(path, true);
+  }
+
+  private _askRemoveMiss(): void {
+    const d = this._dialog?.dialog;
+    if (d?.kind !== 'scan-title' || this._dialog?.busy) return;
+    this._confirm(confirms.removeScan(d.isbn), () => this._removeMiss());
+  }
+
+  private _askImport(): void {
+    const s = this._ui.import;
+    if (!s.summary || s.busy) return;
+    const person = s.personId ?? this._lib?.me.person_id ?? '';
+    this._confirm(confirms.importRows(s, this._idx?.person.get(person)?.name ?? ''), () => this._runImport());
+  }
+
   private _closeDialog(): void {
     const sheet = this._sheetOpen();
     this._dialog = null;
@@ -674,7 +721,10 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         await this._run('return_loan', { loan_id: id }, t('loan.returned_toast'));
         return;
       case 'delete-loan':
-        this._openDialog({ kind: 'confirm', title: t('dialog.delete_loan'), text: t('dialog.delete_loan_text'), label: t('action.delete'), command: 'delete_loan', fields: { loan_id: id } });
+        {
+          const loan = this._lib?.loans.find((l) => l.id === id);
+          if (loan && idx) this._confirm(confirms.deleteLoan(idx, loan), () => this._run('delete_loan', { loan_id: id }));
+        }
         return;
       case 'move-copy':
         this._openDialog({ kind: 'move', copyId: id });
@@ -695,15 +745,19 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         if (book) this._openDialog({ kind: 'copy', bookId: book.id, copyId: id });
         return;
       case 'delete-copy':
-        this._openDialog({ kind: 'confirm', title: t('dialog.delete_copy'), text: t('dialog.delete_copy_text'), label: t('action.delete'), command: 'delete_copy', fields: { copy_id: id } });
+        {
+          const copy = idx?.copy.get(id);
+          if (copy && idx) this._confirm(confirms.deleteCopy(idx, copy), () => this._run('delete_copy', { copy_id: id }));
+        }
         return;
       case 'delete-book':
-        if (book) {
-          this._openDialog({ kind: 'confirm', title: t('dialog.delete_book'), text: t('dialog.delete_book_text', { title: book.title }), label: t('action.delete'), command: 'delete_book', fields: { book_id: book.id }, after: this._booksPath });
+        if (book && this._lib && idx) {
+          const after = this._booksPath;
+          this._confirm(confirms.deleteBook(this._lib, idx, book), () => this._runThen('delete_book', { book_id: book.id }, after));
         }
         return;
       case 'ol-disconnect':
-        this._openDialog({ kind: 'confirm', title: t('ol.disconnect_title'), text: t('ol.disconnect_text'), label: t('ol.disconnect'), command: 'disconnect_catalog', fields: {} });
+        this._confirm(confirms.disconnectCatalog(), () => this._run('disconnect_catalog', {}));
         return;
       case 'send-ol':
         this._openDialog({ kind: 'send-ol', bookId: id || book?.id || '', phase: 'review' });
@@ -718,7 +772,11 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         this._main.querySelector<HTMLInputElement>('[data-k="cover-file"]')?.click();
         return;
       case 'use-ol-cover':
-        if (book) await this._run('set_cover', { book_id: book.id, kind: 'openlibrary' });
+        if (!book) return;
+        // A custom photo is deleted by this swap. Any other cover is easy to bring back.
+        if (book.cover?.kind === 'custom') {
+          this._confirm(confirms.replaceCover(book), () => this._run('set_cover', { book_id: book.id, kind: 'openlibrary' }));
+        } else await this._run('set_cover', { book_id: book.id, kind: 'openlibrary' });
         return;
       case 'lend':
         this._openDialog({ kind: 'lend', bookId: el.dataset.book ?? null });
@@ -736,7 +794,10 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         this._openDialog({ kind: 'got-it', bookId: id });
         return;
       case 'wish-remove':
-        await this._run('remove_from_wishlist', { book_id: id }, t('wishlist.removed'));
+        {
+          const wished = idx?.book.get(id);
+          if (wished) this._confirm(confirms.removeWish(wished), () => this._run('remove_from_wishlist', { book_id: id }, t('wishlist.removed')));
+        }
         return;
       case 'add-room':
         this._openDialog({ kind: 'room', roomId: null });
@@ -745,7 +806,10 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         this._openDialog({ kind: 'room', roomId: id });
         return;
       case 'delete-room':
-        this._openDialog({ kind: 'confirm', title: t('dialog.delete_room'), text: t('dialog.delete_place_text', { name: idx?.room.get(id)?.name ?? '' }), label: t('action.delete'), command: 'delete_room', fields: { room_id: id, force: true }, after: '/shelves' });
+        {
+          const room = idx?.room.get(id);
+          if (room && this._lib && idx) this._confirm(confirms.deleteRoom(this._lib, idx, room), () => this._runThen('delete_room', { room_id: id, force: true }, '/shelves'));
+        }
         return;
       case 'add-bookcase':
         this._openDialog({ kind: 'bookcase', roomId: id, bookcaseId: null });
@@ -756,7 +820,10 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         return;
       }
       case 'delete-bookcase':
-        this._openDialog({ kind: 'confirm', title: t('dialog.delete_bookcase'), text: t('dialog.delete_place_text', { name: idx?.bookcase.get(id)?.name ?? '' }), label: t('action.delete'), command: 'delete_bookcase', fields: { bookcase_id: id, force: true } });
+        {
+          const bookcase = idx?.bookcase.get(id);
+          if (bookcase && this._lib && idx) this._confirm(confirms.deleteBookcase(this._lib, idx, bookcase), () => this._run('delete_bookcase', { bookcase_id: id, force: true }));
+        }
         return;
       case 'add-shelf':
         this._openDialog({ kind: 'shelf', bookcaseId: id, shelfId: null });
@@ -767,7 +834,10 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         return;
       }
       case 'delete-shelf':
-        this._openDialog({ kind: 'confirm', title: t('dialog.delete_shelf'), text: t('dialog.delete_place_text', { name: idx?.shelf.get(id)?.name ?? '' }), label: t('action.delete'), command: 'delete_shelf', fields: { shelf_id: id, force: true } });
+        {
+          const shelf = idx?.shelf.get(id);
+          if (shelf && idx) this._confirm(confirms.deleteShelf(idx, shelf), () => this._run('delete_shelf', { shelf_id: id, force: true }));
+        }
         return;
       case 'set-shelf':
         this._openDialog({ kind: 'set-shelf' });
@@ -777,7 +847,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         this._closeDialog();
         return;
       case 'scan-miss-remove':
-        await this._removeMiss();
+        this._askRemoveMiss();
         return;
       case 'export':
         await this._export();
@@ -786,7 +856,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
         this._main.querySelector<HTMLInputElement>('[data-k="im-file"]')?.click();
         return;
       case 'import-run':
-        await this._runImport();
+        this._askImport();
         return;
       case 'import-close':
       case 'import-close-scrim':
@@ -1102,10 +1172,6 @@ export class HomeKeeperLibraryTab extends HTMLElement {
           }
           break;
         }
-        case 'confirm':
-          await api.call(d.command, d.fields);
-          after = d.after;
-          break;
         case 'send-ol':
           if (d.phase === 'existing') {
             await api.call('link_catalog', { book_id: d.bookId, record: d.editionKey });
@@ -1136,7 +1202,7 @@ export class HomeKeeperLibraryTab extends HTMLElement {
       // The user can close this dialog and open a new one during the call.
       if (this._dialog === state) this._closeDialog();
       void this._refresh();
-      if (after) this._go(after, d.kind === 'confirm');
+      if (after) this._go(after);
     } catch (err) {
       state.busy = false;
       state.error = errorText(err);

@@ -135,6 +135,9 @@ in the rules files below. Read the file for your topic before you change code or
   ([architecture.md](.amazonq/rules/architecture.md#how-to-decide)).
 - **Every user-facing exception has a `translation_key`.**
 - Escape all user content with `escapeHTML`. Navigate the tab only with `host.navigate`.
+- **Every delete, remove, disconnect and import asks first, through `_confirm`.** A scan test
+  fails the build for a command outside it
+  ([frontend.md](.amazonq/rules/frontend.md#confirm-before-data-loss)).
 - All datetimes are timezone-aware. Pure code takes the time from its caller.
 - **A job that installs Home Assistant runs at or above HA's Python floor** and runs
   `ci/check-ha-version.py`.

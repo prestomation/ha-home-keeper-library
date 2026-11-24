@@ -57,6 +57,24 @@ How the tab and the card work is in [frontend-tab-card](../../docs/design/fronte
 - A cover is served by an authenticated view. An `<img>` element cannot send a token, so
   sign the path with `auth/sign_path` or read the image with `fetchWithAuth`.
 
+## Confirm before data loss
+
+How the dialog works is in [confirm-dialog](../../docs/design/confirm-dialog.md).
+
+- **Every delete, remove, disconnect, replace and import asks first**, through `_confirm` in
+  `tab.ts`. Never run such a command from a click handler. Start it from the `run` callback.
+- **The dialog names the item and says what goes with it**, with real counts where the
+  index has them. The button names the action, such as **Delete book**. The text ends with
+  "You cannot undo this." The tab has no undo.
+- **Cancel has the focus.** Escape, a tap outside and Cancel close it, and Tab stays inside.
+  Do not build a second confirm dialog, and do not add a dialog kind for it.
+- **Do not ask before an action that the user can reverse or that is frequent.** A reading
+  status change, a loan return, a move, a pick of a new cover and an edit form ask nothing.
+- A new command that deletes data fails `destructive-scan-parity.test.js` until it runs inside
+  `_confirm`. Add an allowlist entry only with a written reason.
+- Each new confirm needs a vitest in `tab-confirm.test.js` and an e2e spec at desktop and
+  phone width. The text goes in all 16 locale tables.
+
 ## Layout
 
 - **Only CSS picks the layout.** Breakpoints are viewport `@media` queries. The phone

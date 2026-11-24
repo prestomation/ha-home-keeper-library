@@ -33,16 +33,6 @@ export type Dialog =
       editionKey?: string;
       coverFailed?: boolean;
     }
-  | {
-      kind: 'confirm';
-      title: string;
-      text: string;
-      label: string;
-      command: string;
-      fields: Record<string, unknown>;
-      after?: string;
-    };
-
 export interface DialogState {
   dialog: Dialog;
   error: string;
@@ -136,7 +126,6 @@ interface DialogBody {
   title: string;
   html: string;
   submit: string;
-  danger?: boolean;
   noCancel?: boolean;
   /** The label of the cancel button, if it is not "Cancel". */
   cancel?: string;
@@ -334,14 +323,12 @@ function body(ctx: ViewCtx, d: Dialog, areas: Array<[string, string]>): DialogBo
         html: field(t('dialog.name'), text('name', s?.name ?? t('dialog.shelf_default', { n: count + 1 }), 'required'), 'wide'),
       };
     }
-    case 'confirm':
-      return { title: d.title, submit: d.label, html: `<p>${escapeHTML(d.text)}</p>`, danger: true };
   }
 }
 
 /** The dialog layer markup. */
 export function renderDialog(ctx: ViewCtx, state: DialogState, areas: Array<[string, string]>): string {
-  const { title, html, submit, danger, noCancel, cancel: cancelLabel, sheet } = body(ctx, state.dialog, areas);
+  const { title, html, submit, noCancel, cancel: cancelLabel, sheet } = body(ctx, state.dialog, areas);
   const close = sheet ? '' : `<button type="button" class="hkl-iconbtn" data-act="dialog-close" data-k="d-x" aria-label="${escapeHTML(t('action.close'))}">${ICONS.close}</button>`;
   const cancel = sheet
     ? `<button type="button" class="hkl-btn text" data-act="scan-miss-remove" data-k="d-remove">${escapeHTML(t('scan.miss_remove'))}</button>`
@@ -355,7 +342,7 @@ export function renderDialog(ctx: ViewCtx, state: DialogState, areas: Array<[str
       ${state.error ? `<div class="hkl-error" role="alert">${escapeHTML(state.error)}</div>` : ''}
       <div class="hkl-dlg-actions">
         ${cancel}
-        <button type="submit" class="hkl-btn ${danger ? 'danger-primary' : 'primary'}" data-k="d-submit"${off ? ' disabled' : ''}>${escapeHTML(submit)}</button>
+        <button type="submit" class="hkl-btn primary" data-k="d-submit"${off ? ' disabled' : ''}>${escapeHTML(submit)}</button>
       </div>
     </form>
   </div>`;

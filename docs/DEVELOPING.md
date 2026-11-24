@@ -47,6 +47,7 @@ conventions behind them are in [`AGENTS.md`](../AGENTS.md) and
 | **Mutation testing at 80%** | `mutation.yml` | A test that runs a line and asserts nothing that would catch a wrong line. Scoped to the changed code. |
 | **Coverage comment** | `pytest_coverage.yml` | New code with no test, shown in the review. |
 | **Translation parity** | `tests/unit/test_translations_parity.py`, `frontend/test/i18n-parity.test.js` | A missing key, a different `{placeholder}` and English text in another locale, for 16 languages. |
+| **Confirm before delete** | `frontend/test/destructive-scan-parity.test.js` | A delete, remove, disconnect or import command that runs outside the confirm dialog of the tab. |
 | **Localized exceptions** | `tests/unit/test_exception_translations.py` | An error that a user can see with no `translation_key`, and a key with no message. |
 | **Exact shapes** | `tests/unit/test_shapes.py` | A record or reply key that changed name on both sides of a round trip. |
 | **Blocking calls** | `tests/component/conftest.py` (`blockbuster`) | Code of the integration that blocks the event loop in a component test, such as a file read or a `sleep`. |
