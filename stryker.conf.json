@@ -28,7 +28,9 @@
   "disableTypeChecks": "custom_components/home_keeper_library/frontend/src/*.ts",
   "mutate": [
     "custom_components/home_keeper_library/frontend/src/utils.ts",
-    "custom_components/home_keeper_library/frontend/src/i18n.ts"
+    "custom_components/home_keeper_library/frontend/src/i18n.ts",
+    "custom_components/home_keeper_library/frontend/src/confirm-dialog.ts",
+    "custom_components/home_keeper_library/frontend/src/confirm-specs.ts"
   ],
   "thresholds": {
     "high": 90,

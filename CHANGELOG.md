@@ -5,6 +5,13 @@ Each change that a user can see is in this file. The format is based on
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). `manifest.json` `version`
 is the single source of truth (see `RELEASE.md`).
 
+## [0.5.0b1] - 2026-11-24
+
+### Changed
+
+- **Delete confirmations.** Each delete, remove, disconnect and import now asks first in 1 dialog.
+  The dialog names the item and counts what goes with it, and Cancel is the default.
+
 ## [0.4.0] - 2026-10-25
 
 ### Added

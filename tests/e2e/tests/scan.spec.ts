@@ -163,6 +163,16 @@ test.describe('Scan', { tag: '@responsive' }, () => {
     const sheet = tab.locator('.hkl-dialog.sheet');
     await expect(sheet).toBeVisible({ timeout: 30_000 });
     await sheet.locator('[data-k="d-remove"]').click();
+    const confirm = tab.locator('.hkl-confirm-scrim');
+    await expect(confirm.locator('h2')).toHaveText('Remove this scan?');
+    await expect(confirm.locator('p')).toContainText(`ISBN ${MISS_ISBN}`);
+    // Cancel keeps the sheet and the book.
+    await confirm.locator('[data-k="confirm-cancel"]').click();
+    await expect(confirm).toHaveCount(0);
+    await expect(sheet).toBeVisible();
+    expect((await adminState()).books.filter((b: { isbn13: string }) => b.isbn13 === MISS_ISBN)).toHaveLength(1);
+    await sheet.locator('[data-k="d-remove"]').click();
+    await confirm.locator('[data-k="confirm-ok"]').click();
     await expect(sheet).toHaveCount(0);
     await expect(tab.locator('[data-k^="removed-"]')).toHaveText('Removed');
     const state = await adminState();

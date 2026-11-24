@@ -24,8 +24,8 @@ implements:
   - custom_components/home_keeper_library/frontend/src/dom.ts
   - custom_components/home_keeper_library/frontend/src/styles.ts
   - custom_components/home_keeper_library/frontend/src/global.d.ts
-related: [home-keeper-dependency, scan-and-isbn, csv-import-export, people-privilege]
-source_hash: 071169fb183e
+related: [home-keeper-dependency, scan-and-isbn, csv-import-export, people-privilege, confirm-dialog]
+source_hash: 0f2fde907e92
 ---
 
 # Tab and card
@@ -107,8 +107,8 @@ to [send](open-library-contribute.md). Each view is a free function over `ViewCt
 that returns HTML. `tab.ts` renders it with `dom.renderKeepFocus`. It keeps the focus, the caret,
 the typed text and the camera video. A delegated listener for each event type reads the `data-act`,
 `data-chg`, `data-input` and `data-form` attributes. The dialogs of `tab-dialogs.ts` are a separate
-layer, so a data push does not clear a form. An error keeps the typed input. A failed command shows
-the stored values. A [sheet](scan-and-isbn.md#title-sheet) has no close button.
+layer, so a data push does not clear a form. An error keeps the typed input. A delete asks first
+([confirm-dialog](confirm-dialog.md)). A [sheet](scan-and-isbn.md#title-sheet) has no close button.
 
 ### The card
 

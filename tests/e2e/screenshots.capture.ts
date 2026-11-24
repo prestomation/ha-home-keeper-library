@@ -10,6 +10,7 @@
  * A spec under tests/ asserts on each surface here.
  */
 import { expect, test, type Locator, type Page } from '@playwright/test';
+import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { library } from './ha-ws';
 import { adminState, bookByTitle, fakeCamera, libraryTab, noServiceWorker, openCard, openTab } from './tests/helpers';
@@ -172,6 +173,70 @@ async function openSendDialog(page: Page, bannerShot: string): Promise<void> {
   await expect(tab.locator('.hkl-dialog [data-k="d-send-isbn"]')).toBeChecked();
 }
 
+/** Open a confirmation with *open*, shoot it as *name*, and close it with Cancel. The data stays. */
+async function confirmShot(page: Page, name: string, open: () => Promise<void>): Promise<void> {
+  const scrim = libraryTab(page).locator('.hkl-confirm-scrim');
+  await open();
+  await expect(scrim).toBeVisible();
+  await expect(scrim.locator('[role="alertdialog"]')).toBeVisible();
+  await shot(page, name);
+  await scrim.locator('[data-k="confirm-cancel"]').click();
+  await expect(scrim).toHaveCount(0);
+}
+
+/** A seeded book with an Open Library cover, and a cover file to upload over it. */
+async function bookWithOlCover(): Promise<Record<string, any>> {
+  const state = await adminState();
+  const book = state.books.find((b: any) => b.cover?.kind === 'openlibrary' && b.catalogs?.openlibrary?.cover_id);
+  if (!book) throw new Error('no book with an Open Library cover in the seed');
+  return book;
+}
+
+/** Every confirmation of the tab, shot at the current width. Each one is cancelled. */
+async function confirmShots(page: Page, width: 'desktop' | 'mobile'): Promise<void> {
+  const book = await bookWithOlCover();
+  let tab = await openTab(page, `/books/${book.id}`);
+  await coversLoaded(page);
+  // The swap asks only if a cover that the user added would go, so add one first.
+  const cover = resolve(__dirname, 'seed/covers', readdirSync(resolve(__dirname, 'seed/covers'))[0]);
+  await tab.locator('[data-k="cover-file"]').setInputFiles(cover);
+  await expect(tab.locator('.hkl-cover-badge')).toHaveCount(1, { timeout: 30_000 });
+  await confirmShot(page, `confirm-book-${width}`, () => tab.locator('[data-k="delete-book"]').click());
+  await confirmShot(page, `confirm-copy-${width}`, () => tab.locator('[data-act="delete-copy"]').first().click());
+  await confirmShot(page, `confirm-cover-${width}`, () => tab.locator('[data-k="use-ol"]').click());
+
+  tab = await openTab(page, '/shelves');
+  await confirmShot(page, `confirm-shelf-${width}`, () => tab.locator('[data-act="delete-shelf"]').first().click());
+  await confirmShot(page, `confirm-bookcase-${width}`, () => tab.locator('[data-act="delete-bookcase"]').first().click());
+  await confirmShot(page, `confirm-room-${width}`, () => tab.locator('[data-act="delete-room"]').first().click());
+
+  tab = await openTab(page, '/loans;tab=returned');
+  await confirmShot(page, `confirm-loan-${width}`, () => tab.locator('[data-act="delete-loan"]').first().click());
+
+  tab = await openTab(page, '/wishlist');
+  await confirmShot(page, `confirm-wishlist-${width}`, () => tab.locator('[data-act="wish-remove"]').first().click());
+
+  tab = await openTab(page, '/import');
+  await tab.locator('[data-k="im-file"]').setInputFiles(resolve(__dirname, 'seed/goodreads_sample.csv'));
+  await expect(tab.locator('[data-k="import-run"]')).toHaveText('Import 6 rows', { timeout: 30_000 });
+  await confirmShot(page, `confirm-import-${width}`, () => tab.locator('[data-k="import-run"]').click());
+
+  await connectOpenLibrary(page);
+  tab = libraryTab(page);
+  await confirmShot(page, `confirm-disconnect-${width}`, () => tab.locator('[data-k="ol-disconnect"]').click());
+
+  // A scan with no match: the title sheet has Remove this scan.
+  tab = await openTab(page, '/scan');
+  await tab.locator('[data-k="m-manual"]').check();
+  await tab.locator('[data-k="scan-start"]').click();
+  await tab.locator('[data-k="isbn-input"]').fill(SCAN_ISBNS[2]);
+  await tab.locator('[data-k="isbn-add"]').click();
+  const sheet = tab.locator('.hkl-dialog.sheet');
+  await expect(sheet).toBeVisible({ timeout: 30_000 });
+  await confirmShot(page, `confirm-scan-${width}`, () => sheet.locator('[data-k="d-remove"]').click());
+  await deleteScanned();
+}
+
 test.describe.configure({ mode: 'serial' });
 
 test('capture the Library screenshots', async ({ page, browser }) => {
@@ -246,6 +311,9 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await matchSession(page, 'scan-match-desktop');
   await deleteScanned();
 
+  // Every confirmation of the tab, at desktop width.
+  await confirmShots(page, 'desktop');
+
   // The card on a dashboard, as Alex. The window is tall enough for the whole card.
   await page.setViewportSize({ width: 1280, height: 1500 });
   const card = await openCard(page);
@@ -293,6 +361,9 @@ test('capture the Library screenshots', async ({ page, browser }) => {
   await deleteScanned();
   await matchSession(page, 'scan-match-mobile');
   await deleteScanned();
+
+  // Every confirmation of the tab, at phone width.
+  await confirmShots(page, 'mobile');
 
   // The setup step on a page that is not HTTPS: the camera is blocked.
   const http = await browser.newContext({ storageState: './.auth/state.json', viewport: PHONE });

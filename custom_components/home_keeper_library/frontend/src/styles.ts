@@ -27,6 +27,8 @@ export const TOKENS = `
   --hkl-ring-reading: #fb8c00;
   --hkl-star: #f9a825;
   --hkl-wood: color-mix(in srgb, #8d6e63 70%, var(--hkl-surface));
+  --hkl-dim: rgba(0, 0, 0, 0.45);
+  --hkl-shadow: rgba(0, 0, 0, 0.3);
   --hkl-radius: 12px;
   --hkl-font: var(--ha-font-family-body, Roboto, 'Noto Sans', sans-serif);
 `;
@@ -306,12 +308,17 @@ button { font: inherit; color: inherit; }
 .hkl-details summary { cursor: pointer; color: var(--hkl-primary); }
 
 /* Dialogs */
-.hkl-scrim { position: fixed; inset: 0; z-index: 10; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; padding: 16px; }
-.hkl-dialog { width: min(560px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; background: var(--hkl-surface); color: var(--hkl-text); border-radius: 16px; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.3); }
+.hkl-scrim { position: fixed; inset: 0; z-index: 10; background: var(--hkl-dim); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.hkl-dialog { width: min(560px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; background: var(--hkl-surface); color: var(--hkl-text); border-radius: 16px; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 12px 40px var(--hkl-shadow); }
 .hkl-dialog.wide { width: min(760px, 100%); }
 .hkl-dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .hkl-dlg-body { display: flex; flex-direction: column; gap: 12px; }
 .hkl-dlg-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.hkl-confirm-scrim { position: fixed; inset: 0; z-index: 20; background: var(--hkl-dim); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.hkl-confirm { width: min(400px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; background: var(--hkl-surface); color: var(--hkl-text); border-radius: 24px; padding: 24px; box-shadow: 0 12px 40px var(--hkl-shadow); }
+.hkl-confirm h2 { margin: 0 0 16px; font-size: 20px; font-weight: 500; overflow-wrap: anywhere; }
+.hkl-confirm p { margin: 0 0 24px; color: var(--hkl-muted); white-space: pre-line; overflow-wrap: anywhere; }
+.hkl-confirm-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
 .hkl-dialog.sheet { width: min(480px, 100%); }
 .hkl-dialog.sheet .hkl-dlg-actions { justify-content: space-between; }
 .hkl-miss-head { display: flex; gap: 12px; align-items: flex-start; }
@@ -372,6 +379,8 @@ button { font: inherit; color: inherit; }
   .hkl-dialog, .hkl-dialog.wide, .hkl-dialog.sheet { width: 100%; border-radius: 16px 16px 0 0; max-height: 92vh; padding: 16px; }
   .hkl-dialog.sheet .hkl-dlg-actions { flex-direction: column-reverse; align-items: stretch; }
   .hkl-dialog.sheet .hkl-dlg-actions .hkl-btn { height: 48px; }
+  .hkl-confirm-actions { flex-direction: column-reverse; align-items: stretch; }
+  .hkl-confirm-actions .hkl-btn { height: 48px; }
   .hkl-listrow .hkl-btn { height: 36px; }
   .hkl-table th, .hkl-table td { padding: 6px; }
 }

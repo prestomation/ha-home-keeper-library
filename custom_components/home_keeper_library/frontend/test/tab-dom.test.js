@@ -277,8 +277,8 @@ describe('book detail', () => {
     const id = bookId(state, 'Dune');
     const fake = await mount(`/books/${id}`);
     $('[data-k="delete-book"]').click();
-    expect(el.shadowRoot.getElementById('dlg').textContent).toContain('Delete "Dune"');
-    $('[data-k="d-submit"]').click();
+    expect($('.hkl-confirm h2').textContent).toBe('Delete "Dune"?');
+    $('[data-k="confirm-ok"]').click();
     await flush();
     expect(fake.calls('delete_book')[0]).toMatchObject({ book_id: id });
     expect(host.navigate).toHaveBeenLastCalledWith('/books', { replace: true });
@@ -786,6 +786,15 @@ describe('scan with no match', () => {
     const remove = sheet().querySelector('[data-k="d-remove"]');
     expect(remove.textContent).toBe('Remove this scan');
     remove.click();
+    expect(fake.calls('delete_book')).toEqual([]);
+    expect($('.hkl-confirm h2').textContent).toBe('Remove this scan?');
+    expect($('.hkl-confirm p').textContent).toBe('Delete the book with ISBN 9781402894626 and its copy.\nYou cannot undo this.');
+    expect($('[data-k="confirm-ok"]').textContent).toBe('Remove this scan');
+    $('[data-k="confirm-cancel"]').click();
+    expect(sheet()).not.toBeNull();
+    expect(fake.calls('delete_book')).toEqual([]);
+    remove.click();
+    $('[data-k="confirm-ok"]').click();
     await flush();
     expect(fake.calls('delete_book')).toEqual([{ type: 'home_keeper_library/delete_book', book_id: 'one' }]);
     expect(sheet().querySelector('[data-k="d-isbn"]').textContent).toBe('ISBN 9780306406157');
@@ -1118,6 +1127,8 @@ describe('import', () => {
     expect(text()).toContain('goodreads_library_export.csv · 3 rows');
     expect(text()).toContain('Already in the library: 1');
     $('[data-k="import-run"]').click();
+    expect(fake.calls('import_csv')).toHaveLength(1);
+    $('[data-k="confirm-ok"]').click();
     await flush();
     expect(fake.calls('import_csv')[1]).toMatchObject({ dry_run: false });
     expect(host.showToast).toHaveBeenCalledWith('Import complete.');
@@ -1335,7 +1346,7 @@ describe('settings Open Library', () => {
     expect($('[data-k="ol-connected"]').textContent).toBe('Connected as alex_reads');
     expect($('[data-k="ol-access"]')).toBeNull();
     $('[data-k="ol-disconnect"]').click();
-    el.shadowRoot.getElementById('dlg').querySelector('[data-k="d-submit"]').click();
+    $('[data-k="confirm-ok"]').click();
     await flush();
     expect(fake.calls('disconnect_catalog')).toHaveLength(1);
   });
